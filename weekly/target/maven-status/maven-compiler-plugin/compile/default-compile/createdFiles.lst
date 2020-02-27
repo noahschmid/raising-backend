@@ -1,0 +1,6 @@
+com\weekly\controllers\HomeController.class
+com\weekly\weekly\WeeklyApplication.class
+com\weekly\data\DishRepository.class
+com\weekly\controllers\DishController.class
+com\weekly\data\JdbcDishRepository.class
+com\weekly\weekly\Dish.class
