@@ -16,6 +16,6 @@ public class HomeController {
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, String> home() {
-		return Collections.singletonMap("message", "Git setup might work soon");
+		return Collections.singletonMap("message","sone schöne morge");
 	}
 }
