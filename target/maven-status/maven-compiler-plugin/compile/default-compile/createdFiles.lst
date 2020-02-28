@@ -1,0 +1,5 @@
+ch\raising\data\IJdbcRepository.class
+ch\raising\raisingbackend\RaisingBackendApplication.class
+ch\raising\controllers\BaseController.class
+ch\raising\data\JdbcRepository.class
+ch\raising\models\User.class
