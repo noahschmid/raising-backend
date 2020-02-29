@@ -23,13 +23,13 @@ public class JdbcRepository implements IJdbcRepository{
 
 	@Override
 	public List<User> findALL() {
-		String getAll = "SELECT id, name, password FROM account";
+		String getAll = "SELECT id, username, password FROM account";
 		List<User> users = jdbc.query(getAll, this::mapRowToUser);
 		return users;
 	}
 	
 	private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
-		return new User(rs.getInt("id"), rs.getString("name"), rs.getString("password"));
+		return new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
 	}
 
 }
