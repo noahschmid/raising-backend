@@ -23,7 +23,7 @@ import ch.raising.models.Account;
 import ch.raising.models.Response;
 
 @Controller
-@RequestMapping("/account/")
+@RequestMapping("/account")
 public class AccountController {
 	@Autowired
 	private final AccountRepository accountRepository;
@@ -40,7 +40,7 @@ public class AccountController {
 	 */
 	@PostMapping("/login")
 	@ResponseBody
-	public ResponseEntity login(@RequestBody Account account) {
+	public ResponseEntity<Response> login(@RequestBody Account account) {
 		if(accountRepository.login(account.getUsername(), account.getPassword()))
 			return ResponseEntity.ok(new Response("Login successful"));
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
@@ -53,7 +53,7 @@ public class AccountController {
 	 */
 	@PostMapping("/register")
 	@ResponseBody
-	public ResponseEntity register(@RequestBody Account account) {
+	public ResponseEntity<Response> register(@RequestBody Account account) {
 		if(accountRepository.usernameExists(account.getUsername()))
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Username already exists!"));
 
