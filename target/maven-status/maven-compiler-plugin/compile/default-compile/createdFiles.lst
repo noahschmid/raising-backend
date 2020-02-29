@@ -1,5 +1,5 @@
-ch\raising\data\IJdbcRepository.class
+ch\raising\controllers\AccountController.class
 ch\raising\raisingbackend\RaisingBackendApplication.class
-ch\raising\controllers\BaseController.class
-ch\raising\data\JdbcRepository.class
-ch\raising\models\User.class
+ch\raising\data\AccountRepository.class
+ch\raising\models\Response.class
+ch\raising\models\Account.class
