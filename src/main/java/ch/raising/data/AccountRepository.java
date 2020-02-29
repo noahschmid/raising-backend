@@ -2,7 +2,6 @@ package ch.raising.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +53,7 @@ public class AccountRepository {
 	 * @param acc
 	 */
 	public void add(Account acc) {
+		acc.hashPassword();
 		String sql = "INSERT INTO account(username, password) VALUES ('" + acc.getUsername() + "', '" + acc.getPassword() + "')";
 		jdbc.execute(sql);
 	}
