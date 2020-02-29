@@ -16,7 +16,7 @@ import ch.raising.data.JdbcRepository;
 import ch.raising.models.User;
 
 @Controller
-@RequestMapping("/test")
+@RequestMapping("/")
 public class BaseController {
 	
 	
