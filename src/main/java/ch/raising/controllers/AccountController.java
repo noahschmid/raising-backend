@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.data.AccountRepository;
 import ch.raising.models.Account;
+import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.Response;
@@ -99,11 +100,11 @@ public class AccountController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ResponseBody
-	public List<Account> getAccounts(){
+	public List<Account> getAccounts() {
 		return accountService.getAccounts();
-	}
-
-	/**
+    }
+    
+    /**
 	 * Searches for an account by id
 	 * @param id the id of the desired account
      * @param request instance of the http request
@@ -112,36 +113,39 @@ public class AccountController {
 	@GetMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> getAccountById(@PathVariable int id, HttpServletRequest request) {
-        Account account = accountService.findById(id);
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean isAdmin = request.isUserInRole("ROLE_ADMIN");
-        if(account == null)
-            return ResponseEntity.status(500).body(new Response("Account not found"));
-
-        if(!account.getUsername().equals(username) && !isAdmin)
+        if(!accountService.isOwnAccount(id, request))
             return ResponseEntity.status(403).body(new Response("Access denied"));
 
-		return ResponseEntity.ok().body(account);
-	}
-
-	/**
+        return ResponseEntity.ok().body(accountService.findById(id));
+    }
+    
+    /**
 	 * Delete account
 	 * @param id
-     * @param request instance of the http request
+     * @param request instance of the http request 
 	 * @return response object with status text
 	 */
 	@DeleteMapping("/{id}")
 	@ResponseBody
-	public ResponseEntity deleteAccount(@PathVariable int id, HttpServletRequest request) {
-        Account account = accountService.findById(id);
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean isAdmin = request.isUserInRole("ROLE_ADMIN");
-        if(account == null)
-            return ResponseEntity.status(500).body(new Response("Account not found"));
+	public ResponseEntity<?> deleteAccount(@PathVariable int id, HttpServletRequest request) {
+        if(accountService.isOwnAccount(id, request))
+            return accountService.deleteAccount(id);
+        else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
+    }
 
-        if(!account.getUsername().equals(username) && !isAdmin)
-            return ResponseEntity.status(403).body(new Response("Access denied"));
-
-		return accountService.deleteAccount(id);
+    /**
+     * Update account
+     * @return
+     */
+    @PatchMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<?> updateAccount(@PathVariable int id, 
+                                            @RequestBody AccountUpdateRequest updateRequest,
+                                            HttpServletRequest request) {
+        if(accountService.isOwnAccount(id, request))
+            return accountService.updateAccount(id, updateRequest);
+        else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
     }
 }

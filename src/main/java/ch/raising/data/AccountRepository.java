@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
+import ch.raising.models.AccountUpdateRequest;
 
 @Repository
 public class AccountRepository {
@@ -116,6 +117,33 @@ public class AccountRepository {
 			rs.getString("username"), 
 			rs.getString("password"),
 			rs.getString("roles"));
+	}
+
+	/**
+	 * Update user account
+	 * @param id the id of the account to update
+	 * @param req request containing fields to update
+	 */
+	public void update(int id, AccountUpdateRequest req) {
+		String queryFields = "";
+		if(req.getUsername() != null)
+			queryFields += "username = '" + req.getUsername() + "'";
+		if(req.getPassword() != null) {
+			if(queryFields != "")
+				queryFields += ", ";
+			queryFields += "password = '" + req.getPassword() + "'";
+		}
+		if(req.getRoles() != null) {
+			if(queryFields != "")
+				queryFields += ", ";
+			queryFields += "roles = '" + req.getRoles() + "'";
+		}
+		if(queryFields == "")
+			return;
+
+		String sql = "UPDATE account SET " + queryFields + " WHERE id = " + id + ";";
+		System.out.println(sql);
+        jdbc.execute(sql);
 	}
 
 }
