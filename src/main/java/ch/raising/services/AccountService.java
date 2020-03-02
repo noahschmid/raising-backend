@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import ch.raising.models.Account;
+import ch.raising.models.AccountDetails;
 import ch.raising.models.Response;
 import ch.raising.data.AccountRepository;
 
@@ -24,7 +25,7 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByUsername(username);
-        return new User(account.getUsername(), account.getPassword(), new ArrayList<>());
+        return new AccountDetails(account);
     }
 
     public AccountService(AccountRepository accountRepository) {
@@ -48,11 +49,14 @@ public class AccountService implements UserDetailsService {
      * @param  the account to register
      * @return  ResponseEntity with status code and message
      */
-    public ResponseEntity register(Account account) {
+    public ResponseEntity<?> register(Account account) {
         if(accountRepository.usernameExists(account.getUsername()))
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Username already exists!"));
-
-		accountRepository.add(account);
+        try  {
+            accountRepository.add(account);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(e.toString()));
+        }
 		return ResponseEntity.ok(new Response("Successfully registered new account!", account));
     }
 

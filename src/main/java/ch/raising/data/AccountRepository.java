@@ -49,17 +49,22 @@ public class AccountRepository {
 
 	/**
 	 * Add a new account to the database
-	 * @param acc
+	 * @param acc the account to add
 	 */
-	public void add(Account acc) {
-		acc.hashPassword();
-		String sql = "INSERT INTO account(username, password) VALUES ('" + acc.getUsername() + "', '" + acc.getPassword() + "')";
-		jdbc.execute(sql);
+	public void add(Account acc) throws Exception {
+		try {
+			acc.hashPassword();
+			String sql = "INSERT INTO account(username, password) VALUES ('" + acc.getUsername() + "', '" + acc.getPassword() + "')";
+			jdbc.execute(sql);
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			throw e;
+		}
 	}
 
 	/**
 	 * Delete user account
-	 * @param id
+	 * @param id the id of the account
 	 */
 	public void delete(int id) {
 		jdbc.execute("DELETE FROM account WHERE id = " + id); 
@@ -107,7 +112,10 @@ public class AccountRepository {
 	 * @throws SQLException
 	 */
 	private Account mapRowToAccount(ResultSet rs, int rowNum) throws SQLException {
-		return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+		return new Account(rs.getInt("id"), 
+			rs.getString("username"), 
+			rs.getString("password"),
+			rs.getString("roles"));
 	}
 
 }
