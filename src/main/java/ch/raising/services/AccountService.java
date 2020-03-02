@@ -122,9 +122,10 @@ public class AccountService implements UserDetailsService {
      * Update user account
      * @param id the id of the account to be updated
      * @param req the http request instance
+     * @param isAdmin indicates whether or not the user requesting the update is admin
      * @return Response entity with status code and message
      */
-    public ResponseEntity<?> updateAccount(int id, AccountUpdateRequest req) {
+    public ResponseEntity<?> updateAccount(int id, AccountUpdateRequest req, boolean isAdmin) {
         if(accountRepository.find(id) == null)
             return ResponseEntity.status(500).body(new Response("Account doesn't exist"));
         try {  
@@ -132,7 +133,7 @@ public class AccountService implements UserDetailsService {
                 if(accountRepository.findByUsername(req.getUsername()) != null)
                     return ResponseEntity.status(500).body(new Response("Username already in use"));
             }
-            accountRepository.update(id, req);
+            accountRepository.update(id, req, isAdmin);
             return ResponseEntity.ok(new Response("Successfully updated account"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(e.getMessage()));

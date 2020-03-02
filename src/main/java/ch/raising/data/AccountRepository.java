@@ -123,8 +123,9 @@ public class AccountRepository {
 	 * Update user account
 	 * @param id the id of the account to update
 	 * @param req request containing fields to update
+	 * @param isAdmin whether or not the user requesting the update is admin
 	 */
-	public void update(int id, AccountUpdateRequest req) {
+	public void update(int id, AccountUpdateRequest req, boolean isAdmin) {
 		String queryFields = "";
 		if(req.getUsername() != null)
 			queryFields += "username = '" + req.getUsername() + "'";
@@ -133,7 +134,7 @@ public class AccountRepository {
 				queryFields += ", ";
 			queryFields += "password = '" + req.getPassword() + "'";
 		}
-		if(req.getRoles() != null) {
+		if(req.getRoles() != null && isAdmin) {
 			if(queryFields != "")
 				queryFields += ", ";
 			queryFields += "roles = '" + req.getRoles() + "'";

@@ -144,7 +144,7 @@ public class AccountController {
                                             @RequestBody AccountUpdateRequest updateRequest,
                                             HttpServletRequest request) {
         if(accountService.isOwnAccount(id, request))
-            return accountService.updateAccount(id, updateRequest);
+            return accountService.updateAccount(id, updateRequest, request.isUserInRole("ROLE_ADMIN"));
         else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
     }
