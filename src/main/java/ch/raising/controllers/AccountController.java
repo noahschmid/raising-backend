@@ -136,7 +136,7 @@ public class AccountController {
 
     /**
      * Update account
-     * @return
+     * @return Response entity with status code and message
      */
     @PatchMapping("/{id}")
     @ResponseBody

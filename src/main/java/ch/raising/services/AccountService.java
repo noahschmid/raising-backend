@@ -121,7 +121,7 @@ public class AccountService implements UserDetailsService {
     /**
      * Update user account
      * @param id the id of the account to be updated
-     * @param 
+     * @param req the http request instance
      * @return Response entity with status code and message
      */
     public ResponseEntity<?> updateAccount(int id, AccountUpdateRequest req) {
