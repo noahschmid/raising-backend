@@ -9,6 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,21 +21,36 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.data.AccountRepository;
 import ch.raising.models.Account;
+import ch.raising.models.LoginRequest;
+import ch.raising.models.LoginResponse;
 import ch.raising.models.Response;
+import ch.raising.services.AccountService;
+import ch.raising.utils.JwtUtil;
+import ch.raising.controllers.AccountController;
 
 @Controller
-@RequestMapping("/account")
 public class AccountController {
 	@Autowired
-	private final AccountRepository accountRepository;
+    private final AccountService accountService;
+    
+    @Autowired
+    private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    private final JwtUtil jwtUtil;
 	
 	@Autowired
-	public AccountController(AccountRepository accountRepository) {
-		this.accountRepository = accountRepository;
+    public AccountController(AccountService accountService, 
+                            AuthenticationManager authenticationManager,
+                            JwtUtil jwtUtil) {
+        this.accountService = accountService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
 	}
 
 	/**
@@ -38,12 +58,20 @@ public class AccountController {
 	 * @param account provided by the request 
 	 * @return response instance with message and status code
 	 */
-	@PostMapping("/login")
+	@RequestMapping(value = "/account/login", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Response> login(@RequestBody Account account) {
-		if(accountRepository.login(account.getUsername(), account.getPassword()))
-			return ResponseEntity.ok(new Response("Login successful"));
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
+	public ResponseEntity<?> login(@RequestBody LoginRequest request) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        } catch (BadCredentialsException e) {
+            throw new Exception("Incorrect username or password", e);
+        }
+        
+        final UserDetails userDetails = accountService.loadUserByUsername(request.getUsername());
+        final String token = jwtUtil.generateToken(userDetails);
+        
+        return ResponseEntity.ok(new LoginResponse(token));
 	}
 
 	/**
@@ -51,14 +79,10 @@ public class AccountController {
 	 * @param account has to include an unique username and a password
 	 * @return JSON response with status code and added account details (if added)
 	 */
-	@PostMapping("/register")
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<Response> register(@RequestBody Account account) {
-		if(accountRepository.usernameExists(account.getUsername()))
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Username already exists!"));
-
-		accountRepository.add(account);
-		return ResponseEntity.ok(new Response("Successfully registered new account!", account));
+		return accountService.register(account);
 	}
 	
 	/**
@@ -68,9 +92,7 @@ public class AccountController {
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<Account> getAccounts(){
-		ArrayList<Account> accounts = new ArrayList<Account>();
-		accountRepository.getAllAccounts().forEach(acc -> accounts.add(acc));
-		return accounts;
+		return accountService.getAccounts();
 	}
 
 	/**
@@ -81,7 +103,7 @@ public class AccountController {
 	@GetMapping("/{id}")
 	@ResponseBody
 	public Account getAccountById(@PathVariable int id) {
-		return accountRepository.find(id);
+		return accountService.findById(id);
 	}
 
 	/**
@@ -92,7 +114,6 @@ public class AccountController {
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity deleteAccount(@PathVariable int id) {
-		accountRepository.delete(id);
-		return ResponseEntity.ok(new Response("Successfully deleted account"));
+		return accountService.deleteAccount(id);
 	}
 }

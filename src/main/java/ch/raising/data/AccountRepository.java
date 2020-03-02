@@ -33,13 +33,12 @@ public class AccountRepository {
 
 	/**
 	 * Check whether a combination of given username and passwort exist in database
-	 * @param username username of the user
-	 * @param password password of the user
-	 * @return true if login was successful, false if no matching entry could be found
+	 * @param account account instance of the desired account
+	 * @return true if account was found, false if no matching entry could be found
 	 */
-	public boolean login(String username, String password) {
+	public boolean accountExists(Account account) {
 		String query = "SELECT * FROM account WHERE username = ? AND password = ?";
-		Object[] params = new Object[] { username, password };
+		Object[] params = new Object[] { account.getUsername(), account.getPassword() };
 		try {
             jdbc.queryForObject(query, params, this::mapRowToAccount);
             return true;
@@ -73,6 +72,15 @@ public class AccountRepository {
 	 */
 	public Account find(int id) {
 		return jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id }, this::mapRowToAccount);
+	}
+
+	/**
+	 * Find user account by username
+	 * @param username the username to search for
+	 * @return instance of the found user account
+	 */
+	public Account findByUsername(String username) {
+		return jdbc.queryForObject("SELECT * FROM account WHERE username = ?", new Object[] { username }, this::mapRowToAccount);
 	}
 
 	/**

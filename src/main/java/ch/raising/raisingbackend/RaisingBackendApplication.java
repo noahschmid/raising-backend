@@ -3,7 +3,7 @@ package ch.raising.raisingbackend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = {"ch.raising.services", "ch.raising.models", "ch.raising.controllers", "ch.raising.raisingbackend", "ch.raising.data"})
+@SpringBootApplication(scanBasePackages = {"ch.raising.utils", "ch.raising.config", "ch.raising.services", "ch.raising.models", "ch.raising.controllers", "ch.raising.raisingbackend", "ch.raising.data"})
 public class RaisingBackendApplication {
 
 	public static void main(String[] args) {

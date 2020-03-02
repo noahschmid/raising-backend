@@ -18,7 +18,7 @@ public class Account {
 	}
 
 	public void hashPassword() {
-		password = passwordEncoder.encode(password);
+		//password = passwordEncoder.encode(password);
 	}
 
 	public long getId() { return this.id; }
