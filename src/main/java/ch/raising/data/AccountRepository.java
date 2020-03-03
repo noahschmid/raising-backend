@@ -2,7 +2,6 @@ package ch.raising.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
+import ch.raising.models.AccountUpdateRequest;
 
 @Repository
 public class AccountRepository {
@@ -34,13 +34,12 @@ public class AccountRepository {
 
 	/**
 	 * Check whether a combination of given username and passwort exist in database
-	 * @param username username of the user
-	 * @param password password of the user
-	 * @return true if login was successful, false if no matching entry could be found
+	 * @param account account instance of the desired account
+	 * @return true if account was found, false if no matching entry could be found
 	 */
-	public boolean login(String username, String password) {
+	public boolean accountExists(Account account) {
 		String query = "SELECT * FROM account WHERE username = ? AND password = ?";
-		Object[] params = new Object[] { username, password };
+		Object[] params = new Object[] { account.getUsername(), account.getPassword() };
 		try {
             jdbc.queryForObject(query, params, this::mapRowToAccount);
             return true;
@@ -51,16 +50,22 @@ public class AccountRepository {
 
 	/**
 	 * Add a new account to the database
-	 * @param acc
+	 * @param acc the account to add
 	 */
-	public void add(Account acc) {
-		String sql = "INSERT INTO account(username, password) VALUES ('" + acc.getUsername() + "', '" + acc.getPassword() + "')";
-		jdbc.execute(sql);
+	public void add(Account acc) throws Exception {
+		try {
+			acc.hashPassword();
+			String sql = "INSERT INTO account(username, password) VALUES ('" + acc.getUsername() + "', '" + acc.getPassword() + "')";
+			jdbc.execute(sql);
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			throw e;
+		}
 	}
 
 	/**
 	 * Delete user account
-	 * @param id
+	 * @param id the id of the account
 	 */
 	public void delete(int id) {
 		jdbc.execute("DELETE FROM account WHERE id = " + id); 
@@ -73,6 +78,15 @@ public class AccountRepository {
 	 */
 	public Account find(int id) {
 		return jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id }, this::mapRowToAccount);
+	}
+
+	/**
+	 * Find user account by username
+	 * @param username the username to search for
+	 * @return instance of the found user account
+	 */
+	public Account findByUsername(String username) {
+		return jdbc.queryForObject("SELECT * FROM account WHERE username = ?", new Object[] { username }, this::mapRowToAccount);
 	}
 
 	/**
@@ -99,7 +113,38 @@ public class AccountRepository {
 	 * @throws SQLException
 	 */
 	private Account mapRowToAccount(ResultSet rs, int rowNum) throws SQLException {
-		return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+		return new Account(rs.getInt("id"), 
+			rs.getString("username"), 
+			rs.getString("password"),
+			rs.getString("roles"));
+	}
+
+	/**
+	 * Update user account
+	 * @param id the id of the account to update
+	 * @param req request containing fields to update
+	 * @param isAdmin whether or not the user requesting the update is admin
+	 */
+	public void update(int id, AccountUpdateRequest req, boolean isAdmin) {
+		String queryFields = "";
+		if(req.getUsername() != null)
+			queryFields += "username = '" + req.getUsername() + "'";
+		if(req.getPassword() != null) {
+			if(queryFields != "")
+				queryFields += ", ";
+			queryFields += "password = '" + req.getPassword() + "'";
+		}
+		if(req.getRoles() != null && isAdmin) {
+			if(queryFields != "")
+				queryFields += ", ";
+			queryFields += "roles = '" + req.getRoles() + "'";
+		}
+		if(queryFields == "")
+			return;
+
+		String sql = "UPDATE account SET " + queryFields + " WHERE id = " + id + ";";
+		System.out.println(sql);
+        jdbc.execute(sql);
 	}
 
 }
