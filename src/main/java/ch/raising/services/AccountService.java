@@ -54,14 +54,16 @@ public class AccountService implements UserDetailsService {
      * @return  ResponseEntity with status code and message
      */
     public ResponseEntity<?> register(Account account) {
+        if(account.getUsername().length() == 0 || account.getPassword().length() == 0)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Please provide username and password"));
         if(accountRepository.usernameExists(account.getUsername()))
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Username already exists!"));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Username already exists"));
         try  {
             accountRepository.add(account);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(e.toString()));
         }
-		return ResponseEntity.ok(new Response("Successfully registered new account!", account));
+		return ResponseEntity.ok(new Response("Successfully registered new account", account));
     }
 
     /**
