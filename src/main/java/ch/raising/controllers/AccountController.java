@@ -68,17 +68,16 @@ public class AccountController {
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<?> login(@RequestBody LoginRequest request) throws Exception {
+	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Wrong username or password"));
         }
 
         final UserDetails userDetails = accountService.loadUserByUsername(request.getUsername());
         final String token = jwtUtil.generateToken(userDetails);
-        
         return ResponseEntity.ok(new LoginResponse(token));
 	}
 
