@@ -5,7 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class AccountUpdateRequest {
     private String username = null;
     private String password = null;
-    private String roles = "ROLES_USER";
+    private String roles = null;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -20,4 +20,8 @@ public class AccountUpdateRequest {
     public String getUsername() { return this.username; }
     public String getPassword() { return this.password; }
     public String getRoles() { return this.roles; }
+
+    public void setRoles(String roles) { this.roles = roles; }
+    public void setUsername(String username) { this.username = username; }
+    public void setPassword(String password) { this.password = password; }
 }
