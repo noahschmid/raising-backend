@@ -97,7 +97,7 @@ public class AccountController {
 	 * @return list of all accounts
 	 */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
 	@ResponseBody
 	public List<Account> getAccounts() {
 		return accountService.getAccounts();
@@ -112,7 +112,7 @@ public class AccountController {
 	@GetMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> getAccountById(@PathVariable int id, HttpServletRequest request) {
-        if(!accountService.isOwnAccount(id, request.isUserInRole("ROLE_ADMIN")))
+        if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(403).body(new ErrorResponse("Access denied"));
 
         return ResponseEntity.ok().body(accountService.findById(id));
@@ -127,10 +127,10 @@ public class AccountController {
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> deleteAccount(@PathVariable int id, HttpServletRequest request) {
-        if(accountService.isOwnAccount(id, request.isUserInRole("ROLE_ADMIN")))
-            return accountService.deleteAccount(id);
-        else
+        if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
+
+        return accountService.deleteAccount(id);
     }
 
     /**
@@ -142,9 +142,9 @@ public class AccountController {
     public ResponseEntity<?> updateAccount(@PathVariable int id, 
                                             @RequestBody AccountUpdateRequest updateRequest,
                                             HttpServletRequest request) {
-        if(accountService.isOwnAccount(id, request.isUserInRole("ROLE_ADMIN")))
-            return accountService.updateAccount(id, updateRequest, request.isUserInRole("ROLE_ADMIN"));
-        else
+        if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
+
+        return accountService.updateAccount(id, updateRequest, request.isUserInRole("ADMIN"));
     }
 }

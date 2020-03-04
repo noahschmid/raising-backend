@@ -91,18 +91,18 @@ public class AccountService implements UserDetailsService {
     }
 
     /**
-     * Check if request comes from own account (or admin account)
+     * Check if given id belongs to own account
      * @param id the id of the account to check against
      * @param isAdmin indicates whether the user is admin
      * @return true if account belongs to request, false otherwise
      */
-    public boolean isOwnAccount(int id, boolean isAdmin) {
+    public boolean isOwnAccount(int id) {
         Account account = findById(id);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(account == null)
+        if(account == null || username == null)
             return false;
 
-        if(!account.getUsername().equals(username) && !isAdmin)
+        if(!account.getUsername().equals(username))
             return false;
 
         return true;
