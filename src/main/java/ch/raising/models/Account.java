@@ -2,6 +2,11 @@ package ch.raising.models;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Account {
 	
 	private final long id;
@@ -16,9 +21,4 @@ public class Account {
 		this.password = password;
 		this.roles = roles == null ? "ROLE_USER" : roles;
 	}
-
-	public long getId() { return this.id; }
-	public String getUsername() { return this.username; }
-	public String getPassword() { return this.password; }
-	public String getRoles() { return this.roles; }
 }

@@ -22,7 +22,6 @@ import ch.raising.models.AccountUpdateRequest;
 public class AccountRepository {
 	
 	private JdbcTemplate jdbc;
-
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	
 	@Autowired
