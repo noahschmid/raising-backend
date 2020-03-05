@@ -10,6 +10,8 @@ import lombok.Setter;
 public class InvestorProfileResponse {
     private int accountId;
     private String username;
+    private String name;
+    private String description;
     private int investmentMin;
     private int investmentMax;
     private String investorType;

@@ -96,6 +96,8 @@ public class InvestorService {
         response.setUsername(account.getUsername());
         response.setInvestmentMax(investor.getInvestmentMax());
         response.setInvestmentMin(investor.getInvestmentMin());
+        response.setName(investor.getName());
+        response.setDescription(investor.getDescription());
 
         for(Continent cntnt : continents) {
             response.addContinent(cntnt.getName());

@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 public class Investor {
     private int id;
+    private String name;
+    private String description;
     private int accountId;
     private int investmentMin;
     private int investmentMax;
