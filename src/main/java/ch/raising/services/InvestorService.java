@@ -21,6 +21,7 @@ import ch.raising.models.Industry;
 import ch.raising.models.InvestmentPhase;
 import ch.raising.models.Investor;
 import ch.raising.models.InvestorProfileResponse;
+import ch.raising.models.InvestorProfileUpdateRequest;
 import ch.raising.models.InvestorType;
 import ch.raising.models.Support;
 import ch.raising.data.IndustryRepository;
@@ -120,5 +121,14 @@ public class InvestorService {
         }
 
         return ResponseEntity.ok().body(response);
+    }
+
+    /**
+     * Update investor profile
+     * @param request the data to update
+     * @return response entity with status code and message
+     */
+    public ResponseEntity<?> updateInvestorProfile(InvestorProfileUpdateRequest request) {
+        return ResponseEntity.ok().build();
     }
 }

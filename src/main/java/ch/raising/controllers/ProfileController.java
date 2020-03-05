@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ch.raising.models.ProfileUpdateRequest;
+import ch.raising.models.InvestorProfileUpdateRequest;
 import ch.raising.services.InvestorService;
 
 @Controller
@@ -22,27 +22,25 @@ public class ProfileController {
 
     @Autowired
     public ProfileController() {
-
     }
 
     /**
-     * Return profile of either startup or investor by given accountId
-     * @param id the id of the account the startup or investor belongs to
+     * Return profile of investor by given accountId
+     * @param id the id of the account the investor belongs to
      * @return ResponseEntity intance with status code and investor or startup in body
      */
     @GetMapping("/investor/{id}")
-    public ResponseEntity<?> getProfile(@PathVariable int id) {
+    public ResponseEntity<?> getInvestorProfile(@PathVariable int id) {
         return investorService.getInvestorProfile(id);
     }
 
     /**
-     * Update profile of either startup or investor by given accountId
-     * @param request the id of the account the startup or investor belongs to
+     * Update profile of investor by given accountId
+     * @param request the id of the account the investor belongs to
      * @return ResponseEntity with status code and error message (if exists)
      */
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> updateProfile(@RequestBody ProfileUpdateRequest request) {
-        // TODO: update profile
-        return null;
+    @PatchMapping("/investor/{id}")
+    public ResponseEntity<?> updateInvestorProfile(@RequestBody InvestorProfileUpdateRequest request) {
+        return investorService.updateInvestorProfile(request);
     }
 }
