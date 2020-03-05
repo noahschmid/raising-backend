@@ -2,12 +2,15 @@ package ch.raising.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Industry;
 
+@Repository
 public class IndustryRepository {
     private JdbcTemplate jdbc;
 
@@ -23,6 +26,15 @@ public class IndustryRepository {
 	 */
 	public Industry find(int id) {
 		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToIndustry);
+	}
+
+	/**
+	 * Find industries which are assigned to certain account
+	 */
+	public List<Industry> findByAccountId(int id) {
+		return jdbc.query("SELECT * FROM industryAssignment INNER JOIN industry ON " +
+						   "industryAssignment.industryId = industry.id WHERE accountId = ?",
+						   new Object[] { id }, this::mapRowToIndustry);
 	}
 
     /**
