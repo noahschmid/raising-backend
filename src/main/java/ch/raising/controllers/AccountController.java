@@ -35,7 +35,7 @@ import ch.raising.models.Account;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
-import ch.raising.models.Response;
+import ch.raising.models.ErrorResponse;
 import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
@@ -66,14 +66,14 @@ public class AccountController {
 	 * @param account provided by the request 
 	 * @return response instance with message and status code
 	 */
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@PostMapping("/login")
 	@ResponseBody
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Wrong username or password"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
         }
 
         final UserDetails userDetails = accountService.loadUserByUsername(request.getUsername());
@@ -82,11 +82,11 @@ public class AccountController {
 	}
 
 	/**
-	 * Add a new user account
+	 * Register a new user account
 	 * @param account has to include an unique username and a password
-	 * @return JSON response with status code and added account details (if added)
+	 * @return JSON response with status code and error message (if exists)
 	 */
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	@PostMapping("/register")
 	@ResponseBody
 	public ResponseEntity<?> register(@RequestBody Account account) {
 		return accountService.register(account);
@@ -97,7 +97,7 @@ public class AccountController {
 	 * @return list of all accounts
 	 */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
 	@ResponseBody
 	public List<Account> getAccounts() {
 		return accountService.getAccounts();
@@ -112,8 +112,8 @@ public class AccountController {
 	@GetMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> getAccountById(@PathVariable int id, HttpServletRequest request) {
-        if(!accountService.isOwnAccount(id, request))
-            return ResponseEntity.status(403).body(new Response("Access denied"));
+        if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
+            return ResponseEntity.status(403).body(new ErrorResponse("Access denied"));
 
         return ResponseEntity.ok().body(accountService.findById(id));
     }
@@ -127,10 +127,10 @@ public class AccountController {
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> deleteAccount(@PathVariable int id, HttpServletRequest request) {
-        if(accountService.isOwnAccount(id, request))
-            return accountService.deleteAccount(id);
-        else
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
+        if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
+
+        return accountService.deleteAccount(id);
     }
 
     /**
@@ -142,9 +142,9 @@ public class AccountController {
     public ResponseEntity<?> updateAccount(@PathVariable int id, 
                                             @RequestBody AccountUpdateRequest updateRequest,
                                             HttpServletRequest request) {
-        if(accountService.isOwnAccount(id, request))
-            return accountService.updateAccount(id, updateRequest, request.isUserInRole("ROLE_ADMIN"));
-        else
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
+        if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
+
+        return accountService.updateAccount(id, updateRequest, request.isUserInRole("ADMIN"));
     }
 }

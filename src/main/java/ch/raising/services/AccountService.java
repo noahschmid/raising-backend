@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
-import ch.raising.models.Response;
+import ch.raising.models.ErrorResponse;
 import ch.raising.data.AccountRepository;
 
 @Service
@@ -35,18 +36,6 @@ public class AccountService implements UserDetailsService {
     public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
-    
-    /**
-     * Log in with given user account
-     * @param account the user account to log in
-     * @return ResponseEntity with status code and message
-     */
-    public ResponseEntity login(Account account) {
-        account.hashPassword();
-		if(accountRepository.accountExists(account))
-			return ResponseEntity.ok(new Response("Login successful"));
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
-    }
 
     /**
      * Register new user account
@@ -54,16 +43,16 @@ public class AccountService implements UserDetailsService {
      * @return  ResponseEntity with status code and message
      */
     public ResponseEntity<?> register(Account account) {
-        if(account.getUsername().length() == 0 || account.getPassword().length() == 0)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Please provide username and password"));
+        if(account.getUsername() == null || account.getPassword() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Please provide username and password"));
         if(accountRepository.usernameExists(account.getUsername()))
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Username already exists"));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Username already exists"));
         try  {
             accountRepository.add(account);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new Response(e.toString()));
+            return ResponseEntity.status(500).body(new ErrorResponse(e.toString()));
         }
-		return ResponseEntity.ok(new Response("Successfully registered new account", account));
+		return ResponseEntity.ok().build();
     }
 
     /**
@@ -73,12 +62,12 @@ public class AccountService implements UserDetailsService {
      */
     public ResponseEntity<?> deleteAccount(int id) {
         if(accountRepository.find(id) == null)
-            return ResponseEntity.status(500).body(new Response("Account doesn't exist"));
+            return ResponseEntity.status(500).body(new ErrorResponse("Account doesn't exist"));
         try {   
             accountRepository.delete(id);
-            return ResponseEntity.ok(new Response("Successfully deleted account"));
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new Response(e.getMessage()));
+            return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
         }
     }
 
@@ -102,19 +91,18 @@ public class AccountService implements UserDetailsService {
     }
 
     /**
-     * Check if request comes from own account (or admin account)
+     * Check if given id belongs to own account
      * @param id the id of the account to check against
-     * @param request instance of the http request
+     * @param isAdmin indicates whether the user is admin
      * @return true if account belongs to request, false otherwise
      */
-    public boolean isOwnAccount(int id, HttpServletRequest request) {
+    public boolean isOwnAccount(int id) {
         Account account = findById(id);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean isAdmin = request.isUserInRole("ROLE_ADMIN");
-        if(account == null)
+        if(account == null || username == null)
             return false;
 
-        if(!account.getUsername().equals(username) && !isAdmin)
+        if(!account.getUsername().equals(username))
             return false;
 
         return true;
@@ -129,16 +117,17 @@ public class AccountService implements UserDetailsService {
      */
     public ResponseEntity<?> updateAccount(int id, AccountUpdateRequest req, boolean isAdmin) {
         if(accountRepository.find(id) == null)
-            return ResponseEntity.status(500).body(new Response("Account doesn't exist"));
+            return ResponseEntity.status(500).body(new ErrorResponse("Account doesn't exist"));
         try {  
             if(req.getUsername() != null) {
-                if(accountRepository.findByUsername(req.getUsername()) != null)
-                    return ResponseEntity.status(500).body(new Response("Username already in use"));
+                accountRepository.findByUsername(req.getUsername());
+                return ResponseEntity.status(500).body(new ErrorResponse("Username already in use"));
             }
             accountRepository.update(id, req, isAdmin);
-            return ResponseEntity.ok(new Response("Successfully updated account"));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new Response(e.getMessage()));
+            return ResponseEntity.ok().build();
+        } catch(DataAccessException e) { // username not in use
+            accountRepository.update(id, req, isAdmin);
+            return ResponseEntity.ok().build();
         }
     }
 }

@@ -1,12 +1,18 @@
 package ch.raising.data;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
@@ -16,6 +22,7 @@ import ch.raising.models.AccountUpdateRequest;
 public class AccountRepository {
 	
 	private JdbcTemplate jdbc;
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	
 	@Autowired
 	public AccountRepository(JdbcTemplate jdbc) {
@@ -54,9 +61,18 @@ public class AccountRepository {
 	 */
 	public void add(Account acc) throws Exception {
 		try {
-			acc.hashPassword();
-			String sql = "INSERT INTO account(username, password) VALUES ('" + acc.getUsername() + "', '" + acc.getPassword() + "')";
-			jdbc.execute(sql);
+			String query = "INSERT INTO account(username, password) VALUES (?, ?);"; 
+			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
+				@Override  
+				public Boolean doInPreparedStatement(PreparedStatement ps)  
+						throws SQLException, DataAccessException {  
+						
+					ps.setString(1,acc.getUsername());  
+					ps.setString(2,encoder.encode(acc.getPassword()));  
+						
+					return ps.execute();  
+				}  
+			});  
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			throw e;
@@ -67,8 +83,22 @@ public class AccountRepository {
 	 * Delete user account
 	 * @param id the id of the account
 	 */
-	public void delete(int id) {
-		jdbc.execute("DELETE FROM account WHERE id = " + id); 
+	public void delete(int id) throws Exception {
+		try {
+			String query = "DELETE FROM account WHERE id = ?;"; 
+			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
+				@Override  
+				public Boolean doInPreparedStatement(PreparedStatement ps)  
+						throws SQLException, DataAccessException {  
+						
+					ps.setInt(1,id); 	
+					return ps.execute();  
+				}  
+			});  
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			throw e;
+		}
 	}
 	
 	/**
@@ -127,24 +157,44 @@ public class AccountRepository {
 	 */
 	public void update(int id, AccountUpdateRequest req, boolean isAdmin) {
 		String queryFields = "";
-		if(req.getUsername() != null)
-			queryFields += "username = '" + req.getUsername() + "'";
+		ArrayList<String> fields = new ArrayList<>();
+		if(req.getUsername() != null) {
+			fields.add(req.getUsername());
+			queryFields += "username = ?";
+		}
 		if(req.getPassword() != null) {
+			fields.add(req.getPassword());
 			if(queryFields != "")
 				queryFields += ", ";
-			queryFields += "password = '" + req.getPassword() + "'";
+			queryFields += "password = ?";
 		}
 		if(req.getRoles() != null && isAdmin) {
+			fields.add(req.getRoles());
 			if(queryFields != "")
 				queryFields += ", ";
-			queryFields += "roles = '" + req.getRoles() + "'";
+			queryFields += "roles = ?";
 		}
-		if(queryFields == "")
+		if(fields.size() == 0)
 			return;
 
 		String sql = "UPDATE account SET " + queryFields + " WHERE id = " + id + ";";
-		System.out.println(sql);
-        jdbc.execute(sql);
+
+		try {
+			jdbc.execute(sql, new PreparedStatementCallback<Boolean>(){  
+				@Override  
+				public Boolean doInPreparedStatement(PreparedStatement ps)  
+						throws SQLException, DataAccessException {  
+					
+					for(int i = 1; i <= fields.size(); ++i) {
+						ps.setString(i,fields.get(i-1));
+					}
+					return ps.execute();  
+				}  
+			});  
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			throw e;
+		}
 	}
 
 }

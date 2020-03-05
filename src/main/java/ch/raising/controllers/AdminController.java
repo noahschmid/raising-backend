@@ -5,13 +5,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ch.raising.models.Response;
+import ch.raising.models.ErrorResponse;
 
 @RequestMapping("/admin")
 @Controller
 public class AdminController {
     @GetMapping("/")
     public ResponseEntity<?> helloWorld() {
-        return ResponseEntity.ok().body(new Response("hello world"));
+        return ResponseEntity.ok().body(new ErrorResponse("hello world"));
     }
 }
