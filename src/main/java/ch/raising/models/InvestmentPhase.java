@@ -9,7 +9,8 @@ public class InvestmentPhase {
     private int id;
     private String name;
 
-    public InvestmentPhase() {
-
+    public InvestmentPhase(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 }

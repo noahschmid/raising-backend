@@ -1,7 +1,6 @@
 package ch.raising.models;
 
 import java.util.ArrayList;
-import ch.raising.models.Label;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,12 +16,12 @@ public class Startup {
     private int boosts;
     private ArrayList<Label> labels;
     private ArrayList<InvestorType> investorTypes;
-    private ArrayList<InvestmentSector> investmentSectors;
-    private ArrayList<SupervisionType> supervisionTypes;
+    private ArrayList<Industry> industries;
+    private ArrayList<Support> supervisionTypes;
     private ArrayList<String> continents;
     private ArrayList<String> countries;
 
     public Startup() {
-        
+
     }
 }

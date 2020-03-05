@@ -1,7 +1,5 @@
 package ch.raising.models;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 public class LoginRequest {
     private String username;
     private String password;
