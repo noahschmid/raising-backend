@@ -66,6 +66,7 @@ public class AccountController {
 	 * @param account provided by the request 
 	 * @return response instance with message and status code
 	 */
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
@@ -111,7 +112,7 @@ public class AccountController {
 	@GetMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> getAccountById(@PathVariable int id, HttpServletRequest request) {
-        if(!accountService.isOwnAccount(id, request.isUserInRole("ADMIN")))
+        if(!accountService.isOwnAccount(id, request))
             return ResponseEntity.status(403).body(new Response("Access denied"));
 
         return ResponseEntity.ok().body(accountService.findById(id));
@@ -126,7 +127,7 @@ public class AccountController {
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> deleteAccount(@PathVariable int id, HttpServletRequest request) {
-        if(accountService.isOwnAccount(id, request.isUserInRole("ADMIN")))
+        if(accountService.isOwnAccount(id, request))
             return accountService.deleteAccount(id);
         else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
@@ -141,7 +142,7 @@ public class AccountController {
     public ResponseEntity<?> updateAccount(@PathVariable int id, 
                                             @RequestBody AccountUpdateRequest updateRequest,
                                             HttpServletRequest request) {
-        if(accountService.isOwnAccount(id, request.isUserInRole("ADMIN")))
+        if(accountService.isOwnAccount(id, request))
             return accountService.updateAccount(id, updateRequest, request.isUserInRole("ROLE_ADMIN"));
         else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response("Access denied"));
