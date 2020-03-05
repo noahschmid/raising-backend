@@ -5,11 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class InvestmentPhase {
+public class Industry {
     private int id;
     private String name;
 
-    public InvestmentPhase(int id, String name) {
+    public Industry(int id, String name) {
         this.id = id;
         this.name = name;
     }

@@ -5,11 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SupervisionType {
+public class Support {
     private int id;
     private String name;
 
-    public SupervisionType() {
-
+    public Support(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 }
