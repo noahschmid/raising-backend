@@ -107,10 +107,9 @@ public class AccountService implements UserDetailsService {
      * @param request instance of the http request
      * @return true if account belongs to request, false otherwise
      */
-    public boolean isOwnAccount(int id, HttpServletRequest request) {
+    public boolean isOwnAccount(int id, boolean isAdmin) {
         Account account = findById(id);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean isAdmin = request.isUserInRole("ROLE_ADMIN");
         if(account == null)
             return false;
 
