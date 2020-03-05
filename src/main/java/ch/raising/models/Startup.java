@@ -18,8 +18,8 @@ public class Startup {
     private ArrayList<InvestorType> investorTypes;
     private ArrayList<Industry> industries;
     private ArrayList<Support> supervisionTypes;
-    private ArrayList<String> continents;
-    private ArrayList<String> countries;
+    private ArrayList<Continent> continents;
+    private ArrayList<Country> countries;
 
     public Startup() {
 
