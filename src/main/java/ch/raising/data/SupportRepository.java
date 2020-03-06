@@ -2,11 +2,14 @@ package ch.raising.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Support;
 
+@Repository
 public class SupportRepository {
     private JdbcTemplate jdbc;
 
@@ -21,6 +24,15 @@ public class SupportRepository {
 	 */
 	public Support find(int id) {
 		return jdbc.queryForObject("SELECT * FROM support WHERE id = ?", new Object[] { id }, this::mapRowToSupport);
+	}
+
+	/**
+	 * Find supports which are assigned to certain account
+	 */
+	public List<Support> findByAccountId(int id) {
+		return jdbc.query("SELECT * FROM supportAssignment INNER JOIN support ON " +
+						   "supportAssignment.supportId = support.id WHERE accountId = ?",
+						   new Object[] { id }, this::mapRowToSupport);
 	}
 
     /**

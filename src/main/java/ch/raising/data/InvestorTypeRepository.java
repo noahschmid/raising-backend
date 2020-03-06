@@ -5,9 +5,11 @@ import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.InvestorType;
 
+@Repository
 public class InvestorTypeRepository {
     private JdbcTemplate jdbc;
 

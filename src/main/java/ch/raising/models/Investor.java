@@ -8,15 +8,12 @@ import lombok.Setter;
 @Setter
 public class Investor {
     private int id;
-    private Account account;
+    private String name;
+    private String description;
+    private int accountId;
     private int investmentMin;
     private int investmentMax;
-    private InvestorType investorType;
-    private ArrayList<InvestmentPhase> investmentPhases;
-    private ArrayList<Support> supports;
-    private ArrayList<String> countries;
-    private ArrayList<String> continents;
-    private ArrayList<Industry> investmentSectors;
+    private int investorTypeId;
 
     public Investor() {
     }

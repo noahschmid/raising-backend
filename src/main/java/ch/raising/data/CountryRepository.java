@@ -2,13 +2,15 @@ package ch.raising.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Country;
 
+@Repository
 public class CountryRepository {
     private JdbcTemplate jdbc;
 
@@ -24,6 +26,15 @@ public class CountryRepository {
 	 */
 	public Country find(int id) {
 		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToCountry);
+	}
+
+	/**
+	 * Find countries which are assigned to certain account
+	 */
+	public List<Country> findByAccountId(int id) {
+		return jdbc.query("SELECT * FROM countryAssignment INNER JOIN country ON " +
+						   "countryAssignment.countryId = country.id WHERE accountId = ?",
+						   new Object[] { id }, this::mapRowToCountry);
 	}
 
     /**
