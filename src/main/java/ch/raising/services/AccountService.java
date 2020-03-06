@@ -18,6 +18,7 @@ import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
+import ch.raising.models.RegistrationRequest;
 import ch.raising.data.AccountRepository;
 
 @Service
@@ -37,15 +38,16 @@ public class AccountService implements UserDetailsService {
 
     /**
      * Register new user account
-     * @param  the account to register
+     * @param  request account to register
      * @return  ResponseEntity with status code and message
      */
-    public ResponseEntity<?> register(Account account) {
-        if(account.getUsername() == null || account.getPassword() == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Please provide username and password"));
-        if(accountRepository.usernameExists(account.getUsername()))
+    public ResponseEntity<?> register(RegistrationRequest request) {
+        if(request.getUsername() == null || request.getPassword() == null || request.getEmailHash() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Please provide username, email and password"));
+        if(accountRepository.usernameExists(request.getUsername()))
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Username already exists"));
         try  {
+            Account account = new Account(-1, request.getUsername(), request.getPassword(), null, request.getEmailHash());
             accountRepository.add(account);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ErrorResponse(e.toString()));

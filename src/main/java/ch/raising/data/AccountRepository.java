@@ -3,7 +3,6 @@ package ch.raising.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,14 +60,15 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 */
 	public void add(Account acc) throws Exception {
 		try {
-			String query = "INSERT INTO account(username, password) VALUES (?, ?);"; 
+			String query = "INSERT INTO account(username, password, emailHash) VALUES (?, ?, ?);"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
 				@Override  
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
 					ps.setString(1,acc.getUsername());  
-					ps.setString(2,encoder.encode(acc.getPassword()));  
+					ps.setString(2,encoder.encode(acc.getPassword()));
+					ps.setString(3,encoder.encode(acc.getEmailHash()));
 						
 					return ps.execute();  
 				}  
@@ -156,7 +156,8 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 		return new Account(rs.getInt("id"), 
 			rs.getString("username"), 
 			rs.getString("password"),
-			rs.getString("roles"));
+			rs.getString("roles"),
+			rs.getString("emailHash"));
 	}
 
 	/**
@@ -171,6 +172,8 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 			updateQuery.addField(req.getUsername(), "username");
 			updateQuery.addField(req.getPassword(), "password");
 			updateQuery.addField(req.getRoles(), "roles");
+
+			updateQuery.addField(req.getEmailHash(), "emailHash");
 			updateQuery.execute();
 		} catch(Exception e) {
 			throw new Exception(e.getMessage());

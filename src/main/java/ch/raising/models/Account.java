@@ -13,12 +13,14 @@ public class Account {
 	private String username;
 	private String password;
 	private String roles;
+	private String emailHash;
 
 	@Autowired
-	public Account(long id, String username, String password, String roles) {
+	public Account(long id, String username, String password, String roles, String emailHash) {
 		this.id = id;
 		this.username = username; 
 		this.password = password;
 		this.roles = roles == null ? "ROLE_USER" : roles;
+		this.emailHash = emailHash;
 	}
 }

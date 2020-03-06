@@ -37,7 +37,6 @@ public class UpdateQueryBuilder {
         this.id = id;
         this.repository = repository;
         fields = new ArrayList<>();
-        updates = "";
     }
 
     public void setJdbc(JdbcTemplate jdbc) {
@@ -68,6 +67,9 @@ public class UpdateQueryBuilder {
     public void addField(Object field, String fieldName) {
         if(field == null || fieldName == null)
             return;
+        
+        if(updates == null)
+            updates = "";
 
         if(field instanceof Integer) {
             if((int)field != unitializedIntValue) {
@@ -100,8 +102,9 @@ public class UpdateQueryBuilder {
      * @return
      */
     public String buildQuery() {
-        if(updates == null)
+        if(updates == null) 
             return null;
+
         return "UPDATE " + tableName + " SET " + updates + " WHERE id = ?";
     }
 

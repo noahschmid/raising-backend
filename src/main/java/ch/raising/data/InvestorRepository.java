@@ -45,6 +45,9 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
     
     /**
      * Update investor
+     * @param id the id of the investor to update
+     * @param update instance of the update request
+     * @throws Exception 
      */
     public void update(int id, InvestorUpdateRequest update) throws Exception {
         try{

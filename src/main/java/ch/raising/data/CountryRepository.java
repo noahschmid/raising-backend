@@ -32,10 +32,10 @@ public class CountryRepository implements IRepository<Country, Country> {
 	/**
 	 * Find countries which are assigned to certain account
 	 */
-	public List<Country> findByAccountId(int id) {
+	public List<Country> findByAccountId(int accountId) {
 		return jdbc.query("SELECT * FROM countryAssignment INNER JOIN country ON " +
 						   "countryAssignment.countryId = country.id WHERE accountId = ?",
-						   new Object[] { id }, this::mapRowToCountry);
+						   new Object[] { accountId }, this::mapRowToCountry);
 	}
 
     /**

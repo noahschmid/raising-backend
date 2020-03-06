@@ -28,6 +28,7 @@ import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
+import ch.raising.models.RegistrationRequest;
 import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
@@ -75,13 +76,13 @@ public class AccountController {
 
 	/**
 	 * Register a new user account
-	 * @param account has to include an unique username and a password
+	 * @param request has to include an unique username, email and a password
 	 * @return JSON response with status code and error message (if exists)
 	 */
 	@PostMapping("/register")
 	@ResponseBody
-	public ResponseEntity<?> register(@RequestBody Account account) {
-		return accountService.register(account);
+	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
+		return accountService.register(request);
 	}
 	
 	/**
