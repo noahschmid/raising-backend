@@ -1,11 +1,11 @@
 package ch.raising.models;
 
 import java.util.ArrayList;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+import lombok.Data;
+
+
+@Data
 public class Startup {
     private int id;
     private Account account;
@@ -17,11 +17,15 @@ public class Startup {
     private ArrayList<Label> labels;
     private ArrayList<InvestorType> investorTypes;
     private ArrayList<Industry> industries;
-    private ArrayList<Support> supervisionTypes;
+    private ArrayList<Support> support;
     private ArrayList<Continent> continents;
     private ArrayList<Country> countries;
-
-    public Startup() {
-
-    }
+    private ArrayList<Boardmember> boardmembers;
+    private ArrayList<Founder> founders;
+    private Contact contact;
+    private String street;
+    private String city;
+    private String zipCode;
+    private String website;
+    private int breakEvenYear;
 }
