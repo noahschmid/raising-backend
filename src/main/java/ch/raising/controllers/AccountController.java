@@ -32,6 +32,7 @@ import ch.raising.models.RegistrationRequest;
 import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
+import ch.raising.models.ForgotPasswordRequest;
 
 @RequestMapping("/account")
 @Controller
@@ -83,7 +84,18 @@ public class AccountController {
 	@ResponseBody
 	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
 		return accountService.register(request);
-	}
+    }
+    
+    /**
+     * Check if email matches the hashed email and send code 
+     * @param request
+     * @return
+     */
+    @PostMapping("/forgot")
+    @ResponseBody
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        return accountService.forgotPassword(request);
+    }
 	
 	/**
 	 * Get all accounts (only for admins)

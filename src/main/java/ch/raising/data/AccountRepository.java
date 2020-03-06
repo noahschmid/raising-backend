@@ -3,6 +3,7 @@ package ch.raising.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,21 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
         } catch (EmptyResultDataAccessException e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Find accounts by email
+	 * @param email the email to search for
+	 */
+	public List<Account> findByEmail(String email) {
+		List<Account> accounts = getAllAccounts();
+		List<Account> matches = new ArrayList<>();
+		
+		for(Account acc : accounts) {
+			if(encoder.matches(email, acc.getEmailHash()))
+				matches.add(acc);
+		}
+		return matches;
 	}
 
 	/**

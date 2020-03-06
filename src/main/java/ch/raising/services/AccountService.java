@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +20,9 @@ import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
+import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.RegistrationRequest;
+import ch.raising.utils.MailUtil;
 import ch.raising.data.AccountRepository;
 
 @Service
@@ -26,14 +30,20 @@ public class AccountService implements UserDetailsService {
     @Autowired
     private static AccountRepository accountRepository;
 
+    @Autowired
+    private static MailUtil mailUtil;
+
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByUsername(username);
         return new AccountDetails(account);
     }
 
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository, MailUtil mailUtil) {
         this.accountRepository = accountRepository;
+        this.mailUtil = mailUtil;
     }
 
     /**
@@ -131,4 +141,19 @@ public class AccountService implements UserDetailsService {
             return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
         }
     }
+
+    /**
+     * 
+     */
+	public ResponseEntity<?> forgotPassword(ForgotPasswordRequest request) {
+        List<Account> accounts = accountRepository.findByEmail(request.getEmail());
+        try {
+            if(accounts != null)
+                mailUtil.sendPasswordForgotEmail(request.getEmail(), "1500");
+        } catch (MessagingException e) {
+            return ResponseEntity.status(500).body(e.getStackTrace());
+        }
+
+		return ResponseEntity.ok().build();
+	}
 }
