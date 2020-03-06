@@ -8,7 +8,7 @@ CREATE TABLE contact (
 );
 CREATE TABLE boardmember (
 	id serial PRIMARY KEY,
-	startupId REFERENCES startup(id),
+	startupId int REFERENCES startup(id),
 	name varchar,
 	education varchar,
 	profession varchar,
