@@ -1,6 +1,5 @@
 package ch.raising.controllers;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class ProfileController {
     /**
      * Return profile of investor by given accountId
      * @param id the id of the account the investor belongs to
-     * @return ResponseEntity intance with status code and investor or startup in body
+     * @return ResponseEntity instance with status code and investor or startup in body
      */
     @GetMapping("/investor/{id}")
     public ResponseEntity<?> getInvestorProfile(@PathVariable int id) {
