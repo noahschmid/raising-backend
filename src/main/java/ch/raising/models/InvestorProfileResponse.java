@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class InvestorProfileResponse {
+    private int id;
     private int accountId;
     private String username;
     private String name;

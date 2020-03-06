@@ -16,9 +16,11 @@ import ch.raising.models.Account;
 import ch.raising.models.InvestmentPhase;
 import ch.raising.models.Investor;
 import ch.raising.models.InvestorType;
+import ch.raising.models.InvestorUpdateRequest;
+import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class InvestorRepository {
+public class InvestorRepository implements IRepository<Investor, InvestorUpdateRequest> {
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -39,7 +41,25 @@ public class InvestorRepository {
             System.out.println(e.getMessage());
             return null;
         }
-	}
+    }
+    
+    /**
+     * Update investor
+     */
+    public void update(int id, InvestorUpdateRequest update) throws Exception {
+        try{
+            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investor", id, this);
+            updateQuery.setJdbc(jdbc);
+            updateQuery.addField(update.getDescription(), "description");
+            updateQuery.addField(update.getName(), "name");
+            updateQuery.addField(update.getInvestmentMax(), "investmentMax");
+            updateQuery.addField(update.getInvestmentMin(), "investmentMin");
+            updateQuery.addField(update.getInvestorTypeId(), "investorTypeId");
+            updateQuery.execute();
+        } catch(Exception e) {
+            throw new Error(e);
+        }
+    }
 
     /**
 	 * Map a row of a result set to an account instance

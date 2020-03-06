@@ -9,9 +9,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Continent;
+import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class ContinentRepository {
+public class ContinentRepository implements IRepository<Continent, Continent>{
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -47,5 +48,21 @@ public class ContinentRepository {
 	private Continent mapRowToContinent(ResultSet rs, int rowNum) throws SQLException {
 		return new Continent(rs.getInt("id"), 
 			rs.getString("name"));
+	}
+
+	/**
+	 * Update continent
+	 * @param id the id of the continent to update
+	 * @param req request containing fields to update
+	 */
+	public void update(int id, Continent req) throws Exception {
+		try {
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this);
+			updateQuery.setJdbc(jdbc);
+			updateQuery.addField(req.getName(), "name");
+			updateQuery.execute();
+		} catch(Exception e) {
+			throw new Exception(e.getMessage());
+		}
 	}
 }

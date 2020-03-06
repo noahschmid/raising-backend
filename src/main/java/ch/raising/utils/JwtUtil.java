@@ -12,6 +12,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+/**
+ * Class which handles jwt token operations
+ * 
+ * @author Noah Schmid
+ * @version 1.0
+ */
 @Service
 public class JwtUtil {
     private final String SECRET_KEY = "secret";

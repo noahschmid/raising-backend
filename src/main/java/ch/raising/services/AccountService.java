@@ -102,7 +102,6 @@ public class AccountService implements UserDetailsService {
 
         if(!account.getUsername().equals(username))
             return false;
-
         return true;
     }
 
@@ -118,14 +117,16 @@ public class AccountService implements UserDetailsService {
             return ResponseEntity.status(500).body(new ErrorResponse("Account doesn't exist"));
         try {  
             if(req.getUsername() != null) {
-                accountRepository.findByUsername(req.getUsername());
-                return ResponseEntity.status(500).body(new ErrorResponse("Username already in use"));
+                if(accountRepository.findByUsername(req.getUsername()) != null)
+                    return ResponseEntity.status(500).body(new ErrorResponse("Username already in use"));
             }
-            accountRepository.update(id, req, isAdmin);
+            if(!isAdmin)
+                req.setRoles(null);
+            accountRepository.update(id, req);
             return ResponseEntity.ok().build();
-        } catch(DataAccessException e) { // username not in use
-            accountRepository.update(id, req, isAdmin);
-            return ResponseEntity.ok().build();
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
         }
     }
 }

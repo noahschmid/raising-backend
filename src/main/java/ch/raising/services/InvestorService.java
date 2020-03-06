@@ -17,11 +17,12 @@ import ch.raising.data.SupportRepository;
 import ch.raising.models.Account;
 import ch.raising.models.Continent;
 import ch.raising.models.Country;
+import ch.raising.models.ErrorResponse;
 import ch.raising.models.Industry;
 import ch.raising.models.InvestmentPhase;
 import ch.raising.models.Investor;
 import ch.raising.models.InvestorProfileResponse;
-import ch.raising.models.InvestorProfileUpdateRequest;
+import ch.raising.models.InvestorUpdateRequest;
 import ch.raising.models.InvestorType;
 import ch.raising.models.Support;
 import ch.raising.data.IndustryRepository;
@@ -75,13 +76,13 @@ public class InvestorService {
 
     /**
      * Get full profile of investor
-     * @param id
-     * @return
+     * @param id the id of the investor
+     * @return response entity with status code and full investor profile
      */
     public ResponseEntity<?> getInvestorProfile(int id) {
         Investor investor = investorRepository.find(id);
         if(investor == null)
-            return ResponseEntity.status(404).build();
+            return ResponseEntity.status(404).body(new ErrorResponse("Investor not found"));
 
         InvestorProfileResponse response = new InvestorProfileResponse();
         InvestorType type = investorTypeRepository.find(investor.getInvestorTypeId());
@@ -99,6 +100,7 @@ public class InvestorService {
         response.setInvestmentMin(investor.getInvestmentMin());
         response.setName(investor.getName());
         response.setDescription(investor.getDescription());
+        response.setId(investor.getId());
 
         for(Continent cntnt : continents) {
             response.addContinent(cntnt.getName());
@@ -128,7 +130,12 @@ public class InvestorService {
      * @param request the data to update
      * @return response entity with status code and message
      */
-    public ResponseEntity<?> updateInvestorProfile(InvestorProfileUpdateRequest request) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> updateInvestor(int id, InvestorUpdateRequest request) {
+        try {
+            investorRepository.update(id, request);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+        }
     }
 }

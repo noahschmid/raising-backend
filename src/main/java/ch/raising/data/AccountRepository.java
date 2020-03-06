@@ -16,9 +16,10 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
 import ch.raising.models.AccountUpdateRequest;
+import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class AccountRepository {
+public class AccountRepository implements IRepository<Account, AccountUpdateRequest> {
 	
 	private JdbcTemplate jdbc;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -106,7 +107,12 @@ public class AccountRepository {
 	 * @return instance of the found account
 	 */
 	public Account find(int id) {
-		return jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id }, this::mapRowToAccount);
+		try {
+			Account account = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id }, this::mapRowToAccount);
+			return account;
+		} catch(DataAccessException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -115,7 +121,12 @@ public class AccountRepository {
 	 * @return instance of the found user account
 	 */
 	public Account findByUsername(String username) {
-		return jdbc.queryForObject("SELECT * FROM account WHERE username = ?", new Object[] { username }, this::mapRowToAccount);
+		try {
+			Account account = jdbc.queryForObject("SELECT * FROM account WHERE username = ?", new Object[] { username }, this::mapRowToAccount);
+			return account;
+		} catch(DataAccessException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -152,47 +163,17 @@ public class AccountRepository {
 	 * Update user account
 	 * @param id the id of the account to update
 	 * @param req request containing fields to update
-	 * @param isAdmin whether or not the user requesting the update is admin
 	 */
-	public void update(int id, AccountUpdateRequest req, boolean isAdmin) {
-		String queryFields = "";
-		ArrayList<String> fields = new ArrayList<>();
-		if(req.getUsername() != null) {
-			fields.add(req.getUsername());
-			queryFields += "username = ?";
-		}
-		if(req.getPassword() != null) {
-			fields.add(req.getPassword());
-			if(queryFields != "")
-				queryFields += ", ";
-			queryFields += "password = ?";
-		}
-		if(req.getRoles() != null && isAdmin) {
-			fields.add(req.getRoles());
-			if(queryFields != "")
-				queryFields += ", ";
-			queryFields += "roles = ?";
-		}
-		if(fields.size() == 0)
-			return;
-
-		String sql = "UPDATE account SET " + queryFields + " WHERE id = " + id + ";";
-
+	public void update(int id, AccountUpdateRequest req) throws Exception {
 		try {
-			jdbc.execute(sql, new PreparedStatementCallback<Boolean>(){  
-				@Override  
-				public Boolean doInPreparedStatement(PreparedStatement ps)  
-						throws SQLException, DataAccessException {  
-					
-					for(int i = 1; i <= fields.size(); ++i) {
-						ps.setString(i,fields.get(i-1));
-					}
-					return ps.execute();  
-				}  
-			});  
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this);
+			updateQuery.setJdbc(jdbc);
+			updateQuery.addField(req.getUsername(), "username");
+			updateQuery.addField(req.getPassword(), "password");
+			updateQuery.addField(req.getRoles(), "roles");
+			updateQuery.execute();
+		} catch(Exception e) {
+			throw new Exception(e.getMessage());
 		}
 	}
 }

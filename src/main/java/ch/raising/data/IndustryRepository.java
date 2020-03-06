@@ -9,9 +9,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Industry;
+import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class IndustryRepository {
+public class IndustryRepository implements IRepository<Industry, Industry> {
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -49,4 +50,19 @@ public class IndustryRepository {
 			rs.getString("name"));
 	}
 
+	/**
+	 * Update industry
+	 * @param id the id of the industry to update
+	 * @param req request containing fields to update
+	 */
+	public void update(int id, Industry req) throws Exception {
+		try {
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("industry", id, this);
+			updateQuery.setJdbc(jdbc);
+			updateQuery.addField(req.getName(), "name");
+			updateQuery.execute();
+		} catch(Exception e) {
+			throw new Exception(e.getMessage());
+		}
+	}
 }
