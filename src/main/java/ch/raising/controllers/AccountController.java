@@ -89,7 +89,7 @@ public class AccountController {
             accountService.register(request);
             return login(new LoginRequest(request.getUsername(), request.getPassword()));
         } catch (Error e) {
-            return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+            return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
         }
     }
     
