@@ -1,27 +1,31 @@
 package ch.raising.data;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
+import ch.raising.models.InvestmentPhase;
 import ch.raising.models.Investor;
+import ch.raising.models.InvestorType;
+import ch.raising.models.InvestorUpdateRequest;
+import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class InvestorRepository {
+public class InvestorRepository implements IRepository<Investor, InvestorUpdateRequest> {
     private JdbcTemplate jdbc;
 
     @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
-    public InvestorRepository(JdbcTemplate jdbc, AccountRepository accountRepository) {
+    public InvestorRepository(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
-        this.accountRepository = accountRepository;
     }
 
     /**
@@ -30,8 +34,35 @@ public class InvestorRepository {
 	 * @return instance of the found investor
 	 */
 	public Investor find(int id) {
-		return jdbc.queryForObject("SELECT * FROM investor WHERE id = ?", new Object[] { id }, this::mapRowToInvestor);
-	}
+        try {
+            String sql = "SELECT * FROM investor WHERE id = ?";
+            return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToInvestor);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Update investor
+     * @param id the id of the investor to update
+     * @param update instance of the update request
+     * @throws Exception 
+     */
+    public void update(int id, InvestorUpdateRequest update) throws Exception {
+        try{
+            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investor", id, this);
+            updateQuery.setJdbc(jdbc);
+            updateQuery.addField(update.getDescription(), "description");
+            updateQuery.addField(update.getName(), "name");
+            updateQuery.addField(update.getInvestmentMax(), "investmentMax");
+            updateQuery.addField(update.getInvestmentMin(), "investmentMin");
+            updateQuery.addField(update.getInvestorTypeId(), "investorTypeId");
+            updateQuery.execute();
+        } catch(Exception e) {
+            throw new Error(e);
+        }
+    }
 
     /**
 	 * Map a row of a result set to an account instance
@@ -42,14 +73,12 @@ public class InvestorRepository {
 	 */
 	private Investor mapRowToInvestor(ResultSet rs, int rowNum) throws SQLException {
         Investor investor = new Investor();
-        Account account = accountRepository.find(rs.getInt("accountId"));
 
         investor.setId(rs.getInt("id"));
-        investor.setAccount(account);
+        investor.setAccountId(rs.getInt("accountId"));
         investor.setInvestmentMax(rs.getInt("investmentMax"));
         investor.setInvestmentMin(rs.getInt("investmentMin"));
-
-        // TODO: set all required fields
+        investor.setInvestorTypeId(rs.getInt("investorTypeId"));
 
         return investor;
 	}

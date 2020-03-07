@@ -5,10 +5,13 @@ import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.InvestorType;
+import ch.raising.utils.UpdateQueryBuilder;
 
-public class InvestorTypeRepository {
+@Repository
+public class InvestorTypeRepository implements IRepository<InvestorType, InvestorType> {
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -36,5 +39,22 @@ public class InvestorTypeRepository {
 		return new InvestorType(rs.getInt("id"), 
             rs.getString("name"),
             rs.getString("description"));
+	}
+
+	/**
+	 * Update industry
+	 * @param id the id of the industry to update
+	 * @param req request containing fields to update
+	 */
+	public void update(int id, InvestorType req) throws Exception {
+		try {
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investorType", id, this);
+			updateQuery.setJdbc(jdbc);
+			updateQuery.addField(req.getName(), "name");
+			updateQuery.addField(req.getDescription(), "description");
+			updateQuery.execute();
+		} catch(Exception e) {
+			throw new Exception(e.getMessage());
+		}
 	}
 }

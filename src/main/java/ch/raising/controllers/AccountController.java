@@ -28,9 +28,12 @@ import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
+import ch.raising.models.PasswordResetRequest;
+import ch.raising.models.RegistrationRequest;
 import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
+import ch.raising.models.ForgotPasswordRequest;
 
 @RequestMapping("/account")
 @Controller
@@ -75,14 +78,41 @@ public class AccountController {
 
 	/**
 	 * Register a new user account
-	 * @param account has to include an unique username and a password
+	 * @param request has to include an unique username, email and a password
 	 * @return JSON response with status code and error message (if exists)
 	 */
 	@PostMapping("/register")
 	@ResponseBody
-	public ResponseEntity<?> register(@RequestBody Account account) {
-		return accountService.register(account);
-	}
+	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
+        try {
+            accountService.register(request);
+            return login(new LoginRequest(request.getUsername(), request.getPassword()));
+        } catch (Error e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+        }
+    }
+    
+    /**
+     * Forgot password endpoint. Returns reset code if request is valid 
+     * @param request
+     * @return
+     */
+    @PostMapping("/{id}/forgot")
+    @ResponseBody
+    public ResponseEntity<?> forgotPassword(@PathVariable int id, @RequestBody ForgotPasswordRequest request) {
+        return accountService.forgotPassword(id, request);
+    }
+
+    /**
+     * Reset password endpoint. Sets new password if request is valid
+     * @param request
+     * @return
+     */
+    @PostMapping("/{id}/reset")
+    @ResponseBody
+    public ResponseEntity<?> resetPassword(@PathVariable int id, @RequestBody PasswordResetRequest request) {
+        return accountService.resetPassword(id, request);
+    }
 	
 	/**
 	 * Get all accounts (only for admins)

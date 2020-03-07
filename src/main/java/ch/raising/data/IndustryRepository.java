@@ -2,13 +2,17 @@ package ch.raising.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Industry;
+import ch.raising.utils.UpdateQueryBuilder;
 
-public class IndustryRepository {
+@Repository
+public class IndustryRepository implements IRepository<Industry, Industry> {
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -25,6 +29,15 @@ public class IndustryRepository {
 		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToIndustry);
 	}
 
+	/**
+	 * Find industries which are assigned to certain account
+	 */
+	public List<Industry> findByAccountId(int id) {
+		return jdbc.query("SELECT * FROM industryAssignment INNER JOIN industry ON " +
+						   "industryAssignment.industryId = industry.id WHERE accountId = ?",
+						   new Object[] { id }, this::mapRowToIndustry);
+	}
+
     /**
 	 * Map a row of a result set to an Industry instance
 	 * @param rs result set of an sql query
@@ -37,4 +50,19 @@ public class IndustryRepository {
 			rs.getString("name"));
 	}
 
+	/**
+	 * Update industry
+	 * @param id the id of the industry to update
+	 * @param req request containing fields to update
+	 */
+	public void update(int id, Industry req) throws Exception {
+		try {
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("industry", id, this);
+			updateQuery.setJdbc(jdbc);
+			updateQuery.addField(req.getName(), "name");
+			updateQuery.execute();
+		} catch(Exception e) {
+			throw new Exception(e.getMessage());
+		}
+	}
 }

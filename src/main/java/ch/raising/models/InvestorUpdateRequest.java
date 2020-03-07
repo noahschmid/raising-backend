@@ -1,20 +1,19 @@
 package ch.raising.models;
 
-import java.util.ArrayList;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class Investor {
+public class InvestorUpdateRequest {
     private int id;
     private String name;
     private String description;
     private int accountId;
-    private int investmentMin;
-    private int investmentMax;
-    private int investorTypeId;
-
-    public Investor() {
+    private int investmentMin = -1;
+    private int investmentMax = -1;
+    private int investorTypeId = -1;
+    
+    public InvestorUpdateRequest() {
     }
 }

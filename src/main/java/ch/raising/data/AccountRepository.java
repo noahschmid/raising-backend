@@ -16,9 +16,10 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
 import ch.raising.models.AccountUpdateRequest;
+import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class AccountRepository {
+public class AccountRepository implements IRepository<Account, AccountUpdateRequest> {
 	
 	private JdbcTemplate jdbc;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -55,19 +56,35 @@ public class AccountRepository {
 	}
 
 	/**
+	 * Find accounts by email
+	 * @param email the email to search for
+	 */
+	public List<Account> findByEmail(String email) {
+		List<Account> accounts = getAllAccounts();
+		List<Account> matches = new ArrayList<>();
+		
+		for(Account acc : accounts) {
+			if(encoder.matches(email, acc.getEmailHash()))
+				matches.add(acc);
+		}
+		return matches;
+	}
+
+	/**
 	 * Add a new account to the database
 	 * @param acc the account to add
 	 */
 	public void add(Account acc) throws Exception {
 		try {
-			String query = "INSERT INTO account(username, password) VALUES (?, ?);"; 
+			String query = "INSERT INTO account(username, password, emailHash) VALUES (?, ?, ?);"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
 				@Override  
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
 					ps.setString(1,acc.getUsername());  
-					ps.setString(2,encoder.encode(acc.getPassword()));  
+					ps.setString(2,encoder.encode(acc.getPassword()));
+					ps.setString(3,encoder.encode(acc.getEmailHash()));
 						
 					return ps.execute();  
 				}  
@@ -106,7 +123,12 @@ public class AccountRepository {
 	 * @return instance of the found account
 	 */
 	public Account find(int id) {
-		return jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id }, this::mapRowToAccount);
+		try {
+			Account account = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id }, this::mapRowToAccount);
+			return account;
+		} catch(DataAccessException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -115,7 +137,12 @@ public class AccountRepository {
 	 * @return instance of the found user account
 	 */
 	public Account findByUsername(String username) {
-		return jdbc.queryForObject("SELECT * FROM account WHERE username = ?", new Object[] { username }, this::mapRowToAccount);
+		try {
+			Account account = jdbc.queryForObject("SELECT * FROM account WHERE username = ?", new Object[] { username }, this::mapRowToAccount);
+			return account;
+		} catch(DataAccessException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -145,54 +172,27 @@ public class AccountRepository {
 		return new Account(rs.getInt("id"), 
 			rs.getString("username"), 
 			rs.getString("password"),
-			rs.getString("roles"));
+			rs.getString("roles"),
+			rs.getString("emailHash"));
 	}
 
 	/**
 	 * Update user account
 	 * @param id the id of the account to update
 	 * @param req request containing fields to update
-	 * @param isAdmin whether or not the user requesting the update is admin
 	 */
-	public void update(int id, AccountUpdateRequest req, boolean isAdmin) {
-		String queryFields = "";
-		ArrayList<String> fields = new ArrayList<>();
-		if(req.getUsername() != null) {
-			fields.add(req.getUsername());
-			queryFields += "username = ?";
-		}
-		if(req.getPassword() != null) {
-			fields.add(req.getPassword());
-			if(queryFields != "")
-				queryFields += ", ";
-			queryFields += "password = ?";
-		}
-		if(req.getRoles() != null && isAdmin) {
-			fields.add(req.getRoles());
-			if(queryFields != "")
-				queryFields += ", ";
-			queryFields += "roles = ?";
-		}
-		if(fields.size() == 0)
-			return;
-
-		String sql = "UPDATE account SET " + queryFields + " WHERE id = " + id + ";";
-
+	public void update(int id, AccountUpdateRequest req) throws Exception {
 		try {
-			jdbc.execute(sql, new PreparedStatementCallback<Boolean>(){  
-				@Override  
-				public Boolean doInPreparedStatement(PreparedStatement ps)  
-						throws SQLException, DataAccessException {  
-					
-					for(int i = 1; i <= fields.size(); ++i) {
-						ps.setString(i,fields.get(i-1));
-					}
-					return ps.execute();  
-				}  
-			});  
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this);
+			updateQuery.setJdbc(jdbc);
+			updateQuery.addField(req.getUsername(), "username");
+			updateQuery.addField(req.getPassword(), "password");
+			updateQuery.addField(req.getRoles(), "roles");
+
+			updateQuery.addField(req.getEmailHash(), "emailHash");
+			updateQuery.execute();
+		} catch(Exception e) {
+			throw new Exception(e.getMessage());
 		}
 	}
 }
