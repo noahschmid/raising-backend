@@ -85,22 +85,4 @@ public class JwtUtil {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
-    /**
-     * Log user in and send access token if login successful
-     * @param request the login request containing username and password
-     * @return response entity with status code and token (if successful)
-     */
-	public ResponseEntity<?> login(LoginRequest request) {
-		try {
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
-        }
-
-        final UserDetails userDetails = accountService.loadUserByUsername(request.getUsername());
-        final String token = generateToken(userDetails);
-        return ResponseEntity.ok(new LoginResponse(token));
-	}
 }

@@ -51,7 +51,7 @@ public class AccountService implements UserDetailsService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public AccountDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByUsername(username);
         return new AccountDetails(account);
     }

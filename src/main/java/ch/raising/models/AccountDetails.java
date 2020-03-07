@@ -13,6 +13,7 @@ public class AccountDetails implements UserDetails {
     private String username;
     private String password;
     private List<GrantedAuthority> authorities;
+    private long id;
 
     public AccountDetails(Account account) {
         this.username = account.getUsername();
@@ -20,6 +21,7 @@ public class AccountDetails implements UserDetails {
         this.authorities = Arrays.stream(account.getRoles().split(","))
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
+        this.id = account.getId();
     }
 
     @Override
@@ -30,6 +32,10 @@ public class AccountDetails implements UserDetails {
     @Override
     public String getPassword() {
         return this.password;
+    }
+
+    public long getId() {
+        return this.id;
     }
 
     @Override

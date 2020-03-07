@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.models.Account;
+import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
@@ -71,9 +72,9 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
         }
 
-        final UserDetails userDetails = accountService.loadUserByUsername(request.getUsername());
+        final AccountDetails userDetails = accountService.loadUserByUsername(request.getUsername());
         final String token = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new LoginResponse(token));
+        return ResponseEntity.ok(new LoginResponse(token, userDetails.getId()));
 	}
 
 	/**

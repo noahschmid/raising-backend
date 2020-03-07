@@ -61,11 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         	.anyRequest()
         	.requiresSecure();
     }
-    
-    @Override
-	public void configure(WebSecurity web) {
-    	web.ignoring().antMatchers("/test");
-    }
 
     @Override
     @Bean
