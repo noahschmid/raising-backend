@@ -11,8 +11,7 @@ public class RegistrationRequest {
 
     public RegistrationRequest(String username, String password, String email) {
         this.username = username;
-        if(password != null)
-            this.password = encoder.encode(password);
+        this.password = password;
         if(email != null)
             this.emailHash = encoder.encode(email);
     }
@@ -22,6 +21,8 @@ public class RegistrationRequest {
     public String getEmailHash() { return this.emailHash; }
 
     public void setUsername(String username) { this.username = username; }
-    public void setPassword(String passwordHash) { this.password = passwordHash; }
+    public void setPassword(String password) { 
+        this.password = password; 
+    }
     public void setEmail(String email) { this.emailHash = encoder.encode(email); }
 }

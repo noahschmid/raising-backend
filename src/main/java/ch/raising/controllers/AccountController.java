@@ -84,7 +84,12 @@ public class AccountController {
 	@PostMapping("/register")
 	@ResponseBody
 	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
-		return accountService.register(request);
+        try {
+            accountService.register(request);
+            return login(new LoginRequest(request.getUsername(), request.getPassword()));
+        } catch (Error e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+        }
     }
     
     /**

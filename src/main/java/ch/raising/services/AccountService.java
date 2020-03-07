@@ -11,6 +11,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,28 +25,25 @@ import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
+import ch.raising.models.LoginRequest;
+import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.RegistrationRequest;
-import ch.raising.models.ResetCode;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
-import ch.raising.data.ResetCodeRepository;
 
 @Service
 public class AccountService implements UserDetailsService {
     @Autowired
-    private static AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
-    private static ResetCodeRepository resetCodeRepository;
+    private MailUtil mailUtil;
 
     @Autowired
-    private static MailUtil mailUtil;
-
-    @Autowired
-    private static ResetCodeUtil resetCodeUtil;
+    private ResetCodeUtil resetCodeUtil;
 
     @Autowired
     private JdbcTemplate jdbc;
@@ -71,18 +71,17 @@ public class AccountService implements UserDetailsService {
      * @param  request account to register
      * @return  ResponseEntity with status code and message
      */
-    public ResponseEntity<?> register(RegistrationRequest request) {
+    public void register(RegistrationRequest request) throws Error {
         if(request.getUsername() == null || request.getPassword() == null || request.getEmailHash() == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Please provide username, email and password"));
+            throw new Error("Please provide username, email and password");
         if(accountRepository.usernameExists(request.getUsername()))
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Username already exists"));
+			throw new Error("Username already exists");
         try  {
             Account account = new Account(-1, request.getUsername(), request.getPassword(), null, request.getEmailHash());
             accountRepository.add(account);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ErrorResponse(e.toString()));
+            throw new Error(e.getMessage());
         }
-		return ResponseEntity.ok().build();
     }
 
     /**
