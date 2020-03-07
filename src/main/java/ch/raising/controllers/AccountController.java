@@ -28,6 +28,7 @@ import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
+import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.RegistrationRequest;
 import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
@@ -87,14 +88,25 @@ public class AccountController {
     }
     
     /**
-     * Check if email matches the hashed email and send code 
+     * Forgot password endpoint. Returns reset code if request is valid 
      * @param request
      * @return
      */
-    @PostMapping("/forgot")
+    @PostMapping("/{id}/forgot")
     @ResponseBody
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        return accountService.forgotPassword(request);
+    public ResponseEntity<?> forgotPassword(@PathVariable int id, @RequestBody ForgotPasswordRequest request) {
+        return accountService.forgotPassword(id, request);
+    }
+
+    /**
+     * Reset password endpoint. Sets new password if request is valid
+     * @param request
+     * @return
+     */
+    @PostMapping("/{id}/reset")
+    @ResponseBody
+    public ResponseEntity<?> resetPassword(@PathVariable int id, @RequestBody PasswordResetRequest request) {
+        return accountService.resetPassword(id, request);
     }
 	
 	/**

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,9 +22,14 @@ import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
+import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.RegistrationRequest;
+import ch.raising.models.ResetCode;
 import ch.raising.utils.MailUtil;
+import ch.raising.utils.ResetCodeUtil;
+import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
+import ch.raising.data.ResetCodeRepository;
 
 @Service
 public class AccountService implements UserDetailsService {
@@ -31,7 +37,16 @@ public class AccountService implements UserDetailsService {
     private static AccountRepository accountRepository;
 
     @Autowired
+    private static ResetCodeRepository resetCodeRepository;
+
+    @Autowired
     private static MailUtil mailUtil;
+
+    @Autowired
+    private static ResetCodeUtil resetCodeUtil;
+
+    @Autowired
+    private JdbcTemplate jdbc;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -41,9 +56,14 @@ public class AccountService implements UserDetailsService {
         return new AccountDetails(account);
     }
 
-    public AccountService(AccountRepository accountRepository, MailUtil mailUtil) {
+    public AccountService(AccountRepository accountRepository, 
+                        MailUtil mailUtil,
+                        ResetCodeUtil resetCodeUtil,
+                        JdbcTemplate jdbc) {
         this.accountRepository = accountRepository;
         this.mailUtil = mailUtil;
+        this.resetCodeUtil = resetCodeUtil;
+        this.jdbc = jdbc;
     }
 
     /**
@@ -143,17 +163,43 @@ public class AccountService implements UserDetailsService {
     }
 
     /**
-     * 
+     * See if email matches hashed email in existing account
+     * @param id the accountId
+     * @param request the password reset request with the email in clear text
+     * @return response entity with status code
      */
-	public ResponseEntity<?> forgotPassword(ForgotPasswordRequest request) {
+	public ResponseEntity<?> forgotPassword(int id, ForgotPasswordRequest request) {
         List<Account> accounts = accountRepository.findByEmail(request.getEmail());
         try {
-            if(accounts != null)
-                mailUtil.sendPasswordForgotEmail(request.getEmail(), "1500");
+            if(accounts != null) {
+                String code = resetCodeUtil.createResetCode(accounts);
+                mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
+            }
         } catch (MessagingException e) {
             return ResponseEntity.status(500).body(e.getStackTrace());
         }
 
 		return ResponseEntity.ok().build();
-	}
+    }
+    
+    /**
+     * Reset password if valid request
+     * @param id the id of the account to reset password
+     * @param request the request with reset code and new password
+     * @return response entity with status code
+     */
+    public ResponseEntity<?> resetPassword(int id, PasswordResetRequest request){
+        try {
+            if(resetCodeUtil.isValidRequest(id, request)) {
+                UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, accountRepository);
+                updateQuery.setJdbc(jdbc);
+                updateQuery.addField(encoder.encode(request.getPassword()), "password");
+                updateQuery.execute();
+                return ResponseEntity.ok().build();
+            } 
+            return ResponseEntity.status(500).body(new ErrorResponse("Invalid Reset Code"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ErrorResponse("Error updating password", e));
+        }
+    }
 }
