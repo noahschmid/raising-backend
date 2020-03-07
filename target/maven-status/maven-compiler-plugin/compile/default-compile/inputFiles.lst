@@ -28,7 +28,6 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Suppo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Account.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AccountDetails.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\ServerConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\InvestorRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Investor.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\SecurityConfig.java

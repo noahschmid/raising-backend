@@ -12,7 +12,6 @@ ch\raising\data\AccountRepository$3.class
 ch\raising\models\Investor.class
 ch\raising\utils\JwtUtil.class
 ch\raising\raisingbackend\RaisingBackendApplication.class
-ch\raising\config\ServerConfig$1.class
 ch\raising\models\Label.class
 ch\raising\data\InvestorRepository.class
 ch\raising\config\SecurityConfig.class
@@ -32,7 +31,6 @@ ch\raising\data\AccountRepository$2.class
 ch\raising\models\AccountDetails.class
 ch\raising\data\StartupRepository.class
 ch\raising\data\AccountRepository.class
-ch\raising\config\ServerConfig.class
 ch\raising\models\LoginResponse.class
 ch\raising\data\IndustryRepository.class
 ch\raising\services\AccountService.class
