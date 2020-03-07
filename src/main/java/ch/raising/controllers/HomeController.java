@@ -14,4 +14,9 @@ public class HomeController {
     public ResponseEntity<?> helloWorld() {
         return ResponseEntity.ok().body(new ErrorResponse("hello world"));
     }
+    
+    @GetMapping("/test")
+    public ResponseEntity<?> testSSL(){
+    	return ResponseEntity.ok().body(new ErrorResponse("is the connection secured?"));
+    }
 }
