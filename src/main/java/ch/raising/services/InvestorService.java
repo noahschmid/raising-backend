@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -92,8 +93,8 @@ public class InvestorService {
         List<Industry> industries = industryRepository.findByAccountId(investor.getAccountId());
         List<InvestmentPhase> investmentPhases = investmentPhaseRepository.findByInvestorId(investor.getId());
         List<Support> supports = supportRepository.findByAccountId(investor.getAccountId());
-
-        response.setAccountId(investor.getAccountId());
+ 
+        response.setAccount(account);
         response.setInvestorType(type.getName());
         response.setUsername(account.getUsername());
         response.setInvestmentMax(investor.getInvestmentMax());
@@ -103,23 +104,23 @@ public class InvestorService {
         response.setId(investor.getId());
 
         for(Continent cntnt : continents) {
-            response.addContinent(cntnt.getName());
+            response.addContinent(cntnt);
         }
 
         for(Country cntry : countries) {
-            response.addCountry(cntry.getName());
+            response.addCountry(cntry);
         }
 
         for(Industry ind : industries) {
-            response.addIndustry(ind.getName());
+            response.addIndustry(ind);
         }
 
         for(InvestmentPhase invPhs : investmentPhases) {
-            response.addInvestmentPhase(invPhs.getName());
+            response.addInvestmentPhase(invPhs);
         }
 
         for(Support spprt : supports) {
-            response.addSupport(spprt.getName());
+            response.addSupport(spprt);
         }
 
         return ResponseEntity.ok().body(response);
@@ -136,6 +137,23 @@ public class InvestorService {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    /**
+     * Add new investor profile
+     * @param investor the investor to add
+     */
+    public ResponseEntity<?> addInvestor(Investor investor) {
+        if(investor.getAccountId() == -1 || investor.getDescription() == null || 
+            investor.getInvestmentMax() == -1 || investor.getInvestmentMin() == -1 || 
+            investor.getInvestorTypeId() == -1 || investor.getName() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Please fill out all required fields"));
+        try {
+            investorRepository.add(investor);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(e.getLocalizedMessage()));
         }
     }
 }

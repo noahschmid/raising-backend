@@ -6,9 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.models.Startup;
+import ch.raising.models.StartupProfileResponse;
 import ch.raising.services.StartupService;
 
 @Controller
@@ -22,14 +25,23 @@ public class StartupController {
 		this.startupService = startupService;
 	}
 	
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getStartupById(@PathVariable int id){
-		try {
-			Startup startup = startupService.getStartupById(id);
-			return ResponseEntity.status(HttpStatus.OK).body(startup);
-		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); 
-		}
+	/**
+     * Return profile of investor by given accountId
+     * @param id the id of the account the startup belongs to
+     * @return ResponseEntity instance with status code and startup in body
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getInvestorProfile(@PathVariable int id) {
+        return startupService.getStartupProfile(id);
 	}
 	
+	/**
+	 * Add new startup
+	 * @param startup
+	 * @return
+	 */
+	@PostMapping("/{id}")
+	public ResponseEntity<?> addStartup(@RequestBody Startup startup) {
+		return startupService.addStartup(startup);
+	}
 }

@@ -1,8 +1,10 @@
 package ch.raising.data;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.List;
 
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
@@ -79,7 +82,38 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
         investor.setInvestmentMax(rs.getInt("investmentMax"));
         investor.setInvestmentMin(rs.getInt("investmentMin"));
         investor.setInvestorTypeId(rs.getInt("investorTypeId"));
+        investor.setName(rs.getString("name"));
+        investor.setDescription(rs.getString("description"));
 
         return investor;
+    }
+    
+    /**
+	 * Add a new investor to the database
+	 * @param investor the investor to add
+	 */
+	public void add(Investor investor) throws Exception {
+		try {
+            String query = "INSERT INTO investor(accountId, name, description, investmentMin," +
+                            "investmentMax, investorTypeId) VALUES (?, ?, ?, ?, ?, ?);"; 
+			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
+				@Override  
+				public Boolean doInPreparedStatement(PreparedStatement ps)  
+						throws SQLException, DataAccessException {  
+						
+                    ps.setInt(1,investor.getAccountId()); 
+                    ps.setString(2, investor.getName());
+                    ps.setString(3, investor.getDescription());
+                    ps.setInt(4, investor.getInvestmentMin());
+                    ps.setInt(5, investor.getInvestmentMax());
+                    ps.setInt(6, investor.getInvestorTypeId());
+
+					return ps.execute();  
+				}  
+			});  
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			throw e;
+		}
 	}
 }

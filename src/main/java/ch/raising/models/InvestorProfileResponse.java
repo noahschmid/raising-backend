@@ -9,18 +9,18 @@ import lombok.Setter;
 @Setter
 public class InvestorProfileResponse {
     private int id;
-    private int accountId;
+    private Account account;
     private String username;
     private String name;
     private String description;
     private int investmentMin;
     private int investmentMax;
     private String investorType;
-    private ArrayList<String> support;
-    private ArrayList<String> countries;
-    private ArrayList<String> continents;
-    private ArrayList<String> industries;
-    private ArrayList<String> investmentPhases;
+    private ArrayList<Support> support;
+    private ArrayList<Country> countries;
+    private ArrayList<Continent> continents;
+    private ArrayList<Industry> industries;
+    private ArrayList<InvestmentPhase> investmentPhases;
 
     public InvestorProfileResponse() {
         support = new ArrayList<>();
@@ -30,23 +30,23 @@ public class InvestorProfileResponse {
         investmentPhases = new ArrayList<>();
     }
 
-    public void addSupport(String support) {
+    public void addSupport(Support support) {
         this.support.add(support);
     }
 
-    public void addCountry(String country) {
+    public void addCountry(Country country) {
         this.countries.add(country);
     }
 
-    public void addContinent(String continent) {
+    public void addContinent(Continent continent) {
         this.continents.add(continent);
     }
 
-    public void addIndustry(String industry) {
+    public void addIndustry(Industry industry) {
         this.industries.add(industry);
     }
 
-    public void addInvestmentPhase(String phase) {
+    public void addInvestmentPhase(InvestmentPhase phase) {
         this.investmentPhases.add(phase);
     }
 }
