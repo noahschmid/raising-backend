@@ -56,18 +56,18 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	}
 
 	/**
-	 * Find accounts by email
-	 * @param email the email to search for
+	 * Find accounts by email hash
+	 * @param emailHash the email hash to search for
 	 */
-	public List<Account> findByEmail(String email) {
+	public Account findByEmailHash(String emailHash) {
 		List<Account> accounts = getAllAccounts();
-		List<Account> matches = new ArrayList<>();
 		
 		for(Account acc : accounts) {
-			if(encoder.matches(email, acc.getEmailHash()))
-				matches.add(acc);
+			if(encoder.matches(emailHash, acc.getEmailHash()))
+				return acc;
 		}
-		return matches;
+
+		return null;
 	}
 
 	/**
@@ -75,6 +75,8 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @param acc the account to add
 	 */
 	public void add(Account acc) throws Exception {
+		if(findByEmailHash(encoder.encode(acc.getEmailHash())) != null)
+			throw new Error("Account with same email already exists!");
 		try {
 			String query = "INSERT INTO account(username, password, emailHash) VALUES (?, ?, ?);"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  

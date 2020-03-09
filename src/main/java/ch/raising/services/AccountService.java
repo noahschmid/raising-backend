@@ -163,15 +163,14 @@ public class AccountService implements UserDetailsService {
 
     /**
      * See if email matches hashed email in existing account
-     * @param id the accountId
      * @param request the password reset request with the email in clear text
      * @return response entity with status code
      */
-	public ResponseEntity<?> forgotPassword(int id, ForgotPasswordRequest request) {
-        List<Account> accounts = accountRepository.findByEmail(request.getEmail());
+	public ResponseEntity<?> forgotPassword(ForgotPasswordRequest request) {
+        Account account = accountRepository.findByEmailHash(request.getEmail());
         try {
-            if(accounts != null) {
-                String code = resetCodeUtil.createResetCode(accounts);
+            if(account != null) {
+                String code = resetCodeUtil.createResetCode(account);
                 mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
             }
         } catch (MessagingException e) {
@@ -187,9 +186,10 @@ public class AccountService implements UserDetailsService {
      * @param request the request with reset code and new password
      * @return response entity with status code
      */
-    public ResponseEntity<?> resetPassword(int id, PasswordResetRequest request){
+    public ResponseEntity<?> resetPassword(PasswordResetRequest request){
         try {
-            if(resetCodeUtil.isValidRequest(id, request)) {
+            int id = resetCodeUtil.validate(request);
+            if(id != -1) {
                 UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, accountRepository);
                 updateQuery.setJdbc(jdbc);
                 updateQuery.addField(encoder.encode(request.getPassword()), "password");

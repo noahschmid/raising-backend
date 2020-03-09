@@ -31,28 +31,21 @@ public class ResetCodeUtil {
     /**
      * Check if reset code for requested account matches with provided reset code
      * If code is expired, delete it. If 
-     * @param accountId
-     * @param request
-     * @return true if request is valid, else false
+     * @param request instance of password reset request
+     * @return -1 if request isnt valid, else accountId of account the request belongs to 
      * @throws Exception
      */
-    public boolean isValidRequest(int accountId, PasswordResetRequest request) throws Exception {
-        List<ResetCode> codes = resetCodeRepository.findByCode(request.getCode());
-        for(ResetCode code : codes) {
-            if(code.getAccountId() == accountId) {
-                resetCodeRepository.deleteByCode(code.getCode());
-                return true;
-            }
+    public int validate(PasswordResetRequest request) throws Exception {
+        ResetCode code = resetCodeRepository.findByCode(request.getCode());
+        if(code == null)
+            return -1;
 
-            if(isExpired(code))
-                resetCodeRepository.deleteByCode(code.getCode());
+        if(isExpired(code)) {
+            resetCodeRepository.deleteByCode(code.getCode());
+            return -1;
         }
 
-        codes = resetCodeRepository.findByAccountId(accountId);
-        for(ResetCode code : codes) {
-            resetCodeRepository.decrementAttempsLeft(code);
-        }
-        return false;
+        return code.getAccountId();
     }
 
     /**
@@ -66,22 +59,20 @@ public class ResetCodeUtil {
 
     /**
      * Creates reset code and saves it in database for given accounts
-     * @param accounts list of accounts to create code for
+     * @param account account to create code for
      * @return code as string
      */
-    public String createResetCode(List<Account> accounts) {
+    public String createResetCode(Account account) {
         String code;
         do {
             code = generate();
-        } while (resetCodeRepository.findByCode(code).size() > 0);
+        } while (resetCodeRepository.findByCode(code) != null);
 
         Timestamp expiresAt = new Timestamp(new Date().getTime() + 60*1000*10);
         try{
-            for(Account acc : accounts) {
-                ResetCode resetCode = new ResetCode(code, (int)acc.getId(), expiresAt);
-                resetCodeRepository.deleteByAccountId((int)acc.getId());
+                ResetCode resetCode = new ResetCode(code, (int)account.getId(), expiresAt);
+                resetCodeRepository.deleteByAccountId((int)account.getId());
                 resetCodeRepository.add(resetCode);
-            }
         } catch(Exception e) {
             return null;
         }

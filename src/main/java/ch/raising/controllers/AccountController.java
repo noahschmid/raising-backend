@@ -98,10 +98,10 @@ public class AccountController {
      * @param request
      * @return
      */
-    @PostMapping("/{id}/forgot")
+    @PostMapping("/forgot")
     @ResponseBody
-    public ResponseEntity<?> forgotPassword(@PathVariable int id, @RequestBody ForgotPasswordRequest request) {
-        return accountService.forgotPassword(id, request);
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        return accountService.forgotPassword(request);
     }
 
     /**
@@ -109,10 +109,10 @@ public class AccountController {
      * @param request
      * @return
      */
-    @PostMapping("/{id}/reset")
+    @PostMapping("/reset")
     @ResponseBody
-    public ResponseEntity<?> resetPassword(@PathVariable int id, @RequestBody PasswordResetRequest request) {
-        return accountService.resetPassword(id, request);
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest request) {
+        return accountService.resetPassword(request);
     }
 	
 	/**
