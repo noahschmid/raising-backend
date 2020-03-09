@@ -31,10 +31,10 @@ public class ResetCodeRepository {
      * @param code the reset code
      * @return list of matching reset code entries
      */
-    public List<ResetCode> findByCode(String code) {
+    public ResetCode findByCode(String code) {
         String sql = "SELECT * FROM resetCode WHERE code = ?";
         Object[] ps = new Object[] { code };
-        return jdbc.query(sql, ps, this::mapRowToResetCode);
+        return jdbc.queryForObject(sql, ps, this::mapRowToResetCode);
     }
 
     /**

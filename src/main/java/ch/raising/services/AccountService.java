@@ -167,10 +167,10 @@ public class AccountService implements UserDetailsService {
      * @return response entity with status code
      */
 	public ResponseEntity<?> forgotPassword(ForgotPasswordRequest request) {
-        List<Account> accounts = accountRepository.findByEmail(request.getEmail());
+        Account account = accountRepository.findByEmailHash(request.getEmail());
         try {
-            if(accounts != null) {
-                String code = resetCodeUtil.createResetCode(accounts);
+            if(account != null) {
+                String code = resetCodeUtil.createResetCode(account);
                 mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
             }
         } catch (MessagingException e) {
@@ -186,9 +186,10 @@ public class AccountService implements UserDetailsService {
      * @param request the request with reset code and new password
      * @return response entity with status code
      */
-    public ResponseEntity<?> resetPassword(int id, PasswordResetRequest request){
+    public ResponseEntity<?> resetPassword(PasswordResetRequest request){
         try {
-            if(resetCodeUtil.isValidRequest(id, request)) {
+            int id = resetCodeUtil.validate(request);
+            if(id != -1) {
                 UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, accountRepository);
                 updateQuery.setJdbc(jdbc);
                 updateQuery.addField(encoder.encode(request.getPassword()), "password");
