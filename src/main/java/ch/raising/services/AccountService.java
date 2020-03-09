@@ -167,9 +167,10 @@ public class AccountService implements UserDetailsService {
      * @return response entity with status code
      */
 	public ResponseEntity<?> forgotPassword(ForgotPasswordRequest request) {
-        Account account = accountRepository.findByEmailHash(request.getEmail());
+        Account account = accountRepository.findByEmail(request.getEmail());
         try {
             if(account != null) {
+                System.out.println("account found");
                 String code = resetCodeUtil.createResetCode(account);
                 mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
             }
