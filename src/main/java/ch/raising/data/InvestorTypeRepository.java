@@ -2,13 +2,17 @@ package ch.raising.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.InvestorType;
+import ch.raising.utils.UpdateQueryBuilder;
 
-public class InvestorTypeRepository {
+@Repository
+public class InvestorTypeRepository implements IRepository<InvestorType, InvestorType> {
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -25,6 +29,19 @@ public class InvestorTypeRepository {
 		return jdbc.queryForObject("SELECT * FROM investorType WHERE id = ?", new Object[] { id }, this::mapRowToInvestorType);
 	}
 
+	/**
+	 * Find investor types by startup id
+	 * @param startupId id of the desired startup
+	 * @return list of the found investor types
+	 */
+	public List<InvestorType> findByStartupId(int startupId) {
+		return jdbc.query("SELECT * FROM investorType INNER JOIN investorTypeAssignment " +
+						"ON investorType.id = investorTypeAssignment.investorTypeId " +
+						"WHERE startupId = ?", new Object[] { startupId }, 
+						this::mapRowToInvestorType);
+	}
+
+
     /**
 	 * Map a row of a result set to an InvestorType instance
 	 * @param rs result set of an sql query
@@ -36,5 +53,26 @@ public class InvestorTypeRepository {
 		return new InvestorType(rs.getInt("id"), 
             rs.getString("name"),
             rs.getString("description"));
+	}
+
+	/**
+	 * Update industry
+	 * @param id the id of the industry to update
+	 * @param req request containing fields to update
+	 */
+	public void update(int id, InvestorType req) throws Exception {
+		try {
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investorType", id, this);
+			updateQuery.setJdbc(jdbc);
+			updateQuery.addField(req.getName(), "name");
+			updateQuery.addField(req.getDescription(), "description");
+			updateQuery.execute();
+		} catch(Exception e) {
+			throw new Exception(e.getMessage());
+		}
+	}
+
+	public InvestorType findByAccountId(int accountId) {
+		return null;
 	}
 }

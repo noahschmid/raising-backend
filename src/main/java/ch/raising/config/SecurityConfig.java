@@ -43,6 +43,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers("/account/register")
         .permitAll()
+        .antMatchers("/account/forgot")
+        .permitAll()
+        .antMatchers("/account/reset")
+        .permitAll()
         .antMatchers("/admin/*")
         .hasRole("ADMIN")
         .anyRequest()
@@ -56,11 +60,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         	.requiresChannel()
         	.anyRequest()
         	.requiresSecure();
-    }
-    
-    @Override
-	public void configure(WebSecurity web) {
-    	web.ignoring().antMatchers("/test");
     }
 
     @Override

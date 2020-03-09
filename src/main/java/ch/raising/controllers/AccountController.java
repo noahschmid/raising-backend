@@ -24,13 +24,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.models.Account;
+import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
+import ch.raising.models.PasswordResetRequest;
+import ch.raising.models.RegistrationRequest;
 import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
+import ch.raising.models.ForgotPasswordRequest;
 
 @RequestMapping("/account")
 @Controller
@@ -68,21 +72,48 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
         }
 
-        final UserDetails userDetails = accountService.loadUserByUsername(request.getUsername());
+        final AccountDetails userDetails = accountService.loadUserByUsername(request.getUsername());
         final String token = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new LoginResponse(token));
+        return ResponseEntity.ok(new LoginResponse(token, userDetails.getId()));
 	}
 
 	/**
 	 * Register a new user account
-	 * @param account has to include an unique username and a password
+	 * @param request has to include an unique username, email and a password
 	 * @return JSON response with status code and error message (if exists)
 	 */
 	@PostMapping("/register")
 	@ResponseBody
-	public ResponseEntity<?> register(@RequestBody Account account) {
-		return accountService.register(account);
-	}
+	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
+        try {
+            accountService.register(request);
+            return login(new LoginRequest(request.getUsername(), request.getPassword()));
+        } catch (Error e) {
+            return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
+        }
+    }
+    
+    /**
+     * Forgot password endpoint. Returns reset code if request is valid 
+     * @param request
+     * @return
+     */
+    @PostMapping("/forgot")
+    @ResponseBody
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        return accountService.forgotPassword(request);
+    }
+
+    /**
+     * Reset password endpoint. Sets new password if request is valid
+     * @param request
+     * @return
+     */
+    @PostMapping("/reset")
+    @ResponseBody
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest request) {
+        return accountService.resetPassword(request);
+    }
 	
 	/**
 	 * Get all accounts (only for admins)

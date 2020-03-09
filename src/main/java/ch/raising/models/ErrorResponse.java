@@ -13,6 +13,10 @@ public class ErrorResponse {
         this.error = error;
     }
 
+    public ErrorResponse(Object error) {
+        this.error = error;
+    }
+
     public String getMessage() { return this.message; }
     public Object getError() { return this.error; }
 }
