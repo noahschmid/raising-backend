@@ -2,7 +2,6 @@ package ch.raising.raisingbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 @SpringBootApplication(scanBasePackages = {
 	"ch.raising.filters", 
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 	"ch.raising.raisingbackend", 
 	"ch.raising.data"
 })
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class RaisingBackendApplication {
 
 	public static void main(String[] args) {
