@@ -86,6 +86,7 @@ public class AccountController {
 	@ResponseBody
 	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
         try {
+            System.out.println("asdasd");
             accountService.register(request);
             return login(new LoginRequest(request.getUsername(), request.getPassword()));
         } catch (Error e) {
@@ -95,8 +96,8 @@ public class AccountController {
     
     /**
      * Forgot password endpoint. Returns reset code if request is valid 
-     * @param request
-     * @return
+     * @param request including email address of account
+     * @return reset code
      */
     @PostMapping("/forgot")
     @ResponseBody
@@ -106,8 +107,8 @@ public class AccountController {
 
     /**
      * Reset password endpoint. Sets new password if request is valid
-     * @param request
-     * @return
+     * @param request has to include reset code and new password
+     * @return status code
      */
     @PostMapping("/reset")
     @ResponseBody
