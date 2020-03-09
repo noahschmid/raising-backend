@@ -98,10 +98,10 @@ public class AccountController {
      * @param request
      * @return
      */
-    @PostMapping("/{id}/forgot")
+    @PostMapping("/forgot")
     @ResponseBody
     public ResponseEntity<?> forgotPassword(@PathVariable int id, @RequestBody ForgotPasswordRequest request) {
-        return accountService.forgotPassword(id, request);
+        return accountService.forgotPassword(request);
     }
 
     /**

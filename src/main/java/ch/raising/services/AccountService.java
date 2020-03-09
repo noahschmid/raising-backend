@@ -163,11 +163,10 @@ public class AccountService implements UserDetailsService {
 
     /**
      * See if email matches hashed email in existing account
-     * @param id the accountId
      * @param request the password reset request with the email in clear text
      * @return response entity with status code
      */
-	public ResponseEntity<?> forgotPassword(int id, ForgotPasswordRequest request) {
+	public ResponseEntity<?> forgotPassword(ForgotPasswordRequest request) {
         List<Account> accounts = accountRepository.findByEmail(request.getEmail());
         try {
             if(accounts != null) {
