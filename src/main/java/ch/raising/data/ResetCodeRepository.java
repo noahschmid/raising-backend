@@ -32,9 +32,13 @@ public class ResetCodeRepository {
      * @return list of matching reset code entries
      */
     public ResetCode findByCode(String code) {
-        String sql = "SELECT * FROM resetCode WHERE code = ?";
-        Object[] ps = new Object[] { code };
-        return jdbc.queryForObject(sql, ps, this::mapRowToResetCode);
+        try {
+            String sql = "SELECT * FROM resetCode WHERE code = ?";
+            Object[] ps = new Object[] { code };
+            return jdbc.queryForObject(sql, ps, this::mapRowToResetCode);
+        } catch (DataAccessException e) {
+            return null;
+        } 
     }
 
     /**
@@ -44,9 +48,13 @@ public class ResetCodeRepository {
      * @return list of matching reset code entries
      */
     public List<ResetCode> findByAccountId(int accountId) {
-        String sql = "SELECT * FROM resetCode WHERE accountId = ?";
-        Object[] ps = new Object[] { accountId };
-        return jdbc.query(sql, ps, this::mapRowToResetCode);
+        try {
+            String sql = "SELECT * FROM resetCode WHERE accountId = ?";
+            Object[] ps = new Object[] { accountId };
+            return jdbc.query(sql, ps, this::mapRowToResetCode);
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
 
