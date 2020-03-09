@@ -100,7 +100,7 @@ public class AccountController {
      */
     @PostMapping("/forgot")
     @ResponseBody
-    public ResponseEntity<?> forgotPassword(@PathVariable int id, @RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         return accountService.forgotPassword(request);
     }
 
