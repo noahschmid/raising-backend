@@ -18,6 +18,10 @@ public class RegistrationRequest {
         this.email = email;
     }
 
+    public RegistrationRequest() {
+        super();
+    }
+
     public String getUsername() { return this.username; }
     public String getPassword() { return this.password; }
     public String getEmailHash() { return this.emailHash; }
@@ -26,5 +30,10 @@ public class RegistrationRequest {
     public void setUsername(String username) { this.username = username; }
     public void setPassword(String password) { 
         this.password = password; 
+    }
+    public void setEmail(String email) {
+        if(email != null)
+            this.emailHash = encoder.encode(email);
+        this.email = email;
     }
 }
