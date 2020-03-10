@@ -15,5 +15,6 @@ public class InvestorUpdateRequest {
     private int investorTypeId = -1;
     
     public InvestorUpdateRequest() {
+        super();
     }
 }

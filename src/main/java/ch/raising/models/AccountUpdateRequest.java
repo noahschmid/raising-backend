@@ -10,6 +10,10 @@ public class AccountUpdateRequest {
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+    public AccountUpdateRequest() {
+        super();
+    }
+
     public AccountUpdateRequest(String username, String password, String roles, String email) {
         this.username = username.toLowerCase();
         if(password != null)
