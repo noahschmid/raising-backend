@@ -7,6 +7,10 @@ public class PasswordResetRequest {
     private String code;
     private String password;
 
+    public PasswordResetRequest() {
+        super();
+    }
+
     public PasswordResetRequest(String code, String password) {
         this.code = code;
         this.password = password;
