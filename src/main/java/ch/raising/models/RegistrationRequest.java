@@ -16,8 +16,20 @@ public class RegistrationRequest {
             this.emailHash = encoder.encode(email);
     }
 
+    /**
+     * 
+     * @return username from request
+     */
     public String getUsername() { return this.username; }
+    /**
+     * 
+     * @return password from request
+     */
     public String getPassword() { return this.password; }
+    /**
+     * 
+     * @return hashed email from request
+     */
     public String getEmailHash() { return this.emailHash; }
 
     public void setUsername(String username) { this.username = username; }

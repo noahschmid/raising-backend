@@ -1,11 +1,14 @@
 package ch.raising.data;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.InvestorType;
@@ -72,7 +75,19 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 		}
 	}
 
-	public InvestorType findByAccountId(int accountId) {
-		return null;
+	public void addInvestorTypeToStartup(int startupId, int investorTypeId) throws SQLException {
+		String sql = "INSERT INTO investortypeassignment(startupid, investortypeid) VALUES (?,?)";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+					
+				ps.setInt(1, startupId);  
+				ps.setInt(2,investorTypeId);
+					
+				return ps.execute();  
+			}  
+		});  
 	}
+	
 }
