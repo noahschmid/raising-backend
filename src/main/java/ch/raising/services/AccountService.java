@@ -72,10 +72,15 @@ public class AccountService implements UserDetailsService {
      * @return  ResponseEntity with status code and message
      */
     public void register(RegistrationRequest request) throws Error {
+        System.out.println("\n\n\n registering new account");
         if(request.getUsername() == null || request.getPassword() == null || request.getEmailHash() == null)
             throw new Error("Please provide username, email and password");
         if(accountRepository.usernameExists(request.getUsername()))
-			throw new Error("Username already exists");
+            throw new Error("Username already exists");
+
+        System.out.println(request.getEmail());
+        if(accountRepository.findByEmail(request.getEmail()) != null)
+            throw new Error("Account with same email exists");
         try  {
             Account account = new Account(-1, request.getUsername(), request.getPassword(), null, request.getEmailHash());
             accountRepository.add(account);
