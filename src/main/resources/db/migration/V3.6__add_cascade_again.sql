@@ -75,6 +75,7 @@ FOREIGN KEY (accountid)
 REFERENCES account(id)
 ON DELETE CASCADE;
 
+
 ALTER TABLE supportassignment
 DROP CONSTRAINT supervisiontypeassignment_supervisiontypeid_fkey, 
 ADD CONSTRAINT supportassignment_supportid_fkey

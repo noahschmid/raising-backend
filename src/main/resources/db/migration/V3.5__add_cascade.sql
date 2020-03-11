@@ -11,6 +11,3 @@ ADD CONSTRAINT continentassignment_continentid_fkey
 FOREIGN KEY (continentid) 
 REFERENCES continent(id)
 ON DELETE CASCADE;
-
-
-
