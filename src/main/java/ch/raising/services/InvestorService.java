@@ -145,9 +145,7 @@ public class InvestorService {
      * @param investor the investor to add
      */
     public ResponseEntity<?> addInvestor(Investor investor) {
-        if(investor.getAccountId() == -1 || investor.getDescription() == null || 
-            investor.getInvestmentMax() == -1 || investor.getInvestmentMin() == -1 || 
-            investor.getInvestorTypeId() == -1 || investor.getName() == null)
+        if(isIncomplete(investor))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Please fill out all required fields"));
         try {
             investorRepository.add(investor);
@@ -156,4 +154,10 @@ public class InvestorService {
             return ResponseEntity.status(500).body(new ErrorResponse(e.getLocalizedMessage()));
         }
     }
+
+	private boolean isIncomplete(Investor investor) {
+		return investor.getAccountId() == -1 || investor.getDescription() == null || 
+            investor.getInvestmentMax() == -1 || investor.getInvestmentMin() == -1 || 
+            investor.getInvestorTypeId() == -1 || investor.getName() == null;
+	}
 }

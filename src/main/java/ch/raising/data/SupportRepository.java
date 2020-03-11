@@ -1,10 +1,13 @@
 package ch.raising.data;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Support;
@@ -60,6 +63,25 @@ public class SupportRepository implements IRepository<Support, Support> {
 			updateQuery.addField(req.getName(), "name");
 			updateQuery.execute();
 		} catch(Exception e) {
+			throw new Exception(e.getMessage());
+		}
+	}
+	
+	public void addSupportToAccount(int accountId, int supportId) throws Exception {
+		try {
+			String query = "INSERT INTO supportAssignment(accountId, supportId) VALUES (?, ?);"; 
+			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
+				@Override  
+				public Boolean doInPreparedStatement(PreparedStatement ps)  
+						throws SQLException, DataAccessException {  
+						
+					ps.setInt(1,accountId);  
+					ps.setInt(2,supportId);
+						
+					return ps.execute();  
+				}  
+			});  
+		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
 	}

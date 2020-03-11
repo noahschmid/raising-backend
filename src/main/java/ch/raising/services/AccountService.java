@@ -75,14 +75,16 @@ public class AccountService implements UserDetailsService {
         System.out.println("\n\n\n registering new account");
         if(request.getUsername() == null || request.getPassword() == null || request.getEmailHash() == null)
             throw new Error("Please provide username, email and password");
-        if(accountRepository.usernameExists(request.getUsername()))
+
+        if(accountRepository.usernameExists(request.getUsername().toLowerCase()))
             throw new Error("Username already exists");
 
         System.out.println(request.getEmail());
         if(accountRepository.findByEmail(request.getEmail()) != null)
             throw new Error("Account with same email exists");
+
         try  {
-            Account account = new Account(-1, request.getUsername(), request.getPassword(), null, request.getEmailHash());
+            Account account = new Account(-1, request.getUsername().toLowerCase(), request.getPassword(), null, request.getEmailHash());
             accountRepository.add(account);
         } catch (Exception e) {
             throw new Error(e.getMessage());
@@ -132,7 +134,7 @@ public class AccountService implements UserDetailsService {
      */
     public boolean isOwnAccount(int id) {
         Account account = findById(id);
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName().toLowerCase();
         if(account == null || username == null)
             return false;
 

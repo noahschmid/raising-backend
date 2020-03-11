@@ -1,11 +1,14 @@
 package ch.raising.data;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.InvestmentPhase;
@@ -64,5 +67,20 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 		} catch(Exception e) {
 			throw new Exception(e.getMessage());
 		}
+	}
+	
+	public void addInvestmentPhaseToInvestor(int investorId, int investmentPhaseId) throws SQLException {
+		String sql = "INSERT INTO investmentphaseassignment(investorid, investmentphaseid) VALUES (?,?)";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+					
+				ps.setInt(1,investorId);  
+				ps.setInt(2,investmentPhaseId);
+					
+				return ps.execute();  
+			}  
+		});  
 	}
 }

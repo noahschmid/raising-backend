@@ -114,16 +114,12 @@ public class StartupService {
         return ResponseEntity.ok().body(response);
 	}
 	
-	    /**
+    /**
      * Add new investor profile
      * @param investor the investor to add
      */
     public ResponseEntity<?> addStartup(Startup startup) {
-        if(startup.getAccountId() == -1 || startup.getStreet () == null || 
-		startup.getInvestmentMax() == -1 || startup.getInvestmentMin() == -1 || 
-		startup.getWebsite() == null || startup.getZipCode() == null || 
-		startup.getNumberOfFTE() == -1 || startup.getTurnover() == -1 || startup.getBreakEvenYear() == -1 ||
-		startup.getName() == null || startup.getInvestmentPhaseId() == -1)
+        if(isIncomplete(startup))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Please fill out all required fields"));
         try {
             startupRepository.add(startup);
@@ -132,4 +128,12 @@ public class StartupService {
             return ResponseEntity.status(500).body(new ErrorResponse(e.getLocalizedMessage()));
         }
     }
+
+	private boolean isIncomplete(Startup startup) {
+		return startup.getAccountId() == -1 || startup.getStreet () == null || 
+		startup.getInvestmentMax() == -1 || startup.getInvestmentMin() == -1 || 
+		startup.getWebsite() == null || startup.getZipCode() == null || 
+		startup.getNumberOfFTE() == -1 || startup.getTurnover() == -1 || startup.getBreakEvenYear() == -1 ||
+		startup.getName() == null || startup.getInvestmentPhaseId() == -1;
+	}
 }
