@@ -187,7 +187,6 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 			updateQuery.addField(req.getUsername(), "username");
 			updateQuery.addField(req.getPassword(), "password");
 			updateQuery.addField(req.getRoles(), "roles");
-
 			updateQuery.addField(req.getEmailHash(), "emailHash");
 			updateQuery.execute();
 		} catch(Exception e) {

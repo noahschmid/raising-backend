@@ -16,7 +16,7 @@ import ch.raising.models.StartupUpdateRequest;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class StartupRepository implements IRepository<Startup, Startup> {
+public class StartupRepository implements IRepository<Startup, StartupUpdateRequest> {
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -42,18 +42,26 @@ public class StartupRepository implements IRepository<Startup, Startup> {
     /**
      * Update startup
      * @param id the id of the startup to update
-     * @param update instance of the update request
+     * @param req instance of the update request
      * @throws Exception 
      */
-    public void update(int id, Startup update) throws Exception {
+    public void update(int id, StartupUpdateRequest req) throws Exception {
         try{
-            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investor", id, this);
-            updateQuery.setJdbc(jdbc);
-            updateQuery.addField(update.getName(), "name");
-            updateQuery.addField(update.getInvestmentMax(), "investmentMax");
-            updateQuery.addField(update.getInvestmentMin(), "investmentMin");
-            updateQuery.addField(update.getInvestmentPhaseId(), "investmentPhaseId");
-            updateQuery.execute();
+            UpdateQueryBuilder update = new UpdateQueryBuilder("investor", id, this);
+            update.setJdbc(jdbc);
+            update.addField(req.getName(), "name");
+            update.addField(req.getDescription(), "description");
+            update.addField(req.getInvestmentMax(), "investmentMax");
+            update.addField(req.getInvestmentMin(), "investmentMin");
+            update.addField(req.getBoosts(), "boosts");
+            update.addField(req.getNumberOfFTE(), "numberoffte");
+            update.addField(req.getTurnover(), "turnover");
+            update.addField(req.getStreet(), "street");
+            update.addField(req.getCity(), "city");
+            update.addField(req.getWebsite(), "website");
+            update.addField(req.getBreakEvenYear(), "breakevenyear");
+            update.addField(req.getZipCode(), "zipcode");
+            update.execute();
         } catch(Exception e) {
             throw new Error(e);
         }

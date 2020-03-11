@@ -25,7 +25,7 @@ import ch.raising.models.ErrorResponse;
 public class UpdateQueryBuilder {
     private String updates;
     private List fields;
-    private int unitializedIntValue = -1;
+    private int unitializedIntValue = -1; 
     private float unitializedFloatValue = -1f;
     private int id;
     private String tableName;
