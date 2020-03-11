@@ -1,5 +1,6 @@
 package ch.raising.services;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,5 +151,19 @@ public class StartupService {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 
+	}
+
+	/**
+	 * Deletes the startup specified by the id
+	 * @param id of the startup
+	 * @return response with statuscode and message
+	 */
+	public ResponseEntity<?> deleteStartup(int id) {
+		try{
+			startupRepository.delete(id);
+			return ResponseEntity.ok().build();
+		} catch (Error e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
 	}
 }

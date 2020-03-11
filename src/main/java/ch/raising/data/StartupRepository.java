@@ -129,4 +129,21 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 			throw e;
 		}
 	}
+	
+	/**
+	 * Deletes a startup
+	 * @param id of the startup to be deleted
+	 */
+
+	public void delete(int id) {
+		jdbc.execute("DELETE FROM startup WHERE startup.id = ?", new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+				
+				ps.setInt(1, id);
+				return ps.execute();  
+			}  
+		}); 
+	}
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
@@ -115,5 +116,10 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 			System.out.println(e.toString());
 			throw e;
 		}
+	}
+
+	public ResponseEntity<?> deleteInvestorById(int id) {
+		assert 1 == 0;
+		return null;
 	}
 }
