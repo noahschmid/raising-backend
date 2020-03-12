@@ -29,6 +29,7 @@ import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.RegistrationRequest;
+import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
@@ -47,6 +48,9 @@ public class AccountService implements UserDetailsService {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -72,7 +76,6 @@ public class AccountService implements UserDetailsService {
      * @return  ResponseEntity with status code and message
      */
     public void register(RegistrationRequest request) throws Error {
-        System.out.println("\n\n\n registering new account");
         if(request.getUsername() == null || request.getPassword() == null || request.getEmailHash() == null)
             throw new Error("Please provide username, email and password");
         if(accountRepository.usernameExists(request.getUsername()))
@@ -175,7 +178,6 @@ public class AccountService implements UserDetailsService {
         Account account = accountRepository.findByEmail(request.getEmail());
         try {
             if(account != null) {
-                System.out.println("account found");
                 String code = resetCodeUtil.createResetCode(account);
                 mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
             }
@@ -200,7 +202,8 @@ public class AccountService implements UserDetailsService {
                 updateQuery.setJdbc(jdbc);
                 updateQuery.addField(encoder.encode(request.getPassword()), "password");
                 updateQuery.execute();
-                return ResponseEntity.ok().build();
+                UserDetails userDetails = new AccountDetails(accountRepository.find(id));
+                return ResponseEntity.ok().body(new LoginResponse(jwtUtil.generateToken(userDetails), id));
             } 
             return ResponseEntity.status(500).body(new ErrorResponse("Invalid Reset Code"));
         } catch (Exception e) {

@@ -40,10 +40,10 @@ public class ResetCodeUtil {
         if(code == null)
             return -1;
 
-        if(isExpired(code)) {
-            resetCodeRepository.deleteByCode(code.getCode());
+        resetCodeRepository.deleteByCode(code.getCode());
+
+        if(isExpired(code)) 
             return -1;
-        }
 
         return code.getAccountId();
     }

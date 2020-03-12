@@ -86,7 +86,6 @@ public class AccountController {
 	@ResponseBody
 	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
         try {
-            System.out.println("asdasd");
             accountService.register(request);
             return login(new LoginRequest(request.getUsername(), request.getPassword()));
         } catch (Error e) {
