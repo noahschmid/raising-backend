@@ -8,18 +8,6 @@ import java.util.function.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import ch.raising.models.ErrorResponse;
-import ch.raising.models.LoginRequest;
-import ch.raising.models.LoginResponse;
-import ch.raising.services.AccountService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -34,16 +22,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
     private final String SECRET_KEY = "secret";
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private AccountService accountService;
-
-    public JwtUtil(AuthenticationManager authenticationManager,
-                    AccountService accountService) {
-        this.accountService = accountService;
-        this.authenticationManager = authenticationManager;
+    public JwtUtil() {
+        super();
     }
 
     public String extractUsername(String token) {
