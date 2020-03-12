@@ -1,1 +1,0 @@
-ALTER TABLE resetCodes RENAME TO resetCode;

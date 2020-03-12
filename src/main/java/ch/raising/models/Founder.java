@@ -1,12 +1,12 @@
 package ch.raising.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class Founder {
-	private int id;
-	private int startupId;
-	private String name;
+@EqualsAndHashCode(callSuper=false)
+
+public class Founder extends StartupMember{
 	private String education;
-	private String roleInStartup;
+	private String role;
 }

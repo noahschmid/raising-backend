@@ -170,4 +170,55 @@ public class AccountController {
 
         return accountService.updateAccount(id, updateRequest, request.isUserInRole("ADMIN"));
     }
+    
+    @PostMapping("/country/{countryId}")
+    @ResponseBody
+    public ResponseEntity<?> addCountryToAccount(@PathVariable long countryId){
+    	return accountService.addCountryToAccountById(countryId);
+    }
+    
+    @DeleteMapping("/country/{countryId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteCountryFromAccount(@PathVariable long countryId){
+    	return accountService.deleteCountryFromAccountById(countryId);
+    }
+    
+    @PostMapping("/continent/{continentId}")
+    @ResponseBody
+    public ResponseEntity<?> addContinentToAccount(@PathVariable long continentId){
+    	return accountService.addContinentToAccountById(continentId);
+    }
+    
+    @DeleteMapping("/continent/{continentId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteContinentFromAccount(@PathVariable long continentId){
+    	return accountService.deletContinentFromAccountById(continentId);
+    }
+    
+    @PostMapping("/support/{supportId}")
+    @ResponseBody
+    public ResponseEntity<?> addSupportToAccount(@PathVariable long supportId){
+    	return accountService.addSupportToAccountById(supportId);
+    }
+    
+    @DeleteMapping("/support/{supportId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteSupportFromAccount(@PathVariable long supportId){
+    	return accountService.deleteSupportFromAccountById(supportId);
+    }
+    
+    @PostMapping("/industry/{industryId}")
+    @ResponseBody
+    public ResponseEntity<?> addIndustryToAccount(@PathVariable long industryId){
+    	return accountService.addIndustryToAccountById(industryId);
+    }
+    
+    @DeleteMapping("/industry/{industryId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteIndustryFromAccount(@PathVariable long industryId){
+    	return accountService.deleteContinentFromAccountById(industryId);
+    }
+    
+    
 }
+ 

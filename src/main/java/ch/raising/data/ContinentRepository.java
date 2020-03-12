@@ -28,14 +28,14 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	 * @param id id of the desired continent
 	 * @return instance of the found continent
 	 */
-	public Continent find(int id) {
+	public Continent find(long id) {
 		return jdbc.queryForObject("SELECT * FROM continent WHERE id = ?", new Object[] { id }, this::mapRowToContinent);
 	}
 
 	/**
 	 * Find continents which are assigned to certain account
 	 */
-	public List<Continent> findByAccountId(int id) {
+	public List<Continent> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM continentAssignment INNER JOIN continent ON " +
 						   "continentAssignment.continentId = continent.id WHERE accountId = ?",
 						   new Object[] { id }, this::mapRowToContinent);
@@ -49,7 +49,7 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	 * @throws SQLException
 	 */
 	private Continent mapRowToContinent(ResultSet rs, int rowNum) throws SQLException {
-		return new Continent(rs.getInt("id"), 
+		return new Continent(rs.getLong("id"), 
 			rs.getString("name"));
 	}
 
@@ -58,7 +58,7 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	 * @param id the id of the continent to update
 	 * @param req request containing fields to update
 	 */
-	public void update(int id, Continent req) throws Exception {
+	public void update(long id, Continent req) throws Exception {
 		try {
 			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this);
 			updateQuery.setJdbc(jdbc);
@@ -82,8 +82,8 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
-					ps.setInt(1,accountId);  
-					ps.setInt(2,continentId);
+					ps.setLong(1,accountId);  
+					ps.setLong(2,continentId);
 						
 					return ps.execute();  
 				}  

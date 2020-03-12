@@ -22,8 +22,20 @@ public class RegistrationRequest {
         super();
     }
 
+    /**
+     * 
+     * @return username from request
+     */
     public String getUsername() { return this.username; }
+    /**
+     * 
+     * @return password from request
+     */
     public String getPassword() { return this.password; }
+    /**
+     * 
+     * @return hashed email from request
+     */
     public String getEmailHash() { return this.emailHash; }
     public String getEmail() { return this.email; }
 

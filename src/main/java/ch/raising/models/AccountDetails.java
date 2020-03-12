@@ -33,10 +33,11 @@ public class AccountDetails implements UserDetails {
     public String getPassword() {
         return this.password;
     }
-
+    
     public long getId() {
         return this.id;
     }
+    
 
     @Override
     public String getUsername() {

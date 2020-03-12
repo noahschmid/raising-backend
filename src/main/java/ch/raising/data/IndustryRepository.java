@@ -1,11 +1,14 @@
 package ch.raising.data;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Industry;
@@ -25,14 +28,14 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @param id id of the desired industry
 	 * @return instance of the found industry
 	 */
-	public Industry find(int id) {
+	public Industry find(long id) {
 		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToIndustry);
 	}
 
 	/**
 	 * Find industries which are assigned to certain account
 	 */
-	public List<Industry> findByAccountId(int id) {
+	public List<Industry> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM industryAssignment INNER JOIN industry ON " +
 						   "industryAssignment.industryId = industry.id WHERE accountId = ?",
 						   new Object[] { id }, this::mapRowToIndustry);
@@ -46,7 +49,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @throws SQLException
 	 */
 	private Industry mapRowToIndustry(ResultSet rs, int rowNum) throws SQLException {
-		return new Industry(rs.getInt("id"), 
+		return new Industry(rs.getLong("id"), 
 			rs.getString("name"));
 	}
 
@@ -55,7 +58,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @param id the id of the industry to update
 	 * @param req request containing fields to update
 	 */
-	public void update(int id, Industry req) throws Exception {
+	public void update(long id, Industry req) throws Exception {
 		try {
 			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("industry", id, this);
 			updateQuery.setJdbc(jdbc);
@@ -64,5 +67,21 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 		} catch(Exception e) {
 			throw new Exception(e.getMessage());
 		}
+	}
+	
+	public void addIndustryToAccount(long accountId, long industryId) throws SQLException {
+		String sql = "INSERT INTO industryassignment(accountId, industryId) VALUES (?,?)";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+					
+				ps.setLong(1,accountId);  
+				ps.setLong(2,industryId);
+					
+				return ps.execute();  
+			}  
+		});  
+		
 	}
 }

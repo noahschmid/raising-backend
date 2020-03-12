@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class StartupProfileResponse {
-    private int id;
+    private long id;
     private Account account;
     private String name;
     private int investmentMin;

@@ -1,4 +1,4 @@
-package ch.raising.filters;
+package ch.raising.utils;
 
 import java.io.IOException;
 
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import ch.raising.services.AccountService;
-import ch.raising.utils.JwtUtil;
 
 @Component  
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -40,10 +39,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         String username = null;
         String token = null;
+        long id = -1;
         
         if(authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtUtil.extractUsername(token);
+            id = jwtUtil.extractId(token);
         }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

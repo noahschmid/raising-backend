@@ -1,11 +1,14 @@
 package ch.raising.data;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.InvestmentPhase;
@@ -25,14 +28,14 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @param id id of the desired investment phase
 	 * @return instance of the found investment phase
 	 */
-	public InvestmentPhase find(int id) {
+	public InvestmentPhase find(long id) {
 		return jdbc.queryForObject("SELECT * FROM investmentPhase WHERE id = ?", new Object[] { id }, this::mapRowToInvestmentPhase);
 	}
 
 	/**
 	 * Find investment phases which are assigned to certain investor
 	 */
-	public List<InvestmentPhase> findByInvestorId(int id) {
+	public List<InvestmentPhase> findByInvestorId(long id) {
 		return jdbc.query("SELECT * FROM investmentPhaseAssignment INNER JOIN investmentPhase ON " +
 						   "investmentPhaseAssignment.investmentPhaseId = investmentPhase.id WHERE investorId = ?",
 						   new Object[] { id }, this::mapRowToInvestmentPhase);
@@ -46,7 +49,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @throws SQLException
 	 */
 	private InvestmentPhase mapRowToInvestmentPhase(ResultSet rs, int rowNum) throws SQLException {
-		return new InvestmentPhase(rs.getInt("id"), 
+		return new InvestmentPhase(rs.getLong("id"), 
 			rs.getString("name"));
 	}
 
@@ -55,7 +58,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @param id the id of the industry to update
 	 * @param req request containing fields to update
 	 */
-	public void update(int id, InvestmentPhase req) throws Exception {
+	public void update(long id, InvestmentPhase req) throws Exception {
 		try {
 			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investmentPhase", id, this);
 			updateQuery.setJdbc(jdbc);
@@ -64,5 +67,40 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 		} catch(Exception e) {
 			throw new Exception(e.getMessage());
 		}
+	}
+	
+	/**
+	 * adds an entry in investortypeassignments with the ids
+	 * @param investorId
+	 * @param investmentPhaseId
+	 * @throws SQLException
+	 */
+	
+	public void addInvestmentPhaseToInvestor(long investorId, long investmentPhaseId) throws SQLException {
+		String sql = "INSERT INTO investmentphaseassignment(investorid, investmentphaseid) VALUES (?,?)";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+					
+				ps.setLong(1,investorId);  
+				ps.setLong(2,investmentPhaseId);
+					
+				return ps.execute();  
+			}  
+		});  
+	}
+
+	public void deleteInvestmentPhaseOfInvestor(long accountId, long invPhaseId) {
+		String sql = "DELETE FROM investmentphaseassignment WHERE investorid  = ? AND investmentphaseid = ?";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+				ps.setLong(1, accountId);  
+				ps.setLong(2, invPhaseId);
+				return ps.execute();  
+			}  
+		}); 
 	}
 }

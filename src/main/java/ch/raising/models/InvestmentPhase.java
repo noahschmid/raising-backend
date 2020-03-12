@@ -6,10 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class InvestmentPhase {
-    private int id;
+    private long id;
     private String name;
 
-    public InvestmentPhase(int id, String name) {
+    public InvestmentPhase(long id, String name) {
         this.id = id;
         this.name = name;
     }

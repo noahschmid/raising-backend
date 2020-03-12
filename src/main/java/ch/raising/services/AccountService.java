@@ -8,12 +8,8 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,7 +21,6 @@ import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
-import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.RegistrationRequest;
@@ -78,14 +73,16 @@ public class AccountService implements UserDetailsService {
     public void register(RegistrationRequest request) throws Error {
         if(request.getUsername() == null || request.getPassword() == null || request.getEmailHash() == null)
             throw new Error("Please provide username, email and password");
-        if(accountRepository.usernameExists(request.getUsername()))
+
+        if(accountRepository.usernameExists(request.getUsername().toLowerCase()))
             throw new Error("Username already exists");
 
         System.out.println(request.getEmail());
         if(accountRepository.findByEmail(request.getEmail()) != null)
             throw new Error("Account with same email exists");
+
         try  {
-            Account account = new Account(-1, request.getUsername(), request.getPassword(), null, request.getEmailHash());
+            Account account = new Account(-1, request.getUsername().toLowerCase(), request.getPassword(), null, request.getEmailHash());
             accountRepository.add(account);
         } catch (Exception e) {
             throw new Error(e.getMessage());
@@ -135,7 +132,7 @@ public class AccountService implements UserDetailsService {
      */
     public boolean isOwnAccount(int id) {
         Account account = findById(id);
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName().toLowerCase();
         if(account == null || username == null)
             return false;
 
@@ -196,13 +193,13 @@ public class AccountService implements UserDetailsService {
      */
     public ResponseEntity<?> resetPassword(PasswordResetRequest request){
         try {
-            int id = resetCodeUtil.validate(request);
+            long id = resetCodeUtil.validate(request);
             if(id != -1) {
                 UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, accountRepository);
                 updateQuery.setJdbc(jdbc);
                 updateQuery.addField(encoder.encode(request.getPassword()), "password");
                 updateQuery.execute();
-                UserDetails userDetails = new AccountDetails(accountRepository.find(id));
+                AccountDetails userDetails = new AccountDetails(accountRepository.find(id));
                 return ResponseEntity.ok().body(new LoginResponse(jwtUtil.generateToken(userDetails), id));
             } 
             return ResponseEntity.status(500).body(new ErrorResponse("Invalid Reset Code"));
@@ -210,4 +207,80 @@ public class AccountService implements UserDetailsService {
             return ResponseEntity.status(500).body(new ErrorResponse("Error updating password", e));
         }
     }
+
+	public ResponseEntity<?> addCountryToAccountById(long countryId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> deleteCountryFromAccountById(long countryId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> addContinentToAccountById(long continentId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> deletContinentFromAccountById(long continentId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> addSupportToAccountById(long supportId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> deleteContinentFromAccountById(long supportId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> deleteSupportFromAccountById(long supportId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> addIndustryToAccountById(long industryId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	
+
+	
 }

@@ -98,7 +98,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * Delete user account
 	 * @param id the id of the account
 	 */
-	public void delete(int id) throws Exception {
+	public void delete(long id) throws Exception {
 		try {
 			String query = "DELETE FROM account WHERE id = ?;"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
@@ -106,7 +106,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
-					ps.setInt(1,id); 	
+					ps.setLong(1,id); 	
 					return ps.execute();  
 				}  
 			});  
@@ -121,7 +121,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @param id id of the desired account
 	 * @return instance of the found account
 	 */
-	public Account find(int id) {
+	public Account find(long id) {
 		try {
 			Account account = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id }, this::mapRowToAccount);
 			return account;
@@ -168,7 +168,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @throws SQLException
 	 */
 	private Account mapRowToAccount(ResultSet rs, int rowNum) throws SQLException {
-		return new Account(rs.getInt("id"), 
+		return new Account(rs.getLong("id"), 
 			rs.getString("username"), 
 			rs.getString("password"),
 			rs.getString("roles"),
@@ -180,14 +180,13 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @param id the id of the account to update
 	 * @param req request containing fields to update
 	 */
-	public void update(int id, AccountUpdateRequest req) throws Exception {
+	public void update(long id, AccountUpdateRequest req) throws Exception {
 		try {
 			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this);
 			updateQuery.setJdbc(jdbc);
 			updateQuery.addField(req.getUsername(), "username");
 			updateQuery.addField(req.getPassword(), "password");
 			updateQuery.addField(req.getRoles(), "roles");
-
 			updateQuery.addField(req.getEmailHash(), "emailHash");
 			updateQuery.execute();
 		} catch(Exception e) {

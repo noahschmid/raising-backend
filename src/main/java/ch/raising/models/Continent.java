@@ -6,10 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Continent {
-    private int id;
+    private long id;
     private String name;
 
-    public Continent(int id, String name) {
+    public Continent(long id, String name) {
         this.id = id;
         this.name = name;
     }

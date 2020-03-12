@@ -25,19 +25,29 @@ import ch.raising.models.ErrorResponse;
 public class UpdateQueryBuilder {
     private String updates;
     private List fields;
-    private int unitializedIntValue = -1;
+    private int unitializedIntValue = -1; 
     private float unitializedFloatValue = -1f;
-    private int id;
+    private long id;
     private String tableName;
     private IRepository<?,?> repository;
     private JdbcTemplate jdbc;
+    private String idField = "id";
 
-    public UpdateQueryBuilder(String tableName, int id, IRepository<?,?> repository) {
+    public UpdateQueryBuilder(String tableName, long id, IRepository<?,?> repository) {
         this.tableName = tableName;
         this.id = id;
         this.repository = repository;
         fields = new ArrayList<>();
     }
+
+    public UpdateQueryBuilder(String tableName, long id, IRepository<?,?> repository, String idField) {
+        this.tableName = tableName;
+        this.id = id;
+        this.repository = repository;
+        fields = new ArrayList<>();
+        this.idField = idField;
+    }
+
 
     public void setJdbc(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
@@ -105,7 +115,7 @@ public class UpdateQueryBuilder {
         if(updates == null) 
             return null;
 
-        return "UPDATE " + tableName + " SET " + updates + " WHERE id = ?";
+        return "UPDATE " + tableName + " SET " + updates + " WHERE " + idField + " = ?";
     }
 
     /**
@@ -137,7 +147,7 @@ public class UpdateQueryBuilder {
                             ps.setFloat(i, (float)o);
                     }
                     
-                    ps.setInt(fields.size()+1, id);
+                    ps.setLong(fields.size()+1, id);
 
 					return ps.execute();  
 				}  

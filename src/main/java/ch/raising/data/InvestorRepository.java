@@ -13,6 +13,7 @@ import java.util.List;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Account;
@@ -36,9 +37,9 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 	 * @param id id of the desired investor
 	 * @return instance of the found investor
 	 */
-	public Investor find(int id) {
+	public Investor find(long id) {
         try {
-            String sql = "SELECT * FROM investor WHERE id = ?";
+            String sql = "SELECT * FROM investor WHERE accountId = ?";
             return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToInvestor);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -52,9 +53,9 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
      * @param update instance of the update request
      * @throws Exception 
      */
-    public void update(int id, InvestorUpdateRequest update) throws Exception {
+    public void update(long id, InvestorUpdateRequest update) throws Exception {
         try{
-            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investor", id, this);
+            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investor", id, this, "accountId");
             updateQuery.setJdbc(jdbc);
             updateQuery.addField(update.getDescription(), "description");
             updateQuery.addField(update.getName(), "name");
@@ -77,11 +78,10 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 	private Investor mapRowToInvestor(ResultSet rs, int rowNum) throws SQLException {
         Investor investor = new Investor();
 
-        investor.setId(rs.getInt("id"));
-        investor.setAccountId(rs.getInt("accountId"));
+        investor.setAccountId(rs.getLong("accountId"));
         investor.setInvestmentMax(rs.getInt("investmentMax"));
         investor.setInvestmentMin(rs.getInt("investmentMin"));
-        investor.setInvestorTypeId(rs.getInt("investorTypeId"));
+        investor.setInvestorTypeId(rs.getLong("investorTypeId"));
         investor.setName(rs.getString("name"));
         investor.setDescription(rs.getString("description"));
 
@@ -101,12 +101,12 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
-                    ps.setInt(1,investor.getAccountId()); 
+                    ps.setLong(1,investor.getAccountId()); 
                     ps.setString(2, investor.getName());
                     ps.setString(3, investor.getDescription());
                     ps.setInt(4, investor.getInvestmentMin());
                     ps.setInt(5, investor.getInvestmentMax());
-                    ps.setInt(6, investor.getInvestorTypeId());
+                    ps.setLong(6, investor.getInvestorTypeId());
 
 					return ps.execute();  
 				}  
@@ -116,4 +116,5 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 			throw e;
 		}
 	}
+
 }
