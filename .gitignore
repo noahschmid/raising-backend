@@ -27,6 +27,13 @@ HELP.md
 build/
 target/
 ./target
-
+./target/*
+target/*./target/*
+target/*./target/*
+target/*./target/*
+target/*./target/*
+target/*./target/*
+target/*./target/*
+target/*
 ### VS Code ###
 .vscode/

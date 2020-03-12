@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.format.number.PercentStyleFormatter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
@@ -79,8 +80,7 @@ public class CountryRepository implements IRepository<Country, Country> {
 	 * @param accountId id of the account
 	 * @param countryId id of the country
 	 */
-	public void addToAccount(long accountId, long countryId) throws Exception {
-		try {
+	public void addCountryToAccountById(long accountId, long countryId) throws Exception {
 			String query = "INSERT INTO countryAssignment(accountId, countryId) VALUES (?, ?);"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
 				@Override  
@@ -93,9 +93,24 @@ public class CountryRepository implements IRepository<Country, Country> {
 					return ps.execute();  
 				}  
 			});  
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
-		}
+	}
+	/**
+	 * Delete entry in countryassignment with both specified ids
+	 * @param countryId
+	 * @param id
+	 */
+
+	public void deleteCountryFromAccountById(long countryId, long id) {
+		String query = "DELETE FROM countryassignment WHERE accountid = ? AND countryid = ?";
+		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
+			
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps)
+					throws SQLException, DataAccessException {
+				ps.setLong(1, id);
+				ps.setLong(2, countryId);
+				return ps.execute();
+			}
+		});
 	}
 }

@@ -3,6 +3,8 @@ package ch.raising.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -23,6 +25,15 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	@Autowired
 	public LabelRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
+	}
+	
+	/**
+	 * 
+	 * @return a List of all labels
+	 */
+	public List<Label> getAllLabels() {
+		String sql = "SELECT * FROM label";
+		return jdbc.query(sql, this::mapRowToLabel);
 	}
 
 	@Override

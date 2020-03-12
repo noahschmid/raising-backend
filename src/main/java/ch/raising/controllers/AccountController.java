@@ -170,49 +170,81 @@ public class AccountController {
 
         return accountService.updateAccount(id, updateRequest, request.isUserInRole("ADMIN"));
     }
-    
+    /**
+     * add country to account
+     * @param countryId
+     * @return
+     */
     @PostMapping("/country/{countryId}")
     @ResponseBody
     public ResponseEntity<?> addCountryToAccount(@PathVariable long countryId){
     	return accountService.addCountryToAccountById(countryId);
     }
-    
+    /**
+     * delete country from account
+     * @param countryId
+     * @return
+     */
     @DeleteMapping("/country/{countryId}")
     @ResponseBody
     public ResponseEntity<?> deleteCountryFromAccount(@PathVariable long countryId){
     	return accountService.deleteCountryFromAccountById(countryId);
     }
-    
+    /**
+     * add continent to account
+     * @param continentId
+     * @return
+     */
     @PostMapping("/continent/{continentId}")
     @ResponseBody
     public ResponseEntity<?> addContinentToAccount(@PathVariable long continentId){
     	return accountService.addContinentToAccountById(continentId);
     }
-    
+    /**
+     * delete continent from account
+     * @param continentId
+     * @return
+     */
     @DeleteMapping("/continent/{continentId}")
     @ResponseBody
     public ResponseEntity<?> deleteContinentFromAccount(@PathVariable long continentId){
-    	return accountService.deletContinentFromAccountById(continentId);
+    	return accountService.deleteContinentFromAccountById(continentId);
     }
-    
+    /**
+     * add supporttype to account
+     * @param supportId
+     * @return
+     */
     @PostMapping("/support/{supportId}")
     @ResponseBody
     public ResponseEntity<?> addSupportToAccount(@PathVariable long supportId){
     	return accountService.addSupportToAccountById(supportId);
     }
-    
+    /**
+     * delete supporttype from account
+     * @param supportId
+     * @return
+     */
     @DeleteMapping("/support/{supportId}")
     @ResponseBody
     public ResponseEntity<?> deleteSupportFromAccount(@PathVariable long supportId){
     	return accountService.deleteSupportFromAccountById(supportId);
     }
-    
+    /**
+     * add industry to account    
+     * @param industryId
+     * @return
+     */
     @PostMapping("/industry/{industryId}")
     @ResponseBody
     public ResponseEntity<?> addIndustryToAccount(@PathVariable long industryId){
     	return accountService.addIndustryToAccountById(industryId);
     }
-    
+    /**
+     * delete industry form account
+     * @param industryId
+     * @return
+     */
     @DeleteMapping("/industry/{industryId}")
     @ResponseBody
     public ResponseEntity<?> deleteIndustryFromAccount(@PathVariable long industryId){

@@ -68,8 +68,14 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 			throw new Exception(e.getMessage());
 		}
 	}
+	/**
+	 * add entry with industryid and accountid into industryassingment
+	 * @param accountId
+	 * @param industryId
+	 * @throws SQLException
+	 */
 	
-	public void addIndustryToAccount(long accountId, long industryId) throws SQLException {
+	public void addIndustryToAccountById(long accountId, long industryId) throws SQLException {
 		String sql = "INSERT INTO industryassignment(accountId, industryId) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -83,5 +89,25 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 			}  
 		});  
 		
+	}
+
+	/**
+	 * delete entry with both ids from industryassignment
+	 * @param industryId
+	 * @param accountId
+	 */
+	public void deleteIndustryFromAccountById(long industryId, long accountId) {
+		String sql = "DELETE FROM industryassignment WHERE industryid = ? AND accountid = ?";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+					
+				ps.setLong(1,industryId);  
+				ps.setLong(2,accountId);
+					
+				return ps.execute();  
+			}  
+		});  
 	}
 }

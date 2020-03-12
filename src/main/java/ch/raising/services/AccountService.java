@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
+import ch.raising.models.Contact;
+import ch.raising.models.Continent;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.LoginResponse;
@@ -29,7 +31,10 @@ import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
+import ch.raising.data.ContinentRepository;
 import ch.raising.data.CountryRepository;
+import ch.raising.data.IndustryRepository;
+import ch.raising.data.SupportRepository;
 
 @Service
 public class AccountService implements UserDetailsService {
@@ -53,17 +58,29 @@ public class AccountService implements UserDetailsService {
     @Autowired
     private CountryRepository countryRepository;
 
+    @Autowired
+    private ContinentRepository continentRepository;
     
+    @Autowired
+    private SupportRepository supportRepository;
+    
+    @Autowired
+    private IndustryRepository industryRepository;
 
     public AccountService(AccountRepository accountRepository, 
                         MailUtil mailUtil,
                         ResetCodeUtil resetCodeUtil,
-                        JdbcTemplate jdbc, CountryRepository countryRepository) {
+                        JdbcTemplate jdbc, CountryRepository countryRepository,
+                        ContinentRepository continentRepository, SupportRepository supportRepository,
+                        IndustryRepository industryRepository) {
         this.accountRepository = accountRepository;
         this.mailUtil = mailUtil;
         this.resetCodeUtil = resetCodeUtil;
         this.jdbc = jdbc;
         this.countryRepository = countryRepository;
+        this.continentRepository = continentRepository;
+        this.supportRepository = supportRepository;
+        this.industryRepository = industryRepository;
     }
     
     @Override
@@ -215,6 +232,11 @@ public class AccountService implements UserDetailsService {
         }
     }
 
+    /**
+     * Add entry in assignmenttable with both ids
+     * @param countryId
+     * @return Responsenetitiy with a statuscode and an optional body
+     */
 	public ResponseEntity<?> addCountryToAccountById(long countryId) {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
@@ -224,7 +246,11 @@ public class AccountService implements UserDetailsService {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-
+	/**
+	 * remove entry in countryrepository specified by those ids
+	 * @param countryId
+     * @return Responsenetitiy with a statuscode and an optional body
+	 */
 	public ResponseEntity<?> deleteCountryFromAccountById(long countryId) {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
@@ -235,54 +261,85 @@ public class AccountService implements UserDetailsService {
 		}
 	}
 
+	/**
+	 * Add Continent to account
+	 * @param continentId
+     * @return Responsenetitiy with a statuscode and an optional body
+	 */
 	public ResponseEntity<?> addContinentToAccountById(long continentId) {
 		try {
-			
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			continentRepository.addContinentToAccountById(continentId, accDet.getId());
 			return ResponseEntity.ok().build();
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-
-	public ResponseEntity<?> deletContinentFromAccountById(long continentId) {
+	/**
+	 * deletes continent from account
+	 * @param continentId
+     * @return Responsenetitiy with a statuscode and an optional body
+	 */
+	public ResponseEntity<?> deleteContinentFromAccountById(long continentId) {
 		try {
-			
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			continentRepository.deleteContinentFromAccountById(continentId, accDet.getId());
 			return ResponseEntity.ok().build();
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-
+	/**
+	 * adds support to account
+	 * @param supportId
+     * @return Responsenetitiy with a statuscode and an optional body
+	 */
 	public ResponseEntity<?> addSupportToAccountById(long supportId) {
 		try {
-			
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			supportRepository.addSupportToAccountById(accDet.getId(),supportId);
 			return ResponseEntity.ok().build();
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-
-	public ResponseEntity<?> deleteContinentFromAccountById(long supportId) {
-		try {
-			
-			return ResponseEntity.ok().build();
-		}catch(Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-	
+	/**
+	 * deletes support form account
+	 * @param supportId
+     * @return Responsenetitiy with a statuscode and an optional body
+	 */
 	public ResponseEntity<?> deleteSupportFromAccountById(long supportId) {
 		try {
-			
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			supportRepository.deleteSupportFromAccountById(supportId, accDet.getId());
 			return ResponseEntity.ok().build();
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-	
+	/**
+	 * deletes industry form account
+	 * @param industryId
+     * @return Responsenetitiy with a statuscode and an optional body
+	 */
+	public ResponseEntity<?> deleteIndustryFromAccountById(long industryId) {
+		try {
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			industryRepository.deleteIndustryFromAccountById(industryId, accDet.getId());
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	/**
+	 * adds industry to account
+	 * @param industryId
+     * @return Responsenetitiy with a statuscode and an optional body
+	 */
 	public ResponseEntity<?> addIndustryToAccountById(long industryId) {
 		try {
-			
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			industryRepository.addIndustryToAccountById(industryId, accDet.getId());
 			return ResponseEntity.ok().build();
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));

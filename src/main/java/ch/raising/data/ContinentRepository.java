@@ -71,10 +71,10 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 
 	/**
 	 * Add continent to account
-	 * @param accountId id of the account
-	 * @param continentId id of the continent
+	 * @param continentId id of the account
+	 * @param accId id of the continent
 	 */
-	public void addToAccount(int accountId, int continentId) throws Exception {
+	public void addContinentToAccountById(long continentId, long accId) throws Exception {
 		try {
 			String query = "INSERT INTO continentAssignment(accountId, continentId) VALUES (?, ?);"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
@@ -82,8 +82,8 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
-					ps.setLong(1,accountId);  
-					ps.setLong(2,continentId);
+					ps.setLong(1,continentId);  
+					ps.setLong(2,accId);
 						
 					return ps.execute();  
 				}  
@@ -92,5 +92,24 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 			System.out.println(e.toString());
 			throw e;
 		}
+	}
+	/**
+	 * delete entry with both ids from continentrepository
+	 * @param continentId
+	 * @param id
+	 */
+
+	public void deleteContinentFromAccountById(long continentId, long id) {
+		String query = "DELETE FROM countryassignment WHERE accountid = ? AND continentid = ?";
+		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
+			
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps)
+					throws SQLException, DataAccessException {
+				ps.setLong(1, id);
+				ps.setLong(2, continentId);
+				return ps.execute();
+			}
+		});
 	}
 }

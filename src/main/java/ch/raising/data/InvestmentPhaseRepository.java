@@ -103,4 +103,8 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 			}  
 		}); 
 	}
+
+	public List<InvestmentPhase> getAllinvestmnetPhases() {
+		return jdbc.query("SELECT * FROM investmentphase", this::mapRowToInvestmentPhase);
+	}
 }

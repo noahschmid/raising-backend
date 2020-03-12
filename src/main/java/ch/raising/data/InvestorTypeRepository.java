@@ -114,5 +114,9 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 			}  
 		});  
 	}
+
+	public Object getAllInvestorTypes() {
+		return jdbc.query("SELECT * FROM investortype", this::mapRowToInvestorType);
+	}
 	
 }
