@@ -69,18 +69,38 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 		}
 	}
 	
-	public void addInvestmentPhaseToInvestor(int investorId, int investmentPhaseId) throws SQLException {
+	/**
+	 * adds an entry in investortypeassignments with the ids
+	 * @param investorId
+	 * @param investmentPhaseId
+	 * @throws SQLException
+	 */
+	
+	public void addInvestmentPhaseToInvestor(long investorId, long investmentPhaseId) throws SQLException {
 		String sql = "INSERT INTO investmentphaseassignment(investorid, investmentphaseid) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
 			public Boolean doInPreparedStatement(PreparedStatement ps)  
 					throws SQLException, DataAccessException {  
 					
-				ps.setInt(1,investorId);  
-				ps.setInt(2,investmentPhaseId);
+				ps.setLong(1,investorId);  
+				ps.setLong(2,investmentPhaseId);
 					
 				return ps.execute();  
 			}  
 		});  
+	}
+
+	public void deleteInvestmentPhaseOfInvestor(long accountId, long invPhaseId) {
+		String sql = "DELETE FROM investmentphaseassignment WHERE investorid  =? AND investmentphaseid = ?";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+				ps.setLong(1, accountId);  
+				ps.setLong(2, invPhaseId);
+				return ps.execute();  
+			}  
+		}); 
 	}
 }

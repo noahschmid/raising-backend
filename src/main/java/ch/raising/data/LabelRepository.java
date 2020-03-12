@@ -9,9 +9,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 
+import ch.raising.models.Contact;
 import ch.raising.models.Label;
+import ch.raising.utils.UpdateQueryBuilder;
 
-public class LabelRepository implements IRepository{
+public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	
 	@Autowired
 	JdbcTemplate jdbc;
@@ -26,30 +28,53 @@ public class LabelRepository implements IRepository{
 		String sql = "SELECT * FROM label WHERE id=?";
 		return jdbc.queryForObject(sql ,new Object[] {id}, this::mapRowToLabel);
 	}
-
-	@Override
-	public void update(int id, Object updateRequest) throws Exception {
-		throw new Exception("Not updateable");
-	}
 	
 	private Label mapRowToLabel(ResultSet rs, int row) throws SQLException {
 		return new Label(rs.getInt("id"), rs.getString("name"), rs.getString("descritpion"));
 	}
 	
-	public void addLabelToStartup(int labelId, int suId) {
+	/**
+	 * creates an entry in the labelassignmenttable with the specified ids
+	 * @param labelId
+	 * @param suId
+	 */
+	public void addLabelToStartup(int labelId, long suId) {
 		String sql = "INSERT INTO labelassignment(startupid, labelid) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
 			public Boolean doInPreparedStatement(PreparedStatement ps)  
 					throws SQLException, DataAccessException {  
 					
-				ps.setInt(1, suId);  
+				ps.setLong(1, suId);  
 				ps.setInt(2, labelId);
 					
 				return ps.execute();  
 			}  
 		});  
 	}
-	
 
+	@Override
+	public void update(int id, UpdateQueryBuilder updateRequest) throws Exception {
+		throw new Exception("not implemented");
+	}
+
+	/**
+	 * deletes the entries of labelassignment table containing both ids
+	 * @param labelId
+	 * @param suId
+	 */
+	public void deleteLabelOfStartup(int labelId, long suId) {
+		String sql = "DELETE FROM labelassignment WHERE label.id = ? label.startupid = ?";
+		jdbc.execute(sql, new PreparedStatementCallback<Boolean>(){
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps)
+					throws SQLException, DataAccessException{
+				ps.setInt(1, labelId);
+				ps.setLong(2, suId);
+				
+				return ps.execute();
+			}
+		
+		});
+	}
 }

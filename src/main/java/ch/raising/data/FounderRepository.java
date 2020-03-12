@@ -21,7 +21,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 		this.jdbc = jdbc;
 	}
 
-	public void deleteFounder(int id) {
+	public void deleteFounderByStartupId(int id) {
 		jdbc.execute("DELETE FROM founder WHERE founder.id = ?", new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -31,7 +31,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 		});
 	}
 
-	public void addFounder(Founder founder) {
+	public void addFounderByStartupId(Founder founder) {
 		jdbc.execute("INSERT INTO founder(id ,startupid, name, role, education) VALUES (?,?,?,?,?,?,?)", 
 				new PreparedStatementCallback<Boolean>() {
 				@Override

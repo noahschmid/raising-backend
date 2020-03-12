@@ -22,7 +22,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 		this.jdbc = jdbc;
 	}
 
-	public void deleteBoardMember(int id) {
+	public void deleteBoardMemberByStartupId(int id) {
 		jdbc.execute("DELETE FROM boardmemeber WHERE boardmember.id = ?", new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -32,7 +32,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 		});
 	}
 
-	public void addBoardMember(Boardmember bmem) {
+	public void addBoardMemberByStartupId(Boardmember bmem) {
 		jdbc.execute("INSERT INTO boardmember(id ,startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?,?)", 
 				new PreparedStatementCallback<Boolean>() {
 				@Override

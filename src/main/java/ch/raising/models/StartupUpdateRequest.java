@@ -11,6 +11,7 @@ public class StartupUpdateRequest {
 	 private int accountId;
 	 private int investmentMin = -1;
 	 private int investmentMax = -1;
+	 private int investmentPhaseId=-1;
 	 private int boosts = -1;
 	 private int numberOfFTE;
 	 private int turnover;

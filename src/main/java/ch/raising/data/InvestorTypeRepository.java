@@ -74,8 +74,14 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 			throw new Exception(e.getMessage());
 		}
 	}
+	/**
+	 * adds an entry in the investortypeassignment table with the specified ids
+	 * @param startupId
+	 * @param investorTypeId
+	 * @throws SQLException
+	 */
 
-	public void addInvestorTypeToStartup(int startupId, int investorTypeId) throws SQLException {
+	public void addInvestorTypeToStartup(int startupId, long investorTypeId) throws SQLException {
 		String sql = "INSERT INTO investortypeassignment(startupid, investortypeid) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -83,6 +89,25 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 					throws SQLException, DataAccessException {  
 					
 				ps.setInt(1, startupId);  
+				ps.setLong(2,investorTypeId);
+					
+				return ps.execute();  
+			}  
+		});  
+	}
+	/**
+	 * deletes the entry in investortypeassignment with the specified ids
+	 * @param investorTypeId
+	 * @param startupId
+	 */
+	public void deleteInvestorTypeOfStartupId(int investorTypeId, long startupId) {
+		String sql = "DELETE FROM investortypeassignment(startupid, invetortypeid) VALUES (?, ?)";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+					
+				ps.setInt(1, investorTypeId);  
 				ps.setInt(2,investorTypeId);
 					
 				return ps.execute();  

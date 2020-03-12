@@ -202,4 +202,80 @@ public class AccountService implements UserDetailsService {
             return ResponseEntity.status(500).body(new ErrorResponse("Error updating password", e));
         }
     }
+
+	public ResponseEntity<?> addCountryToAccountById(long countryId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> deleteCountryFromAccountById(long countryId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> addContinentToAccountById(long continentId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> deletContinentFromAccountById(long continentId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> addSupportToAccountById(long supportId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	public ResponseEntity<?> deleteContinentFromAccountById(long supportId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> deleteSupportFromAccountById(long supportId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> addIndustryToAccountById(long industryId) {
+		try {
+			
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	
+
+	
 }

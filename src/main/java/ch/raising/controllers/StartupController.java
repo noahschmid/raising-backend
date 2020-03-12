@@ -67,7 +67,7 @@ public class StartupController {
 	@DeleteMapping("/contact/{id}")
 	public ResponseEntity<?> deleteContact(@PathVariable int id){
 		//TODO check if the contact is part of the startup
-		return startupService.deleteContact(id);
+		return startupService.deleteContactByStartupId(id);
 	}
 	/**
 	 * Add a contact to a startup
@@ -76,7 +76,7 @@ public class StartupController {
 	 */
 	@PostMapping("/contact")
 	public ResponseEntity<?> addContact(@RequestBody Contact contact){
-		return startupService.addContact(contact);
+		return startupService.addContactByStartupId(contact);
 	}
 	/**
 	 * Deletes a boardmember specified by id.
@@ -85,7 +85,7 @@ public class StartupController {
 	 */
 	@DeleteMapping("/boardmemeber/{id}")
 	public ResponseEntity<?> deleteBoardmember(@PathVariable int id){
-		return startupService.deleteBoardmember(id);
+		return startupService.deleteBoardmemberByStartupId(id);
 	}
 	/**
 	 * Add a boardmember to a startup
@@ -94,7 +94,7 @@ public class StartupController {
 	 */
 	@PostMapping("/boardmember")
 	public ResponseEntity<?> addBoardmemeber(Boardmember bmem){
-		return startupService.addBoardmember(bmem);
+		return startupService.addBoardmemberByStartupId(bmem);
 	}
 	/**
 	 * Deletes a founder specified by id.
@@ -103,15 +103,54 @@ public class StartupController {
 	 */
 	@DeleteMapping("/founder/{id}")
 	public ResponseEntity<?> deleteFounder(@PathVariable int id){
-		return startupService.deleteFounder(id);
+		return startupService.deleteFounderByStartupId(id);
 	}
 	/**
 	 * Add a founder to a startup
 	 * @param contact to be added
 	 * @return a response with a code
 	 */
-	@PostMapping("/fouder")
+	@PostMapping("/founder")
 	public ResponseEntity<?> addFounder(Founder founder){
-		return startupService.addFounder(founder);
+		return startupService.addFounderByStartupId(founder);
 	}
+	/**
+	 * Deletes a label specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@DeleteMapping("/label/{id}")
+	public ResponseEntity<?> deleteLabel(@PathVariable int id){
+		return startupService.deleteLabelByStartupId(id);
+	}
+	/**
+	 * Add a label to a startup
+	 * @param contact to be added
+	 * @return a response with a code
+	 */
+	@PostMapping("/label/{id}")
+	public ResponseEntity<?> addLabel(int id){
+		return startupService.addLabelByStartupId(id);
+	}
+	
+	/**
+	 * Deletes a founder specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@DeleteMapping("/investmenttype/{id}")
+	public ResponseEntity<?> deleteInvestmentPhase(@PathVariable int id){
+		return startupService.deleteInvestorTypeByStartupId(id);
+	}
+	/**
+	 * Add a founder to a startup
+	 * @param contact to be added
+	 * @return a response with a code
+	 */
+	@PostMapping("/investmenttype/{id}")
+	public ResponseEntity<?> addInvestmentphase(int id){
+		return startupService.addInvestorTypeByStartupId(id);
+	}
+	
+	
 }

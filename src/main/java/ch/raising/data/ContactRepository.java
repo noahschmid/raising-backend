@@ -30,7 +30,7 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 	 * 
 	 * @param id
 	 */
-	public void deleteContactById(int id) {
+	public void deleteContactByIdByStartupId(int id) {
 		jdbc.execute("DELETE FROM contact WHERE id = ?", new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -41,7 +41,7 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 
 	}
 
-	public void addContact(Contact contact) {
+	public void addContactByStartupId(Contact contact) {
 		jdbc.execute("INSERT INTO contact(id, startupid, name, role, email, phone) VALUES (?,?,?,?,?,?)",
 				new PreparedStatementCallback<Boolean>() {
 					@Override

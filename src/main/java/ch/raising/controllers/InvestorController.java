@@ -54,4 +54,24 @@ public class InvestorController {
     public ResponseEntity<?> addInvestor(@RequestBody Investor investor) {
         return investorService.addInvestor(investor);
     }
+    /**
+     * deletes the investmentphase of investor
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/investmentphase/{id}")
+    public ResponseEntity<?> deleteInvestmentphaseByInvestorId(@PathVariable long id){
+    	return investorService.deleteInvestmentPhaseByIvestorId(id);
+    }
+    
+    /**
+     * adds investmentphase to investor
+     * @param id
+     * @return
+     */
+    
+    @PostMapping("/investmentphase/{id}")
+    public ResponseEntity<?> addInvestmentphaseByInvestorId(@PathVariable long id){
+    		return investorService.addInvestmentPhaseByIvestorId(id);
+    	}
 }

@@ -54,6 +54,7 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
             update.addField(req.getDescription(), "description");
             update.addField(req.getInvestmentMax(), "investmentMax");
             update.addField(req.getInvestmentMin(), "investmentMin");
+            update.addField(req.getInvestmentPhaseId(), "investmentPhaseId");
             update.addField(req.getBoosts(), "boosts");
             update.addField(req.getNumberOfFTE(), "numberoffte");
             update.addField(req.getTurnover(), "turnover");
