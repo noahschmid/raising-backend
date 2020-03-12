@@ -1,6 +1,5 @@
-CREATE TABLE resetCodes (
-    accountId integer references account(id),
-    code varchar,
+CREATE TABLE resetCode (
+    accountId integer REFERENCES account(id)  ON DELETE CASCADE,
+    code varchar UNIQUE,
     expiresAt timestamp,
-    attemptsLeft int NOT NULL DEFAULT(3),
     PRIMARY KEY (accountId, code));

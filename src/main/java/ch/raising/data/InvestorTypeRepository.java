@@ -28,7 +28,7 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @param id id of the desired investor type
 	 * @return instance of the found investor type
 	 */
-	public InvestorType find(int id) {
+	public InvestorType find(long id) {
 		return jdbc.queryForObject("SELECT * FROM investorType WHERE id = ?", new Object[] { id }, this::mapRowToInvestorType);
 	}
 
@@ -37,7 +37,7 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @param startupId id of the desired startup
 	 * @return list of the found investor types
 	 */
-	public List<InvestorType> findByStartupId(int startupId) {
+	public List<InvestorType> findByStartupId(long startupId) {
 		return jdbc.query("SELECT * FROM investorType INNER JOIN investorTypeAssignment " +
 						"ON investorType.id = investorTypeAssignment.investorTypeId " +
 						"WHERE startupId = ?", new Object[] { startupId }, 
@@ -53,7 +53,7 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @throws SQLException
 	 */
 	private InvestorType mapRowToInvestorType(ResultSet rs, int rowNum) throws SQLException {
-		return new InvestorType(rs.getInt("id"), 
+		return new InvestorType(rs.getLong("id"), 
             rs.getString("name"),
             rs.getString("description"));
 	}
@@ -63,7 +63,7 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @param id the id of the industry to update
 	 * @param req request containing fields to update
 	 */
-	public void update(int id, InvestorType req) throws Exception {
+	public void update(long id, InvestorType req) throws Exception {
 		try {
 			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investorType", id, this);
 			updateQuery.setJdbc(jdbc);
@@ -81,14 +81,14 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @throws SQLException
 	 */
 
-	public void addInvestorTypeToStartup(int startupId, long investorTypeId) throws SQLException {
+	public void addInvestorTypeToStartup(long startupId, long investorTypeId) throws SQLException {
 		String sql = "INSERT INTO investortypeassignment(startupid, investortypeid) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
 			public Boolean doInPreparedStatement(PreparedStatement ps)  
 					throws SQLException, DataAccessException {  
 					
-				ps.setInt(1, startupId);  
+				ps.setLong(1, startupId);  
 				ps.setLong(2,investorTypeId);
 					
 				return ps.execute();  
@@ -100,15 +100,15 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @param investorTypeId
 	 * @param startupId
 	 */
-	public void deleteInvestorTypeOfStartupId(int investorTypeId, long startupId) {
+	public void deleteInvestorTypeOfStartupId(long investorTypeId, long startupId) {
 		String sql = "DELETE FROM investortypeassignment(startupid, invetortypeid) VALUES (?, ?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
 			public Boolean doInPreparedStatement(PreparedStatement ps)  
 					throws SQLException, DataAccessException {  
-					
-				ps.setInt(1, investorTypeId);  
-				ps.setInt(2,investorTypeId);
+
+				ps.setLong(1, investorTypeId);  
+				ps.setLong(2,investorTypeId);
 					
 				return ps.execute();  
 			}  

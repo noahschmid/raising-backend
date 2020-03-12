@@ -30,11 +30,11 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 	 * 
 	 * @param id
 	 */
-	public void deleteContactByIdByStartupId(int id) {
+	public void deleteContactByIdByStartupId(long id) {
 		jdbc.execute("DELETE FROM contact WHERE id = ?", new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setInt(1, id);
+				ps.setLong(1, id);
 				return ps.execute();
 			}
 		});
@@ -47,8 +47,8 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 					@Override
 					public Boolean doInPreparedStatement(PreparedStatement ps)
 							throws SQLException, DataAccessException {
-						ps.setInt(1, contact.getId());
-						ps.setInt(2, contact.getStartupId());
+						ps.setLong(1, contact.getId());
+						ps.setLong(2, contact.getStartupId());
 						ps.setString(3, contact.getName());
 						ps.setString(4,  contact.getRole());
 						ps.setString(5, contact.getEmail());
@@ -59,18 +59,18 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 	}
 
 	@Override
-	public int getStartupIdOfTableById(int contactId) {
+	public long getStartupIdOfTableById(long contactId) {
 		return jdbc.queryForObject("SELECT startupid FROM contact WHERE id = ?", new Object[] {contactId}, this::mapRowToId);
 	}
 
 	@Override
-	public Contact find(int id) {
+	public Contact find(long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void update(int id, UpdateQueryBuilder updateRequest) throws Exception {
+	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
@@ -82,7 +82,7 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 	}
 
 	@Override
-	public void deleteEntry(int id) {
+	public void deleteEntry(long id) {
 		// TODO Auto-generated method stub
 		
 	}

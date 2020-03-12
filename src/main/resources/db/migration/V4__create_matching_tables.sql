@@ -1,14 +1,14 @@
 CREATE TABLE relationship (
-    id serial PRIMARY KEY,
-    startupId int REFERENCES startup(id),
-    investorId int REFERENCES investor(id),
-    state varchar,
-    matchingScore int
+    id bigserial PRIMARY KEY,
+    startupId int REFERENCES startup(accountId)  ON DELETE CASCADE,
+    investorId int REFERENCES investor(accountId)  ON DELETE CASCADE,
+    state varchar NOT NULL,
+    matchingScore int NOT NULL
 );
 
 CREATE TABLE history (
-    id serial PRIMARY KEY,
-    relationshipId int REFERENCES relationship(id),
-    action varchar,
-    timestamp timestamp
+    id bigserial PRIMARY KEY,
+    relationshipId int REFERENCES relationship(id)  ON DELETE CASCADE,
+    action varchar NOT NULL,
+    timestamp timestamp NOT NULL
 );

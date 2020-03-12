@@ -1,17 +1,18 @@
 package ch.raising.data;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Founder;
 import ch.raising.utils.UpdateQueryBuilder;
 
+@Repository
 public class FounderRepository implements IAdditionalInformationRepository<Founder, UpdateQueryBuilder> {
 	
 	@Autowired
@@ -21,11 +22,11 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 		this.jdbc = jdbc;
 	}
 
-	public void deleteFounderByStartupId(int id) {
+	public void deleteFounderByStartupId(long id) {
 		jdbc.execute("DELETE FROM founder WHERE founder.id = ?", new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setInt(1, id);
+				ps.setLong(1, id);
 				return ps.execute();
 			}
 		});
@@ -37,8 +38,8 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps)
 						throws SQLException, DataAccessException {
-					ps.setInt(1, founder.getId());
-					ps.setInt(2, founder.getStartupId());
+					ps.setLong(1, founder.getId());
+					ps.setLong(2, founder.getStartupId());
 					ps.setString(3, founder.getName());
 					ps.setString(4, founder.getRole());
 					ps.setString(5, founder.getEducation());
@@ -49,18 +50,18 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	}
 
 	@Override
-	public int getStartupIdOfTableById(int founderId) {
+	public long getStartupIdOfTableById(long founderId) {
 		return jdbc.queryForObject("SELECT startupid FROM founder WHERE id = ?", new Object[] {founderId}, this::mapRowToId);
 	}
 
 	@Override
-	public Founder find(int id) {
+	public Founder find(long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void update(int id, UpdateQueryBuilder updateRequest) throws Exception {
+	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
@@ -72,7 +73,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	}
 
 	@Override
-	public void deleteEntry(int id) {
+	public void deleteEntry(long id) {
 		// TODO Auto-generated method stub
 		
 	}

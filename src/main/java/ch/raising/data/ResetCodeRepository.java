@@ -47,7 +47,7 @@ public class ResetCodeRepository {
      * @param accountId id of the account to search for
      * @return list of matching reset code entries
      */
-    public List<ResetCode> findByAccountId(int accountId) {
+    public List<ResetCode> findByAccountId(long accountId) {
         try {
             String sql = "SELECT * FROM resetCode WHERE accountId = ?";
             Object[] ps = new Object[] { accountId };
@@ -70,32 +70,10 @@ public class ResetCodeRepository {
                 @Override
                 public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 
-                    ps.setInt(1, resetCode.getAccountId());
+                    ps.setLong(1, resetCode.getAccountId());
                     ps.setString(2, resetCode.getCode());
                     ps.setTimestamp(3, new Timestamp(resetCode.getExpiresAt().getTime()));
 						
-					return ps.execute();  
-				}  
-			});  
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
-		}
-    }
-    
-    /**
-     * Decrement attemps from one code and delete all other reset codes with same code but
-     * different accountId
-     * @param code
-     */
-    public void decrementAttempsLeft(ResetCode resetCode) {
-        try {
-            String query = "UPDATE resetCode SET attempsLeft = attempsLeft - 1 WHERE code = ? AND accountId = ?";
-            jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
-                @Override
-                public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                    ps.setString(1, resetCode.getCode());
-                    ps.setInt(2, resetCode.getAccountId());	
 					return ps.execute();  
 				}  
 			});  
@@ -115,9 +93,8 @@ public class ResetCodeRepository {
     private ResetCode mapRowToResetCode(ResultSet rs, int row) throws SQLException {
         return new ResetCode( 
             rs.getString("code"), 
-            rs.getInt("accountId"), 
-            rs.getTimestamp("expiresAt"),
-            rs.getInt("attemptsLeft"));
+            rs.getLong("accountId"), 
+            rs.getTimestamp("expiresAt"));
     }
 
     /**
@@ -147,7 +124,7 @@ public class ResetCodeRepository {
      * Delete reset code by account id
      * @param accountId the account id 
      */
-	public void deleteByAccountId(int accountId) {
+	public void deleteByAccountId(long accountId) {
         try {
 			String query = "DELETE FROM resetCode WHERE accountId = ?;"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
@@ -155,7 +132,7 @@ public class ResetCodeRepository {
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
-					ps.setInt(1, accountId); 	
+					ps.setLong(1, accountId); 	
 					return ps.execute();  
 				}  
 			});  

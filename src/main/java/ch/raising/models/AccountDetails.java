@@ -37,6 +37,7 @@ public class AccountDetails implements UserDetails {
     public long getId() {
         return this.id;
     }
+    
 
     @Override
     public String getUsername() {

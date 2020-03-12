@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class AssignmentRequest {
-    private int assignmentId;
+    private long assignmentId;
 }

@@ -4,14 +4,13 @@ import lombok.Data;
 
 @Data
 public class StartupUpdateRequest {
-	
-	 private int id;
+	 private long id;
 	 private String name;
 	 private String description;
-	 private int accountId;
+	 private long accountId;
 	 private int investmentMin = -1;
 	 private int investmentMax = -1;
-	 private int investmentPhaseId=-1;
+	 private long investmentPhaseId=-1;
 	 private int boosts = -1;
 	 private int numberOfFTE;
 	 private int turnover;

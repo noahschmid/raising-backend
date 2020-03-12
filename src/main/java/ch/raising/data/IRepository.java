@@ -1,8 +1,8 @@
 package ch.raising.data;
 
 public interface IRepository<Model, UpdateRequest> {
-    public Model find(int id);
+    public Model find(long id);
     
-    public void update(int id, UpdateRequest updateRequest) throws Exception;
+    public void update(long id, UpdateRequest updateRequest) throws Exception;
 
 }

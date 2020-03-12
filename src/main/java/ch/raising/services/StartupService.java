@@ -41,6 +41,7 @@ public class StartupService {
 	@Autowired
 	private StartupRepository startupRepository;
 	
+	@Autowired
 	private ContactRepository contactRepository;
 
 	@Autowired
@@ -86,7 +87,7 @@ public class StartupService {
 		StartupProfileResponse response = new StartupProfileResponse();
 		Account account = accountRepository.find(startup.getAccountId());
 
-		List<InvestorType> types = investorTypeRepository.findByStartupId(startup.getId());
+		List<InvestorType> types = investorTypeRepository.findByStartupId(startup.getAccountId());
 
 		List<Continent> continents = continentRepository.findByAccountId(startup.getAccountId());
 		List<Country> countries = countryRepository.findByAccountId(startup.getAccountId());
@@ -100,7 +101,6 @@ public class StartupService {
 		response.setInvestmentMax(startup.getInvestmentMax());
 		response.setInvestmentMin(startup.getInvestmentMin());
 		response.setName(startup.getName());
-		response.setId(startup.getId());
 		response.setCity(startup.getCity());
 		response.setZipCode(startup.getZipCode());
 		response.setStreet(startup.getStreet());
@@ -161,7 +161,7 @@ public class StartupService {
 	 * @param request the data to update
 	 * @return response entity with status code and message
 	 */
-	public ResponseEntity<?> updateStartup(int id, StartupUpdateRequest request) {
+	public ResponseEntity<?> updateStartup(long id, StartupUpdateRequest request) {
 
 		try {
 			startupRepository.update(id, request);
@@ -178,7 +178,7 @@ public class StartupService {
 	 * @return
 	 */
 
-	public ResponseEntity<?> deleteContactByStartupId(int id) {
+	public ResponseEntity<?> deleteContactByStartupId(long id) {
 		try {
 			if(!belongsToStartup(id, contactRepository)) {
 				return ResponseEntity.status(403).body(new ErrorResponse("this contact does not belong to that startup"));
@@ -211,7 +211,7 @@ public class StartupService {
 	 * @return response with code and optional body
 	 */
 	
-	public ResponseEntity<?> deleteBoardmemberByStartupId(int id){
+	public ResponseEntity<?> deleteBoardmemberByStartupId(long id){
 		try {
 			if(!belongsToStartup(id, bmemRepository)) {
 				return ResponseEntity.status(403).body(new ErrorResponse("this contact does not belong to that startup"));
@@ -244,7 +244,7 @@ public class StartupService {
 	 * @return response with code and optional body
 	 */
 	
-	public ResponseEntity<?> deleteFounderByStartupId(int id){
+	public ResponseEntity<?> deleteFounderByStartupId(long id){
 		try {
 			if(!belongsToStartup(id, founderRepository)) {
 				return ResponseEntity.status(403).body(new ErrorResponse("this contact does not belong to that startup"));
@@ -276,7 +276,7 @@ public class StartupService {
 	 * @param labelId
 	 * @return response with code and optional body
 	 */
-	public ResponseEntity<?> deleteLabelByStartupId(int labelId){
+	public ResponseEntity<?> deleteLabelByStartupId(long labelId){
 		try {
 			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			labelRepository.deleteLabelOfStartup(labelId, accdet.getId());
@@ -291,7 +291,7 @@ public class StartupService {
 	 * @param labelId of the label a new founder
 	 * @return response with code and optional body
 	 */
-	public ResponseEntity<?> addLabelByStartupId(int labelId) {
+	public ResponseEntity<?> addLabelByStartupId(long labelId) {
 		try {
 			AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			investorTypeRepository.addInvestorTypeToStartup(labelId, accdetails.getId());
@@ -307,7 +307,7 @@ public class StartupService {
 	 * @return response with code and optional body
 	 */
 
-	public ResponseEntity<?> addInvestorTypeByStartupId(int invTypeId) {
+	public ResponseEntity<?> addInvestorTypeByStartupId(long invTypeId) {
 		try {
 			AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			investorTypeRepository.addInvestorTypeToStartup(invTypeId, accdetails.getId());
@@ -322,7 +322,7 @@ public class StartupService {
 	 * @param investortypeid
 	 * @return response with code and optional body
 	 */
-	public ResponseEntity<?> deleteInvestorTypeByStartupId(int invTypeId){
+	public ResponseEntity<?> deleteInvestorTypeByStartupId(long invTypeId){
 		try {
 			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			investorTypeRepository.deleteInvestorTypeOfStartupId(invTypeId, accdet.getId());
@@ -338,7 +338,7 @@ public class StartupService {
 	 * @param addinfRepo The sidetable repository that should check if the startup belongs to the sidetable entry with given id
 	 * @return
 	 */
-	private boolean belongsToStartup(int sideTableEntryId, IAdditionalInformationRepository<?, UpdateQueryBuilder> addinfRepo) {
+	private boolean belongsToStartup(long sideTableEntryId, IAdditionalInformationRepository<?, UpdateQueryBuilder> addinfRepo) {
 		AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return accdetails.getId() == addinfRepo.getStartupIdOfTableById(sideTableEntryId);
 	}

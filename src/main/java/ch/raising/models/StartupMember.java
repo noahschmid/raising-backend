@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class StartupMember {
-	private int id;
-	private int startupId;
+	private long id;
+	private long startupId;
 	private String name;
 }

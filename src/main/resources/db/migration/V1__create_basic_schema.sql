@@ -1,103 +1,111 @@
 CREATE TABLE account (
-	id serial PRIMARY KEY,
+	id bigserial PRIMARY KEY,
 	username VARCHAR(50) NOT NULL UNIQUE,
 	password VARCHAR(100) NOT NULL,
-	roles VARCHAR NOT NULL DEFAULT('ROLE_USER')
+	roles VARCHAR NOT NULL DEFAULT('ROLE_USER'),
+  emailhash VARCHAR NOT NULL
 );
 
 CREATE TABLE investorType (
-  id serial PRIMARY KEY,
-  name varchar NOT NULL,
+  id bigserial PRIMARY KEY,
+  name varchar UNIQUE NOT NULL,
   description varchar
 );
 
+CREATE TABLE investmentPhase (
+  id bigserial PRIMARY KEY,
+  name varchar UNIQUE NOT NULL
+);
+
 CREATE TABLE investor (
-  id serial PRIMARY KEY,
-  accountId int REFERENCES account(id),
+  accountId int PRIMARY KEY REFERENCES account(id) ON DELETE CASCADE,
+  name varchar,
+  description varchar,
   investmentMin int,
   investmentMax int,
-  investorTypeId int REFERENCES investorType(id)
+  investorTypeId int REFERENCES investorType(id) ON DELETE CASCADE
 );
 
 CREATE TABLE startup (
-  id serial PRIMARY KEY,
-  accountId int REFERENCES account(id),
+  accountId int PRIMARY KEY REFERENCES account(id) ON DELETE CASCADE,
   name varchar NOT NULL,
-  investmentMin int,
-  investmentMax int,
-  investmentPhase int,
-  boosts int
+  investmentMin int DEFAULT 0,
+  investmentMax int DEFAULT 0,
+  investmentPhaseId int REFERENCES investmentPhase(id)  ON DELETE CASCADE,
+  boosts int DEFAULT 0,
+  numberOfFTE int,
+  turnover int,
+  street varchar,
+  city varchar,
+  website varchar, 
+  breakevenYear int,
+  zipCode int
 );
 
 CREATE TABLE investorTypeAssignment (
-  id serial PRIMARY KEY,
-  investorTypeId int REFERENCES investorType(id),
-  startupId int REFERENCES startup(id)
+  id bigserial PRIMARY KEY,
+  investorTypeId int REFERENCES investorType(id) ON DELETE CASCADE,
+  startupId int REFERENCES startup(accountId) ON DELETE CASCADE
 );
 
 CREATE TABLE label (
-  id serial PRIMARY KEY,
-  name varchar NOT NULL,
+  id bigserial PRIMARY KEY,
+  name varchar UNIQUE NOT NULL,
   description varchar
 );
 
 CREATE TABLE labelAssignment (
-  id serial PRIMARY KEY,
-  startupId int REFERENCES startup(id),
-  labelId int REFERENCES label(id)
+  id bigserial PRIMARY KEY,
+  startupId int REFERENCES startup(accountId) ON DELETE CASCADE,
+  labelId int REFERENCES label(id) ON DELETE CASCADE
 );
 
 CREATE TABLE country (
-  id serial PRIMARY KEY,
-  name varchar NOT NULL
+  id bigserial PRIMARY KEY,
+  name varchar UNIQUE NOT NULL
 );
 
 CREATE TABLE continent (
-  id serial PRIMARY KEY,
-  name varchar NOT NULL
-);
-
-CREATE TABLE investmentPhase (
-  id serial PRIMARY KEY,
-  name varchar NOT NULL
+  id bigserial PRIMARY KEY,
+  name varchar UNIQUE NOT NULL
 );
 
 CREATE TABLE investmentPhaseAssignment (
-  id serial PRIMARY KEY,
-  investorId int REFERENCES investor(id),
-  investmentPhaseId int REFERENCES investmentPhase(id)
+  id bigserial PRIMARY KEY,
+  investorId int REFERENCES investor(accountId) ON DELETE CASCADE,
+  investmentPhaseId int REFERENCES investmentPhase(id) ON DELETE CASCADE
 );
 
-CREATE TABLE supervisionType (
-  id serial PRIMARY KEY,
-  name varchar NOT NULL
+CREATE TABLE support (
+  id bigserial PRIMARY KEY,
+  name varchar UNIQUE NOT NULL
 );
 
-CREATE TABLE supervisionTypeAssignment (
-  id serial PRIMARY KEY,
-  accountId int REFERENCES account(id),
-  supervisionTypeId int REFERENCES supervisionType(id)
+CREATE TABLE supportAssignment (
+  id bigserial PRIMARY KEY,
+  accountId int REFERENCES account(id) ON DELETE CASCADE,
+  supportId int REFERENCES support(id) ON DELETE CASCADE
 );
 
 CREATE TABLE continentAssignment (
-  id serial PRIMARY KEY,
-  accountId int REFERENCES account(id),
-  continentId int REFERENCES continent(id)
+  id bigserial PRIMARY KEY,
+  accountId int REFERENCES account(id) ON DELETE CASCADE,
+  continentId int REFERENCES continent(id) ON DELETE CASCADE
 );
 
 CREATE TABLE countryAssignment (
-  id serial PRIMARY KEY,
-  accountId int REFERENCES account(id),
-  countryId int REFERENCES country(id)
+  id bigserial PRIMARY KEY,
+  accountId int REFERENCES account(id) ON DELETE CASCADE,
+  countryId int REFERENCES country(id) ON DELETE CASCADE
 );
 
-CREATE TABLE investmentSector (
-  id serial PRIMARY KEY,
-  name varchar NOT NULL
+CREATE TABLE industry (
+  id bigserial PRIMARY KEY,
+  name varchar UNIQUE NOT NULL
 );
 
-CREATE TABLE investmentSectorAssignment (
-  id serial PRIMARY KEY,
-  investmentSectorId int REFERENCES investmentSector(id),
-  accountId int REFERENCES account(id)
+CREATE TABLE industryAssignment (
+  id bigserial PRIMARY KEY,
+  industryId int REFERENCES industry(id) ON DELETE CASCADE,
+  accountId int REFERENCES account(id) ON DELETE CASCADE
 );

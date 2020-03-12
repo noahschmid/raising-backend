@@ -93,7 +93,7 @@ public class InvestorService {
         List<Continent> continents = continentRepository.findByAccountId(investor.getAccountId());
         List<Country> countries = countryRepository.findByAccountId(investor.getAccountId());
         List<Industry> industries = industryRepository.findByAccountId(investor.getAccountId());
-        List<InvestmentPhase> investmentPhases = investmentPhaseRepository.findByInvestorId(investor.getId());
+        List<InvestmentPhase> investmentPhases = investmentPhaseRepository.findByInvestorId(investor.getAccountId());
         List<Support> supports = supportRepository.findByAccountId(investor.getAccountId());
  
         response.setAccount(account);
@@ -103,7 +103,6 @@ public class InvestorService {
         response.setInvestmentMin(investor.getInvestmentMin());
         response.setName(investor.getName());
         response.setDescription(investor.getDescription());
-        response.setId(investor.getId());
 
         for(Continent cntnt : continents) {
             response.addContinent(cntnt);

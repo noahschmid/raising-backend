@@ -30,7 +30,7 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 	 * @param accountId id of the desired startup account
 	 * @return instance of the found startup
 	 */
-	public Startup find(int accountId) {
+	public Startup find(long accountId) {
         try {
             String sql = "SELECT * FROM startup WHERE accountId = ?";
             return jdbc.queryForObject(sql, new Object[] { accountId }, this::mapRowToStartup);
@@ -46,9 +46,9 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
      * @param req instance of the update request
      * @throws Exception 
      */
-    public void update(int id, StartupUpdateRequest req) throws Exception {
+    public void update(long id, StartupUpdateRequest req) throws Exception {
         try{
-            UpdateQueryBuilder update = new UpdateQueryBuilder("investor", id, this);
+            UpdateQueryBuilder update = new UpdateQueryBuilder("investor", id, this, "accountId");
             update.setJdbc(jdbc);
             update.addField(req.getName(), "name");
             update.addField(req.getDescription(), "description");
@@ -79,7 +79,7 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 	private Startup mapRowToStartup(ResultSet rs, int rowNum) throws SQLException {
         Startup startup = new Startup();
 
-        startup.setAccountId(rs.getInt("accountId"));
+        startup.setAccountId(rs.getLong("accountId"));
         startup.setInvestmentMax(rs.getInt("investmentMax"));
         startup.setInvestmentMin(rs.getInt("investmentMin"));
 		startup.setBoosts(rs.getInt("boosts"));
@@ -89,7 +89,7 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 		startup.setZipCode(rs.getString("zipCode"));
 		startup.setWebsite(rs.getString("website"));
 		startup.setStreet(rs.getString("street"));
-		startup.setInvestmentPhaseId(rs.getInt("investmentPhaseId"));
+		startup.setInvestmentPhaseId(rs.getLong("investmentPhaseId"));
 		startup.setTurnover(rs.getInt("turnover"));
 		startup.setNumberOfFTE(rs.getInt("numberOfFTE"));
 
@@ -110,7 +110,7 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
-                    ps.setInt(1,startup.getAccountId()); 
+                    ps.setLong(1,startup.getAccountId()); 
                     ps.setString(2, startup.getName());
                     ps.setString(3, startup.getCity());
                     ps.setInt(4, startup.getInvestmentMax());
@@ -121,7 +121,7 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 					ps.setInt(9, startup.getNumberOfFTE());
 					ps.setInt(10, startup.getBreakEvenYear());
 					ps.setInt(11, startup.getTurnover());
-					ps.setInt(12, startup.getInvestmentPhaseId());
+					ps.setLong(12, startup.getInvestmentPhaseId());
 
 					return ps.execute();  
 				}  

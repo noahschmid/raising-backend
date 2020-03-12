@@ -28,14 +28,14 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @param id id of the desired investment phase
 	 * @return instance of the found investment phase
 	 */
-	public InvestmentPhase find(int id) {
+	public InvestmentPhase find(long id) {
 		return jdbc.queryForObject("SELECT * FROM investmentPhase WHERE id = ?", new Object[] { id }, this::mapRowToInvestmentPhase);
 	}
 
 	/**
 	 * Find investment phases which are assigned to certain investor
 	 */
-	public List<InvestmentPhase> findByInvestorId(int id) {
+	public List<InvestmentPhase> findByInvestorId(long id) {
 		return jdbc.query("SELECT * FROM investmentPhaseAssignment INNER JOIN investmentPhase ON " +
 						   "investmentPhaseAssignment.investmentPhaseId = investmentPhase.id WHERE investorId = ?",
 						   new Object[] { id }, this::mapRowToInvestmentPhase);
@@ -49,7 +49,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @throws SQLException
 	 */
 	private InvestmentPhase mapRowToInvestmentPhase(ResultSet rs, int rowNum) throws SQLException {
-		return new InvestmentPhase(rs.getInt("id"), 
+		return new InvestmentPhase(rs.getLong("id"), 
 			rs.getString("name"));
 	}
 
@@ -58,7 +58,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @param id the id of the industry to update
 	 * @param req request containing fields to update
 	 */
-	public void update(int id, InvestmentPhase req) throws Exception {
+	public void update(long id, InvestmentPhase req) throws Exception {
 		try {
 			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investmentPhase", id, this);
 			updateQuery.setJdbc(jdbc);
@@ -92,7 +92,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	}
 
 	public void deleteInvestmentPhaseOfInvestor(long accountId, long invPhaseId) {
-		String sql = "DELETE FROM investmentphaseassignment WHERE investorid  =? AND investmentphaseid = ?";
+		String sql = "DELETE FROM investmentphaseassignment WHERE investorid  = ? AND investmentphaseid = ?";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
 			public Boolean doInPreparedStatement(PreparedStatement ps)  

@@ -26,14 +26,14 @@ public class SupportRepository implements IRepository<Support, Support> {
 	 * @param id id of the desired support instance
 	 * @return instance of the found support
 	 */
-	public Support find(int id) {
+	public Support find(long id) {
 		return jdbc.queryForObject("SELECT * FROM support WHERE id = ?", new Object[] { id }, this::mapRowToSupport);
 	}
 
 	/**
 	 * Find supports which are assigned to certain account
 	 */
-	public List<Support> findByAccountId(int id) {
+	public List<Support> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM supportAssignment INNER JOIN support ON " +
 						   "supportAssignment.supportId = support.id WHERE accountId = ?",
 						   new Object[] { id }, this::mapRowToSupport);
@@ -47,7 +47,7 @@ public class SupportRepository implements IRepository<Support, Support> {
 	 * @throws SQLException
 	 */
 	private Support mapRowToSupport(ResultSet rs, int rowNum) throws SQLException {
-		return new Support(rs.getInt("id"), 
+		return new Support(rs.getLong("id"), 
 			rs.getString("name"));
 	}
 
@@ -56,7 +56,7 @@ public class SupportRepository implements IRepository<Support, Support> {
 	 * @param id the id of the industry to update
 	 * @param req request containing fields to update
 	 */
-	public void update(int id, Support req) throws Exception {
+	public void update(long id, Support req) throws Exception {
 		try {
 			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("support", id, this);
 			updateQuery.setJdbc(jdbc);
@@ -67,7 +67,7 @@ public class SupportRepository implements IRepository<Support, Support> {
 		}
 	}
 	
-	public void addSupportToAccount(int accountId, int supportId) throws Exception {
+	public void addSupportToAccount(long accountId, long supportId) throws Exception {
 		try {
 			String query = "INSERT INTO supportAssignment(accountId, supportId) VALUES (?, ?);"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
@@ -75,8 +75,8 @@ public class SupportRepository implements IRepository<Support, Support> {
 				public Boolean doInPreparedStatement(PreparedStatement ps)  
 						throws SQLException, DataAccessException {  
 						
-					ps.setInt(1,accountId);  
-					ps.setInt(2,supportId);
+					ps.setLong(1,accountId);  
+					ps.setLong(2,supportId);
 						
 					return ps.execute();  
 				}  

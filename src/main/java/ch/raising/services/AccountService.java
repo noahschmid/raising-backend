@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,10 @@ import ch.raising.models.AccountDetails;
 import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
+import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.RegistrationRequest;
+import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
@@ -41,6 +44,9 @@ public class AccountService implements UserDetailsService {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     
@@ -72,7 +78,6 @@ public class AccountService implements UserDetailsService {
      * @return  ResponseEntity with status code and message
      */
     public void register(RegistrationRequest request) throws Error {
-        System.out.println("\n\n\n registering new account");
         if(request.getUsername() == null || request.getPassword() == null || request.getEmailHash() == null)
             throw new Error("Please provide username, email and password");
 
@@ -177,7 +182,6 @@ public class AccountService implements UserDetailsService {
         Account account = accountRepository.findByEmail(request.getEmail());
         try {
             if(account != null) {
-                System.out.println("account found");
                 String code = resetCodeUtil.createResetCode(account);
                 mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
             }
@@ -196,13 +200,14 @@ public class AccountService implements UserDetailsService {
      */
     public ResponseEntity<?> resetPassword(PasswordResetRequest request){
         try {
-            int id = resetCodeUtil.validate(request);
+            long id = resetCodeUtil.validate(request);
             if(id != -1) {
                 UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, accountRepository);
                 updateQuery.setJdbc(jdbc);
                 updateQuery.addField(encoder.encode(request.getPassword()), "password");
                 updateQuery.execute();
-                return ResponseEntity.ok().build();
+                AccountDetails userDetails = new AccountDetails(accountRepository.find(id));
+                return ResponseEntity.ok().body(new LoginResponse(jwtUtil.generateToken(userDetails), id));
             } 
             return ResponseEntity.status(500).body(new ErrorResponse("Invalid Reset Code"));
         } catch (Exception e) {

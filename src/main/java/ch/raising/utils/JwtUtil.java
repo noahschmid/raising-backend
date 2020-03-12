@@ -9,10 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import ch.raising.models.AccountDetails;
-import ch.raising.services.AccountService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,16 +23,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
     private final String SECRET_KEY = "secret";
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private AccountService accountService;
-
-    public JwtUtil(AuthenticationManager authenticationManager,
-                    AccountService accountService) {
-        this.accountService = accountService;
-        this.authenticationManager = authenticationManager;
+    public JwtUtil() {
+        super();
     }
 
     public String extractUsername(String token) {
@@ -76,7 +64,7 @@ public class JwtUtil {
             .setClaims(claims)
             .setSubject(subject)
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 365))
             .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 

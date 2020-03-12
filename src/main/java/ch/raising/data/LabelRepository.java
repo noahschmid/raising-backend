@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Contact;
 import ch.raising.models.Label;
 import ch.raising.utils.UpdateQueryBuilder;
 
+@Repository
 public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	
 	@Autowired
@@ -24,7 +26,7 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	}
 
 	@Override
-	public Label find(int id) {
+	public Label find(long id) {
 		String sql = "SELECT * FROM label WHERE id=?";
 		return jdbc.queryForObject(sql ,new Object[] {id}, this::mapRowToLabel);
 	}
@@ -38,7 +40,7 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	 * @param labelId
 	 * @param suId
 	 */
-	public void addLabelToStartup(int labelId, long suId) {
+	public void addLabelToStartup(long labelId, long suId) {
 		String sql = "INSERT INTO labelassignment(startupid, labelid) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -46,7 +48,7 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 					throws SQLException, DataAccessException {  
 					
 				ps.setLong(1, suId);  
-				ps.setInt(2, labelId);
+				ps.setLong(2, labelId);
 					
 				return ps.execute();  
 			}  
@@ -54,7 +56,7 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	}
 
 	@Override
-	public void update(int id, UpdateQueryBuilder updateRequest) throws Exception {
+	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
 		throw new Exception("not implemented");
 	}
 
@@ -63,13 +65,13 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	 * @param labelId
 	 * @param suId
 	 */
-	public void deleteLabelOfStartup(int labelId, long suId) {
+	public void deleteLabelOfStartup(long labelId, long suId) {
 		String sql = "DELETE FROM labelassignment WHERE label.id = ? label.startupid = ?";
 		jdbc.execute(sql, new PreparedStatementCallback<Boolean>(){
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps)
 					throws SQLException, DataAccessException{
-				ps.setInt(1, labelId);
+				ps.setLong(1, labelId);
 				ps.setLong(2, suId);
 				
 				return ps.execute();

@@ -10,9 +10,9 @@ import java.sql.SQLException;
  */
 public interface IAdditionalInformationRepository<Model, UpdateQueryBuilder> extends IRepository<Model, UpdateQueryBuilder> {
 	
-	public int getStartupIdOfTableById(int id);
+	public long getStartupIdOfTableById(long id);
 	public void addEntry(Model sumem);
-	public void deleteEntry(int id);
+	public void deleteEntry(long id);
 	
 	public default int mapRowToId(ResultSet rs, int row) throws SQLException {
 		return rs.getInt("startupId");

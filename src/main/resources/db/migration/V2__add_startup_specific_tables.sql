@@ -1,23 +1,24 @@
 CREATE TABLE contact (
-	id serial PRIMARY KEY,
-	startupId int REFERENCES startup(id),
-	name varchar,
-	role varchar,
+	id bigserial PRIMARY KEY,
+	startupId int REFERENCES startup(accountId)  ON DELETE CASCADE,
+	name varchar NOT NULL,
+	role varchar NOT NULL,
 	email varchar,
 	phone varchar
 );
 CREATE TABLE boardmember (
-	id serial PRIMARY KEY,
-	startupId int REFERENCES startup(id),
+	id bigserial PRIMARY KEY,
+	startupId int REFERENCES startup(accountId)  ON DELETE CASCADE,
 	name varchar,
 	education varchar,
 	profession varchar,
 	pullDownType varchar,
 	PullDownDuration int
 );
+
 CREATE TABLE founder (
-	id serial PRIMARY KEY, 
-	startipId int REFERENCES startup(id),
+	id bigserial PRIMARY KEY, 
+	startupId int REFERENCES startup(accountId)  ON DELETE CASCADE,
 	name varchar,
 	role varchar,
 	education varchar

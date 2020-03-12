@@ -35,15 +35,15 @@ public class ResetCodeUtil {
      * @return -1 if request isnt valid, else accountId of account the request belongs to 
      * @throws Exception
      */
-    public int validate(PasswordResetRequest request) throws Exception {
+    public long validate(PasswordResetRequest request) throws Exception {
         ResetCode code = resetCodeRepository.findByCode(request.getCode());
         if(code == null)
             return -1;
 
-        if(isExpired(code)) {
-            resetCodeRepository.deleteByCode(code.getCode());
+        resetCodeRepository.deleteByCode(code.getCode());
+
+        if(isExpired(code)) 
             return -1;
-        }
 
         return code.getAccountId();
     }
@@ -54,7 +54,7 @@ public class ResetCodeUtil {
      * @return
      */
     public boolean isExpired(ResetCode code) {
-        return (code.getExpiresAt().before(new Date()) || code.getAttempsLeft() <= 0); 
+        return code.getExpiresAt().before(new Date()); 
     }
 
     /**
