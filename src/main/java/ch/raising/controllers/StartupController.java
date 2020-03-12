@@ -3,6 +3,7 @@ package ch.raising.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ch.raising.models.Boardmember;
+import ch.raising.models.Contact;
+import ch.raising.models.Founder;
 import ch.raising.models.InvestorUpdateRequest;
 import ch.raising.models.Startup;
 import ch.raising.models.StartupUpdateRequest;
@@ -56,9 +60,58 @@ public class StartupController {
 	public ResponseEntity<?> addStartup(@RequestBody Startup startup) {
 		return startupService.addStartup(startup);
 	}
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteStartup(@PathVariable int id){
-		return startupService.deleteStartup(id);
+	/**
+	 * Deletes a contact specified by id.
+	 * @param id of the contact to be deleted
+	 */
+	@DeleteMapping("/contact/{id}")
+	public ResponseEntity<?> deleteContact(@PathVariable int id){
+		//TODO check if the contact is part of the startup
+		return startupService.deleteContact(id);
+	}
+	/**
+	 * Add a contact to a startup
+	 * @param contact to be added
+	 * @return a response with a code
+	 */
+	@PostMapping("/contact")
+	public ResponseEntity<?> addContact(@RequestBody Contact contact){
+		return startupService.addContact(contact);
+	}
+	/**
+	 * Deletes a boardmember specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@DeleteMapping("/boardmemeber/{id}")
+	public ResponseEntity<?> deleteBoardmember(@PathVariable int id){
+		return startupService.deleteBoardmember(id);
+	}
+	/**
+	 * Add a boardmember to a startup
+	 * @param contact to be added
+	 * @return a response with a code
+	 */
+	@PostMapping("/boardmember")
+	public ResponseEntity<?> addBoardmemeber(Boardmember bmem){
+		return startupService.addBoardmember(bmem);
+	}
+	/**
+	 * Deletes a founder specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@DeleteMapping("/founder/{id}")
+	public ResponseEntity<?> deleteFounder(@PathVariable int id){
+		return startupService.deleteFounder(id);
+	}
+	/**
+	 * Add a founder to a startup
+	 * @param contact to be added
+	 * @return a response with a code
+	 */
+	@PostMapping("/fouder")
+	public ResponseEntity<?> addFounder(Founder founder){
+		return startupService.addFounder(founder);
 	}
 }

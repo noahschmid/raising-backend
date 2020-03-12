@@ -54,8 +54,4 @@ public class InvestorController {
     public ResponseEntity<?> addInvestor(@RequestBody Investor investor) {
         return investorService.addInvestor(investor);
     }
-    @DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteStartup(@PathVariable int id){
-		return investorService.deleteInvestor(id);
-	}
 }

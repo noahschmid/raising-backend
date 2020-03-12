@@ -118,8 +118,4 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 		}
 	}
 
-	public ResponseEntity<?> deleteInvestorById(int id) {
-		assert 1 == 0;
-		return null;
-	}
 }

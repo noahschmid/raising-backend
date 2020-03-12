@@ -160,13 +160,4 @@ public class InvestorService {
             investor.getInvestmentMax() == -1 || investor.getInvestmentMin() == -1 || 
             investor.getInvestorTypeId() == -1 || investor.getName() == null;
 	}
-
-	/**
-	 * Deletes an investor specified by id
-	 * @param id of investor to be deleted
-	 * @return a responsentity with statuscode 
-	 */
-	public ResponseEntity<?> deleteInvestor(int id) {
-		return investorRepository.deleteInvestorById(id);
-	}
 }

@@ -1,14 +1,14 @@
 package ch.raising.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class Boardmember {
-	private int id;
-	private int startupId;
-	private String name;
+@EqualsAndHashCode(callSuper=false)
+
+public class Boardmember extends StartupMember {
 	private String education;
 	private String profession;
-	private String roleInStartup;
-	private int joinedIn;
+	private String pullDownType;
+	private int pullDownDuration;
 }
