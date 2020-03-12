@@ -26,6 +26,7 @@ import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
+import ch.raising.data.CountryRepository;
 
 @Service
 public class AccountService implements UserDetailsService {
@@ -42,23 +43,29 @@ public class AccountService implements UserDetailsService {
     private JdbcTemplate jdbc;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    
+    @Autowired
+    private CountryRepository countryRepository;
 
+    
+
+    public AccountService(AccountRepository accountRepository, 
+                        MailUtil mailUtil,
+                        ResetCodeUtil resetCodeUtil,
+                        JdbcTemplate jdbc, CountryRepository countryRepository) {
+        this.accountRepository = accountRepository;
+        this.mailUtil = mailUtil;
+        this.resetCodeUtil = resetCodeUtil;
+        this.jdbc = jdbc;
+        this.countryRepository = countryRepository;
+    }
+    
     @Override
     public AccountDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByUsername(username);
         return new AccountDetails(account);
     }
-
-    public AccountService(AccountRepository accountRepository, 
-                        MailUtil mailUtil,
-                        ResetCodeUtil resetCodeUtil,
-                        JdbcTemplate jdbc) {
-        this.accountRepository = accountRepository;
-        this.mailUtil = mailUtil;
-        this.resetCodeUtil = resetCodeUtil;
-        this.jdbc = jdbc;
-    }
-
+    
     /**
      * Register new user account
      * @param  request account to register
@@ -205,7 +212,8 @@ public class AccountService implements UserDetailsService {
 
 	public ResponseEntity<?> addCountryToAccountById(long countryId) {
 		try {
-			
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			countryRepository.addCountryToAccountById(countryId, accDet.getId());
 			return ResponseEntity.ok().build();
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -214,7 +222,8 @@ public class AccountService implements UserDetailsService {
 
 	public ResponseEntity<?> deleteCountryFromAccountById(long countryId) {
 		try {
-			
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			countryRepository.deleteCountryFromAccountById(countryId, accDet.getId());
 			return ResponseEntity.ok().build();
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));

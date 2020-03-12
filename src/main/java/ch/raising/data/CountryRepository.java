@@ -16,15 +16,16 @@ import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class CountryRepository implements IRepository<Country, Country> {
-    private JdbcTemplate jdbc;
+	private JdbcTemplate jdbc;
 
-    @Autowired
-    public CountryRepository(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	@Autowired
+	public CountryRepository(JdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+	}
 
-    /**
+	/**
 	 * Find country by id
+	 * 
 	 * @param id id of the desired country
 	 * @return instance of the found country
 	 */
@@ -36,26 +37,28 @@ public class CountryRepository implements IRepository<Country, Country> {
 	 * Find countries which are assigned to certain account
 	 */
 	public List<Country> findByAccountId(int accountId) {
-		return jdbc.query("SELECT * FROM countryAssignment INNER JOIN country ON " +
-						   "countryAssignment.countryId = country.id WHERE accountId = ?",
-						   new Object[] { accountId }, this::mapRowToCountry);
+		return jdbc.query(
+				"SELECT * FROM countryAssignment INNER JOIN country ON "
+						+ "countryAssignment.countryId = country.id WHERE accountId = ?",
+				new Object[] { accountId }, this::mapRowToCountry);
 	}
 
-    /**
+	/**
 	 * Map a row of a result set to an Country instance
-	 * @param rs result set of an sql query
+	 * 
+	 * @param rs     result set of an sql query
 	 * @param rowNum row number in the result set
 	 * @return Country instance of the result set
 	 * @throws SQLException
 	 */
 	private Country mapRowToCountry(ResultSet rs, int rowNum) throws SQLException {
-		return new Country(rs.getInt("id"), 
-			rs.getString("name"));
+		return new Country(rs.getInt("id"), rs.getString("name"));
 	}
 
 	/**
 	 * Update country
-	 * @param id the id of the country to update
+	 * 
+	 * @param id  the id of the country to update
 	 * @param req request containing fields to update
 	 */
 	public void update(int id, Country req) throws Exception {
@@ -64,33 +67,40 @@ public class CountryRepository implements IRepository<Country, Country> {
 			updateQuery.setJdbc(jdbc);
 			updateQuery.addField(req.getName(), "name");
 			updateQuery.execute();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
 	}
 
 	/**
 	 * Add country to account
+	 * 
 	 * @param accountId id of the account
 	 * @param countryId id of the country
 	 */
 	public void addToAccount(int accountId, int countryId) throws Exception {
-		try {
-			String query = "INSERT INTO countryAssignment(accountId, countryId) VALUES (?, ?);"; 
-			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
-				@Override  
-				public Boolean doInPreparedStatement(PreparedStatement ps)  
-						throws SQLException, DataAccessException {  
-						
-					ps.setInt(1,accountId);  
-					ps.setInt(2,countryId);
-						
-					return ps.execute();  
-				}  
-			});  
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
-		}
+
+		String query = "INSERT INTO countryAssignment(accountId, countryId) VALUES (?, ?);";
+		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+
+				ps.setInt(1, accountId);
+				ps.setInt(2, countryId);
+
+				return ps.execute();
+			}
+		});
+
+	}
+
+	public void addCountryToAccountById(long countryId, long id) {
+		String sql = "INSERT INTO countryassingment";
+		jdbc.execute(sql);
+	}
+
+	public void deleteCountryFromAccountById(long countryId, long id) {
+		// TODO Auto-generated method stub
+
 	}
 }
