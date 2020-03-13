@@ -120,6 +120,6 @@ public class CountryRepository implements IRepository<Country, Country> {
 	 */
 	
 	public List<Country> getAllCountries() {
-		return jdbc.query("SELECT * FROM countries", this::mapRowToCountry);
+		return jdbc.query("SELECT * FROM country", this::mapRowToCountry);
 	}
 }

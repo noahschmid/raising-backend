@@ -112,6 +112,6 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	}
 
 	public List<Industry> getAllIndustries() {
-		return jdbc.query("SELECT * FROM industy", this::mapRowToIndustry);
+		return jdbc.query("SELECT * FROM industry", this::mapRowToIndustry);
 	}
 }

@@ -32,7 +32,7 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	 * @return a List of all labels
 	 */
 	public List<Label> getAllLabels() {
-		String sql = "SELECT * FROM label";
+		String sql = "SELECT * FROM label;";
 		return jdbc.query(sql, this::mapRowToLabel);
 	}
 
@@ -43,7 +43,8 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 	}
 	
 	private Label mapRowToLabel(ResultSet rs, int row) throws SQLException {
-		return new Label(rs.getInt("id"), rs.getString("name"), rs.getString("descritpion"));
+		return Label.builder().id(rs.getLong("id")).name(rs.getString("name"))
+				.description(rs.getString("description")).build();
 	}
 	
 	/**

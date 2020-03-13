@@ -107,6 +107,6 @@ public class SupportRepository implements IRepository<Support, Support> {
 	}
 
 	public List<Support> getAllSupports() {
-		return jdbc.query("SELECT * FROM supports", this::mapRowToSupport);
+		return jdbc.query("SELECT * FROM support", this::mapRowToSupport);
 	}
 }

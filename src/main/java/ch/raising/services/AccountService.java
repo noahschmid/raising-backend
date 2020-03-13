@@ -101,7 +101,6 @@ public class AccountService implements UserDetailsService {
         if(accountRepository.usernameExists(request.getUsername().toLowerCase()))
             throw new Error("Username already exists");
 
-        System.out.println(request.getEmail());
         if(accountRepository.findByEmail(request.getEmail()) != null)
             throw new Error("Account with same email exists");
 
