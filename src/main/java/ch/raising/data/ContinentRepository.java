@@ -112,4 +112,8 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 			}
 		});
 	}
+
+	public Object getAllContinents() {
+		return jdbc.query("SELECT * FROM continent", this::mapRowToContinent);
+	}
 }

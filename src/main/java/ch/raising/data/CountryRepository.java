@@ -113,4 +113,13 @@ public class CountryRepository implements IRepository<Country, Country> {
 			}
 		});
 	}
+	
+	/**
+	 * 
+	 * @return all countries in the countrytable
+	 */
+	
+	public List<Country> getAllCountries() {
+		return jdbc.query("SELECT * FROM countries", this::mapRowToCountry);
+	}
 }

@@ -7,25 +7,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.raising.services.InvestmentPhaseService;
 import ch.raising.services.LabelService;
+import ch.raising.services.SupportService;
 
 @Controller
-@RequestMapping("/investmentphase")
-public class InvestmentPhaseController {
+@RequestMapping("/support")
+public class SupportController {
 	
 	@Autowired
-	private InvestmentPhaseService investmentPhaseService;
+	private SupportService supportService;
 	
 	@Autowired 
-	public InvestmentPhaseController(InvestmentPhaseService investmentPhaseService) {
-		this.investmentPhaseService = investmentPhaseService;
+	public SupportController(SupportService supportService) {
+		this.supportService = supportService;
 	}
 	
 	@GetMapping
 	@ResponseBody
-	public ResponseEntity<?> getAllInvestmentphases() {
-		return investmentPhaseService.getAllinvestmentPhases();
+	public ResponseEntity<?> getAllSupports() {
+		return supportService.getAllSupports();
 	}
 	
 }

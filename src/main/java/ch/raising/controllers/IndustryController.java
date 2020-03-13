@@ -7,24 +7,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.raising.services.LabelService;
+import ch.raising.services.IndustryService;
 
 @Controller
-@RequestMapping("/label")
-public class LabelController {
+@RequestMapping("/industry")
+public class IndustryController {
 	
 	@Autowired
-	private LabelService labelService;
+	private IndustryService industryService;
 	
 	@Autowired 
-	public LabelController(LabelService labelservice) {
-		this.labelService = labelservice;
+	public IndustryController(IndustryService industryService) {
+		this.industryService = industryService;
 	}
 	
 	@GetMapping
 	@ResponseBody
 	public ResponseEntity<?> getAllLabel() {
-		return labelService.getAllLabels();
+		return industryService.getAllIndustries();
 	}
 	
 }

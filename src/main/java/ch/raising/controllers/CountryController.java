@@ -7,24 +7,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.raising.services.LabelService;
+import ch.raising.services.CountryService;
 
 @Controller
-@RequestMapping("/label")
-public class LabelController {
+@RequestMapping("/country")
+public class CountryController {
 	
 	@Autowired
-	private LabelService labelService;
+	private CountryService countryService;
 	
 	@Autowired 
-	public LabelController(LabelService labelservice) {
-		this.labelService = labelservice;
+	public CountryController(CountryService countryService) {
+		this.countryService = countryService;
 	}
 	
 	@GetMapping
 	@ResponseBody
-	public ResponseEntity<?> getAllLabel() {
-		return labelService.getAllLabels();
+	public ResponseEntity<?> getAllCountries() {
+		return countryService.getAllCountries();
 	}
 	
 }

@@ -7,25 +7,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.raising.services.InvestmentPhaseService;
+import ch.raising.services.ContinentService;
 import ch.raising.services.LabelService;
 
 @Controller
-@RequestMapping("/investmentphase")
-public class InvestmentPhaseController {
+@RequestMapping("/continent")
+public class ContinentController {
 	
 	@Autowired
-	private InvestmentPhaseService investmentPhaseService;
+	private ContinentService continentService;
 	
 	@Autowired 
-	public InvestmentPhaseController(InvestmentPhaseService investmentPhaseService) {
-		this.investmentPhaseService = investmentPhaseService;
+	public ContinentController(ContinentService continentService) {
+		this.continentService = continentService;
 	}
 	
 	@GetMapping
 	@ResponseBody
-	public ResponseEntity<?> getAllInvestmentphases() {
-		return investmentPhaseService.getAllinvestmentPhases();
+	public ResponseEntity<?> getAllLabel() {
+		return continentService.getAllContinents();
 	}
 	
 }
