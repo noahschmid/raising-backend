@@ -29,7 +29,7 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @return instance of the found investor type
 	 */
 	public InvestorType find(long id) {
-		return jdbc.queryForObject("SELECT * FROM investorType WHERE id = ?", new Object[] { id }, this::mapRowToInvestorType);
+		return jdbc.queryForObject("SELECT * FROM investorType WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 		return jdbc.query("SELECT * FROM investorType INNER JOIN investorTypeAssignment " +
 						"ON investorType.id = investorTypeAssignment.investorTypeId " +
 						"WHERE startupId = ?", new Object[] { startupId }, 
-						this::mapRowToInvestorType);
+						this::mapRowToModel);
 	}
 
 
@@ -52,7 +52,8 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @return InvestorType instance of the result set
 	 * @throws SQLException
 	 */
-	private InvestorType mapRowToInvestorType(ResultSet rs, int rowNum) throws SQLException {
+	@Override
+	public InvestorType mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return new InvestorType(rs.getLong("id"), 
             rs.getString("name"),
             rs.getString("description"));
@@ -81,7 +82,7 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	 * @throws SQLException
 	 */
 
-	public void addInvestorTypeToStartup(long startupId, long investorTypeId) throws SQLException {
+	public void addInvestorTypeToStartup(long startupId, long investorTypeId) {
 		String sql = "INSERT INTO investortypeassignment(startupid, investortypeid) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -116,7 +117,7 @@ public class InvestorTypeRepository implements IRepository<InvestorType, Investo
 	}
 
 	public Object getAllInvestorTypes() {
-		return jdbc.query("SELECT * FROM investortype", this::mapRowToInvestorType);
+		return jdbc.query("SELECT * FROM investortype", this::mapRowToModel);
 	}
 	
 }

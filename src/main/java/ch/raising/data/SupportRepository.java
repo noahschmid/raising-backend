@@ -28,7 +28,7 @@ public class SupportRepository implements IRepository<Support, Support> {
 	 * @return instance of the found support
 	 */
 	public Support find(long id) {
-		return jdbc.queryForObject("SELECT * FROM support WHERE id = ?", new Object[] { id }, this::mapRowToSupport);
+		return jdbc.queryForObject("SELECT * FROM support WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class SupportRepository implements IRepository<Support, Support> {
 		return jdbc.query(
 				"SELECT * FROM supportAssignment INNER JOIN support ON "
 						+ "supportAssignment.supportId = support.id WHERE accountId = ?",
-				new Object[] { id }, this::mapRowToSupport);
+				new Object[] { id }, this::mapRowToModel);
 	}
 
 	/**
@@ -49,7 +49,8 @@ public class SupportRepository implements IRepository<Support, Support> {
 	 * @return Support instance of the result set
 	 * @throws SQLException
 	 */
-	private Support mapRowToSupport(ResultSet rs, int rowNum) throws SQLException {
+	@Override
+	public Support mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return new Support(rs.getLong("id"), rs.getString("name"));
 	}
 
@@ -73,7 +74,7 @@ public class SupportRepository implements IRepository<Support, Support> {
 	 * @param supportId
 	 * @throws Exception
 	 */
-	public void addSupportToAccountById(long accountId, long supportId) throws Exception {
+	public void addSupportToAccountById(long accountId, long supportId) {
 		String query = "INSERT INTO supportAssignment(accountId, supportId) VALUES (?, ?);";
 		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 			@Override
@@ -107,6 +108,6 @@ public class SupportRepository implements IRepository<Support, Support> {
 	}
 
 	public List<Support> getAllSupports() {
-		return jdbc.query("SELECT * FROM support", this::mapRowToSupport);
+		return jdbc.query("SELECT * FROM support", this::mapRowToModel);
 	}
 }

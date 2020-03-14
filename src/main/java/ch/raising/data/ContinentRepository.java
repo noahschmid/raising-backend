@@ -29,7 +29,7 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	 * @return instance of the found continent
 	 */
 	public Continent find(long id) {
-		return jdbc.queryForObject("SELECT * FROM continent WHERE id = ?", new Object[] { id }, this::mapRowToContinent);
+		return jdbc.queryForObject("SELECT * FROM continent WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	public List<Continent> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM continentAssignment INNER JOIN continent ON " +
 						   "continentAssignment.continentId = continent.id WHERE accountId = ?",
-						   new Object[] { id }, this::mapRowToContinent);
+						   new Object[] { id }, this::mapRowToModel);
 	}
 
     /**
@@ -48,7 +48,8 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	 * @return Continent instance of the result set
 	 * @throws SQLException
 	 */
-	private Continent mapRowToContinent(ResultSet rs, int rowNum) throws SQLException {
+	@Override
+	public Continent mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return new Continent(rs.getLong("id"), 
 			rs.getString("name"));
 	}
@@ -74,7 +75,7 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	 * @param continentId id of the account
 	 * @param accId id of the continent
 	 */
-	public void addContinentToAccountById(long continentId, long accId) throws Exception {
+	public void addContinentToAccountById(long continentId, long accId) {
 		try {
 			String query = "INSERT INTO continentAssignment(accountId, continentId) VALUES (?, ?);"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
@@ -114,6 +115,6 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	}
 
 	public Object getAllContinents() {
-		return jdbc.query("SELECT * FROM continent", this::mapRowToContinent);
+		return jdbc.query("SELECT * FROM continent", this::mapRowToModel);
 	}
 }

@@ -25,92 +25,91 @@ import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class InvestorRepository implements IRepository<Investor, InvestorUpdateRequest> {
-    private JdbcTemplate jdbc;
+	private JdbcTemplate jdbc;
 
-    @Autowired
-    public InvestorRepository(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	@Autowired
+	public InvestorRepository(JdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+	}
 
-    /**
+	/**
 	 * Find investor by id
+	 * 
 	 * @param id id of the desired investor
 	 * @return instance of the found investor
 	 */
 	public Investor find(long id) {
-        try {
-            String sql = "SELECT * FROM investor WHERE accountId = ?";
-            return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToInvestor);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    /**
-     * Update investor
-     * @param id the id of the investor to update
-     * @param update instance of the update request
-     * @throws Exception 
-     */
-    public void update(long id, InvestorUpdateRequest update) throws Exception {
-        try{
-            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investor", id, this, "accountId");
-            updateQuery.setJdbc(jdbc);
-            updateQuery.addField(update.getDescription(), "description");
-            updateQuery.addField(update.getName(), "name");
-            updateQuery.addField(update.getInvestmentMax(), "investmentMax");
-            updateQuery.addField(update.getInvestmentMin(), "investmentMin");
-            updateQuery.addField(update.getInvestorTypeId(), "investorTypeId");
-            updateQuery.execute();
-        } catch(Exception e) {
-            throw new Error(e);
-        }
-    }
+		try {
+			String sql = "SELECT * FROM investor WHERE accountId = ?";
+			return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToModel);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+	}
 
-    /**
+	/**
+	 * Update investor
+	 * 
+	 * @param id     the id of the investor to update
+	 * @param update instance of the update request
+	 * @throws Exception
+	 */
+	public void update(long id, InvestorUpdateRequest update) throws Exception {
+		try {
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investor", id, this, "accountId");
+			updateQuery.setJdbc(jdbc);
+			updateQuery.addField(update.getDescription(), "description");
+			updateQuery.addField(update.getName(), "name");
+			updateQuery.addField(update.getInvestmentMax(), "investmentMax");
+			updateQuery.addField(update.getInvestmentMin(), "investmentMin");
+			updateQuery.addField(update.getInvestorTypeId(), "investorTypeId");
+			updateQuery.execute();
+		} catch (Exception e) {
+			throw new Error(e);
+		}
+	}
+
+	/**
 	 * Map a row of a result set to an account instance
-	 * @param rs result set of an sql query
+	 * 
+	 * @param rs     result set of an sql query
 	 * @param rowNum row number in the result set
 	 * @return Account instance of the result set
 	 * @throws SQLException
 	 */
-	private Investor mapRowToInvestor(ResultSet rs, int rowNum) throws SQLException {
-        Investor investor = new Investor();
+	@Override
+	public Investor mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
+		return Investor.investorBuilder().accountId(rs.getLong("accountId")).description(rs.getString("description"))
+				.investorTypeId(rs.getInt("investorTypeId")).build();
+	}
 
-        investor.setAccountId(rs.getLong("accountId"));
-        investor.setInvestmentMax(rs.getInt("investmentMax"));
-        investor.setInvestmentMin(rs.getInt("investmentMin"));
-        investor.setInvestorTypeId(rs.getLong("investorTypeId"));
-        investor.setName(rs.getString("name"));
-        investor.setDescription(rs.getString("description"));
-
-        return investor;
-    }
-    
-    /**
+	/**
 	 * Add a new investor to the database
+	 * 
 	 * @param investor the investor to add
 	 */
-	public void add(Investor investor) throws Exception {
-		try {
-            String query = "INSERT INTO investor(accountId, name, description, investmentMin," +
-                            "investmentMax, investorTypeId) VALUES (?, ?, ?, ?, ?, ?);"; 
-			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
-				@Override  
-				public Boolean doInPreparedStatement(PreparedStatement ps)  
-						throws SQLException, DataAccessException {  
-						
-                    ps.setLong(1,investor.getAccountId()); 
-                    ps.setString(2, investor.getName());
-                    ps.setString(3, investor.getDescription());
-                    ps.setInt(4, investor.getInvestmentMin());
-                    ps.setInt(5, investor.getInvestmentMax());
-                    ps.setLong(6, investor.getInvestorTypeId());
+	public void add(Investor investor) {
 
-					return ps.execute();  
-				}  
-			});  
+		// SCHEMA WILL CHANGE !!!! FIRST CHANGE SCHEMA
+
+		try {
+			String query = "INSERT INTO investor(accountId, name, description, investmentMin,"
+					+ "investmentMax, investorTypeId) VALUES (?, ?, ?, ?, ?, ?);";
+			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
+				@Override
+				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+
+					ps.setLong(1, investor.getAccountId());
+					ps.setString(2, investor.getName());
+					ps.setString(3, investor.getDescription());
+					ps.setInt(4, investor.getInvestmentMin());
+					ps.setInt(5, investor.getInvestmentMax());
+					ps.setLong(6, investor.getInvestorTypeId());
+
+					return ps.execute();
+				}
+			});
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			throw e;

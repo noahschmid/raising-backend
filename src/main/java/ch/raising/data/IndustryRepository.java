@@ -29,7 +29,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @return instance of the found industry
 	 */
 	public Industry find(long id) {
-		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToIndustry);
+		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	public List<Industry> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM industryAssignment INNER JOIN industry ON " +
 						   "industryAssignment.industryId = industry.id WHERE accountId = ?",
-						   new Object[] { id }, this::mapRowToIndustry);
+						   new Object[] { id }, this::mapRowToModel);
 	}
 
     /**
@@ -48,7 +48,8 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @return Industry instance of the result set
 	 * @throws SQLException
 	 */
-	private Industry mapRowToIndustry(ResultSet rs, int rowNum) throws SQLException {
+	@Override
+	public Industry mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return new Industry(rs.getLong("id"), 
 			rs.getString("name"));
 	}
@@ -75,7 +76,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @throws SQLException
 	 */
 	
-	public void addIndustryToAccountById(long accountId, long industryId) throws SQLException {
+	public void addIndustryToAccountById(long accountId, long industryId) {
 		String sql = "INSERT INTO industryassignment(accountId, industryId) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -112,6 +113,6 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	}
 
 	public List<Industry> getAllIndustries() {
-		return jdbc.query("SELECT * FROM industry", this::mapRowToIndustry);
+		return jdbc.query("SELECT * FROM industry", this::mapRowToModel);
 	}
 }

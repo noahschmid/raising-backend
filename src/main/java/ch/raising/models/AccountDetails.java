@@ -16,12 +16,12 @@ public class AccountDetails implements UserDetails {
     private long id;
 
     public AccountDetails(Account account) {
-        this.username = account.getUsername();
+        this.username = account.getName();
         this.password = account.getPassword();
         this.authorities = Arrays.stream(account.getRoles().split(","))
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
-        this.id = account.getId();
+        this.id = account.getAccountId();
     }
 
     @Override

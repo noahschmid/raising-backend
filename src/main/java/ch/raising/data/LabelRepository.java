@@ -17,54 +17,55 @@ import ch.raising.models.Label;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
-	
+public class LabelRepository implements IRepository<Label, UpdateQueryBuilder> {
+
 	@Autowired
 	JdbcTemplate jdbc;
-	
+
 	@Autowired
 	public LabelRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 	}
-	
+
 	/**
 	 * 
 	 * @return a List of all labels
 	 */
 	public List<Label> getAllLabels() {
 		String sql = "SELECT * FROM label;";
-		return jdbc.query(sql, this::mapRowToLabel);
+		return jdbc.query(sql, this::mapRowToModel);
 	}
 
 	@Override
 	public Label find(long id) {
 		String sql = "SELECT * FROM label WHERE id=?";
-		return jdbc.queryForObject(sql ,new Object[] {id}, this::mapRowToLabel);
+		return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToModel);
 	}
-	
-	private Label mapRowToLabel(ResultSet rs, int row) throws SQLException {
-		return Label.builder().id(rs.getLong("id")).name(rs.getString("name"))
-				.description(rs.getString("description")).build();
+
+	@Override
+	public Label mapRowToModel(ResultSet rs, int row) throws SQLException {
+		return Label.builder().id(rs.getLong("id")).name(rs.getString("name")).description(rs.getString("description"))
+				.build();
 	}
-	
+
 	/**
 	 * creates an entry in the labelassignmenttable with the specified ids
+	 * 
 	 * @param labelId
 	 * @param suId
 	 */
 	public void addLabelToStartup(long labelId, long suId) {
 		String sql = "INSERT INTO labelassignment(startupid, labelid) VALUES (?,?)";
-		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
-			@Override  
-			public Boolean doInPreparedStatement(PreparedStatement ps)  
-					throws SQLException, DataAccessException {  
-					
-				ps.setLong(1, suId);  
+		jdbc.execute(sql, new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+
+				ps.setLong(1, suId);
 				ps.setLong(2, labelId);
-					
-				return ps.execute();  
-			}  
-		});  
+
+				return ps.execute();
+			}
+		});
 	}
 
 	@Override
@@ -74,21 +75,26 @@ public class LabelRepository implements IRepository<Label, UpdateQueryBuilder>{
 
 	/**
 	 * deletes the entries of labelassignment table containing both ids
+	 * 
 	 * @param labelId
 	 * @param suId
 	 */
 	public void deleteLabelOfStartup(long labelId, long suId) {
 		String sql = "DELETE FROM labelassignment WHERE label.id = ? label.startupid = ?";
-		jdbc.execute(sql, new PreparedStatementCallback<Boolean>(){
+		jdbc.execute(sql, new PreparedStatementCallback<Boolean>() {
 			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps)
-					throws SQLException, DataAccessException{
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				ps.setLong(1, labelId);
 				ps.setLong(2, suId);
-				
+
 				return ps.execute();
 			}
-		
+
 		});
+	}
+
+	public List<Label> findByStartupId(long startupId) {
+		return jdbc.query("SELECT * FROM label INNER JOIN labelAssignment ON label.id = labelAssignment.labelId "
+				+ "WHERE startupId = ?", new Object[] { startupId }, this::mapRowToModel);
 	}
 }

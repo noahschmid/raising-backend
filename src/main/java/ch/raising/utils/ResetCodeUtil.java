@@ -70,8 +70,8 @@ public class ResetCodeUtil {
 
         Timestamp expiresAt = new Timestamp(new Date().getTime() + 60*1000*10);
         try{
-                ResetCode resetCode = new ResetCode(code, (int)account.getId(), expiresAt);
-                resetCodeRepository.deleteByAccountId((int)account.getId());
+                ResetCode resetCode = new ResetCode(code, (int)account.getAccountId(), expiresAt);
+                resetCodeRepository.deleteByAccountId((int)account.getAccountId());
                 resetCodeRepository.add(resetCode);
         } catch(Exception e) {
             return null;

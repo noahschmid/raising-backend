@@ -38,7 +38,7 @@ public class StartupController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getInvestorProfile(@PathVariable int id) {
-        return startupService.getStartupProfile(id);
+        return startupService.getProfile(id);
 	}
     
     /**
@@ -58,7 +58,7 @@ public class StartupController {
 	 */
 	@PostMapping("/{id}")
 	public ResponseEntity<?> addStartup(@RequestBody Startup startup) {
-		return startupService.addStartup(startup);
+		return startupService.registerProfile(startup);
 	}
 	/**
 	 * Deletes a contact specified by id.

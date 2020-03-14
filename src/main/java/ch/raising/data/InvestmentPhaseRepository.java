@@ -29,7 +29,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @return instance of the found investment phase
 	 */
 	public InvestmentPhase find(long id) {
-		return jdbc.queryForObject("SELECT * FROM investmentPhase WHERE id = ?", new Object[] { id }, this::mapRowToInvestmentPhase);
+		return jdbc.queryForObject("SELECT * FROM investmentPhase WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	public List<InvestmentPhase> findByInvestorId(long id) {
 		return jdbc.query("SELECT * FROM investmentPhaseAssignment INNER JOIN investmentPhase ON " +
 						   "investmentPhaseAssignment.investmentPhaseId = investmentPhase.id WHERE investorId = ?",
-						   new Object[] { id }, this::mapRowToInvestmentPhase);
+						   new Object[] { id }, this::mapRowToModel);
 	}
 
     /**
@@ -48,7 +48,8 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @return InvestmentPhase instance of the result set
 	 * @throws SQLException
 	 */
-	private InvestmentPhase mapRowToInvestmentPhase(ResultSet rs, int rowNum) throws SQLException {
+	@Override
+	public InvestmentPhase mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return new InvestmentPhase(rs.getLong("id"), 
 			rs.getString("name"));
 	}
@@ -76,7 +77,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @throws SQLException
 	 */
 	
-	public void addInvestmentPhaseToInvestor(long investorId, long investmentPhaseId) throws SQLException {
+	public void addInvestmentPhaseToInvestor(long investorId, long investmentPhaseId) {
 		String sql = "INSERT INTO investmentphaseassignment(investorid, investmentphaseid) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -105,6 +106,6 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	}
 
 	public List<InvestmentPhase> getAllinvestmnetPhases() {
-		return jdbc.query("SELECT * FROM investmentphase", this::mapRowToInvestmentPhase);
+		return jdbc.query("SELECT * FROM investmentphase", this::mapRowToModel);
 	}
 }
