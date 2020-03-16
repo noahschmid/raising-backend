@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -34,6 +35,20 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
         try {
             String sql = "SELECT * FROM startup WHERE accountId = ?";
             return jdbc.queryForObject(sql, new Object[] { accountId }, this::mapRowToStartup);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+	 * Get all existing startups
+	 * @return list of all startups
+	 */
+	public List<Startup> getAll() {
+        try {
+            String sql = "SELECT * FROM startup";
+            return jdbc.query(sql, new Object[] { }, this::mapRowToStartup);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

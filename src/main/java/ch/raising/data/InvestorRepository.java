@@ -21,6 +21,7 @@ import ch.raising.models.InvestmentPhase;
 import ch.raising.models.Investor;
 import ch.raising.models.InvestorType;
 import ch.raising.models.InvestorUpdateRequest;
+import ch.raising.models.Startup;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -41,6 +42,20 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
         try {
             String sql = "SELECT * FROM investor WHERE accountId = ?";
             return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToInvestor);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get all investors
+     * @return list of investors
+     */
+    public List<Investor> getAll() {
+        try {
+            String sql = "SELECT * FROM investor";
+            return jdbc.query(sql, new Object[] { }, this::mapRowToInvestor);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

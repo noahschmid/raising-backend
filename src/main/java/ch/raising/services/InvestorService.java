@@ -26,6 +26,7 @@ import ch.raising.models.InvestmentPhase;
 import ch.raising.models.Investor;
 import ch.raising.models.InvestorProfileResponse;
 import ch.raising.models.InvestorUpdateRequest;
+import ch.raising.models.MatchingProfile;
 import ch.raising.models.InvestorType;
 import ch.raising.models.Support;
 import ch.raising.data.IndustryRepository;
@@ -154,6 +155,71 @@ public class InvestorService {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ErrorResponse(e.getLocalizedMessage()));
         }
+    }
+
+    /**
+     * Get matching profile of investor (the required information for matching)
+     * @return Matching profile of investor
+     */
+    public MatchingProfile getMatchingProfile(Investor investor) {
+        if(investor == null)
+            return null;
+        
+        MatchingProfile profile = new MatchingProfile();
+        InvestorType type = investorTypeRepository.find(investor.getInvestorTypeId());
+        List<Continent> continents = continentRepository.findByAccountId(investor.getAccountId());
+        List<Country> countries = countryRepository.findByAccountId(investor.getAccountId());
+        List<Industry> industries = industryRepository.findByAccountId(investor.getAccountId());
+        List<InvestmentPhase> investmentPhases = investmentPhaseRepository.findByInvestorId(investor.getAccountId());
+        List<Support> supports = supportRepository.findByAccountId(investor.getAccountId());
+
+        profile.setAccountId(investor.getAccountId());
+        profile.setName(investor.getName());
+        profile.setDescription(investor.getDescription());
+        profile.setInvestmentMax(investor.getInvestmentMax());
+        profile.setInvestmentMin(investor.getInvestmentMin());
+        profile.setStartup(false);
+
+        profile.addInvestorType(type);
+
+        for(Continent cntnt : continents) {
+            profile.addContinent(cntnt);
+        }
+
+        for(Country cntry : countries) {
+            profile.addCountry(cntry);
+        }
+
+        for(Industry ind : industries) {
+            profile.addIndustry(ind);
+        }
+
+        for(InvestmentPhase invPhs : investmentPhases) {
+            profile.addInvestmentPhase(invPhs);
+        }
+
+        for(Support spprt : supports) {
+            profile.addSupport(spprt);
+        }
+
+        return profile;
+    }
+
+    /**
+     * Get all matching profiles of all investors
+     * @return List of matching profiles
+     */
+    public List<MatchingProfile> getAllMatchingProfiles() {
+        List<Investor> investors = investorRepository.getAll();
+        List<MatchingProfile> profiles = new ArrayList<>();
+        if(investors.size() == 0)
+            return null;
+
+        for(Investor investor : investors) {
+            profiles.add(getMatchingProfile(investor));
+        }
+
+        return profiles;
     }
 
 	private boolean isIncomplete(Investor investor) {

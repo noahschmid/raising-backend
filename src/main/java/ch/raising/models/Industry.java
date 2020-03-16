@@ -13,4 +13,14 @@ public class Industry {
         this.id = id;
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == this)
+            return true;
+        if(!(o instanceof Industry))
+            return false;
+
+        return ((Industry)o).getId() == this.id;
+    }
 }

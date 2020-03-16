@@ -13,4 +13,14 @@ public class Support {
         this.id = id;
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == this)
+            return true;
+        if(!(o instanceof Support))
+            return false;
+
+        return ((Support)o).getId() == this.id;
+    }
 }

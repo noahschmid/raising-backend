@@ -6,6 +6,7 @@ import lombok.Data;
 public class Startup {
     private long accountId = -1;
     private String name;
+    private String description;
     private int investmentMin = -1;
     private int investmentMax = -1;
     private long investmentPhaseId = -1;

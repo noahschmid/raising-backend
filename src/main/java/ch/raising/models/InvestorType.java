@@ -15,4 +15,14 @@ public class InvestorType {
         this.name = name;
         this.description = description;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == this)
+            return true;
+        if(!(o instanceof InvestorType))
+            return false;
+
+        return ((InvestorType)o).getId() == this.id;
+    }
 }

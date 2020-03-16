@@ -1,0 +1,1 @@
+ALTER TABLE relationship ADD CONSTRAINT unq_strtup_inv UNIQUE(startupId,investorId);

@@ -13,4 +13,14 @@ public class Continent {
         this.id = id;
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == this)
+            return true;
+        if(!(o instanceof Continent))
+            return false;
+
+        return ((Continent)o).getId() == this.id;
+    }
 }

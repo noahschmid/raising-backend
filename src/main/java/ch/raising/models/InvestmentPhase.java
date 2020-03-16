@@ -13,4 +13,14 @@ public class InvestmentPhase {
         this.id = id;
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == this)
+            return true;
+        if(!(o instanceof InvestmentPhase))
+            return false;
+
+        return ((InvestmentPhase)o).getId() == this.id;
+    }
 }
