@@ -155,7 +155,7 @@ public class AccountController {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
 
-        return accountService.deleteAccount(id);
+        return accountService.deleteProfile(id);
     }
 
     /**
@@ -250,7 +250,7 @@ public class AccountController {
     @DeleteMapping("/industry/{industryId}")
     @ResponseBody
     public ResponseEntity<?> deleteIndustryFromAccount(@PathVariable long industryId){
-    	return accountService.deleteContinentFromAccountById(industryId);
+    	return accountService.deleteIndustryFromAccountById(industryId);
     }
     
     

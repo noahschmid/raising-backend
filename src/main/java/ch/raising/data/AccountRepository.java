@@ -106,7 +106,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * 
 	 * @param id the id of the account
 	 */
-	public void delete(long id) throws Exception {
+	public void delete(long id) {
 		try {
 			String query = "DELETE FROM account WHERE id = ?;";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {

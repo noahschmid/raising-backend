@@ -7,6 +7,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,6 +37,7 @@ import ch.raising.data.CountryRepository;
 import ch.raising.data.IndustryRepository;
 import ch.raising.data.SupportRepository;
 
+@Primary
 @Service
 public class AccountService implements UserDetailsService {
 	@Autowired
@@ -130,17 +132,28 @@ public class AccountService implements UserDetailsService {
 	 * @param id the id of the account to delete
 	 * @return ResponseEntity with status code and message
 	 */
-	public ResponseEntity<?> deleteAccount(int id) {
-		if (accountRepository.find(id) == null)
-			return ResponseEntity.status(500).body(new ErrorResponse("Account doesn't exist"));
+	public ResponseEntity<?> deleteProfile(long id) {
 		try {
-			accountRepository.delete(id);
+			deleteAccount(id);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
+	/**
+	 * is overwritten by subtype {@link InvestorService} and {@link StartupService} to allow the retrieving of a specific accounttype.
+	 * @param id
+	 * @return the account with the specified id. the account is fully initialized with all lists and objects non null.
+	 */
+	protected void deleteAccount(long id) {
+		accountRepository.delete(id);
+	}
 
+	/**
+	 * gets the requested Profile and handles all the Responses for the request
+	 * @param id
+	 * @return
+	 */
 	public ResponseEntity<?> getProfile(long id) {
 		try {
 			Account acc = getAccount(id);
@@ -150,6 +163,11 @@ public class AccountService implements UserDetailsService {
 		}
 	}
 
+	/**
+	 * is overwritten by subtype {@link InvestorService} and {@link StartupService} to allow the retrieving of a specific accounttype.
+	 * @param id
+	 * @return the account with the specified id. the account is fully initialized with all lists and objects non null.
+	 */
 	protected Account getAccount(long id) {
 		List<Country> countries = countryRepository.findByAccountId(id);
 		List<Continent> continents = continentRepository.findByAccountId(id);
