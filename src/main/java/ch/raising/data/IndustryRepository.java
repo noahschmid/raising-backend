@@ -29,7 +29,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @return instance of the found industry
 	 */
 	public Industry find(long id) {
-		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToIndustry);
+		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	public List<Industry> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM industryAssignment INNER JOIN industry ON " +
 						   "industryAssignment.industryId = industry.id WHERE accountId = ?",
-						   new Object[] { id }, this::mapRowToIndustry);
+						   new Object[] { id }, this::mapRowToModel);
 	}
 
     /**
@@ -48,7 +48,8 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @return Industry instance of the result set
 	 * @throws SQLException
 	 */
-	private Industry mapRowToIndustry(ResultSet rs, int rowNum) throws SQLException {
+	@Override
+	public Industry mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return new Industry(rs.getLong("id"), 
 			rs.getString("name"));
 	}
@@ -68,8 +69,14 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 			throw new Exception(e.getMessage());
 		}
 	}
+	/**
+	 * add entry with industryid and accountid into industryassingment
+	 * @param accountId
+	 * @param industryId
+	 * @throws SQLException
+	 */
 	
-	public void addIndustryToAccount(long accountId, long industryId) throws SQLException {
+	public void addIndustryToAccountById(long accountId, long industryId) {
 		String sql = "INSERT INTO industryassignment(accountId, industryId) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -83,5 +90,29 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 			}  
 		});  
 		
+	}
+
+	/**
+	 * delete entry with both ids from industryassignment
+	 * @param industryId
+	 * @param accountId
+	 */
+	public void deleteIndustryFromAccountById(long industryId, long accountId) {
+		String sql = "DELETE FROM industryassignment WHERE industryid = ? AND accountid = ?";
+		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
+			@Override  
+			public Boolean doInPreparedStatement(PreparedStatement ps)  
+					throws SQLException, DataAccessException {  
+					
+				ps.setLong(1,industryId);  
+				ps.setLong(2,accountId);
+					
+				return ps.execute();  
+			}  
+		});  
+	}
+
+	public List<Industry> getAllIndustries() {
+		return jdbc.query("SELECT * FROM industry", this::mapRowToModel);
 	}
 }

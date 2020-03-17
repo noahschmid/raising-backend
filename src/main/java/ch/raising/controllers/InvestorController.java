@@ -32,7 +32,7 @@ public class InvestorController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getInvestorProfile(@PathVariable int id) {
-        return investorService.getInvestorProfile(id);
+        return investorService.getProfile(id);
     }
 
     /**
@@ -52,7 +52,7 @@ public class InvestorController {
      */
     @PostMapping("/{id}")
     public ResponseEntity<?> addInvestor(@RequestBody Investor investor) {
-        return investorService.addInvestor(investor);
+        return investorService.registerProfile(investor);
     }
     /**
      * deletes the investmentphase of investor

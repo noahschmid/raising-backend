@@ -19,22 +19,23 @@ import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class StartupRepository implements IRepository<Startup, StartupUpdateRequest> {
-    private JdbcTemplate jdbc;
+	private JdbcTemplate jdbc;
 
-    @Autowired
-    public StartupRepository(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	@Autowired
+	public StartupRepository(JdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+	}
 
 	/**
 	 * Find startup by id
+	 * 
 	 * @param accountId id of the desired startup account
 	 * @return instance of the found startup
 	 */
 	public Startup find(long accountId) {
         try {
             String sql = "SELECT * FROM startup WHERE accountId = ?";
-            return jdbc.queryForObject(sql, new Object[] { accountId }, this::mapRowToStartup);
+            return jdbc.queryForObject(sql, new Object[] { accountId }, this::mapRowToModel);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -48,7 +49,7 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 	public List<Startup> getAll() {
         try {
             String sql = "SELECT * FROM startup";
-            return jdbc.query(sql, new Object[] { }, this::mapRowToStartup);
+            return jdbc.query(sql, new Object[] { }, this::mapRowToModel);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -84,63 +85,63 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
         }
     }
 
-    /**
+	/**
 	 * Map a row of a result set to an account instance
-	 * @param rs result set of an sql query
+	 * 
+	 * @param rs     result set of an sql query
 	 * @param rowNum row number in the result set
 	 * @return Account instance of the result set
 	 * @throws SQLException
 	 */
-	private Startup mapRowToStartup(ResultSet rs, int rowNum) throws SQLException {
-        Startup startup = new Startup();
-
-        startup.setAccountId(rs.getLong("accountId"));
-        startup.setInvestmentMax(rs.getInt("investmentMax"));
-        startup.setInvestmentMin(rs.getInt("investmentMin"));
-		startup.setBoosts(rs.getInt("boosts"));
-		startup.setBreakEvenYear(rs.getInt("breakevenYear"));
-		startup.setCity(rs.getString("city"));
-		startup.setName(rs.getString("name"));
-		startup.setZipCode(rs.getString("zipCode"));
-		startup.setWebsite(rs.getString("website"));
-		startup.setStreet(rs.getString("street"));
-		startup.setInvestmentPhaseId(rs.getLong("investmentPhaseId"));
-		startup.setTurnover(rs.getInt("turnover"));
-		startup.setNumberOfFTE(rs.getInt("numberOfFTE"));
-
-        return startup;
+	@Override
+	public Startup mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
+		return Startup.startupBuilder().accountId(rs.getLong("accountId")).boosts(rs.getInt("boosts"))
+				.breakEvenYear(rs.getInt("breakevenYear")).city(rs.getString("city")).zipCode(rs.getString("zipCode"))
+				.website(rs.getString("website")).street(rs.getString("street"))
+				.investmentPhaseId(rs.getLong("investmentPhaseId")).turnover(rs.getInt("turnover"))
+				.numberOfFTE(rs.getInt("numberOfFTE")).build();
+	}
+	
+	private long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
+		return rs.getLong("startupId");
 	}
 
 	/**
 	 * Add a new investor to the database
+	 * 
 	 * @param startup the startup to add
 	 */
 	public void add(Startup startup) throws Exception {
+		
+		
+		
+		
+		//schema will change, FIRST CHANGE IT
+		
+		
 		try {
-            String query = "INSERT INTO investor(accountId, name, city, investmentMax," +
-							"investmentMin, street, zipCode, website, numberOfFTE, breakEvenYear," +
-							"turnover, investmentPhaseId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; 
-			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
-				@Override  
-				public Boolean doInPreparedStatement(PreparedStatement ps)  
-						throws SQLException, DataAccessException {  
-						
-                    ps.setLong(1,startup.getAccountId()); 
-                    ps.setString(2, startup.getName());
-                    ps.setString(3, startup.getCity());
-                    ps.setInt(4, startup.getInvestmentMax());
-                    ps.setInt(5, startup.getInvestmentMin());
-					ps.setString(6, startup.getStreet());
-					ps.setString(7, startup.getZipCode());
-					ps.setString(8, startup.getWebsite());
-					ps.setInt(9, startup.getNumberOfFTE());
-					ps.setInt(10, startup.getBreakEvenYear());
-					ps.setInt(11, startup.getTurnover());
-					ps.setLong(12, startup.getInvestmentPhaseId());
+			String query = "INSERT INTO investor(name, city, investmentMax,"
+					+ "investmentMin, street, zipCode, website, numberOfFTE, breakEvenYear,"
+					+ "turnover, investmentPhaseId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
+				@Override
+				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 
-					return ps.execute();  
-				}  
-			});  
+					ps.setString(1, startup.getName());
+					ps.setString(2, startup.getCity());
+					ps.setInt(3, startup.getInvestmentMax());
+					ps.setInt(4, startup.getInvestmentMin());
+					ps.setString(5, startup.getStreet());
+					ps.setString(6, startup.getZipCode());
+					ps.setString(7, startup.getWebsite());
+					ps.setInt(8, startup.getNumberOfFTE());
+					ps.setInt(9, startup.getBreakEvenYear());
+					ps.setInt(10, startup.getTurnover());
+					ps.setLong(11, startup.getInvestmentPhaseId());
+
+					return ps.execute();
+				}
+			});
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			throw e;

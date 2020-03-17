@@ -2,6 +2,7 @@ package ch.raising.controllers;
 
 import java.util.List;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +30,9 @@ import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
-import ch.raising.models.RegistrationRequest;
 import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
+import ch.raising.utils.NotImplementedException;
 import ch.raising.controllers.AccountController;
 import ch.raising.models.ForgotPasswordRequest;
 
@@ -79,17 +79,19 @@ public class AccountController {
 
 	/**
 	 * Register a new user account
-	 * @param request has to include an unique username, email and a password
+	 * @param account has to include an unique username, email and a password
 	 * @return JSON response with status code and error message (if exists)
 	 */
 	@PostMapping("/register")
 	@ResponseBody
-	public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
+	public ResponseEntity<?> register(@RequestBody Account account) {
         try {
-            accountService.register(request);
-            return login(new LoginRequest(request.getUsername(), request.getPassword()));
+            throw new NotImplementedException();
+            //return login(new LoginRequest(account.getName(), account.getPassword()));
         } catch (Error e) {
             return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+        	return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
         }
     }
     
@@ -153,7 +155,7 @@ public class AccountController {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
 
-        return accountService.deleteAccount(id);
+        return accountService.deleteProfile(id);
     }
 
     /**
@@ -170,53 +172,85 @@ public class AccountController {
 
         return accountService.updateAccount(id, updateRequest, request.isUserInRole("ADMIN"));
     }
-    
+    /**
+     * add country to account
+     * @param countryId
+     * @return
+     */
     @PostMapping("/country/{countryId}")
     @ResponseBody
     public ResponseEntity<?> addCountryToAccount(@PathVariable long countryId){
     	return accountService.addCountryToAccountById(countryId);
     }
-    
+    /**
+     * delete country from account
+     * @param countryId
+     * @return
+     */
     @DeleteMapping("/country/{countryId}")
     @ResponseBody
     public ResponseEntity<?> deleteCountryFromAccount(@PathVariable long countryId){
     	return accountService.deleteCountryFromAccountById(countryId);
     }
-    
+    /**
+     * add continent to account
+     * @param continentId
+     * @return
+     */
     @PostMapping("/continent/{continentId}")
     @ResponseBody
     public ResponseEntity<?> addContinentToAccount(@PathVariable long continentId){
     	return accountService.addContinentToAccountById(continentId);
     }
-    
+    /**
+     * delete continent from account
+     * @param continentId
+     * @return
+     */
     @DeleteMapping("/continent/{continentId}")
     @ResponseBody
     public ResponseEntity<?> deleteContinentFromAccount(@PathVariable long continentId){
-    	return accountService.deletContinentFromAccountById(continentId);
+    	return accountService.deleteContinentFromAccountById(continentId);
     }
-    
+    /**
+     * add supporttype to account
+     * @param supportId
+     * @return
+     */
     @PostMapping("/support/{supportId}")
     @ResponseBody
     public ResponseEntity<?> addSupportToAccount(@PathVariable long supportId){
     	return accountService.addSupportToAccountById(supportId);
     }
-    
+    /**
+     * delete supporttype from account
+     * @param supportId
+     * @return
+     */
     @DeleteMapping("/support/{supportId}")
     @ResponseBody
     public ResponseEntity<?> deleteSupportFromAccount(@PathVariable long supportId){
     	return accountService.deleteSupportFromAccountById(supportId);
     }
-    
+    /**
+     * add industry to account    
+     * @param industryId
+     * @return
+     */
     @PostMapping("/industry/{industryId}")
     @ResponseBody
     public ResponseEntity<?> addIndustryToAccount(@PathVariable long industryId){
     	return accountService.addIndustryToAccountById(industryId);
     }
-    
+    /**
+     * delete industry form account
+     * @param industryId
+     * @return
+     */
     @DeleteMapping("/industry/{industryId}")
     @ResponseBody
     public ResponseEntity<?> deleteIndustryFromAccount(@PathVariable long industryId){
-    	return accountService.deleteContinentFromAccountById(industryId);
+    	return accountService.deleteIndustryFromAccountById(industryId);
     }
     
     

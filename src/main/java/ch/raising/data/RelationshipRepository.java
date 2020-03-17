@@ -30,7 +30,7 @@ public class RelationshipRepository implements IRepository<Relationship, Relatio
 	public Relationship find(long id) {
         try {
             String sql = "SELECT * FROM relationship WHERE id = ?";
-            return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToRelationship);
+            return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToModel);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -64,7 +64,7 @@ public class RelationshipRepository implements IRepository<Relationship, Relatio
 	 * @return Relationship instance of the result set
 	 * @throws SQLException
 	 */
-	private Relationship mapRowToRelationship(ResultSet rs, int rowNum) throws SQLException {
+	public Relationship mapRowToModel(ResultSet rs, int row) throws SQLException {
         Relationship relationship = new Relationship();
 
         relationship.setId(rs.getLong("id"));

@@ -20,19 +20,4 @@ public class ProfileService  {
         this.startupService = startupService;
         this.investorService = investorService;
     }
-
-    /**
-     * Get profile details
-     * @param accountId
-     * @return
-     */
-    public ResponseEntity<?> getProfile(int accountId) {
-        ResponseEntity<?> response = startupService.getStartupProfile(accountId);
-        if (response.getStatusCode() == HttpStatus.OK)
-            return response;
-        response = investorService.getInvestorProfile(accountId);
-        if (response.getStatusCode() == HttpStatus.OK)
-            return response;
-        return ResponseEntity.status(500).body(new Error("User has not yet created a profile"));
-    }
 }

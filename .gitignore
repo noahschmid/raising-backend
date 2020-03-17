@@ -26,6 +26,14 @@ HELP.md
 /.nb-gradle/
 build/
 target/
-
+./target
+./target/*
+target/*./target/*
+target/*./target/*
+target/*./target/*
+target/*./target/*
+target/*./target/*
+target/*./target/*
+target/*
 ### VS Code ###
 .vscode/
