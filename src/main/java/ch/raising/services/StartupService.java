@@ -34,6 +34,12 @@ public class StartupService extends AccountService {
 
 	@Autowired
 	private LabelRepository labelRepository;
+	
+	@Autowired
+	private PrivateShareholderRepository pshRepository;
+	
+	@Autowired
+	private CorporateShareholderRepository cshRepository;
 
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
@@ -41,7 +47,8 @@ public class StartupService extends AccountService {
 			BoardmemberRepository bmemRepository, FounderRepository founderRepository, LabelRepository labelRepository,
 			IndustryRepository industryRepository, SupportRepository supportRepository,
 			ContinentRepository continentRepository, CountryRepository countryRepository,
-			InvestorRepository investorRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc) {
+			InvestorRepository investorRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc,
+			PrivateShareholderRepository pshRepository, CorporateShareholderRepository cshRepository) {
 
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc, countryRepository, continentRepository,
 				supportRepository, industryRepository);
@@ -52,6 +59,8 @@ public class StartupService extends AccountService {
 		this.bmemRepository = bmemRepository;
 		this.founderRepository = founderRepository;
 		this.labelRepository = labelRepository;
+		this.pshRepository = pshRepository;
+		this.cshRepository = cshRepository;
 	}
 
 	@Override
@@ -91,8 +100,10 @@ public class StartupService extends AccountService {
 
 		Account acc = super.getAccount(startupId);
 		Startup su = startupRepository.find(startupId);
+		List<PrivateShareholder> psh = pshRepository.findByStartupId(startupId);
+		List<CorporateShareholder> csh = cshRepository.findByStartupId(startupId);
 
-		return new Startup(acc, su, invTypes, labels, contact, founders);
+		return new Startup(acc, su, invTypes, labels, contact, founders, psh, csh);
 	}
 
 	/**
@@ -159,7 +170,7 @@ public class StartupService extends AccountService {
 		try {
 			if (!belongsToStartup(id, bmemRepository)) {
 				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this contact does not belong to that startup"));
+						.body(new ErrorResponse("this boardmember does not belong to that startup"));
 			}
 			bmemRepository.deleteMemberByStartupId(id);
 			return ResponseEntity.ok().build();
@@ -195,7 +206,7 @@ public class StartupService extends AccountService {
 		try {
 			if (!belongsToStartup(id, founderRepository)) {
 				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this contact does not belong to that startup"));
+						.body(new ErrorResponse("this founder does not belong to that startup"));
 			}
 			founderRepository.deleteMemberByStartupId(id);
 			return ResponseEntity.ok().build();

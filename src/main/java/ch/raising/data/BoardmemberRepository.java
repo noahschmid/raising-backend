@@ -28,7 +28,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	@Override
 	public void addMemberByStartupId(Boardmember bmem) {
 		jdbc.execute(
-				"INSERT INTO boardmember(id ,startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?,?)",
+				"INSERT INTO boardmember(startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?,?)",
 				addByMember(bmem));
 
 	}
@@ -36,8 +36,8 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	@Override 
 	public void addMemberByStartupId(Boardmember bmem, long startupid) {
 		jdbc.execute(
-				"INSERT INTO boardmember(id ,startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?,?)",
-				addByMember(bmem));
+				"INSERT INTO boardmember(startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?,?)",
+				addByStartupId(bmem, startupid));
 	}
 
 	@Override
