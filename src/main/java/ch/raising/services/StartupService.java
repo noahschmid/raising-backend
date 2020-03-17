@@ -18,7 +18,6 @@ import ch.raising.data.*;
 
 @Service
 public class StartupService extends AccountService {
-
 	@Autowired
 	private InvestorTypeRepository investorTypeRepository;
 
@@ -62,7 +61,6 @@ public class StartupService extends AccountService {
 			IndustryRepository industryRepository, SupportRepository supportRepository,
 			ContinentRepository continentRepository, CountryRepository countryRepository,
 			InvestorRepository investorRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc) {
-
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc, countryRepository, continentRepository,
 				supportRepository, industryRepository);
 

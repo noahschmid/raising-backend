@@ -9,6 +9,7 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -86,6 +87,18 @@ public class AccountService implements UserDetailsService {
 	public AccountDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Account account = accountRepository.findByUsername(username);
 		return new AccountDetails(account);
+	}
+
+	/**
+	 * Check whether given email is already registered
+	 * @param email the email to check
+	 * @return 
+	 */
+	public ResponseEntity<?> isEmailFree(String email) {
+		Account account = accountRepository.findByEmail(email);
+		if(account == null)
+			return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
 	/**

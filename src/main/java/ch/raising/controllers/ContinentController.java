@@ -24,7 +24,7 @@ public class ContinentController {
 	
 	@GetMapping
 	@ResponseBody
-	public ResponseEntity<?> getAllLabel() {
+	public ResponseEntity<?> getAllContinents() {
 		return continentService.getAllContinents();
 	}
 	
