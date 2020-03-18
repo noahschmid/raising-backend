@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.models.PrivateShareholder;
 import ch.raising.utils.UpdateQueryBuilder;
 
+@Repository
 public class PrivateShareholderRepository
 		implements IAdditionalInformationRepository<PrivateShareholder, UpdateQueryBuilder> {
 

@@ -86,13 +86,13 @@ public class AccountController {
 	@ResponseBody
 	public ResponseEntity<?> register(@RequestBody Account account) {
         try {
-            throw new NotImplementedException();
-            //return login(new LoginRequest(account.getName(), account.getPassword()));
+           accountService.registerProfile(account);
         } catch (Error e) {
             return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
         	return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
         }
+        return login(new LoginRequest(account.getName(), account.getPassword()));
     }
     
     /**
