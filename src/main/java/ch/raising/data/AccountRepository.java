@@ -47,8 +47,8 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @return true if account was found, false if no matching entry could be found
 	 */
 	public boolean accountExists(Account account) {
-		String query = "SELECT * FROM account WHERE username = ? AND password = ?";
-		Object[] params = new Object[] { account.getName(), account.getPassword()};
+		String query = "SELECT * FROM account WHERE emailhash = ? AND password = ?";
+		Object[] params = new Object[] { account.getEmail(), account.getPassword()};
 		try {
 			jdbc.queryForObject(query, params, this::mapRowToModel);
 			return true;
@@ -56,21 +56,20 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 			return false;
 		}
 	}
-
+	
 	/**
-	 * Find accounts by email
+	 * Find user account by username
 	 * 
-	 * @param email the email to search for
+	 * @param email the username to search for
+	 * @return instance of the found user account
 	 */
 	public Account findByEmail(String email) {
-		List<Account> accounts = getAllAccounts();
-
-		for (Account acc : accounts) {
-			if (encoder.matches(email, acc.getEmail()))
-				return acc;
-		}
-		return null;
-	}
+        List<Account> accounts = getAllAccounts();        for (Account acc : accounts) {
+            if (encoder.matches(email, acc.getEmail()))
+                return acc;
+        }
+        return null;
+    }
 
 	/**
 	 * Add a new account to the database
@@ -80,7 +79,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 */
 	public long add(Account acc) throws Exception {
 		try {
-			String query = "INSERT INTO account(username, password, emailHash) VALUES (?, ?, ?);";
+			String query = "INSERT INTO account(name, password, emailHash) VALUES (?, ?, ?)";
 			String emailHash = encoder.encode(acc.getEmail());
 			String passwordHash = encoder.encode(acc.getPassword());
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
@@ -140,22 +139,6 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	}
 
 	/**
-	 * Find user account by username
-	 * 
-	 * @param username the username to search for
-	 * @return instance of the found user account
-	 */
-	public Account findByUsername(String username) {
-		try {
-			Account account = jdbc.queryForObject("SELECT * FROM account WHERE username = ?", new Object[] { username },
-					this::mapRowToModel);
-			return account;
-		} catch (DataAccessException e) {
-			return null;
-		}
-	}
-
-	/**
 	 * Check whether given username already exists in the database
 	 * 
 	 * @param username the username to search for
@@ -187,7 +170,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	}
 	
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
-		return rs.getLong("accountid");
+		return rs.getLong("id");
 	}
 
 	/**

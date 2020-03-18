@@ -83,11 +83,11 @@ public class Account{
 	}
 	
 	public boolean isInComplete() {
-		return email == null || password == null || name == null || roles == null
-				|| investmentMin == -1 || investmentMax == -1 || countries == null
-				|| continents == null || support == null ||industries == null
-				||industries.isEmpty() || support.isEmpty() || continents.isEmpty()
-				||countries.isEmpty();
+		return email == null || password == null || name == null;
+//				|| investmentMin == -1 || investmentMax == -1 || countries == null
+//				|| continents == null || support == null ||industries == null
+//				||industries.isEmpty() || support.isEmpty() || continents.isEmpty()
+//				||countries.isEmpty();
 	}
 
 }

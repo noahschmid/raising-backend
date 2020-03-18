@@ -3,6 +3,7 @@ package ch.raising.data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -99,11 +100,9 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 				.breakEvenYear(rs.getInt("breakevenYear")).city(rs.getString("city")).zipCode(rs.getString("zipCode"))
 				.website(rs.getString("website")).street(rs.getString("street"))
 				.investmentPhaseId(rs.getLong("investmentPhaseId")).turnover(rs.getInt("turnover"))
-				.numberOfFTE(rs.getInt("numberOfFTE")).build();
-	}
-	
-	private long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
-		return rs.getLong("startupId");
+				.numberOfFTE(rs.getInt("numberOfFTE")).revenue(rs.getString("revenue"))
+				.financeTypeId(rs.getLong("financetype")).closingtime(rs.getDate("closingtime"))
+				.preMoneyevaluation(rs.getInt("premoneyvaluation")).build();
 	}
 
 	/**
@@ -112,33 +111,25 @@ public class StartupRepository implements IRepository<Startup, StartupUpdateRequ
 	 * @param startup the startup to add
 	 */
 	public void add(Startup startup) throws Exception {
-		
-		
-		
-		
-		//schema will change, FIRST CHANGE IT
-		
-		
+
 		try {
-			String query = "INSERT INTO investor(name, city, investmentMax,"
-					+ "investmentMin, street, zipCode, website, numberOfFTE, breakEvenYear,"
-					+ "turnover, investmentPhaseId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			String query = "INSERT INTO startup(investmentphaseid, boosts, numberoffte, turnover, street, city, website,"
+					+ "breakevenyear, zipcode, premoeyevaluation, closingtime, revenue, financetype) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-
-					ps.setString(1, startup.getName());
-					ps.setString(2, startup.getCity());
-					ps.setInt(3, startup.getInvestmentMax());
-					ps.setInt(4, startup.getInvestmentMin());
+					ps.setLong(1, startup.getInvestmentPhaseId());
+					ps.setInt(2, startup.getBoosts());
+					ps.setInt(3, startup.getNumberOfFTE());
+					ps.setInt(4, startup.getTurnover());
 					ps.setString(5, startup.getStreet());
-					ps.setString(6, startup.getZipCode());
-					ps.setString(7, startup.getWebsite());
-					ps.setInt(8, startup.getNumberOfFTE());
-					ps.setInt(9, startup.getBreakEvenYear());
-					ps.setInt(10, startup.getTurnover());
-					ps.setLong(11, startup.getInvestmentPhaseId());
-
+					ps.setString(6, startup.getWebsite());
+					ps.setInt(7, startup.getBreakEvenYear());
+					ps.setString(8, startup.getZipCode());
+					ps.setInt(9, startup.getPreMoneyevaluation());
+					ps.setDate(10, (Date) startup.getClosingtime());
+					ps.setString(11, startup.getRevenue());
+					ps.setLong(12, startup.getFinanceTypeId());
 					return ps.execute();
 				}
 			});

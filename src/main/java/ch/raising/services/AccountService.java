@@ -84,8 +84,8 @@ public class AccountService implements UserDetailsService {
 	}
 
 	@Override
-	public AccountDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Account account = accountRepository.findByUsername(username);
+	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		Account account = accountRepository.findByEmail(email);
 		return new AccountDetails(account);
 	}
 
@@ -127,7 +127,7 @@ public class AccountService implements UserDetailsService {
 	 */
 	protected long registerAccount(Account req) throws Exception {
 		checkRequestValid(req);
-
+		
 		long accountId = accountRepository.add(Account.accountBuilder().name(req.getName()).password(req.getPassword())
 				.roles(req.getRoles()).email(req.getEmail()).investmentMin(req.getInvestmentMin())
 				.investmentMax(req.getInvestmentMax()).build());
@@ -250,7 +250,7 @@ public class AccountService implements UserDetailsService {
 			return ResponseEntity.status(500).body(new ErrorResponse("Account doesn't exist"));
 		try {
 			if (req.getUsername() != null) {
-				if (accountRepository.findByUsername(req.getUsername()) != null)
+				if (accountRepository.findByEmail(req.getUsername()) != null)
 					return ResponseEntity.status(500).body(new ErrorResponse("Username already in use"));
 			}
 			if (!isAdmin)
