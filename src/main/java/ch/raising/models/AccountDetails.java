@@ -10,13 +10,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class AccountDetails implements UserDetails {
-    private String username;
+    private String email;
     private String password;
     private List<GrantedAuthority> authorities;
     private long id;
 
     public AccountDetails(Account account) {
-        this.username = account.getName();
+        this.email = account.getEmail();
         this.password = account.getPassword();
         this.authorities = Arrays.stream(account.getRoles().split(","))
             .map(SimpleGrantedAuthority::new)
@@ -41,7 +41,7 @@ public class AccountDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username;
+        return this.email;
     }
 
     @Override

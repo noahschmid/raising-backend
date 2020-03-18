@@ -28,7 +28,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	@Override
 	public void addMemberByStartupId(Boardmember bmem) {
 		jdbc.execute(
-				"INSERT INTO boardmember(startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?,?)",
+				"INSERT INTO boardmember(startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?)",
 				addByMember(bmem));
 
 	}
@@ -84,13 +84,13 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, bmem.getId());
-				ps.setLong(2, bmem.getStartupId());
-				ps.setString(3, bmem.getName());
-				ps.setString(4, bmem.getEducation());
-				ps.setString(5, bmem.getProfession());
-				ps.setString(6, bmem.getPullDownType());
-				ps.setInt(7, bmem.getPullDownDuration());
+				int c = 1;
+				ps.setLong(c++, bmem.getStartupId());
+				ps.setString(c++, bmem.getName());
+				ps.setString(c++, bmem.getEducation());
+				ps.setString(c++, bmem.getProfession());
+				ps.setString(c++, bmem.getPullDownType());
+				ps.setInt(c++, bmem.getPullDownDuration());
 				return ps.execute();
 			}
 		};

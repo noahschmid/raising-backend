@@ -67,12 +67,12 @@ public class AccountController {
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        } catch (BadCredentialsException e) {
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
         }
 
-        final AccountDetails userDetails = accountService.loadUserByUsername(request.getUsername());
+        final AccountDetails userDetails = accountService.loadUserByUsername(request.getEmail());
         final String token = jwtUtil.generateToken(userDetails);
         return ResponseEntity.ok(new LoginResponse(token, userDetails.getId()));
 	}
@@ -87,12 +87,12 @@ public class AccountController {
 	public ResponseEntity<?> register(@RequestBody Account account) {
         try {
            accountService.registerProfile(account);
+           return ResponseEntity.ok().build();
         } catch (Error e) {
             return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
         	return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
         }
-        return login(new LoginRequest(account.getName(), account.getPassword()));
     }
     
     /**

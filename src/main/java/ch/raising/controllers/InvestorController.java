@@ -50,7 +50,7 @@ public class InvestorController {
      * @param investor
      * @return
      */
-    @PostMapping("/{id}")
+    @PostMapping("/register")
     public ResponseEntity<?> addInvestor(@RequestBody Investor investor) {
         return investorService.registerProfile(investor);
     }

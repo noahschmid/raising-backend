@@ -56,7 +56,7 @@ public class StartupController {
 	 * @param startup
 	 * @return
 	 */
-	@PostMapping("/{id}")
+	@PostMapping("/register")
 	public ResponseEntity<?> addStartup(@RequestBody Startup startup) {
 		return startupService.registerProfile(startup);
 	}

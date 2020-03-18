@@ -1,21 +1,21 @@
 package ch.raising.models;
 
 public class LoginRequest {
-    private String username;
+    private String email;
     private String password;
 
     public LoginRequest() {
         super();
     }
 
-    public LoginRequest(String username, String password) {
-        this.username = username;
+    public LoginRequest(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
-    public String getUsername() { return this.username; }
+    public String getEmail() { return this.email; }
     public String getPassword() { return this.password; }
 
     public void setPassword(String password) { this.password = password; }
-    public void setUsername(String username) { this.username = username;}
+    public void setEmail(String username) { this.email = username;}
 }
