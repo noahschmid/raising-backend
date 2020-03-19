@@ -15,7 +15,7 @@ import ch.raising.models.Continent;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class ContinentRepository implements IRepository<Continent, Continent>{
+public class ContinentRepository implements IAssignmentTableRepository<Continent>{
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -28,6 +28,7 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	 * @param id id of the desired continent
 	 * @return instance of the found continent
 	 */
+    
 	public Continent find(long id) {
 		return jdbc.queryForObject("SELECT * FROM continent WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
@@ -35,6 +36,7 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	/**
 	 * Find continents which are assigned to certain account
 	 */
+	@Override
 	public List<Continent> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM continentAssignment INNER JOIN continent ON " +
 						   "continentAssignment.continentId = continent.id WHERE accountId = ?",
@@ -53,29 +55,13 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 		return new Continent(rs.getLong("id"), 
 			rs.getString("name"));
 	}
-
-	/**
-	 * Update continent
-	 * @param id the id of the continent to update
-	 * @param req request containing fields to update
-	 */
-	public void update(long id, Continent req) throws Exception {
-		try {
-			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this);
-			updateQuery.setJdbc(jdbc);
-			updateQuery.addField(req.getName(), "name");
-			updateQuery.execute();
-		} catch(Exception e) {
-			throw new Exception(e.getMessage());
-		}
-	}
-
 	/**
 	 * Add continent to account
 	 * @param continentId id of the account
 	 * @param accId id of the continent
 	 */
-	public void addContinentToAccountById(long continentId, long accId) {
+	@Override
+	public void addEntryToAccountById(long continentId, long accId) {
 		try {
 			String query = "INSERT INTO continentAssignment(accountId, continentId) VALUES (?, ?);"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
@@ -100,7 +86,8 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 	 * @param id
 	 */
 
-	public void deleteContinentFromAccountById(long continentId, long id) {
+	@Override
+	public void deleteEntryFromAccountById(long continentId, long id) {
 		String query = "DELETE FROM countryassignment WHERE accountid = ? AND continentid = ?";
 		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 			
@@ -114,7 +101,8 @@ public class ContinentRepository implements IRepository<Continent, Continent>{
 		});
 	}
 
-	public Object getAllContinents() {
+	@Override
+	public List<Continent> getAll() {
 		return jdbc.query("SELECT * FROM continent", this::mapRowToModel);
 	}
 }

@@ -17,7 +17,7 @@ import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class ContactRepository implements IAdditionalInformationRepository<Contact, UpdateQueryBuilder> {
+public class ContactRepository implements IAdditionalInformationRepository<Contact> {
 
 	@Autowired
 	JdbcTemplate jdbc;
@@ -36,11 +36,6 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 	@Override
 	public Contact find(long id) {
 		return jdbc.queryForObject("SELECT * FROM contact WHERE id = ?", new Object[] { id }, this::mapRowToModel);
-	}
-
-	@Override
-	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
-		throw new NotImplementedException();
 	}
 
 	@Override
@@ -109,9 +104,9 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 		};
 	}
 
-
-	public Contact findByStartupId(long startupId) {
-		return jdbc.queryForObject("SELECT * FROM contact WHERE startupid = ?", new Object[] { startupId }, 
+	@Override
+	public List<Contact> findByStartupId(long startupId) {
+		return jdbc.query("SELECT * FROM contact WHERE startupid = ?", new Object[] { startupId }, 
 				this::mapRowToModel);
 	}
 }

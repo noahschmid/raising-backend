@@ -16,7 +16,7 @@ import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class FounderRepository implements IAdditionalInformationRepository<Founder, UpdateQueryBuilder> {
+public class FounderRepository implements IAdditionalInformationRepository<Founder> {
 
 	@Autowired
 	JdbcTemplate jdbc;
@@ -35,12 +35,6 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	@Override
 	public Founder find(long id) {
 		return jdbc.queryForObject("SELECT * FROM founder WHERE id = ?", new Object[] { id }, this::mapRowToModel);
-	}
-
-	@Override
-	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
 	}
 
 	@Override

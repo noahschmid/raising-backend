@@ -34,7 +34,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * 
 	 * @return list of all accounts
 	 */
-	public List<Account> getAllAccounts() {
+	public List<Account> getAll() {
 		String getAll = "SELECT * FROM account";
 		List<Account> users = jdbc.query(getAll, this::mapRowToModel);
 		return users;
@@ -64,7 +64,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @return instance of the found user account
 	 */
 	public Account findByEmail(String email) {
-        List<Account> accounts = getAllAccounts();        
+        List<Account> accounts = getAll();        
         for (Account acc : accounts) {
             if (encoder.matches(email, acc.getEmail()))
                 return acc;
@@ -149,7 +149,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @return true if email already exists, false if email doesn't exist
 	 */
 	public boolean emailExists(String email) {
-		List<Account> accounts = getAllAccounts();
+		List<Account> accounts = getAll();
 		for(Account account: accounts) {
 			if(encoder.matches(email, account.getEmail()))
 				return true;

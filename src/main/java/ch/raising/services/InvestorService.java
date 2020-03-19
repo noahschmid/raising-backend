@@ -60,7 +60,7 @@ public class InvestorService extends AccountService {
 		Investor inv = Investor.investorBuilder().accountId(accountId).description(invReq.getDescription()).investorTypeId(invReq.getInvestorTypeId()).build();
 		
 		investorRepository.add(inv);
-		invReq.getInvPhases().forEach(phase -> investmentPhaseRepository.addInvestmentPhaseToInvestor(accountId, phase.getId()));
+		invReq.getInvPhases().forEach(phase -> investmentPhaseRepository.addEntryToAccountById(accountId, phase.getId()));
 		
 		return accountId;
 	}
@@ -69,7 +69,7 @@ public class InvestorService extends AccountService {
 	protected Investor getAccount(long id) {
 
 		Account acc = super.getAccount(id);
-		List<InvestmentPhase> invPhase = investmentPhaseRepository.findByInvestorId(id);
+		List<InvestmentPhase> invPhase = investmentPhaseRepository.findByAccountId(id);
 		Investor inv = investorRepository.find(id);
 
 		return new Investor(acc, inv, invPhase);
@@ -101,7 +101,7 @@ public class InvestorService extends AccountService {
 		try {
 			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			investmentPhaseRepository.addInvestmentPhaseToInvestor(accdet.getId(), id);
+			investmentPhaseRepository.addEntryToAccountById(accdet.getId(), id);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e.getMessage());
@@ -112,7 +112,7 @@ public class InvestorService extends AccountService {
 		try {
 			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			investmentPhaseRepository.deleteInvestmentPhaseOfInvestor(accdet.getId(), id);
+			investmentPhaseRepository.deleteEntryFromAccountById(accdet.getId(), id);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e.getMessage());

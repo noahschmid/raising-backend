@@ -95,7 +95,7 @@ public class StartupService extends AccountService {
 
 		List<InvestorType> invTypes = investorTypeRepository.findByStartupId(startupId);
 		List<Label> labels = labelRepository.findByStartupId(startupId);
-		Contact contact = contactRepository.findByStartupId(startupId);
+		Contact contact = contactRepository.findByStartupId(startupId).get(0);
 		List<Founder> founders = founderRepository.findByStartupId(startupId);
 
 		Account acc = super.getAccount(startupId);
@@ -311,7 +311,7 @@ public class StartupService extends AccountService {
 	 * @return
 	 */
 	private boolean belongsToStartup(long sideTableEntryId,
-			IAdditionalInformationRepository<?, UpdateQueryBuilder> addinfRepo) {
+			IAdditionalInformationRepository<?> addinfRepo) {
 		AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		return accdetails.getId() == addinfRepo.getStartupIdByMemberId(sideTableEntryId);

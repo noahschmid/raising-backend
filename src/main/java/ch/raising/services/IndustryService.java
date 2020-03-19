@@ -20,7 +20,7 @@ public class IndustryService {
 
 	public ResponseEntity<?> getAllIndustries() {
 		try {
-			return ResponseEntity.ok().body(industryRepository.getAllIndustries());
+			return ResponseEntity.ok().body(industryRepository.getAll());
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}

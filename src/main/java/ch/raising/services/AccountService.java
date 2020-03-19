@@ -119,10 +119,10 @@ public class AccountService implements UserDetailsService {
 				.roles(req.getRoles()).email(req.getEmail()).investmentMin(req.getInvestmentMin())
 				.investmentMax(req.getInvestmentMax()).build());
 		
-		req.getCountries().forEach(country -> countryRepository.addCountryToAccountById(accountId,country.getId()));
-		req.getContinents().forEach(continent -> continentRepository.addContinentToAccountById(continent.getId(), accountId));
+		req.getCountries().forEach(country -> countryRepository.addEntryToAccountById(accountId,country.getId()));
+		req.getContinents().forEach(continent -> continentRepository.addEntryToAccountById(continent.getId(), accountId));
 		req.getSupport().forEach(sup -> supportRepository.addSupportToAccountById(accountId, sup.getId()));
-		req.getIndustries().forEach(ind -> industryRepository.addIndustryToAccountById(accountId,ind.getId()));
+		req.getIndustries().forEach(ind -> industryRepository.addEntryToAccountById(accountId,ind.getId()));
 		return accountId;
 	}
 
@@ -191,7 +191,7 @@ public class AccountService implements UserDetailsService {
 	 */
 	public List<Account> getAccounts() {
 		ArrayList<Account> accounts = new ArrayList<Account>();
-		accountRepository.getAllAccounts().forEach(acc -> accounts.add(acc));
+		accountRepository.getAll().forEach(acc -> accounts.add(acc));
 		return accounts;
 	}
 
@@ -304,7 +304,7 @@ public class AccountService implements UserDetailsService {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			countryRepository.addCountryToAccountById(countryId, accDet.getId());
+			countryRepository.addEntryToAccountById(countryId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -321,7 +321,7 @@ public class AccountService implements UserDetailsService {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			countryRepository.deleteCountryFromAccountById(countryId, accDet.getId());
+			countryRepository.deleteEntryFromAccountById(countryId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -338,7 +338,7 @@ public class AccountService implements UserDetailsService {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			continentRepository.addContinentToAccountById(continentId, accDet.getId());
+			continentRepository.addEntryToAccountById(continentId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -355,7 +355,7 @@ public class AccountService implements UserDetailsService {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			continentRepository.deleteContinentFromAccountById(continentId, accDet.getId());
+			continentRepository.deleteEntryFromAccountById(continentId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -406,7 +406,7 @@ public class AccountService implements UserDetailsService {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			industryRepository.deleteIndustryFromAccountById(industryId, accDet.getId());
+			industryRepository.deleteEntryFromAccountById(industryId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -423,7 +423,7 @@ public class AccountService implements UserDetailsService {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			industryRepository.addIndustryToAccountById(industryId, accDet.getId());
+			industryRepository.addEntryToAccountById(industryId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));

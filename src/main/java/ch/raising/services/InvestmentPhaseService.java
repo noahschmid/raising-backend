@@ -20,7 +20,7 @@ public class InvestmentPhaseService {
 
 	public ResponseEntity<?> getAllinvestmentPhases() {
 		try {
-			return ResponseEntity.ok().body(investmentPhaseRepository.getAllinvestmnetPhases());
+			return ResponseEntity.ok().body(investmentPhaseRepository.getAll());
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}

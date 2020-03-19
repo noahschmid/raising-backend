@@ -3,6 +3,7 @@ package ch.raising.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -15,7 +16,7 @@ import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class BoardmemberRepository implements IAdditionalInformationRepository<Boardmember, UpdateQueryBuilder> {
+public class BoardmemberRepository implements IAdditionalInformationRepository<Boardmember> {
 
 	@Autowired
 	JdbcTemplate jdbc;
@@ -49,11 +50,6 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	@Override
 	public Boardmember find(long id) {
 		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { id }, this::mapRowToModel);
-	}
-
-	@Override
-	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
-		throw new NotImplementedException();
 	}
 
 	@Override
@@ -114,7 +110,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	}
 
 	@Override
-	public Object findByStartupId(long startupId) {
+	public List<Boardmember> findByStartupId(long startupId) {
 		return jdbc.query("SELECT * FROM boardmember WHERE startupid = ?", new Object[] {startupId}, this::mapRowToModel);
 	}
 

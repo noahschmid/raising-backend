@@ -91,22 +91,15 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 	 */
 	public void add(Investor investor) {
 
-		// SCHEMA WILL CHANGE !!!! FIRST CHANGE SCHEMA
-
 		try {
-			String query = "INSERT INTO investor(accountId, name, description, investmentMin,"
-					+ "investmentMax, investorTypeId) VALUES (?, ?, ?, ?, ?, ?);";
+			String query = "INSERT INTO investor(accountid, description, investorTypeId) VALUES (?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-
-					ps.setLong(1, investor.getAccountId());
-					ps.setString(2, investor.getName());
-					ps.setString(3, investor.getDescription());
-					ps.setInt(4, investor.getInvestmentMin());
-					ps.setInt(5, investor.getInvestmentMax());
-					ps.setLong(6, investor.getInvestorTypeId());
-
+					int c = 1;
+					ps.setLong(c++, investor.getAccountId());
+					ps.setString(c++, investor.getDescription());
+					ps.setLong(c++, investor.getInvestorTypeId());
 					return ps.execute();
 				}
 			});
@@ -115,5 +108,4 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 			throw e;
 		}
 	}
-
 }

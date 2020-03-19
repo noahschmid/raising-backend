@@ -15,7 +15,7 @@ import ch.raising.models.Industry;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class IndustryRepository implements IRepository<Industry, Industry> {
+public class IndustryRepository implements IAssignmentTableRepository<Industry> {
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -28,6 +28,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @param id id of the desired industry
 	 * @return instance of the found industry
 	 */
+    @Override
 	public Industry find(long id) {
 		return jdbc.queryForObject("SELECT * FROM industry WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
@@ -35,6 +36,7 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	/**
 	 * Find industries which are assigned to certain account
 	 */
+    @Override
 	public List<Industry> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM industryAssignment INNER JOIN industry ON " +
 						   "industryAssignment.industryId = industry.id WHERE accountId = ?",
@@ -55,28 +57,13 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	}
 
 	/**
-	 * Update industry
-	 * @param id the id of the industry to update
-	 * @param req request containing fields to update
-	 */
-	public void update(long id, Industry req) throws Exception {
-		try {
-			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("industry", id, this);
-			updateQuery.setJdbc(jdbc);
-			updateQuery.addField(req.getName(), "name");
-			updateQuery.execute();
-		} catch(Exception e) {
-			throw new Exception(e.getMessage());
-		}
-	}
-	/**
 	 * add entry with industryid and accountid into industryassingment
 	 * @param accountId
 	 * @param industryId
 	 * @throws SQLException
 	 */
-	
-	public void addIndustryToAccountById(long accountId, long industryId) {
+	@Override
+	public void addEntryToAccountById(long accountId, long industryId) {
 		String sql = "INSERT INTO industryassignment(accountId, industryId) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -97,7 +84,8 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 	 * @param industryId
 	 * @param accountId
 	 */
-	public void deleteIndustryFromAccountById(long industryId, long accountId) {
+	@Override
+	public void deleteEntryFromAccountById(long industryId, long accountId) {
 		String sql = "DELETE FROM industryassignment WHERE industryid = ? AND accountid = ?";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -111,8 +99,8 @@ public class IndustryRepository implements IRepository<Industry, Industry> {
 			}  
 		});  
 	}
-
-	public List<Industry> getAllIndustries() {
+	@Override
+	public List<Industry> getAll() {
 		return jdbc.query("SELECT * FROM industry", this::mapRowToModel);
 	}
 }

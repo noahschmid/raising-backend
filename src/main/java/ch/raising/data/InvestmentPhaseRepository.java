@@ -15,7 +15,7 @@ import ch.raising.models.InvestmentPhase;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, InvestmentPhase> {
+public class InvestmentPhaseRepository implements IAssignmentTableRepository<InvestmentPhase> {
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -28,6 +28,7 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @param id id of the desired investment phase
 	 * @return instance of the found investment phase
 	 */
+    @Override
 	public InvestmentPhase find(long id) {
 		return jdbc.queryForObject("SELECT * FROM investmentPhase WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
@@ -35,7 +36,8 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	/**
 	 * Find investment phases which are assigned to certain investor
 	 */
-	public List<InvestmentPhase> findByInvestorId(long id) {
+    @Override
+	public List<InvestmentPhase> findByAccountId(long id) {
 		return jdbc.query("SELECT * FROM investmentPhaseAssignment INNER JOIN investmentPhase ON " +
 						   "investmentPhaseAssignment.investmentPhaseId = investmentPhase.id WHERE investorId = ?",
 						   new Object[] { id }, this::mapRowToModel);
@@ -53,22 +55,6 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 		return new InvestmentPhase(rs.getLong("id"), 
 			rs.getString("name"));
 	}
-
-	/**
-	 * Update industry
-	 * @param id the id of the industry to update
-	 * @param req request containing fields to update
-	 */
-	public void update(long id, InvestmentPhase req) throws Exception {
-		try {
-			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investmentPhase", id, this);
-			updateQuery.setJdbc(jdbc);
-			updateQuery.addField(req.getName(), "name");
-			updateQuery.execute();
-		} catch(Exception e) {
-			throw new Exception(e.getMessage());
-		}
-	}
 	
 	/**
 	 * adds an entry in investortypeassignments with the ids
@@ -76,8 +62,8 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 	 * @param investmentPhaseId
 	 * @throws SQLException
 	 */
-	
-	public void addInvestmentPhaseToInvestor(long investorId, long investmentPhaseId) {
+	@Override
+	public void addEntryToAccountById(long investorId, long investmentPhaseId) {
 		String sql = "INSERT INTO investmentphaseassignment(investorid, investmentphaseid) VALUES (?,?)";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -91,8 +77,8 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 			}  
 		});  
 	}
-
-	public void deleteInvestmentPhaseOfInvestor(long accountId, long invPhaseId) {
+	@Override
+	public void deleteEntryFromAccountById(long accountId, long invPhaseId) {
 		String sql = "DELETE FROM investmentphaseassignment WHERE investorid  = ? AND investmentphaseid = ?";
 		jdbc.execute(sql,new PreparedStatementCallback<Boolean>(){  
 			@Override  
@@ -104,8 +90,8 @@ public class InvestmentPhaseRepository implements IRepository<InvestmentPhase, I
 			}  
 		}); 
 	}
-
-	public List<InvestmentPhase> getAllinvestmnetPhases() {
+	@Override
+	public List<InvestmentPhase> getAll() {
 		return jdbc.query("SELECT * FROM investmentphase", this::mapRowToModel);
 	}
 }

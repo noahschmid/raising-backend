@@ -20,7 +20,7 @@ public class CountryService {
 
 	public ResponseEntity<?> getAllCountries() {
 		try {
-			return ResponseEntity.ok().body(countryRepository.getAllCountries());
+			return ResponseEntity.ok().body(countryRepository.getAll());
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}

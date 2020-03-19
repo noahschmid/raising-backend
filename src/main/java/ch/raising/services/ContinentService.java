@@ -20,7 +20,7 @@ public class ContinentService {
 
 	public ResponseEntity<?> getAllContinents() {
 		try {
-			return ResponseEntity.ok().body(continentRepository.getAllContinents());
+			return ResponseEntity.ok().body(continentRepository.getAll());
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}

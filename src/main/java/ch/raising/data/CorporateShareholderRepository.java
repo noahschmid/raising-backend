@@ -16,7 +16,7 @@ import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class CorporateShareholderRepository
-		implements IAdditionalInformationRepository<CorporateShareholder, UpdateQueryBuilder> {
+		implements IAdditionalInformationRepository<CorporateShareholder> {
 
 	@Autowired
 	JdbcTemplate jdbc;
@@ -30,12 +30,6 @@ public class CorporateShareholderRepository
 	public CorporateShareholder find(long id) {
 		return jdbc.queryForObject("SELECT * FROM corporateshareholder WHERE id = ?", new Object[] { id },
 				this::mapRowToModel);
-	}
-
-	@Override
-	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
-		// TODO Auto-generated method stub
-		throw new Error("not implemented");
 	}
 
 	@Override
