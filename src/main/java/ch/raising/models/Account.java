@@ -2,6 +2,8 @@ package ch.raising.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ public class Account{
 
 	protected long accountId = -1l;
 	protected String name;
+	@JsonIgnore
 	private String password;
 	private String roles;
 	private String email;

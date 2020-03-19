@@ -64,7 +64,8 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @return instance of the found user account
 	 */
 	public Account findByEmail(String email) {
-        List<Account> accounts = getAllAccounts();        for (Account acc : accounts) {
+        List<Account> accounts = getAllAccounts();        
+        for (Account acc : accounts) {
             if (encoder.matches(email, acc.getEmail()))
                 return acc;
         }
@@ -78,6 +79,9 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @return 
 	 */
 	public long add(Account acc) throws Exception {
+		if(emailExists(acc.getEmail())) {
+			 throw new Exception("Account with same email already exists");
+		}
 		try {
 			String query = "INSERT INTO account(name, password, emailHash) VALUES (?, ?, ?)";
 			String emailHash = encoder.encode(acc.getEmail());
@@ -139,20 +143,18 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	}
 
 	/**
-	 * Check whether given username already exists in the database
+	 * Check whether given email already exists in the database
 	 * 
-	 * @param username the username to search for
-	 * @return true if username already exists, false if username doesn't exist
+	 * @param username the email to search for
+	 * @return true if email already exists, false if email doesn't exist
 	 */
-	public boolean usernameExists(String username) {
-		String query = "SELECT * FROM account WHERE username = ?";
-		Object[] params = new Object[] { username };
-		try {
-			jdbc.queryForObject(query, params, this::mapRowToModel);
-			return true;
-		} catch (EmptyResultDataAccessException e) {
-			return false;
+	public boolean emailExists(String email) {
+		List<Account> accounts = getAllAccounts();
+		for(Account account: accounts) {
+			if(encoder.matches(email, account.getEmail()))
+				return true;
 		}
+		return false;
 	}
 
 	/**
@@ -166,7 +168,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	@Override
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
-				.email(rs.getString("emailHash")).password(rs.getString("password")).roles(rs.getString("roles")).build();
+				.email(rs.getString("emailHash")).roles(rs.getString("roles")).password(rs.getString("password")).build();
 	}
 	
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
@@ -183,7 +185,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 		try {
 			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this);
 			updateQuery.setJdbc(jdbc);
-			updateQuery.addField(req.getUsername(), "username");
+			updateQuery.addField(req.getName(), "name");
 			updateQuery.addField(req.getPassword(), "password");
 			updateQuery.addField(req.getRoles(), "roles");
 			updateQuery.addField(req.getEmailHash(), "emailHash");

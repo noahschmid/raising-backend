@@ -236,8 +236,8 @@ public class AccountService implements UserDetailsService {
 		if (accountRepository.find(id) == null)
 			return ResponseEntity.status(500).body(new ErrorResponse("Account doesn't exist"));
 		try {
-			if (req.getUsername() != null) {
-				if (accountRepository.findByEmail(req.getUsername()) != null)
+			if (req.getName() != null) {
+				if (accountRepository.findByEmail(req.getName()) != null)
 					return ResponseEntity.status(500).body(new ErrorResponse("Username already in use"));
 			}
 			if (!isAdmin)
