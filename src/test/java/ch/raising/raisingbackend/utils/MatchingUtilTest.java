@@ -1,43 +1,24 @@
 package ch.raising.raisingbackend.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import java.util.ArrayList;
 
-import ch.raising.config.AppConfig;
-import ch.raising.controllers.AccountController;
+import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
-import ch.raising.models.Industry;
-import ch.raising.models.InvestmentPhase;
-import ch.raising.models.LoginRequest;
 import ch.raising.models.MatchingProfile;
-import ch.raising.services.AccountService;
 import ch.raising.utils.MatchingUtil;
 
 @SpringBootTest
+@ContextConfiguration(classes = { MatchingUtil.class })
 class MatchingUtilTest {
     @Test
     void testEquals() {
-        Industry ind1 = new Industry(1, "test");
-        Industry ind2 = new Industry(2, "test2");
+    	AssignmentTableModel ind1 = new AssignmentTableModel("test", 1);
+    	AssignmentTableModel ind2 = new AssignmentTableModel("test2", 2);
 
         boolean result = ind1.equals(ind2);
         assertEquals(false, result, "Industries don't match");
@@ -48,15 +29,15 @@ class MatchingUtilTest {
         result = ind1.equals(ind1);
         assertEquals(true, result, "Industries match");
 
-        result = ind1.equals(new Industry(1, "test"));
+        result = ind1.equals(new AssignmentTableModel("test", 1));
         assertEquals(true, result, "Industries match");
     }
 
     @Test
     void testContains() {
         ArrayList<Country> countries = new ArrayList<>();
-        countries.add(new Country(1, "Switzerland"));
-        boolean result = countries.contains(new Country(2, "Germany"));
+        countries.add(new Country("Switzerland", 1, 1));
+        boolean result = countries.contains(new Country("Germany", 2, 1));
         assertEquals(false, result, "Country list doesn't contain Germany");
     }
 
@@ -107,16 +88,16 @@ class MatchingUtilTest {
         // subject investment range inside object range
         int score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(0, score, "No countries match 0");
-        subject.addCountry(new Country(1, "Switzerland"));
-        object.addCountry(new Country(2, "Germany"));
+        subject.addCountry(new Country("Switzerland", 1, 1));
+        object.addCountry(new Country("Germany", 2, 1));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(0, score, "No countries match 1");
 
-        object.addCountry(new Country(1, "Switzerland"));
+        object.addCountry(new Country("Switzerland", 1,1 ));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(1, score, "Countries match");
 
-        subject.addCountry(new Country(2, "Germany"));
+        subject.addCountry(new Country("Germany", 2,1 ));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple countries match");
     }
@@ -128,16 +109,16 @@ class MatchingUtilTest {
 
         int score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(0, score, "No investment phases match");
-        subject.addInvestmentPhase(new InvestmentPhase(1, "Round A"));
-        object.addInvestmentPhase(new InvestmentPhase(2, "Round B"));
+        subject.addInvestmentPhase(new AssignmentTableModel("Round A", 1));
+        object.addInvestmentPhase(new AssignmentTableModel("Round B", 2));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(0, score, "No investment phases match");
 
-        object.addInvestmentPhase(new InvestmentPhase(1, "Round A"));
+        object.addInvestmentPhase(new AssignmentTableModel("Round A", 1));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(1, score, "Investment phases match");
 
-        subject.addCountry(new Country(2, "Round B"));
+        subject.addCountry(new Country("Round B", 2, 1));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple investment phases match");
     }
@@ -150,16 +131,16 @@ class MatchingUtilTest {
         // subject investment range inside object range
         int score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(0, score, "No industries match");
-        subject.addIndustry(new Industry(1, "Tech"));
-        object.addIndustry(new Industry(2, "Health"));
+        subject.addIndustry(new AssignmentTableModel("Tech", 1));
+        object.addIndustry(new AssignmentTableModel("Health", 2));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(0, score, "No industries match");
 
-        object.addIndustry(new Industry(1, "Tech"));
+        object.addIndustry(new AssignmentTableModel("Tech", 1));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(1, score, "Industries match");
 
-        subject.addIndustry(new Industry(2, "Health"));
+        subject.addIndustry(new AssignmentTableModel("Health", 2));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple industries match");
     }

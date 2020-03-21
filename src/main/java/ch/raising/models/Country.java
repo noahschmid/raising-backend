@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Country implements IAssignmentTableModel {
-
 	private String name;
 	private long id;
 	private long continentId;

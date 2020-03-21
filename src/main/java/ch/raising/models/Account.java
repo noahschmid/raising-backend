@@ -21,7 +21,7 @@ public class Account{
 	private String roles;
 	private String email;
 	private String pitch;
-	private String desciription;
+	private String description;
 	private int investmentMin = -1;
 	private int investmentMax = -1;
 
@@ -56,7 +56,7 @@ public class Account{
 		this.password = password;
 		this.roles = roles;
 		this.email = email;
-		this.desciription = description;
+		this.description = description;
 		this.pitch = pitch;
 		this.investmentMin = investmentMin;
 		this.investmentMax = investmentMax;
@@ -89,7 +89,7 @@ public class Account{
 		this.password = acc.password;
 		this.roles = acc.roles;
 		this.email = acc.email;
-		this.desciription = acc.desciription;
+		this.description = acc.description;
 		this.pitch = acc.pitch;
 		this.investmentMin = acc.investmentMin;
 		this.investmentMax = acc.investmentMax;

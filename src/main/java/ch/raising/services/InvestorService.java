@@ -16,12 +16,17 @@ import ch.raising.data.InvestorRepository;
 import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
+
+import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
+
 import ch.raising.models.Investor;
 import ch.raising.utils.MailUtil;
+import ch.raising.utils.MapUtil;
 import ch.raising.utils.ResetCodeUtil;
 
+import ch.raising.models.MatchingProfile;
 @Service
 public class InvestorService extends AccountService {
 
@@ -29,6 +34,16 @@ public class InvestorService extends AccountService {
 
 	@Autowired
 	private InvestorRepository investorRepository;
+
+	private AssignmentTableRepository supportRepository;
+
+	private AssignmentTableRepository continentRepository;
+
+	private AssignmentTableRepository countryRepository;
+
+	private AssignmentTableRepository industryRepository;
+
+	private AssignmentTableRepository investorTypeRepository;
 
 	@Autowired
 
@@ -38,11 +53,10 @@ public class InvestorService extends AccountService {
 
 		this.investmentPhaseRepository = new AssignmentTableRepository(jdbc, "investmentphase");
 		this.investorRepository = investorRepository;
-		this.supportRepository = supportRepository;
-		this.accountRepository = accountRepository;
-		this.continentRepository = continentRepository;
-		this.countryRepository = countryRepository;
-		this.industryRepository = industryRepository;
+		this.supportRepository = new AssignmentTableRepository(jdbc, "support");
+		this.continentRepository = new AssignmentTableRepository(jdbc, "continent");
+		this.countryRepository = new AssignmentTableRepository(jdbc, "country", MapUtil::mapRowToCountry);
+		this.industryRepository = new AssignmentTableRepository(jdbc, "industry");
 	}
 
 	@Override
@@ -79,7 +93,7 @@ public class InvestorService extends AccountService {
 	 * @param request the data to update
 	 * @return response entity with status code and message
 	 */
-	public ResponseEntity<?> updateInvestor(int id, InvestorUpdateRequest request) {
+	public ResponseEntity<?> updateInvestor(int id, Investor request) {
 		try {
 			investorRepository.update(id, request);
 			return ResponseEntity.ok().build();
@@ -98,12 +112,12 @@ public class InvestorService extends AccountService {
             return null;
         
         MatchingProfile profile = new MatchingProfile();
-        InvestorType type = investorTypeRepository.find(investor.getInvestorTypeId());
-        List<Continent> continents = continentRepository.findByAccountId(investor.getAccountId());
-        List<Country> countries = countryRepository.findByAccountId(investor.getAccountId());
-        List<Industry> industries = industryRepository.findByAccountId(investor.getAccountId());
-        List<InvestmentPhase> investmentPhases = investmentPhaseRepository.findByInvestorId(investor.getAccountId());
-        List<Support> supports = supportRepository.findByAccountId(investor.getAccountId());
+        IAssignmentTableModel investorType = investorTypeRepository.find(investor.getInvestorTypeId());
+        List<IAssignmentTableModel> continents = continentRepository.findByAccountId(investor.getAccountId());
+        List<IAssignmentTableModel> countries = countryRepository.findByAccountId(investor.getAccountId());
+        List<IAssignmentTableModel> industries = industryRepository.findByAccountId(investor.getAccountId());
+        List<IAssignmentTableModel> investmentPhases = investmentPhaseRepository.findByAccountId(investor.getAccountId());
+        List<IAssignmentTableModel> supports = supportRepository.findByAccountId(investor.getAccountId());
 
         profile.setAccountId(investor.getAccountId());
         profile.setName(investor.getName());
@@ -112,27 +126,13 @@ public class InvestorService extends AccountService {
         profile.setInvestmentMin(investor.getInvestmentMin());
         profile.setStartup(false);
 
-        profile.addInvestorType(type);
-
-        for(Continent cntnt : continents) {
-            profile.addContinent(cntnt);
-        }
-
-        for(Country cntry : countries) {
-            profile.addCountry(cntry);
-        }
-
-        for(Industry ind : industries) {
-            profile.addIndustry(ind);
-        }
-
-        for(InvestmentPhase invPhs : investmentPhases) {
-            profile.addInvestmentPhase(invPhs);
-        }
-
-        for(Support spprt : supports) {
-            profile.addSupport(spprt);
-        }
+        profile.addInvestorType(investorType);
+        
+        profile.setContinents(continents);
+        profile.setCountries(countries);
+        profile.setIndustries(industries);
+        profile.setInvestmentPhases(investmentPhases);
+        profile.setSupport(supports);
 
         return profile;
     }
@@ -152,7 +152,7 @@ public class InvestorService extends AccountService {
         }
 
         return profiles;
-    }
+	}
 
 	public ResponseEntity<?> addInvestmentPhaseByIvestorId(long id) {
 		try {

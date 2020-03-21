@@ -55,7 +55,7 @@ public class AccountModelTest {
 		assertEquals(roles, acc.getRoles());
 		assertEquals(email, acc.getEmail());
 		assertEquals(pitch, acc.getPitch());
-		assertEquals(description, acc.getDesciription());
+		assertEquals(description, acc.getDescription());
 		assertEquals(investmentMax, acc.getInvestmentMax());
 		assertEquals(investmentMin, acc.getInvestmentMin());
 		assertEquals(name, acc.getName());
@@ -73,7 +73,7 @@ public class AccountModelTest {
 		assertEquals(roles, acc.getRoles());
 		assertEquals(email, acc.getEmail());
 		assertNull( acc.getPitch());
-		assertEquals(description, acc.getDesciription());
+		assertEquals(description, acc.getDescription());
 		assertEquals(investmentMax, acc.getInvestmentMax());
 		assertEquals(investmentMin, acc.getInvestmentMin());
 		assertNull(acc.getName());
@@ -106,7 +106,7 @@ public class AccountModelTest {
 		assertEquals(roles, fullAcc.getRoles());
 		assertEquals(email, fullAcc.getEmail());
 		assertEquals(pitch, fullAcc.getPitch());
-		assertEquals(description, fullAcc.getDesciription());
+		assertEquals(description, fullAcc.getDescription());
 		assertEquals(investmentMax, fullAcc.getInvestmentMax());
 		assertEquals(investmentMin, fullAcc.getInvestmentMin());
 		assertEquals(name, fullAcc.getName());

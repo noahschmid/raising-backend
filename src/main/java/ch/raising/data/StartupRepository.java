@@ -44,6 +44,17 @@ public class StartupRepository implements IRepository<Startup, Startup> {
             return null;
         }
     }
+	
+	/**
+	 * Get all startups
+	 * 
+	 * @return list of all startups
+	 */
+	public List<Startup> getAll() {
+		String getAll = "SELECT * FROM account";
+		List<Startup> users = jdbc.query(getAll, this::mapRowToModel);
+		return users;
+	}
 
 	/**
 	 * Update startup

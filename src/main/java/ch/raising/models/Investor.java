@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class Investor extends Account{
+	
 	private long investorTypeId = -1;
 	private List<IAssignmentTableModel> invPhases;
 

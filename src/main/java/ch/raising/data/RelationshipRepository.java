@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
+import ch.raising.interfaces.IRepository;
 import ch.raising.models.Relationship;
 import ch.raising.utils.UpdateQueryBuilder;
 
