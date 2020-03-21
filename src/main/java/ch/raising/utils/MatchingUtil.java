@@ -2,6 +2,7 @@ package ch.raising.utils;
 
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -9,16 +10,11 @@ import org.springframework.stereotype.Component;
 import ch.raising.data.InvestorRepository;
 import ch.raising.data.RelationshipRepository;
 import ch.raising.data.StartupRepository;
-import ch.raising.models.Country;
-import ch.raising.models.Industry;
-import ch.raising.models.InvestmentPhase;
+import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.Investor;
-import ch.raising.models.InvestorType;
 import ch.raising.models.MatchingProfile;
 import ch.raising.models.Relationship;
 import ch.raising.models.Startup;
-import ch.raising.models.StartupProfileResponse;
-import ch.raising.models.Support;
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
 
@@ -104,35 +100,35 @@ public class MatchingUtil {
                 object.getInvestmentMin() <= subject.getInvestmentMax())
                 ++score;
         }
-        for(Country cntry : object.getCountries()) {
+        for(IAssignmentTableModel cntry : object.getCountries()) {
             if(subject.getCountries().contains(cntry)) {
                 ++score;
                 break;
             }
         }
 
-        for(InvestmentPhase phase : object.getInvestmentPhases()) {
+        for(IAssignmentTableModel phase : object.getInvestmentPhases()) {
             if(subject.getInvestmentPhases().contains(phase)) {
                 ++score;
                 break;
             }
         }
 
-        for(InvestorType type : object.getInvestorTypes()) {
+        for(IAssignmentTableModel type : object.getInvestorTypes()) {
             if(subject.getInvestorTypes().contains(type)) {
                 ++score;
                 break;
             }
         }
 
-        for(Industry industry : object.getIndustries()) {
+        for(IAssignmentTableModel industry : object.getIndustries()) {
             if(subject.getIndustries().contains(industry)) {
                 ++score;
                 break;
             }
         }
 
-        for(Support support : object.getSupport()) {
+        for(IAssignmentTableModel support : object.getSupport()) {
             if(subject.getSupport().contains(support)) {
                 ++score;
                 break;

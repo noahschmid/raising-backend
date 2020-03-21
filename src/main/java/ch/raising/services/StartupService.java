@@ -44,22 +44,19 @@ public class StartupService extends AccountService {
 	private CorporateShareholderRepository cshRepository;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	private AssignmentTableRepository industryRepository;
 
 	@Autowired
-	private IndustryRepository industryRepository;
+	private AssignmentTableRepository supportRepository;
 
 	@Autowired
-	private SupportRepository supportRepository;
+	private AssignmentTableRepository continentRepository;
 
 	@Autowired
-	private ContinentRepository continentRepository;
+	private AssignmentTableRepository countryRepository;
 
 	@Autowired
-	private CountryRepository countryRepository;
-
-	@Autowired
-	private InvestmentPhaseRepository investmentPhaseRepository;
+	private AssignmentTableRepository investmentPhaseRepository;
 
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
@@ -303,12 +300,12 @@ public class StartupService extends AccountService {
             return null;
         
         MatchingProfile profile = new MatchingProfile();
-        List<InvestorType> types = investorTypeRepository.findByStartupId(startup.getAccountId());
-        List<Continent> continents = continentRepository.findByAccountId(startup.getAccountId());
-        List<Country> countries = countryRepository.findByAccountId(startup.getAccountId());
-        List<Industry> industries = industryRepository.findByAccountId(startup.getAccountId());
-        List<InvestmentPhase> investmentPhases = investmentPhaseRepository.findByInvestorId(startup.getAccountId());
-        List<Support> supports = supportRepository.findByAccountId(startup.getAccountId());
+        List<IAssignmentTableModel> types = investorTypeRepository.findByAccountId(startup.getAccountId());
+        List<IAssignmentTableModel> continents = continentRepository.findByAccountId(startup.getAccountId());
+        List<IAssignmentTableModel> countries = countryRepository.findByAccountId(startup.getAccountId());
+        List<IAssignmentTableModel> industries = industryRepository.findByAccountId(startup.getAccountId());
+        List<IAssignmentTableModel> investmentPhases = investmentPhaseRepository.findByAccountId(startup.getAccountId());
+        List<IAssignmentTableModel> supports = supportRepository.findByAccountId(startup.getAccountId());
 
         profile.setAccountId(startup.getAccountId());
         profile.setName(startup.getName());
@@ -316,30 +313,13 @@ public class StartupService extends AccountService {
         profile.setInvestmentMax(startup.getInvestmentMax());
         profile.setInvestmentMin(startup.getInvestmentMin());
         profile.setStartup(true);
-
-		for(InvestorType type : types) {
-			profile.addInvestorType(type);
-		}
         
-        for(Continent cntnt : continents) {
-            profile.addContinent(cntnt);
-        }
-
-        for(Country cntry : countries) {
-            profile.addCountry(cntry);
-        }
-
-        for(Industry ind : industries) {
-            profile.addIndustry(ind);
-        }
-
-        for(InvestmentPhase invPhs : investmentPhases) {
-            profile.addInvestmentPhase(invPhs);
-        }
-
-        for(Support spprt : supports) {
-            profile.addSupport(spprt);
-        }
+        profile.setContinents(continents);
+        profile.setInvestorTypes(types);
+        profile.setCountries(countries);
+        profile.setIndustries(industries);
+        profile.setInvestmentPhases(investmentPhases);
+        profile.setSupport(supports);
 
         return profile;
     }

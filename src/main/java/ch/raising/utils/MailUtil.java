@@ -14,6 +14,8 @@ import org.thymeleaf.context.Context;
 @Component
 public class MailUtil {
 
+	
+	
     @Autowired
     private JavaMailSender javaMailSender;
 

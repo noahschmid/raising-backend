@@ -48,6 +48,17 @@ public class InvestorRepository implements IRepository<Investor, Investor> {
             return null;
         }
     }
+	/**
+	 * Get all investors
+	 * 
+	 * @return list of all investors
+	 */
+	public List<Investor> getAll() {
+		String getAll = "SELECT * FROM investor";
+		List<Investor> users = jdbc.query(getAll, this::mapRowToModel);
+		return users;
+	}
+	
 
 	/**
 	 * Update investor

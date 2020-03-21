@@ -8,7 +8,4 @@ import lombok.Setter;
 public class ForgotPasswordRequest {
     private String email;
 
-    public ForgotPasswordRequest() {
-        super();
-    }
 }
