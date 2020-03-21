@@ -53,13 +53,13 @@ public class AccountService implements UserDetailsService {
 
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-	private AssignmentTableRepository countryRepository;
+	protected AssignmentTableRepository countryRepository;
 
-	private AssignmentTableRepository continentRepository;
+	protected AssignmentTableRepository continentRepository;
 
-	private AssignmentTableRepository supportRepository;
+	protected AssignmentTableRepository supportRepository;
 
-	private AssignmentTableRepository industryRepository;
+	protected AssignmentTableRepository industryRepository;
 
 	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,

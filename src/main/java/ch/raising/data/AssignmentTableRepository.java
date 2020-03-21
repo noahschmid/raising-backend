@@ -17,7 +17,6 @@ import ch.raising.models.AssignmentTableModel;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.RowMapper;
 
-
 public class AssignmentTableRepository {
 
 	private JdbcTemplate jdbc;

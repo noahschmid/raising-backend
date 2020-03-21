@@ -1,18 +1,15 @@
 package ch.raising.services;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import ch.raising.models.*;
 import ch.raising.utils.MailUtil;
+import ch.raising.utils.MapUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.data.*;
 import ch.raising.interfaces.IAdditionalInformationRepository;
@@ -20,8 +17,6 @@ import ch.raising.interfaces.IAssignmentTableModel;
 
 @Service
 public class StartupService extends AccountService {
-
-	private AssignmentTableRepository investorTypeRepository;
 
 	@Autowired
 	private StartupRepository startupRepository;
@@ -42,21 +37,10 @@ public class StartupService extends AccountService {
 
 	@Autowired
 	private CorporateShareholderRepository cshRepository;
-
-	@Autowired
-	private AssignmentTableRepository industryRepository;
-
-	@Autowired
-	private AssignmentTableRepository supportRepository;
-
-	@Autowired
-	private AssignmentTableRepository continentRepository;
-
-	@Autowired
-	private AssignmentTableRepository countryRepository;
-
-	@Autowired
+	
 	private AssignmentTableRepository investmentPhaseRepository;
+	
+	private AssignmentTableRepository investorTypeRepository;
 
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
@@ -68,11 +52,12 @@ public class StartupService extends AccountService {
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc);
 
 		this.investorTypeRepository = new AssignmentTableRepository(jdbc, "investortype");
+		this.labelRepository = new AssignmentTableRepository(jdbc, "label", MapUtil::mapRowToAssignmentTableWithDescription);
 		this.startupRepository = startupRepository;
 		this.contactRepository = contactRepository;
 		this.bmemRepository = bmemRepository;
 		this.founderRepository = founderRepository;
-		this.labelRepository = new AssignmentTableRepository(jdbc, "label");
+		
 		this.pshRepository = pshRepository;
 		this.cshRepository = cshRepository;
 	}
