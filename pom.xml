@@ -20,9 +20,7 @@
 		<thymeleaf-layout-dialect.version>2.2.1
 		</thymeleaf-layout-dialect.version>
 	</properties>
-
 	<dependencies>
-
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
@@ -31,8 +29,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
-			<version>2.2.5.RELEASE</version>
-		</dependency>
+			</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -105,26 +102,21 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>5.2.4.RELEASE</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.3.2</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.3.2</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -133,5 +125,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
