@@ -65,6 +65,7 @@ public class Account{
 
 	/**
 	 * this constructor makes a complete Account object
+	 * @param support 
 	 * 
 	 * @param accountId
 	 * @param name
@@ -76,6 +77,9 @@ public class Account{
 	 * @param countries
 	 * @param continents
 	 * @param support
+	 * @param continents 
+	 * @param countries 
+	 * @param industries 
 	 * @param industries
 	 */
 	public Account(Account acc) {

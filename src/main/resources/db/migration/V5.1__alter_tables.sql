@@ -41,3 +41,5 @@ ALTER TABLE privateshareholder RENAME COLUMN prename to firstname;
 ALTER TABLE privateshareholder RENAME COLUMN name to lastname;
 
 ALTER TABLE contact RENAME COLUMN role TO poisition;
+
+ALTER TABLE corporatebody RENAME COLUMN type TO name;
