@@ -19,7 +19,6 @@ import ch.raising.interfaces.IAssignmentTableModel;
 @Service
 public class StartupService extends AccountService {
 
-	@Autowired
 	private AssignmentTableRepository investorTypeRepository;
 
 	@Autowired
@@ -34,7 +33,6 @@ public class StartupService extends AccountService {
 	@Autowired
 	private FounderRepository founderRepository;
 
-	@Autowired
 	private AssignmentTableRepository labelRepository;
 
 	@Autowired

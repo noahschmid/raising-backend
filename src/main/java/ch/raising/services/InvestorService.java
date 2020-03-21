@@ -22,7 +22,7 @@ import ch.raising.utils.ResetCodeUtil;
 
 @Service
 public class InvestorService extends AccountService {
-	@Autowired
+
 	private AssignmentTableRepository investmentPhaseRepository;
 
 	@Autowired

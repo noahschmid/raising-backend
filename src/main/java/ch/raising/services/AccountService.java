@@ -52,18 +52,15 @@ public class AccountService implements UserDetailsService {
 
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-	@Autowired
 	private AssignmentTableRepository countryRepository;
 
-	@Autowired
 	private AssignmentTableRepository continentRepository;
 
-	@Autowired
 	private AssignmentTableRepository supportRepository;
 
-	@Autowired
 	private AssignmentTableRepository industryRepository;
 
+	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
 			JdbcTemplate jdbc) {
 		this.accountRepository = accountRepository;

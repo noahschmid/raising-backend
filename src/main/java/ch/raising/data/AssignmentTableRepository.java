@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.interfaces.IAssignmentTableRepository;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.RowMapper;
+
 
 public class AssignmentTableRepository {
 

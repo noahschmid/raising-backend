@@ -12,6 +12,7 @@ import ch.raising.services.PublicInformationService;
 @RequestMapping("/")
 public class PublicInformationController {
 	
+	@Autowired
 	PublicInformationService pis;
 	
 	@Autowired
