@@ -9,5 +9,6 @@ public class StartupMember {
 	
 	private long id = -1l;
 	private long startupId;
-	private String name;
+	private String firstName;
+	private String lastName;
 }

@@ -144,7 +144,7 @@ public class StartupService extends AccountService {
 
 	public ResponseEntity<?> addContactByStartupId(Contact contact) {
 		try {
-			contactRepository.addMemberByStartupId(contact);
+			contactRepository.addMemberByStartupId(contact, contact.getStartupId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -180,7 +180,7 @@ public class StartupService extends AccountService {
 
 	public ResponseEntity<?> addBoardmemberByStartupId(Boardmember bMem) {
 		try {
-			bmemRepository.addMemberByStartupId(bMem);
+			bmemRepository.addMemberByStartupId(bMem, bMem.getStartupId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -216,7 +216,7 @@ public class StartupService extends AccountService {
 
 	public ResponseEntity<?> addFounderByStartupId(Founder founder) {
 		try {
-			founderRepository.addByMember(founder);
+			founderRepository.addMemberByStartupId(founder, founder.getStartupId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));

@@ -16,18 +16,35 @@ import ch.raising.models.AssignmentTableModel;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.RowMapper;
 
-public class AssignmentTableRepository{
+public class AssignmentTableRepository {
 
 	private JdbcTemplate jdbc;
 	private String tableName;
 	private String tableAssignment;
 	protected RowMapper<ResultSet, Integer, IAssignmentTableModel> rowMapper;
 
+	/**
+	 * uses the default rowmapper
+	 * @param jdbc
+	 * @param tableName
+	 */
 	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName) {
 		this.jdbc = jdbc;
 		this.tableName = tableName;
 		this.tableAssignment = tableName + "assignment";
 		this.rowMapper = MapUtil::mapRowToAssignmentTable;
+	}
+	/**
+	 * Is used if an assignmenttable contains more fields than name and id. then a custom rowmapper can be added.
+	 * @param jdbc
+	 * @param tableName
+	 * @param rowMapper method from {@link MapUtil}
+	 */
+	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName, RowMapper<ResultSet, Integer, IAssignmentTableModel> rowMapper) {
+		this.jdbc = jdbc;
+		this.tableName = tableName;
+		this.tableAssignment = tableName + "assignment";
+		this.rowMapper = rowMapper;
 	}
 
 	public IAssignmentTableModel find(long id) {

@@ -70,7 +70,7 @@ public class InvestorRepository implements IRepository<Investor, Investor> {
 	 */
 	@Override
 	public Investor mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Investor.investorBuilder().accountId(rs.getLong("accountId")).description(rs.getString("description"))
+		return Investor.investorBuilder().accountId(rs.getLong("accountId")).company(rs.getString("company"))
 				.investorTypeId(rs.getInt("investorTypeId")).build();
 	}
 
@@ -88,7 +88,7 @@ public class InvestorRepository implements IRepository<Investor, Investor> {
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 					int c = 1;
 					ps.setLong(c++, investor.getAccountId());
-					ps.setString(c++, investor.getDescription());
+					ps.setString(c++, investor.getCompany());
 					ps.setLong(c++, investor.getInvestorTypeId());
 					return ps.execute();
 				}

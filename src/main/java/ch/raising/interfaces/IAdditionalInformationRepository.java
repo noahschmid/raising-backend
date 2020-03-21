@@ -21,15 +21,11 @@ public interface IAdditionalInformationRepository<Model>{
 	
 	public void addMemberByStartupId(Model sumem, long startupId);
 	
-	public void addMemberByStartupId(Model sumem);
-	
 	public void deleteMemberByStartupId(long id);
 	
 	public PreparedStatementCallback<Boolean> deleteById(long id);
 	
 	public PreparedStatementCallback<Boolean> addByStartupId(Model model, long startupId);
-	
-	PreparedStatementCallback<Boolean> addByMember(Model bmem);
 	
 	public List<Model> findByStartupId(long startupId);
 	

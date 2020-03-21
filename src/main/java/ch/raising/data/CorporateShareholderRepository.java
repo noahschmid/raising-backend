@@ -16,8 +16,7 @@ import ch.raising.models.CorporateShareholder;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class CorporateShareholderRepository
-		implements IAdditionalInformationRepository<CorporateShareholder> {
+public class CorporateShareholderRepository implements IAdditionalInformationRepository<CorporateShareholder> {
 
 	@Autowired
 	JdbcTemplate jdbc;
@@ -29,39 +28,32 @@ public class CorporateShareholderRepository
 
 	@Override
 	public CorporateShareholder find(long id) {
-		return jdbc.queryForObject("SELECT * FROM corporateshareholder WHERE tableEntryId = ?", new Object[] { id },
+		return jdbc.queryForObject("SELECT * FROM corporateshareholder WHERE id = ?", new Object[] { id },
 				this::mapRowToModel);
 	}
 
 	@Override
 	public CorporateShareholder mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return CorporateShareholder.builder().name(rs.getString("name")).website(rs.getString("website"))
-				.equityShare(rs.getInt("equityshare")).corporateBodyId(rs.getLong("startupid")).build();
+		return CorporateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid")).name(rs.getString("name")).website(rs.getString("website"))
+				.equityShare(rs.getInt("equityshare")).corporateBodyId(rs.getLong("corporatebodyid")).countryId(rs.getInt("countryid")).build();
 	}
 
 	@Override
 	public long getStartupIdByMemberId(long id) {
-		return jdbc.queryForObject("SELECT startupid FROM corporateshareholder WHERE tableEntryId = ?", new Object[] { id },
-				this::mapRowToId);
+		return jdbc.queryForObject("SELECT * FROM corporateshareholder WHERE id = ?",
+				new Object[] { id }, this::mapRowToId);
 	}
 
 	@Override
 	public void addMemberByStartupId(CorporateShareholder sumem, long startupId) {
 		jdbc.execute(
-				"INSERT INTO corporateshareholder(name,website,equityshare,coporatebodyid,startupid) VALUES (?,?,?,?,?)",
+				"INSERT INTO corporateshareholder(startupid, name, website, equityshare, coporatebodyid, countryid) VALUES (?,?,?,?,?,?)",
 				addByStartupId(sumem, startupId));
 	}
 
 	@Override
-	public void addMemberByStartupId(CorporateShareholder sumem) {
-		jdbc.execute(
-				"INSERT INTO corporateshareholder(name,website,equityshare,coporatebodyid,startupid) VALUES (?,?,?,?,?)",
-				addByMember(sumem));
-	}
-
-	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM privateshareholder WHERE tableEntryId = ?", deleteById(id));
+		jdbc.execute("DELETE FROM privateshareholder WHERE startupid = ?", deleteById(id));
 	}
 
 	@Override
@@ -76,30 +68,17 @@ public class CorporateShareholderRepository
 	}
 
 	@Override
-	public PreparedStatementCallback<Boolean> addByStartupId(CorporateShareholder psh, long startupId) {
+	public PreparedStatementCallback<Boolean> addByStartupId(CorporateShareholder csh, long startupId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
-				ps.setString(c++, psh.getName());
-				ps.setString(c++, psh.getWebsite());
-				ps.setLong(c++, psh.getCorporateBodyId());
-				ps.setLong(c++, startupId);
-				return ps.execute();
-			}
-		};
-	}
-
-	@Override
-	public PreparedStatementCallback<Boolean> addByMember(CorporateShareholder psh) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				int c = 1;
-				ps.setString(c++, psh.getName());
-				ps.setString(c++, psh.getWebsite());
-				ps.setLong(c++, psh.getCorporateBodyId());
-				ps.setLong(c++, psh.getStartupId());
+				ps.setLong(c++, csh.getStartupId());
+				ps.setString(c++, csh.getName());
+				ps.setString(c++, csh.getWebsite());
+				ps.setInt(c++, csh.getEquityShare());
+				ps.setLong(c++, csh.getCorporateBodyId());
+				ps.setLong(c++, csh.getCountryId());
 				return ps.execute();
 			}
 		};
@@ -107,7 +86,8 @@ public class CorporateShareholderRepository
 
 	@Override
 	public List<CorporateShareholder> findByStartupId(long startupId) {
-		return jdbc.query("SELECT * FROM corporateshareholder WHERE startupid = ?", new Object[] {startupId}, this::mapRowToModel);
+		return jdbc.query("SELECT * FROM corporateshareholder WHERE startupid = ?", new Object[] { startupId },
+				this::mapRowToModel);
 	}
 
 }

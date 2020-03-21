@@ -46,7 +46,7 @@ public class InvestorService extends AccountService {
 		checkRequestValid(invReq);
 
 		long accountId = super.registerAccount(invReq);
-		Investor inv = Investor.investorBuilder().accountId(accountId).description(invReq.getDescription())
+		Investor inv = Investor.investorBuilder().accountId(accountId).company(invReq.getCompany())
 				.investorTypeId(invReq.getInvestorTypeId()).build();
 
 		investorRepository.add(inv);

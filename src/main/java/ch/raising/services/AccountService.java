@@ -18,12 +18,14 @@ import org.springframework.stereotype.Service;
 
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
+import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
+import ch.raising.utils.MapUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
@@ -68,7 +70,7 @@ public class AccountService implements UserDetailsService {
 		this.mailUtil = mailUtil;
 		this.resetCodeUtil = resetCodeUtil;
 		this.jdbc = jdbc;
-		this.countryRepository = new AssignmentTableRepository(jdbc, "country");
+		this.countryRepository = new AssignmentTableRepository(jdbc, "country", MapUtil::mapRowToCountry);
 		this.continentRepository = new AssignmentTableRepository(jdbc, "continent");
 		this.supportRepository = new AssignmentTableRepository(jdbc, "support");
 		this.industryRepository = new AssignmentTableRepository(jdbc, "industry");

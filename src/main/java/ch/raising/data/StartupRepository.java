@@ -47,8 +47,8 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	/**
 	 * Update startup
 	 * 
-	 * @param tableEntryId  the tableEntryId of the startup to update
-	 * @param req instance of the update request
+	 * @param tableEntryId the tableEntryId of the startup to update
+	 * @param req          instance of the update request
 	 * @throws Exception
 	 */
 	@Override
@@ -65,11 +65,13 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	 * @throws SQLException
 	 */
 	public Startup mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Startup.startupBuilder().accountId(rs.getLong("accountId")).boosts(rs.getInt("boosts"))
+		return Startup.startupBuilder().accountId(rs.getLong("accountId"))
+				.investmentPhaseId(rs.getLong("investmentphaseid")).boosts(rs.getInt("boosts"))
+				.numberOfFTE(rs.getInt("numberOfFTE")).turnover(rs.getInt("turnover")).street(rs.getString("street"))
 				.breakEvenYear(rs.getInt("breakevenYear")).city(rs.getString("city")).zipCode(rs.getString("zipCode"))
-				.website(rs.getString("website")).street(rs.getString("street"))
-				.investmentPhaseId(rs.getLong("investmentPhaseId")).turnover(rs.getInt("turnover"))
-				.numberOfFTE(rs.getInt("numberOfFTE")).revenue(rs.getString("revenue"))
+				.website(rs.getString("website")).investmentPhaseId(rs.getLong("investmentPhaseId"))
+				.revenueMax(rs.getInt("revenuemax")).revenueMin(rs.getInt("revenuemin")).scope(rs.getInt("scope"))
+				.uId(rs.getString("uid")).foundingyear(rs.getInt("foundingyear"))
 				.financeTypeId(rs.getLong("financetype")).closingtime(rs.getDate("closingtime"))
 				.preMoneyevaluation(rs.getInt("premoneyvaluation")).build();
 	}
@@ -79,26 +81,34 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	 * 
 	 * @param startup the startup to add
 	 */
-	public void add(Startup startup) throws Exception {
+	public void add(Startup su) throws Exception {
 
 		try {
-			String query = "INSERT INTO startup(investmentphaseid, boosts, numberoffte, turnover, street, city, website,"
-					+ "breakevenyear, zipcode, premoeyevaluation, closingtime, revenue, financetype) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			String query = "INSERT INTO startup(accountid, investmentphaseid, boosts, numberoffte, turnover, "
+					+ "street, city, website, breakevenyear, zipcode, premoneyevaluation, revenueMax, financetypeid, "
+					+ "closingtime, revenuemin, scope, uid, foundingyear) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-					ps.setLong(1, startup.getInvestmentPhaseId());
-					ps.setInt(2, startup.getBoosts());
-					ps.setInt(3, startup.getNumberOfFTE());
-					ps.setInt(4, startup.getTurnover());
-					ps.setString(5, startup.getStreet());
-					ps.setString(6, startup.getWebsite());
-					ps.setInt(7, startup.getBreakEvenYear());
-					ps.setString(8, startup.getZipCode());
-					ps.setInt(9, startup.getPreMoneyevaluation());
-					ps.setDate(10, (Date) startup.getClosingtime());
-					ps.setString(11, startup.getRevenue());
-					ps.setLong(12, startup.getFinanceTypeId());
+					int c = 1;
+					ps.setLong(c++, su.getAccountId());
+					ps.setLong(c++, su.getInvestmentPhaseId());
+					ps.setInt(c++, su.getBoosts());
+					ps.setInt(c++, su.getNumberOfFTE());
+					ps.setInt(c++, su.getTurnover());
+					ps.setString(c++, su.getStreet());
+					ps.setString(c++, su.getCity());
+					ps.setString(c++, su.getWebsite());
+					ps.setInt(c++, su.getBreakEvenYear());
+					ps.setString(c++, su.getZipCode());
+					ps.setInt(c++, su.getPreMoneyevaluation());
+					ps.setInt(c++, su.getRevenueMax());
+					ps.setLong(c++, su.getFinanceTypeId());
+					ps.setDate(c++, (Date) su.getClosingtime());
+					ps.setInt(c++, su.getRevenueMin());
+					ps.setInt(c++, su.getScope());
+					ps.setInt(c++, su.getFoundingyear());
+					
 					return ps.execute();
 				}
 			});

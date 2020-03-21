@@ -29,36 +29,31 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 
 	@Override
 	public long getStartupIdByMemberId(long founderId) {
-		return jdbc.queryForObject("SELECT startupid FROM founder WHERE tableEntryId = ?", new Object[] { founderId },
-				this::mapRowToId);
+		return jdbc.queryForObject("SELECT * FROM founder WHERE id = ?", new Object[] { founderId }, this::mapRowToId);
 	}
 
 	@Override
 	public Founder find(long id) {
-		return jdbc.queryForObject("SELECT * FROM founder WHERE tableEntryId = ?", new Object[] { id }, this::mapRowToModel);
+		return jdbc.queryForObject("SELECT * FROM founder WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	@Override
 	public void addMemberByStartupId(Founder founder, long accountId) {
-		jdbc.execute("INSERT INTO founder(tableEntryId ,startupid, name, role, education) VALUES (?,?,?,?,?,?,?)",
+		jdbc.execute(
+				"INSERT INTO founder(startupid, firstname, lastname, education, position, countryid,) VALUES (?,?,?,?,?,?)",
 				addByStartupId(founder, accountId));
-	}
-	
-	@Override
-	public void addMemberByStartupId(Founder founder) {
-		jdbc.execute("INSERT INTO founder(tableEntryId ,startupid, name, role, education) VALUES (?,?,?,?,?,?,?)",
-				addByMember(founder));
 	}
 
 	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM founder WHERE founder.id = ?", deleteById(id));
+		jdbc.execute("DELETE FROM founder WHERE id = ?", deleteById(id));
 	}
 
 	@Override
 	public Founder mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return Founder.builder().id(rs.getLong("tableEntryId")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
-				.role(rs.getString("role")).education(rs.getString("education")).build();
+		return Founder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
+				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).position(rs.getString("role"))
+				.countryId(rs.getLong("countryId")).education(rs.getString("education")).build();
 	}
 
 	@Override
@@ -77,33 +72,21 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, founder.getId());
-				ps.setLong(2, accountId);
-				ps.setString(3, founder.getName());
-				ps.setString(4, founder.getRole());
-				ps.setString(5, founder.getEducation());
+				int c = 1;
+				ps.setLong(c++, founder.getStartupId());
+				ps.setString(c++, founder.getFirstName());
+				ps.setString(c++, founder.getLastName());
+				ps.setString(c++, founder.getEducation());
+				ps.setString(c++, founder.getPosition());
+				ps.setLong(c++, founder.getCountryId());
 				return ps.execute();
 			}
 		};
 	}
-	@Override
-	public PreparedStatementCallback<Boolean> addByMember(Founder founder) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, founder.getId());
-				ps.setLong(2, founder.getStartupId());
-				ps.setString(3, founder.getName());
-				ps.setString(4, founder.getRole());
-				ps.setString(5, founder.getEducation());
-				return ps.execute();
-			}
-		};
-	}
+
 	@Override
 	public List<Founder> findByStartupId(long startupId) {
 		return jdbc.query("SELECT * FROM founder WHERE startupid = ?", new Object[] { startupId }, this::mapRowToModel);
 	}
 
-	
 }

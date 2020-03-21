@@ -30,36 +30,30 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 
 	@Override
 	public long getStartupIdByMemberId(long contactId) {
-		return jdbc.queryForObject("SELECT startupid FROM contact WHERE tableEntryId = ?", new Object[] { contactId },
-				this::mapRowToId);
+		return jdbc.queryForObject("SELECT * FROM contact WHERE id = ?", new Object[] { contactId }, this::mapRowToId);
 	}
 
 	@Override
 	public Contact find(long id) {
-		return jdbc.queryForObject("SELECT * FROM contact WHERE tableEntryId = ?", new Object[] { id }, this::mapRowToModel);
+		return jdbc.queryForObject("SELECT * FROM contact WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	@Override
 	public void addMemberByStartupId(Contact contact, long startupId) {
-		jdbc.execute("INSERT INTO contact(tableEntryId, startupid, name, role, email, phone) VALUES (?,?,?,?,?,?)",
+		jdbc.execute("INSERT INTO contact(startupid, firstname, lastname, position, email, phone) VALUES (?,?,?,?,?,?)",
 				addByStartupId(contact, startupId));
-	}
-	
-	@Override
-	public void addMemberByStartupId(Contact sumem) {
-		jdbc.execute("INSERT INTO contact(tableEntryId, startupid, name, role, email, phone) VALUES (?,?,?,?,?,?)",
-				addByMember(sumem));
 	}
 
 	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM contact WHERE tableEntryId = ?", deleteById(id));
+		jdbc.execute("DELETE FROM contact WHERE id = ?", deleteById(id));
 	}
 
 	@Override
 	public Contact mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return Contact.builder().id(rs.getLong("tableEntryId")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
-				.phone(rs.getString("phone")).email(rs.getString("email")).role(rs.getString("role")).build();
+		return Contact.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
+				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).phone(rs.getString("phone"))
+				.email(rs.getString("email")).position(rs.getString("position")).build();
 	}
 
 	@Override
@@ -72,34 +66,19 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 			}
 		};
 	}
-	
+
 	@Override
 	public PreparedStatementCallback<Boolean> addByStartupId(Contact contact, long startupId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, contact.getId());
-				ps.setLong(2, startupId);
-				ps.setString(3, contact.getName());
-				ps.setString(4, contact.getRole());
-				ps.setString(5, contact.getEmail());
-				ps.setString(6, contact.getPhone());
-				return ps.execute();
-			}
-		};
-	}
-	
-	@Override
-	public PreparedStatementCallback<Boolean> addByMember(Contact contact) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, contact.getId());
-				ps.setLong(2, contact.getStartupId());
-				ps.setString(3, contact.getName());
-				ps.setString(4, contact.getRole());
-				ps.setString(5, contact.getEmail());
-				ps.setString(6, contact.getPhone());
+				int c = 1;
+				ps.setLong(c++, startupId);
+				ps.setString(c++, contact.getFirstName());
+				ps.setString(c++, contact.getLastName());
+				ps.setString(c++, contact.getPosition());
+				ps.setString(c++, contact.getEmail());
+				ps.setString(c++, contact.getPhone());
 				return ps.execute();
 			}
 		};
@@ -107,7 +86,6 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 
 	@Override
 	public List<Contact> findByStartupId(long startupId) {
-		return jdbc.query("SELECT * FROM contact WHERE startupid = ?", new Object[] { startupId }, 
-				this::mapRowToModel);
+		return jdbc.query("SELECT * FROM contact WHERE startupid = ?", new Object[] { startupId }, this::mapRowToModel);
 	}
 }

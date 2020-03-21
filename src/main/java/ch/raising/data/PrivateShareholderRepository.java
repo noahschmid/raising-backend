@@ -16,8 +16,7 @@ import ch.raising.models.PrivateShareholder;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class PrivateShareholderRepository
-		implements IAdditionalInformationRepository<PrivateShareholder> {
+public class PrivateShareholderRepository implements IAdditionalInformationRepository<PrivateShareholder> {
 
 	@Autowired
 	JdbcTemplate jdbc;
@@ -29,42 +28,35 @@ public class PrivateShareholderRepository
 
 	@Override
 	public PrivateShareholder find(long id) {
-		return jdbc.queryForObject("SELECT * FROM privateshareholder WHERE tableEntryId = ?", new Object[] { id },
+		return jdbc.queryForObject("SELECT * FROM privateshareholder WHERE id = ?", new Object[] { id },
 				this::mapRowToModel);
 	}
 
 	@Override
 	public PrivateShareholder mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return PrivateShareholder.builder().prename(rs.getString("prename")).name(rs.getString("name"))
-				.city(rs.getString("city")).equityShare(rs.getInt("equityShare"))
-				.investortypeId(rs.getLong("investortypeid")).startupId(rs.getLong("startupid")).build();
+		return PrivateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid"))
+				.firstName(rs.getString("fistname")).lastName(rs.getString("lastname")).city(rs.getString("city"))
+				.equityShare(rs.getInt("equityshare")).investortypeId(rs.getLong("investortypeid"))
+				.startupId(rs.getLong("startupid")).countryId(rs.getLong("countryid")).build();
 	}
 
 	@Override
 	public long getStartupIdByMemberId(long id) {
-		return jdbc.queryForObject("SELECT startupid FROM privateshareholder WHERE tableEntryId = ?", new Object[] { id },
-				this::mapRowToId);
+		return jdbc.queryForObject("SELECT * FROM privateshareholder WHERE id = ?",
+				new Object[] { id }, this::mapRowToId);
 	}
 
 	@Override
 	public void addMemberByStartupId(PrivateShareholder sumem, long startupId) {
 		jdbc.execute(
-				"INSERT INTO privateshareholder(prename, name, city, equityshare, investorid, startupid) VALUES (?,?,?,?,?,?,?)",
+				"INSERT INTO privateshareholder(startupid, firstname, lastname, city, equityshare, investortypeid, countryid) VALUES (?,?,?,?,?,?,?)",
 				addByStartupId(sumem, startupId));
 	}
 
 	@Override
-	public void addMemberByStartupId(PrivateShareholder sumem) {
-		jdbc.execute(
-				"INSERT INTO privateshareholder(prename, name, city, equityshare, investorid, startupid) VALUES (?,?,?,?,?,?,?)",
-				addByMember(sumem));
-	}
-
-	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM privateshareholder WHERE tableEntryId = ?", deleteById(id));
+		jdbc.execute("DELETE FROM privateshareholder WHERE id = ?", deleteById(id));
 	}
-
 
 	@Override
 	public PreparedStatementCallback<Boolean> deleteById(long id) {
@@ -82,28 +74,14 @@ public class PrivateShareholderRepository
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setString(1, psh.getPrename());
-				ps.setString(2, psh.getName());
-				ps.setString(3, psh.getCity());
-				ps.setInt(4,  psh.getEquityShare());
-				ps.setLong(5, psh.getInvestortypeId());
-				ps.setLong(6, startupId);
-				return ps.execute();
-			}
-		};
-	}
-
-	@Override
-	public PreparedStatementCallback<Boolean> addByMember(PrivateShareholder psh) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setString(1, psh.getPrename());
-				ps.setString(2, psh.getName());
-				ps.setString(3, psh.getCity());
-				ps.setInt(4,  psh.getEquityShare());
-				ps.setLong(5, psh.getInvestortypeId());
-				ps.setLong(6, psh.getStartupId());
+				int c = 1;
+				ps.setLong(c++, psh.getStartupId());
+				ps.setString(c++, psh.getFirstName());
+				ps.setString(c++, psh.getLastName());
+				ps.setString(c++, psh.getCity());
+				ps.setInt(c++, psh.getEquityShare());
+				ps.setLong(c++, psh.getInvestortypeId());
+				ps.setLong(c++, psh.getCountryId());
 				return ps.execute();
 			}
 		};
@@ -111,7 +89,8 @@ public class PrivateShareholderRepository
 
 	@Override
 	public List<PrivateShareholder> findByStartupId(long startupId) {
-		return jdbc.query("SELECT * FROM privateshareholder WHERE startupid = ?", new Object[] {startupId}, this::mapRowToModel);
+		return jdbc.query("SELECT * FROM privateshareholder WHERE startupid = ?", new Object[] { startupId },
+				this::mapRowToModel);
 	}
 
 }

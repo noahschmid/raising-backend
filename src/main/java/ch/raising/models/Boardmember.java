@@ -10,15 +10,17 @@ import lombok.EqualsAndHashCode;
 public class Boardmember extends StartupMember {
 	private String education;
 	private String profession;
-	private String pullDownType;
-	private int pullDownDuration;
+	private String position;
+	private int membersince;
+	private long countryId;
 	
 	@Builder
-	public Boardmember(long id, long startupid, String name, int pullDownDuration, String pullDownType, String profession, String education) {
-		super(id, startupid, name);
+	public Boardmember(long id, long startupid, String firstName, String lastName, int membersince, String position, String profession, String education, long coutryId) {
+		super(id, startupid, firstName, lastName);
 		this.education = education;
 		this.profession =profession;
-		this.pullDownType = pullDownType;
-		this.pullDownDuration = pullDownDuration;
+		this.position = position;
+		this.membersince = membersince;
+		this.countryId = coutryId;
 	}
 }

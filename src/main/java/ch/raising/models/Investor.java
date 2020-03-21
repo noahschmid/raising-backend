@@ -10,8 +10,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class Investor extends Account{
-
-	private String description;
 	private long investorTypeId = -1;
 	private List<IAssignmentTableModel> invPhases;
 
@@ -27,8 +25,6 @@ public class Investor extends Account{
 	public Investor(Account account, Investor inv, List<IAssignmentTableModel> invPhases) {
 
 		super(account);
-
-		this.description = inv.getDescription();
 		this.investorTypeId = inv.getInvestorTypeId();
 		this.invPhases = invPhases;
 
@@ -45,15 +41,15 @@ public class Investor extends Account{
 	 */
 
 	@Builder(builderMethodName = "investorBuilder")
-	public Investor(long accountId, String description, long investorTypeId) {
+	public Investor(long accountId, String company, long investorTypeId) {
+		this.company = company;
 		this.accountId = accountId;
-		this.description = description;
 		this.investorTypeId = investorTypeId;
 	}
 	
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() || description == null || investorTypeId == -1
+		return super.isInComplete() || investorTypeId == -1
 				||invPhases == null || invPhases.isEmpty();
 	}
 

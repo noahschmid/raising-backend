@@ -14,11 +14,14 @@ import lombok.NoArgsConstructor;
 public class Account{
 
 	protected long accountId = -1l;
+	protected String company;
 	protected String name;
 	@JsonIgnore
 	private String password;
 	private String roles;
 	private String email;
+	private String pitch;
+	private String desciription;
 	private int investmentMin = -1;
 	private int investmentMax = -1;
 
@@ -45,13 +48,16 @@ public class Account{
 
 	@Builder(builderMethodName = "accountBuilder")
 	public Account(long accountId, String name, String password, String roles, String email, int investmentMin,
-			int investmentMax) {
+			int investmentMax, String company, String description, String pitch) {
 
+		this.company = company;
 		this.accountId = accountId;
 		this.name = name;
 		this.password = password;
 		this.roles = roles;
 		this.email = email;
+		this.desciription = description;
+		this.pitch = pitch;
 		this.investmentMin = investmentMin;
 		this.investmentMax = investmentMax;
 
@@ -73,11 +79,14 @@ public class Account{
 	 * @param industries
 	 */
 	public Account(Account acc) {
+		this.company = acc.company;
 		this.accountId = acc.accountId;
 		this.name = acc.name;
 		this.password = acc.password;
 		this.roles = acc.roles;
 		this.email = acc.email;
+		this.desciription = acc.desciription;
+		this.pitch = acc.pitch;
 		this.investmentMin = acc.investmentMin;
 		this.investmentMax = acc.investmentMax;
 		this.countries = acc.countries;

@@ -27,30 +27,24 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 		this.jdbc = jdbc;
 	}
 
+
 	@Override
-	public void addMemberByStartupId(Boardmember bmem) {
-		jdbc.execute(
-				"INSERT INTO boardmember(startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?)",
-				addByMember(bmem));
-
-	}
-
-	@Override 
 	public void addMemberByStartupId(Boardmember bmem, long startupid) {
 		jdbc.execute(
-				"INSERT INTO boardmember(startupid, name, education, profession, pulldowntype, pulldownduration) VALUES (?,?,?,?,?,?,?)",
+				"INSERT INTO boardmember(startupid, firstname, lastname, education, profession, position, membersince, countryid) VALUES (?,?,?,?,?,?,?,?)",
 				addByStartupId(bmem, startupid));
 	}
 
 	@Override
 	public long getStartupIdByMemberId(long bmemId) {
-		return jdbc.queryForObject("SELECT startupid FROM boardmember WHERE tableEntryId = ?", new Object[] { bmemId },
+		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { bmemId },
 				this::mapRowToId);
 	}
 
 	@Override
 	public Boardmember find(long id) {
-		return jdbc.queryForObject("SELECT * FROM boardmember WHERE tableEntryId = ?", new Object[] { id }, this::mapRowToModel);
+		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { id },
+				this::mapRowToModel);
 	}
 
 	@Override
@@ -60,9 +54,10 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 
 	@Override
 	public Boardmember mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return Boardmember.builder().id(rs.getLong("tableEntryId")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
+		return Boardmember.builder().id(rs.getLong("tableEntryId")).startupid(rs.getLong("startupid"))
+				.lastName(rs.getString("lastname")).firstName("firstname").position("position")
 				.education(rs.getString("education")).profession(rs.getString("profession"))
-				.pullDownType(rs.getString("pulldowntype")).pullDownDuration(rs.getInt("pulldownduration")).build();
+				.membersince(rs.getInt("pulldownduration")).coutryId(rs.getLong("countryId")).build();
 	}
 
 	@Override
@@ -77,34 +72,18 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	}
 
 	@Override
-	public PreparedStatementCallback<Boolean> addByMember(Boardmember bmem) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				int c = 1;
-				ps.setLong(c++, bmem.getStartupId());
-				ps.setString(c++, bmem.getName());
-				ps.setString(c++, bmem.getEducation());
-				ps.setString(c++, bmem.getProfession());
-				ps.setString(c++, bmem.getPullDownType());
-				ps.setInt(c++, bmem.getPullDownDuration());
-				return ps.execute();
-			}
-		};
-	}
-	
-	@Override
 	public PreparedStatementCallback<Boolean> addByStartupId(Boardmember bmem, long accountId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, bmem.getId());
-				ps.setLong(2, accountId);
-				ps.setString(3, bmem.getName());
-				ps.setString(4, bmem.getEducation());
-				ps.setString(5, bmem.getProfession());
-				ps.setString(6, bmem.getPullDownType());
-				ps.setInt(7, bmem.getPullDownDuration());
+				int c = 1;
+				ps.setLong(c++, accountId);
+				ps.setString(c++, bmem.getFirstName());
+				ps.setString(c++, bmem.getLastName());
+				ps.setString(c++, bmem.getEducation());
+				ps.setString(c++, bmem.getProfession());
+				ps.setInt(c++, bmem.getMembersince());
+				ps.setLong(c++, bmem.getCountryId());
 				return ps.execute();
 			}
 		};
@@ -112,7 +91,8 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 
 	@Override
 	public List<Boardmember> findByStartupId(long startupId) {
-		return jdbc.query("SELECT * FROM boardmember WHERE startupid = ?", new Object[] {startupId}, this::mapRowToModel);
+		return jdbc.query("SELECT * FROM boardmember WHERE startupid = ?", new Object[] { startupId },
+				this::mapRowToModel);
 	}
 
 }
