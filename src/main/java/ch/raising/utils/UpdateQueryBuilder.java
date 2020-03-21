@@ -12,8 +12,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Service;
 
-import ch.raising.data.IRepository;
 import ch.raising.data.InvestorRepository;
+import ch.raising.interfaces.IRepository;
 import ch.raising.models.ErrorResponse;
 
 /**
@@ -31,7 +31,7 @@ public class UpdateQueryBuilder {
     private String tableName;
     private IRepository<?,?> repository;
     private JdbcTemplate jdbc;
-    private String idField = "id";
+    private String idField = "tableEntryId";
 
     public UpdateQueryBuilder(String tableName, long id, IRepository<?,?> repository) {
         this.tableName = tableName;

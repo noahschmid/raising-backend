@@ -2,6 +2,7 @@ package ch.raising.models;
 
 import java.util.List;
 
+import ch.raising.interfaces.IAssignmentTableModel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,7 +13,7 @@ public class Investor extends Account{
 
 	private String description;
 	private long investorTypeId = -1;
-	private List<InvestmentPhase> invPhases;
+	private List<IAssignmentTableModel> invPhases;
 
 	/**
 	 * makes the investor represented for the fronted, with all lists initialised
@@ -23,7 +24,7 @@ public class Investor extends Account{
 	 * @param inv       represent by the database table investor
 	 * @param invPhases
 	 */
-	public Investor(Account account, Investor inv, List<InvestmentPhase> invPhases) {
+	public Investor(Account account, Investor inv, List<IAssignmentTableModel> invPhases) {
 
 		super(account);
 

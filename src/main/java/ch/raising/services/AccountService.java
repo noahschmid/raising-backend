@@ -18,24 +18,17 @@ import org.springframework.stereotype.Service;
 
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
-import ch.raising.models.AccountUpdateRequest;
-import ch.raising.models.Continent;
-import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
-import ch.raising.models.Industry;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
-import ch.raising.models.Support;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
-import ch.raising.data.ContinentRepository;
-import ch.raising.data.CountryRepository;
-import ch.raising.data.IndustryRepository;
-import ch.raising.data.SupportRepository;
+import ch.raising.data.AssignmentTableRepository;
+import ch.raising.interfaces.IAssignmentTableModel;
 
 @Primary
 @Service
@@ -58,28 +51,27 @@ public class AccountService implements UserDetailsService {
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 	@Autowired
-	private CountryRepository countryRepository;
+	private AssignmentTableRepository countryRepository;
 
 	@Autowired
-	private ContinentRepository continentRepository;
+	private AssignmentTableRepository continentRepository;
 
 	@Autowired
-	private SupportRepository supportRepository;
+	private AssignmentTableRepository supportRepository;
 
 	@Autowired
-	private IndustryRepository industryRepository;
+	private AssignmentTableRepository industryRepository;
 
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
-			JdbcTemplate jdbc, CountryRepository countryRepository, ContinentRepository continentRepository,
-			SupportRepository supportRepository, IndustryRepository industryRepository) {
+			JdbcTemplate jdbc) {
 		this.accountRepository = accountRepository;
 		this.mailUtil = mailUtil;
 		this.resetCodeUtil = resetCodeUtil;
 		this.jdbc = jdbc;
-		this.countryRepository = countryRepository;
-		this.continentRepository = continentRepository;
-		this.supportRepository = supportRepository;
-		this.industryRepository = industryRepository;
+		this.countryRepository = new AssignmentTableRepository(jdbc, "country");
+		this.continentRepository = new AssignmentTableRepository(jdbc, "continent");
+		this.supportRepository = new AssignmentTableRepository(jdbc, "support");
+		this.industryRepository = new AssignmentTableRepository(jdbc, "industry");
 	}
 
 	@Override
@@ -114,22 +106,23 @@ public class AccountService implements UserDetailsService {
 	 */
 	protected long registerAccount(Account req) throws Exception {
 		checkRequestValid(req);
-		
+
 		long accountId = accountRepository.add(Account.accountBuilder().name(req.getName()).password(req.getPassword())
 				.roles(req.getRoles()).email(req.getEmail()).investmentMin(req.getInvestmentMin())
 				.investmentMax(req.getInvestmentMax()).build());
-		
-		req.getCountries().forEach(country -> countryRepository.addEntryToAccountById(accountId,country.getId()));
-		req.getContinents().forEach(continent -> continentRepository.addEntryToAccountById(continent.getId(), accountId));
-		req.getSupport().forEach(sup -> supportRepository.addSupportToAccountById(accountId, sup.getId()));
-		req.getIndustries().forEach(ind -> industryRepository.addEntryToAccountById(accountId,ind.getId()));
+
+		req.getCountries().forEach(country -> countryRepository.addEntryToAccountById(accountId, country.getId()));
+		req.getContinents()
+				.forEach(continent -> continentRepository.addEntryToAccountById(continent.getId(), accountId));
+		req.getSupport().forEach(sup -> supportRepository.addEntryToAccountById(sup.getId(), accountId));
+		req.getIndustries().forEach(ind -> industryRepository.addEntryToAccountById(ind.getId(), accountId));
 		return accountId;
 	}
 
 	/**
 	 * Delete user account
 	 * 
-	 * @param id the id of the account to delete
+	 * @param tableEntryId the tableEntryId of the account to delete
 	 * @return ResponseEntity with status code and message
 	 */
 	public ResponseEntity<?> deleteProfile(long id) {
@@ -140,10 +133,14 @@ public class AccountService implements UserDetailsService {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
+
 	/**
-	 * is overwritten by subtype {@link InvestorService} and {@link StartupService} to allow the retrieving of a specific accounttype.
-	 * @param id
-	 * @return the account with the specified id. the account is fully initialized with all lists and objects non null.
+	 * is overwritten by subtype {@link InvestorService} and {@link StartupService}
+	 * to allow the retrieving of a specific accounttype.
+	 * 
+	 * @param tableEntryId
+	 * @return the account with the specified tableEntryId. the account is fully
+	 *         initialized with all lists and objects non null.
 	 */
 	protected void deleteAccount(long id) {
 		accountRepository.delete(id);
@@ -151,7 +148,8 @@ public class AccountService implements UserDetailsService {
 
 	/**
 	 * gets the requested Profile and handles all the Responses for the request
-	 * @param id
+	 * 
+	 * @param tableEntryId
 	 * @return
 	 */
 	public ResponseEntity<?> getProfile(long id) {
@@ -164,15 +162,18 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * is overwritten by subtype {@link InvestorService} and {@link StartupService} to allow the retrieving of a specific accounttype.
-	 * @param id
-	 * @return the account with the specified id. the account is fully initialized with all lists and objects non null.
+	 * is overwritten by subtype {@link InvestorService} and {@link StartupService}
+	 * to allow the retrieving of a specific accounttype.
+	 * 
+	 * @param tableEntryId
+	 * @return the account with the specified tableEntryId. the account is fully
+	 *         initialized with all lists and objects non null.
 	 */
 	protected Account getAccount(long id) {
-		List<Country> countries = countryRepository.findByAccountId(id);
-		List<Continent> continents = continentRepository.findByAccountId(id);
-		List<Support> support = supportRepository.findByAccountId(id);
-		List<Industry> industries = industryRepository.findByAccountId(id);
+		List<IAssignmentTableModel> countries = countryRepository.findByAccountId(id);
+		List<IAssignmentTableModel> continents = continentRepository.findByAccountId(id);
+		List<IAssignmentTableModel> support = supportRepository.findByAccountId(id);
+		List<IAssignmentTableModel> industries = industryRepository.findByAccountId(id);
 
 		Account acc = accountRepository.find(id);
 
@@ -196,9 +197,9 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * Find user account by id
+	 * Find user account by tableEntryId
 	 * 
-	 * @param id the id of the desired account
+	 * @param tableEntryId the tableEntryId of the desired account
 	 * @return Account instance of the desired account
 	 */
 	public Account findById(int id) {
@@ -206,10 +207,10 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * Check if given id belongs to own account
+	 * Check if given tableEntryId belongs to own account
 	 * 
-	 * @param id      the id of the account to check against
-	 * @param isAdmin indicates whether the user is admin
+	 * @param tableEntryId the tableEntryId of the account to check against
+	 * @param isAdmin      indicates whether the user is admin
 	 * @return true if account belongs to request, false otherwise
 	 */
 	public boolean isOwnAccount(int id) {
@@ -226,28 +227,14 @@ public class AccountService implements UserDetailsService {
 	/**
 	 * Update user account
 	 * 
-	 * @param id      the id of the account to be updated
-	 * @param req     the http request instance
-	 * @param isAdmin indicates whether or not the user requesting the update is
-	 *                admin
+	 * @param tableEntryId the tableEntryId of the account to be updated
+	 * @param req          the http request instance
+	 * @param isAdmin      indicates whether or not the user requesting the update
+	 *                     is admin
 	 * @return Response entity with status code and message
 	 */
-	public ResponseEntity<?> updateAccount(int id, AccountUpdateRequest req, boolean isAdmin) {
-		if (accountRepository.find(id) == null)
-			return ResponseEntity.status(500).body(new ErrorResponse("Account doesn't exist"));
-		try {
-			if (req.getName() != null) {
-				if (accountRepository.findByEmail(req.getName()) != null)
-					return ResponseEntity.status(500).body(new ErrorResponse("Username already in use"));
-			}
-			if (!isAdmin)
-				req.setRoles(null);
-			accountRepository.update(id, req);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public ResponseEntity<?> updateAccount(int id, Account acc) {
+		return ResponseEntity.status(500).body(new ErrorResponse("Not Implemented yet"));
 	}
 
 	/**
@@ -273,8 +260,8 @@ public class AccountService implements UserDetailsService {
 	/**
 	 * Reset password if valid request
 	 * 
-	 * @param id      the id of the account to reset password
-	 * @param request the request with reset code and new password
+	 * @param tableEntryId the tableEntryId of the account to reset password
+	 * @param request      the request with reset code and new password
 	 * @return response entity with status code
 	 */
 	public ResponseEntity<?> resetPassword(PasswordResetRequest request) {
@@ -372,7 +359,7 @@ public class AccountService implements UserDetailsService {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			supportRepository.addSupportToAccountById(accDet.getId(), supportId);
+			supportRepository.addEntryToAccountById(accDet.getId(), supportId);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -389,7 +376,7 @@ public class AccountService implements UserDetailsService {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			supportRepository.deleteSupportFromAccountById(supportId, accDet.getId());
+			supportRepository.deleteEntryFromAccountById(supportId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));

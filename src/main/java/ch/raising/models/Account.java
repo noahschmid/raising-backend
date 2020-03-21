@@ -1,6 +1,7 @@
 package ch.raising.models;
 
 import java.util.List;
+import ch.raising.interfaces.IAssignmentTableModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,10 +22,10 @@ public class Account{
 	private int investmentMin = -1;
 	private int investmentMax = -1;
 
-	private List<Country> countries;
-	private List<Continent> continents;
-	private List<Support> support;
-	private List<Industry> industries;
+	private List<IAssignmentTableModel> countries;
+	private List<IAssignmentTableModel> continents;
+	private List<IAssignmentTableModel> support;
+	private List<IAssignmentTableModel> industries;
 
 	/**
 	 * This constructor makes an Account represented by the account table in the

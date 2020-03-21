@@ -1,4 +1,4 @@
-package ch.rasing.raisingbackend.utils;
+package ch.raising.utils;
 
 import java.util.Map;
 
@@ -26,9 +26,9 @@ public class QueryBuilder {
 	 * @param name
 	 * @return
 	 */
-	public QueryBuilder tableName(String name) {
+	public QueryBuilder tableName(String tableName) {
 		assert this.tableName == null;
-		this.tableName = name;
+		this.tableName = tableName;
 		return this;
 	}
 	
@@ -70,7 +70,7 @@ public class QueryBuilder {
 		return this;
 	}
 	
-	public QueryBuilder values(String value) {
+	public QueryBuilder value(String value) {
 		if(valuesForInsertion == null) {
 			valuesForInsertion = "'" + value + "'";
 		}else {
@@ -85,7 +85,7 @@ public class QueryBuilder {
 		return this;
 	}
 	
-	public QueryBuilder where(String field, String value) {
+	public QueryBuilder whereEquals(String field, String value) {
 		if(whereStatement == "") {
 			this.whereStatement = field + " = '" + value + "'";
 		}else {

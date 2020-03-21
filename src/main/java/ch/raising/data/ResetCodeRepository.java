@@ -44,7 +44,7 @@ public class ResetCodeRepository {
     /**
      * Find reset code entry by accountId
      * 
-     * @param accountId id of the account to search for
+     * @param accountId tableEntryId of the account to search for
      * @return list of matching reset code entries
      */
     public List<ResetCode> findByAccountId(long accountId) {
@@ -121,8 +121,8 @@ public class ResetCodeRepository {
 	}
 
     /**
-     * Delete reset code by account id
-     * @param accountId the account id 
+     * Delete reset code by account tableEntryId
+     * @param accountId the account tableEntryId 
      */
 	public void deleteByAccountId(long accountId) {
         try {

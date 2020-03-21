@@ -25,7 +25,7 @@ public class ProfileController {
         this.profileService = profileService;
     }  
     
-    @GetMapping("/{id}")
+    @GetMapping("/{tableEntryId}")
     public ResponseEntity<?> getProfile(@PathVariable int id) {
        	return ResponseEntity.status(500).body(new ErrorResponse("Not implemented"));
     }

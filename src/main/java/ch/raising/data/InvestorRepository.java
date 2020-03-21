@@ -1,6 +1,8 @@
 package ch.raising.data;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+
+
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -16,15 +18,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
+import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
-import ch.raising.models.InvestmentPhase;
 import ch.raising.models.Investor;
-import ch.raising.models.InvestorType;
-import ch.raising.models.InvestorUpdateRequest;
+import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class InvestorRepository implements IRepository<Investor, InvestorUpdateRequest> {
+public class InvestorRepository implements IRepository<Investor, Investor> {
 	private JdbcTemplate jdbc;
 
 	@Autowired
@@ -33,9 +34,9 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 	}
 
 	/**
-	 * Find investor by id
+	 * Find investor by tableEntryId
 	 * 
-	 * @param id id of the desired investor
+	 * @param tableEntryId tableEntryId of the desired investor
 	 * @return instance of the found investor
 	 */
 	public Investor find(long id) {
@@ -51,23 +52,12 @@ public class InvestorRepository implements IRepository<Investor, InvestorUpdateR
 	/**
 	 * Update investor
 	 * 
-	 * @param id     the id of the investor to update
+	 * @param tableEntryId     the tableEntryId of the investor to update
 	 * @param update instance of the update request
 	 * @throws Exception
 	 */
-	public void update(long id, InvestorUpdateRequest update) throws Exception {
-		try {
-			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("investor", id, this, "accountId");
-			updateQuery.setJdbc(jdbc);
-			updateQuery.addField(update.getDescription(), "description");
-			updateQuery.addField(update.getName(), "name");
-			updateQuery.addField(update.getInvestmentMax(), "investmentMax");
-			updateQuery.addField(update.getInvestmentMin(), "investmentMin");
-			updateQuery.addField(update.getInvestorTypeId(), "investorTypeId");
-			updateQuery.execute();
-		} catch (Exception e) {
-			throw new Error(e);
-		}
+	public void update(long id, Investor inv) throws Exception {
+		throw new NotImplementedException();
 	}
 
 	/**

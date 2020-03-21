@@ -1,4 +1,4 @@
-package ch.raising.data;
+package ch.raising.interfaces;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,16 +18,26 @@ import ch.raising.models.Contact;
 public interface IAdditionalInformationRepository<Model>{
 	
 	public long getStartupIdByMemberId(long id);
+	
 	public void addMemberByStartupId(Model sumem, long startupId);
+	
 	public void addMemberByStartupId(Model sumem);
+	
 	public void deleteMemberByStartupId(long id);
+	
 	public PreparedStatementCallback<Boolean> deleteById(long id);
+	
 	public PreparedStatementCallback<Boolean> addByStartupId(Model model, long startupId);
+	
 	PreparedStatementCallback<Boolean> addByMember(Model bmem);
+	
 	public List<Model> findByStartupId(long startupId);
+	
 	public default long mapRowToId(ResultSet rs, int row) throws SQLException {
 		return rs.getInt("accountId");
 	}
+	
 	public Model mapRowToModel(ResultSet rs, int row) throws SQLException;
+	
 	public Model find(long id);
 }

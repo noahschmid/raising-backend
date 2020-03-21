@@ -14,12 +14,14 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
+import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
-import ch.raising.models.AccountUpdateRequest;
+import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
+
 @Repository
-public class AccountRepository implements IRepository<Account, AccountUpdateRequest> {
+public class AccountRepository implements IRepository<Account, UpdateQueryBuilder> {
 
 	private JdbcTemplate jdbc;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -107,7 +109,7 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	/**
 	 * Delete user account
 	 * 
-	 * @param id the id of the account
+	 * @param tableEntryId the tableEntryId of the account
 	 */
 	public void delete(long id) {
 		try {
@@ -127,9 +129,9 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	}
 
 	/**
-	 * Find user account by id
+	 * Find user account by tableEntryId
 	 * 
-	 * @param id id of the desired account
+	 * @param tableEntryId tableEntryId of the desired account
 	 * @return instance of the found account
 	 */
 	public Account find(long id) {
@@ -165,7 +167,6 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	 * @return Account instance of the result set
 	 * @throws SQLException
 	 */
-	@Override
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
 				.email(rs.getString("emailHash")).roles(rs.getString("roles")).password(rs.getString("password")).build();
@@ -178,20 +179,27 @@ public class AccountRepository implements IRepository<Account, AccountUpdateRequ
 	/**
 	 * Update user account
 	 * 
-	 * @param id  the id of the account to update
+	 * @param tableEntryId  the tableEntryId of the account to update
 	 * @param req request containing fields to update
 	 */
-	public void update(long id, AccountUpdateRequest req) throws Exception {
-		try {
-			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this);
-			updateQuery.setJdbc(jdbc);
-			updateQuery.addField(req.getName(), "name");
-			updateQuery.addField(req.getPassword(), "password");
-			updateQuery.addField(req.getRoles(), "roles");
-			updateQuery.addField(req.getEmailHash(), "emailHash");
-			updateQuery.execute();
-		} catch (Exception e) {
-			throw new Exception(e.getMessage());
-		}
+	public void update(long id, Account req) throws Exception {
+		throw new NotImplementedException();
+//		try {
+//			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this, "asd");
+//			updateQuery.setJdbc(jdbc);
+//			updateQuery.addField(req.getName(), "name");
+//			updateQuery.addField(req.getPassword(), "password");
+//			updateQuery.addField(req.getRoles(), "roles");
+//			updateQuery.addField(req.getEmail(), "emailHash");
+//			updateQuery.execute();
+//		} catch (Exception e) {
+//			throw new Exception(e.getMessage());
+//		}
+	}
+
+	@Override
+	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 }

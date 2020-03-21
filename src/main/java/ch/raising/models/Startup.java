@@ -3,6 +3,7 @@ package ch.raising.models;
 import java.util.Date;
 import java.util.List;
 
+import ch.raising.interfaces.IAssignmentTableModel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,12 +25,12 @@ public class Startup extends Account {
 	private Date closingtime;
 	private String revenue;
 	private long financeTypeId = -1;
-	private List<InvestorType> invTypes;
-	private List<Label> labels;
+	private List<IAssignmentTableModel> invTypes;
+	private List<IAssignmentTableModel> labels;
 	private Contact contact;
 	private List<Founder> founders;
-	private List<PrivateShareholder> pShareholders;
-	private List<CorporateShareholder> cShareholders;
+	private List<PrivateShareholder> privateShareholders;
+	private List<CorporateShareholder> corporateShareholders;
 
 	/**
 	 * creates the startup with all lists initialized. should be used to return a
@@ -43,7 +44,7 @@ public class Startup extends Account {
 	 * @param founders
 	 * @param preMoneyevaluation
 	 */
-	public Startup(Account account, Startup su, List<InvestorType> invTypes, List<Label> labels, Contact contact,
+	public Startup(Account account, Startup su, List<IAssignmentTableModel> invTypes, List<IAssignmentTableModel> labels, Contact contact,
 			List<Founder> founders, List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders) {
 		super(account);
 		this.investmentPhaseId = su.getInvestmentPhaseId();
@@ -63,8 +64,8 @@ public class Startup extends Account {
 		this.labels = labels;
 		this.contact = contact;
 		this.founders = founders;
-		this.pShareholders = pShareholders;
-		this.cShareholders = cShareholders;
+		this.privateShareholders = pShareholders;
+		this.corporateShareholders = cShareholders;
 	}
 
 	/**
@@ -107,9 +108,8 @@ public class Startup extends Account {
 	public boolean isInComplete() {
 		return super.isInComplete() || investmentPhaseId == -1 || boosts != 0 || street == null || city == null
 				|| zipCode == null || website == null || breakEvenYear == -1 || numberOfFTE == -1 || turnover == -1
-				|| zipCode == null || revenue == null || financeTypeId == -1
-				|| closingtime == null || contact == null || invTypes == null || labels == null || founders == null
-				|| invTypes.isEmpty() || labels.isEmpty() || founders.isEmpty();
+				|| revenue == null || financeTypeId == -1 || closingtime == null || contact == null || invTypes == null
+				|| labels == null || founders == null || invTypes.isEmpty() || labels.isEmpty() || founders.isEmpty();
 	}
 
 }

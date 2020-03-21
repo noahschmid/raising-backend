@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
+import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.PrivateShareholder;
 import ch.raising.utils.UpdateQueryBuilder;
 
@@ -28,7 +29,7 @@ public class PrivateShareholderRepository
 
 	@Override
 	public PrivateShareholder find(long id) {
-		return jdbc.queryForObject("SELECT * FROM privateshareholder WHERE id = ?", new Object[] { id },
+		return jdbc.queryForObject("SELECT * FROM privateshareholder WHERE tableEntryId = ?", new Object[] { id },
 				this::mapRowToModel);
 	}
 
@@ -41,7 +42,7 @@ public class PrivateShareholderRepository
 
 	@Override
 	public long getStartupIdByMemberId(long id) {
-		return jdbc.queryForObject("SELECT startupid FROM privateshareholder WHERE id = ?", new Object[] { id },
+		return jdbc.queryForObject("SELECT startupid FROM privateshareholder WHERE tableEntryId = ?", new Object[] { id },
 				this::mapRowToId);
 	}
 
@@ -61,7 +62,7 @@ public class PrivateShareholderRepository
 
 	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM privateshareholder WHERE id = ?", deleteById(id));
+		jdbc.execute("DELETE FROM privateshareholder WHERE tableEntryId = ?", deleteById(id));
 	}
 
 

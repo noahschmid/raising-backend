@@ -1,5 +1,8 @@
 package ch.raising.models;
 
+import lombok.Getter;
+
+@Getter
 public class ErrorResponse {
     private String message;
     private Object error;
@@ -16,7 +19,4 @@ public class ErrorResponse {
     public ErrorResponse(Object error) {
         this.error = error;
     }
-
-    public String getMessage() { return this.message; }
-    public Object getError() { return this.error; }
 }

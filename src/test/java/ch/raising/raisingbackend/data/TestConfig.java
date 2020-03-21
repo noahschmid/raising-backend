@@ -1,4 +1,4 @@
-package ch.rasing.raisingbackend.data;
+package ch.raising.raisingbackend.data;
 
 
 import javax.sql.DataSource;

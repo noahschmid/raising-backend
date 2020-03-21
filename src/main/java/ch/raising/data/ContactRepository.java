@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
+import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.Boardmember;
 import ch.raising.models.Contact;
 import ch.raising.utils.NotImplementedException;
@@ -29,35 +30,35 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 
 	@Override
 	public long getStartupIdByMemberId(long contactId) {
-		return jdbc.queryForObject("SELECT startupid FROM contact WHERE id = ?", new Object[] { contactId },
+		return jdbc.queryForObject("SELECT startupid FROM contact WHERE tableEntryId = ?", new Object[] { contactId },
 				this::mapRowToId);
 	}
 
 	@Override
 	public Contact find(long id) {
-		return jdbc.queryForObject("SELECT * FROM contact WHERE id = ?", new Object[] { id }, this::mapRowToModel);
+		return jdbc.queryForObject("SELECT * FROM contact WHERE tableEntryId = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	@Override
 	public void addMemberByStartupId(Contact contact, long startupId) {
-		jdbc.execute("INSERT INTO contact(id, startupid, name, role, email, phone) VALUES (?,?,?,?,?,?)",
+		jdbc.execute("INSERT INTO contact(tableEntryId, startupid, name, role, email, phone) VALUES (?,?,?,?,?,?)",
 				addByStartupId(contact, startupId));
 	}
 	
 	@Override
 	public void addMemberByStartupId(Contact sumem) {
-		jdbc.execute("INSERT INTO contact(id, startupid, name, role, email, phone) VALUES (?,?,?,?,?,?)",
+		jdbc.execute("INSERT INTO contact(tableEntryId, startupid, name, role, email, phone) VALUES (?,?,?,?,?,?)",
 				addByMember(sumem));
 	}
 
 	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM contact WHERE id = ?", deleteById(id));
+		jdbc.execute("DELETE FROM contact WHERE tableEntryId = ?", deleteById(id));
 	}
 
 	@Override
 	public Contact mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return Contact.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
+		return Contact.builder().id(rs.getLong("tableEntryId")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
 				.phone(rs.getString("phone")).email(rs.getString("email")).role(rs.getString("role")).build();
 	}
 

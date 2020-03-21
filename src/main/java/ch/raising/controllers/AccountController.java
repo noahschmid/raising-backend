@@ -3,6 +3,7 @@ package ch.raising.controllers;
 import java.util.List;
 
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,14 +25,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
-import ch.raising.models.AccountUpdateRequest;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
-import ch.raising.utils.NotImplementedException;
 import ch.raising.controllers.AccountController;
 import ch.raising.models.ForgotPasswordRequest;
 
@@ -129,12 +127,12 @@ public class AccountController {
     }
     
     /**
-	 * Searches for an account by id
-	 * @param id the id of the desired account
+	 * Searches for an account by tableEntryId
+	 * @param tableEntryId the tableEntryId of the desired account
      * @param request instance of the http request
 	 * @return details of specific account
 	 */
-	@GetMapping("/{id}")
+	@GetMapping("/{tableEntryId}")
 	@ResponseBody
 	public ResponseEntity<?> getAccountById(@PathVariable int id, HttpServletRequest request) {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
@@ -145,11 +143,11 @@ public class AccountController {
     
     /**
 	 * Delete account
-	 * @param id
+	 * @param tableEntryId
      * @param request instance of the http request 
 	 * @return response object with status text
 	 */
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{tableEntryId}")
 	@ResponseBody
 	public ResponseEntity<?> deleteAccount(@PathVariable int id, HttpServletRequest request) {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
@@ -162,15 +160,15 @@ public class AccountController {
      * Update account
      * @return Response entity with status code and message
      */
-    @PatchMapping("/{id}")
+    @PatchMapping("/{tableEntryId}")
     @ResponseBody
     public ResponseEntity<?> updateAccount(@PathVariable int id, 
-                                            @RequestBody AccountUpdateRequest updateRequest,
+                                            @RequestBody Account updateRequest,
                                             HttpServletRequest request) {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
 
-        return accountService.updateAccount(id, updateRequest, request.isUserInRole("ADMIN"));
+        return accountService.updateAccount(id, updateRequest);
     }
     /**
      * add country to account

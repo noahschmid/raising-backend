@@ -1,6 +1,7 @@
-package ch.rasing.raisingbackend.data;
+package ch.raising.raisingbackend.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
@@ -36,11 +37,7 @@ public class BoardMemberRepositoryTest {
 
 	@Test
 	public void findABoardmember() {
-		Boardmember bmem = Boardmember.builder().name("test").education("testversity").profession("tester")
-				.pullDownType("test").pullDownDuration(12).build();
-		bmemRepo.addMemberByStartupId(bmem);
-		
-		assertEquals(1,JdbcTestUtils.countRowsInTable(jdbc, "boardmember"));
+		fail();
 	
 	}
 	

@@ -1,6 +1,7 @@
-package ch.rasing.raisingbackend.data;
+package ch.raising.raisingbackend.data;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -25,10 +26,9 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import ch.raising.data.AccountRepository;
 import ch.raising.models.Account;
-import ch.raising.models.AccountUpdateRequest;
-import ch.rasing.raisingbackend.utils.MappingUtil;
-import ch.rasing.raisingbackend.utils.QueryBuilder;
-import ch.rasing.raisingbackend.utils.Type;
+import ch.raising.utils.MapUtil;
+import ch.raising.utils.QueryBuilder;
+import ch.raising.utils.Type;
 
 @ContextConfiguration(classes = { AccountRepository.class, TestConfig.class })
 @SpringBootTest
@@ -80,11 +80,11 @@ public class AccountRepositoryTest {
 				.email(encoder.encode("testmanil2")).build();
 
 		String sql = QueryBuilder.getInstance().tableName(tableName).attribute("name").attribute("password")
-				.attribute("emailhash").values(name).values("testpassword").values(emailhash).insert();
+				.attribute("emailhash").value(name).value("testpassword").value(emailhash).insert();
 		jdbc.execute(sql);
 
-		sql = QueryBuilder.getInstance().tableName(tableName).where("account.name", name).select();
-		id = jdbc.queryForObject(sql, MappingUtil::mapRowToId);
+		sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("account.name", name).select();
+		id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
 	}
 
 	@AfterEach
@@ -159,16 +159,16 @@ public class AccountRepositoryTest {
 		String newMailHash = encoder.encode(newMail);
 		String newPassword = "newpassword";
 		String newPasswordHash = encoder.encode(newPassword);
-		String newName = "aloysius endergast";
-		AccountUpdateRequest accup = new AccountUpdateRequest();
+		String newName = "aloysius pendergast";
+		Account accup = new Account();
 		accup.setEmail(newMail);
 		accup.setPassword(newPassword);
 		accup.setRoles("ROLE_TESTER");
 		accup.setName(newName);
 		accountRepo.update(1, accup);
 		String sql = QueryBuilder.getInstance().tableName(tableName)
-				.where("emailhash", newMailHash).select();
-		Account updated = jdbc.queryForObject(sql, MappingUtil::mapRowToAccount);
+				.whereEquals("emailhash", newMailHash).select();
+		Account updated = jdbc.queryForObject(sql, MapUtil::mapRowToAccount);
 		assertNotNull(updated);
 		assertEquals(newName, updated.getName());
 	}

@@ -32,7 +32,7 @@ public class JwtUtil {
     }
     
     public long extractId(String token) {
-    	return (long) extractAllClaims(token).get("id");
+    	return (long) extractAllClaims(token).get("tableEntryId");
     }
     
     public Date extractExpiration(String token) {
@@ -50,7 +50,7 @@ public class JwtUtil {
 
     public String generateToken(AccountDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", userDetails.getId());
+        claims.put("tableEntryId", userDetails.getId());
         claims.put("username", userDetails.getUsername());
         return createToken(claims, userDetails.getUsername());
     }

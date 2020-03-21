@@ -2,6 +2,7 @@ package ch.raising.services;
 
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,14 +12,15 @@ import org.springframework.stereotype.Service;
 import ch.raising.models.*;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
-import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.*;
+import ch.raising.interfaces.IAdditionalInformationRepository;
+import ch.raising.interfaces.IAssignmentTableModel;
 
 @Service
 public class StartupService extends AccountService {
 
 	@Autowired
-	private InvestorTypeRepository investorTypeRepository;
+	private AssignmentTableRepository investorTypeRepository;
 
 	@Autowired
 	private StartupRepository startupRepository;
@@ -33,32 +35,29 @@ public class StartupService extends AccountService {
 	private FounderRepository founderRepository;
 
 	@Autowired
-	private LabelRepository labelRepository;
-	
+	private AssignmentTableRepository labelRepository;
+
 	@Autowired
 	private PrivateShareholderRepository pshRepository;
-	
+
 	@Autowired
 	private CorporateShareholderRepository cshRepository;
 
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
-			InvestorTypeRepository investorTypeRepository, ContactRepository contactRepository,
-			BoardmemberRepository bmemRepository, FounderRepository founderRepository, LabelRepository labelRepository,
-			IndustryRepository industryRepository, SupportRepository supportRepository,
-			ContinentRepository continentRepository, CountryRepository countryRepository,
-			InvestorRepository investorRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc,
+			ContactRepository contactRepository, BoardmemberRepository bmemRepository,
+			FounderRepository founderRepository,  InvestorRepository investorRepository,
+			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc,
 			PrivateShareholderRepository pshRepository, CorporateShareholderRepository cshRepository) {
 
-		super(accountRepository, mailUtil, resetCodeUtil, jdbc, countryRepository, continentRepository,
-				supportRepository, industryRepository);
+		super(accountRepository, mailUtil, resetCodeUtil, jdbc);
 
-		this.investorTypeRepository = investorTypeRepository;
+		this.investorTypeRepository = new AssignmentTableRepository(jdbc, "investortype");
 		this.startupRepository = startupRepository;
 		this.contactRepository = contactRepository;
 		this.bmemRepository = bmemRepository;
 		this.founderRepository = founderRepository;
-		this.labelRepository = labelRepository;
+		this.labelRepository = new AssignmentTableRepository(jdbc, "label");
 		this.pshRepository = pshRepository;
 		this.cshRepository = cshRepository;
 	}
@@ -66,35 +65,35 @@ public class StartupService extends AccountService {
 	@Override
 	protected long registerAccount(Account account) throws Exception {
 		Startup suReq = (Startup) account;
-		
+
 		checkRequestValid(account);
-		
+
 		long accountId = super.registerAccount(account);
-		Startup su = Startup.startupBuilder().accountId(accountId).investmentPhaseId(suReq.getInvestmentPhaseId()).street(suReq.getStreet())
-				.city(suReq.getCity()).zipCode(suReq.getZipCode()).website(suReq.getWebsite()).breakEvenYear(suReq.getBreakEvenYear())
-				.numberOfFTE(suReq.getNumberOfFTE()).turnover(suReq.getTurnover()).build();
-		
-		
+		Startup su = Startup.startupBuilder().accountId(accountId).investmentPhaseId(suReq.getInvestmentPhaseId())
+				.street(suReq.getStreet()).city(suReq.getCity()).zipCode(suReq.getZipCode()).website(suReq.getWebsite())
+				.breakEvenYear(suReq.getBreakEvenYear()).numberOfFTE(suReq.getNumberOfFTE())
+				.turnover(suReq.getTurnover()).build();
+
 		startupRepository.add(su);
-		
+
 		contactRepository.addMemberByStartupId(suReq.getContact(), accountId);
-		
-		suReq.getLabels().forEach(label -> labelRepository.addLabelToStartup(label.getId(), accountId));
-		suReq.getInvTypes().forEach(it -> investorTypeRepository.addInvestorTypeToStartup(accountId, it.getId()));
+
+		suReq.getLabels().forEach(label -> labelRepository.addEntryToAccountById(label.getId(), accountId));
+		suReq.getInvTypes().forEach(it -> investorTypeRepository.addEntryToAccountById(accountId, it.getId()));
 		suReq.getFounders().forEach(founder -> founderRepository.addByStartupId(founder, accountId));
-		
+
 		return accountId;
 	}
 
 	@Override
 	/**
-	 * @param long the id of the startup
+	 * @param long the tableEntryId of the startup
 	 * @returns Account a fully initialised Startup object
 	 */
 	public Account getAccount(long startupId) {
 
-		List<InvestorType> invTypes = investorTypeRepository.findByStartupId(startupId);
-		List<Label> labels = labelRepository.findByStartupId(startupId);
+		List<IAssignmentTableModel> invTypes = investorTypeRepository.findByAccountId(startupId);
+		List<IAssignmentTableModel> labels = labelRepository.findByAccountId(startupId);
 		Contact contact = contactRepository.findByStartupId(startupId).get(0);
 		List<Founder> founders = founderRepository.findByStartupId(startupId);
 
@@ -112,21 +111,14 @@ public class StartupService extends AccountService {
 	 * @param request the data to update
 	 * @return response entity with status code and message
 	 */
-	public ResponseEntity<?> updateStartup(long id, StartupUpdateRequest request) {
-
-		try {
-			startupRepository.update(id, request);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-
+	public ResponseEntity<?> updateStartup(long id, Startup su) {
+		return ResponseEntity.status(500).body(new ErrorResponse("Not implemented yet"));
 	}
 
 	/**
-	 * Deletes the contact specified by id
+	 * Deletes the contact specified by tableEntryId
 	 * 
-	 * @param id
+	 * @param tableEntryId
 	 * @return
 	 */
 
@@ -147,7 +139,7 @@ public class StartupService extends AccountService {
 	 * Adds a new contact
 	 * 
 	 * @param contact to be inserted in the DB
-	 * @return a response with id and maybe body
+	 * @return a response with tableEntryId and maybe body
 	 */
 
 	public ResponseEntity<?> addContactByStartupId(Contact contact) {
@@ -162,7 +154,7 @@ public class StartupService extends AccountService {
 	/**
 	 * Deletes a Boardmember
 	 * 
-	 * @param id of the boardmember to be deleted
+	 * @param tableEntryId of the boardmember to be deleted
 	 * @return response with code and optional body
 	 */
 
@@ -198,7 +190,7 @@ public class StartupService extends AccountService {
 	/**
 	 * Deletes a Founder
 	 * 
-	 * @param id of the founder to be deleted
+	 * @param tableEntryId of the founder to be deleted
 	 * @return response with code and optional body
 	 */
 
@@ -232,8 +224,8 @@ public class StartupService extends AccountService {
 	}
 
 	/**
-	 * Deletes the entry in labelassignment with the specified labelId and the id in
-	 * tokens.
+	 * Deletes the entry in labelassignment with the specified labelId and the
+	 * tableEntryId in tokens.
 	 * 
 	 * @param labelId
 	 * @return response with code and optional body
@@ -242,7 +234,7 @@ public class StartupService extends AccountService {
 		try {
 			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			labelRepository.deleteLabelOfStartup(labelId, accdet.getId());
+			labelRepository.deleteEntryFromAccountById(labelId, accdet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getLocalizedMessage()));
@@ -259,7 +251,7 @@ public class StartupService extends AccountService {
 		try {
 			AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			investorTypeRepository.addInvestorTypeToStartup(labelId, accdetails.getId());
+			labelRepository.addEntryToAccountById(labelId, accdetails.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -277,7 +269,7 @@ public class StartupService extends AccountService {
 		try {
 			AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			investorTypeRepository.addInvestorTypeToStartup(invTypeId, accdetails.getId());
+			investorTypeRepository.addEntryToAccountById(invTypeId, accdetails.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -286,7 +278,7 @@ public class StartupService extends AccountService {
 
 	/**
 	 * Deletes the entry in investortypeassignment with the specified labelId and
-	 * the id in tokens.
+	 * the tableEntryId in tokens.
 	 * 
 	 * @param investortypeid
 	 * @return response with code and optional body
@@ -295,7 +287,7 @@ public class StartupService extends AccountService {
 		try {
 			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
-			investorTypeRepository.deleteInvestorTypeOfStartupId(invTypeId, accdet.getId());
+			investorTypeRepository.deleteEntryFromAccountById(invTypeId, accdet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getLocalizedMessage()));
@@ -307,11 +299,11 @@ public class StartupService extends AccountService {
 	 * 
 	 * @param sideTableEntryId
 	 * @param addinfRepo       The sidetable repository that should check if the
-	 *                         startup belongs to the sidetable entry with given id
+	 *                         startup belongs to the sidetable entry with given
+	 *                         tableEntryId
 	 * @return
 	 */
-	private boolean belongsToStartup(long sideTableEntryId,
-			IAdditionalInformationRepository<?> addinfRepo) {
+	private boolean belongsToStartup(long sideTableEntryId, IAdditionalInformationRepository<?> addinfRepo) {
 		AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		return accdetails.getId() == addinfRepo.getStartupIdByMemberId(sideTableEntryId);

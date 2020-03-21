@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
+import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.Founder;
 import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
@@ -28,24 +29,24 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 
 	@Override
 	public long getStartupIdByMemberId(long founderId) {
-		return jdbc.queryForObject("SELECT startupid FROM founder WHERE id = ?", new Object[] { founderId },
+		return jdbc.queryForObject("SELECT startupid FROM founder WHERE tableEntryId = ?", new Object[] { founderId },
 				this::mapRowToId);
 	}
 
 	@Override
 	public Founder find(long id) {
-		return jdbc.queryForObject("SELECT * FROM founder WHERE id = ?", new Object[] { id }, this::mapRowToModel);
+		return jdbc.queryForObject("SELECT * FROM founder WHERE tableEntryId = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	@Override
 	public void addMemberByStartupId(Founder founder, long accountId) {
-		jdbc.execute("INSERT INTO founder(id ,startupid, name, role, education) VALUES (?,?,?,?,?,?,?)",
+		jdbc.execute("INSERT INTO founder(tableEntryId ,startupid, name, role, education) VALUES (?,?,?,?,?,?,?)",
 				addByStartupId(founder, accountId));
 	}
 	
 	@Override
 	public void addMemberByStartupId(Founder founder) {
-		jdbc.execute("INSERT INTO founder(id ,startupid, name, role, education) VALUES (?,?,?,?,?,?,?)",
+		jdbc.execute("INSERT INTO founder(tableEntryId ,startupid, name, role, education) VALUES (?,?,?,?,?,?,?)",
 				addByMember(founder));
 	}
 
@@ -56,7 +57,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 
 	@Override
 	public Founder mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return Founder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
+		return Founder.builder().id(rs.getLong("tableEntryId")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
 				.role(rs.getString("role")).education(rs.getString("education")).build();
 	}
 

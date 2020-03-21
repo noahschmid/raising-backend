@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
+import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.Boardmember;
 import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
@@ -43,23 +44,23 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 
 	@Override
 	public long getStartupIdByMemberId(long bmemId) {
-		return jdbc.queryForObject("SELECT startupid FROM boardmember WHERE id = ?", new Object[] { bmemId },
+		return jdbc.queryForObject("SELECT startupid FROM boardmember WHERE tableEntryId = ?", new Object[] { bmemId },
 				this::mapRowToId);
 	}
 
 	@Override
 	public Boardmember find(long id) {
-		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { id }, this::mapRowToModel);
+		return jdbc.queryForObject("SELECT * FROM boardmember WHERE tableEntryId = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM boardmember WHERE id = ?", deleteById(id));
+		jdbc.execute("DELETE FROM boardmember WHERE tableEntryId = ?", deleteById(id));
 	}
 
 	@Override
 	public Boardmember mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return Boardmember.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
+		return Boardmember.builder().id(rs.getLong("tableEntryId")).startupid(rs.getLong("startupid")).name(rs.getString("name"))
 				.education(rs.getString("education")).profession(rs.getString("profession"))
 				.pullDownType(rs.getString("pulldowntype")).pullDownDuration(rs.getInt("pulldownduration")).build();
 	}
