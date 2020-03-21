@@ -16,27 +16,11 @@ import ch.raising.data.InvestorRepository;
 import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
-import ch.raising.models.Continent;
 import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
-<<<<<<< HEAD
 import ch.raising.models.Investor;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
-=======
-import ch.raising.models.Industry;
-import ch.raising.models.InvestmentPhase;
-import ch.raising.models.Investor;
-import ch.raising.models.InvestorUpdateRequest;
-import ch.raising.models.MatchingProfile;
-import ch.raising.models.InvestorType;
-import ch.raising.models.Support;
-import ch.raising.models.RegisterAccountRequest;
-import ch.raising.utils.MailUtil;
-import ch.raising.utils.ResetCodeUtil;
-
-import ch.raising.data.IndustryRepository;
->>>>>>> c1e2333027054891b58d67be94510f4622e3697c
 
 @Service
 public class InvestorService extends AccountService {
@@ -95,10 +79,6 @@ public class InvestorService extends AccountService {
 	 * @param request the data to update
 	 * @return response entity with status code and message
 	 */
-<<<<<<< HEAD
-	public ResponseEntity<?> updateInvestor(int id, Investor inv) {
-		return ResponseEntity.status(500).body(new ErrorResponse("not implemented yet"));
-=======
 	public ResponseEntity<?> updateInvestor(int id, InvestorUpdateRequest request) {
 		try {
 			investorRepository.update(id, request);
@@ -173,13 +153,6 @@ public class InvestorService extends AccountService {
 
         return profiles;
     }
-
-	private boolean isIncomplete(Investor investor) {
-		return investor.getAccountId() == -1 || investor.getDescription() == null || investor.getInvestmentMax() == -1
-				|| investor.getInvestmentMin() == -1 || investor.getInvestorTypeId() == -1
-				|| investor.getName() == null;
->>>>>>> c1e2333027054891b58d67be94510f4622e3697c
-	}
 
 	public ResponseEntity<?> addInvestmentPhaseByIvestorId(long id) {
 		try {
