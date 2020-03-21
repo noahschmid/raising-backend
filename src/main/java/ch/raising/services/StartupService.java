@@ -1,5 +1,7 @@
 package ch.raising.services;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -40,6 +42,24 @@ public class StartupService extends AccountService {
 
 	@Autowired
 	private CorporateShareholderRepository cshRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
+
+	@Autowired
+	private IndustryRepository industryRepository;
+
+	@Autowired
+	private SupportRepository supportRepository;
+
+	@Autowired
+	private ContinentRepository continentRepository;
+
+	@Autowired
+	private CountryRepository countryRepository;
+
+	@Autowired
+	private InvestmentPhaseRepository investmentPhaseRepository;
 
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
@@ -274,6 +294,73 @@ public class StartupService extends AccountService {
 		}
 	}
 
+	/**
+     * Get matching profile of startup (the required information for matching)
+     * @return Matching profile of startup
+     */
+    public MatchingProfile getMatchingProfile(Startup startup) {
+        if(startup == null)
+            return null;
+        
+        MatchingProfile profile = new MatchingProfile();
+        List<InvestorType> types = investorTypeRepository.findByStartupId(startup.getAccountId());
+        List<Continent> continents = continentRepository.findByAccountId(startup.getAccountId());
+        List<Country> countries = countryRepository.findByAccountId(startup.getAccountId());
+        List<Industry> industries = industryRepository.findByAccountId(startup.getAccountId());
+        List<InvestmentPhase> investmentPhases = investmentPhaseRepository.findByInvestorId(startup.getAccountId());
+        List<Support> supports = supportRepository.findByAccountId(startup.getAccountId());
+
+        profile.setAccountId(startup.getAccountId());
+        profile.setName(startup.getName());
+        profile.setDescription(startup.getDescription());
+        profile.setInvestmentMax(startup.getInvestmentMax());
+        profile.setInvestmentMin(startup.getInvestmentMin());
+        profile.setStartup(true);
+
+		for(InvestorType type : types) {
+			profile.addInvestorType(type);
+		}
+        
+        for(Continent cntnt : continents) {
+            profile.addContinent(cntnt);
+        }
+
+        for(Country cntry : countries) {
+            profile.addCountry(cntry);
+        }
+
+        for(Industry ind : industries) {
+            profile.addIndustry(ind);
+        }
+
+        for(InvestmentPhase invPhs : investmentPhases) {
+            profile.addInvestmentPhase(invPhs);
+        }
+
+        for(Support spprt : supports) {
+            profile.addSupport(spprt);
+        }
+
+        return profile;
+    }
+
+    /**
+     * Get all matching profiles of all investors
+     * @return List of matching profiles
+     */
+    public List<MatchingProfile> getAllMatchingProfiles() {
+        List<Startup> startups = startupRepository.getAll();
+        List<MatchingProfile> profiles = new ArrayList<>();
+        if(startups.size() == 0)
+            return null;
+
+        for(Startup startup : startups) {
+            profiles.add(getMatchingProfile(startup));
+        }
+
+        return profiles;
+    }
+	
 	/**
 	 * Deletes the entry in investortypeassignment with the specified labelId and
 	 * the tableEntryId in tokens.

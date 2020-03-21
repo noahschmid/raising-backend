@@ -33,6 +33,7 @@ import ch.raising.services.AccountService;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
 import ch.raising.models.ForgotPasswordRequest;
+import ch.raising.models.FreeEmailRequest;
 
 @RequestMapping("/account")
 @Controller
@@ -84,8 +85,8 @@ public class AccountController {
 	@ResponseBody
 	public ResponseEntity<?> register(@RequestBody Account account) {
         try {
-           accountService.registerProfile(account);
-           return ResponseEntity.ok().build();
+            accountService.registerProfile(account);
+            return login(new LoginRequest(account.getEmail(), account.getPassword()));
         } catch (Error e) {
             return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
@@ -124,6 +125,17 @@ public class AccountController {
 	@ResponseBody
 	public List<Account> getAccounts() {
 		return accountService.getAccounts();
+    }
+
+    /**
+     * Check whether email is already registered
+     * @param request the request containing the email to test
+     * @return response with status 400 if email is already registered, 200 else
+     */
+    @GetMapping("/valid")
+    @ResponseBody
+    public ResponseEntity<?> isEmailFree(@RequestBody FreeEmailRequest request) {
+        return accountService.isEmailFree(request.getEmail());
     }
     
     /**

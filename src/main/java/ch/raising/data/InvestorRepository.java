@@ -40,14 +40,14 @@ public class InvestorRepository implements IRepository<Investor, Investor> {
 	 * @return instance of the found investor
 	 */
 	public Investor find(long id) {
-		try {
-			String sql = "SELECT * FROM investor WHERE accountId = ?";
-			return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToModel);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return null;
-		}
-	}
+        try {
+            String sql = "SELECT * FROM investor WHERE accountId = ?";
+            return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToModel);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
 
 	/**
 	 * Update investor

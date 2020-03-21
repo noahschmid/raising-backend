@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -35,14 +36,14 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	 * @return instance of the found startup
 	 */
 	public Startup find(long accountId) {
-		try {
-			String sql = "SELECT * FROM startup WHERE accountId = ?";
-			return jdbc.queryForObject(sql, new Object[] { accountId }, this::mapRowToModel);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return null;
-		}
-	}
+        try {
+            String sql = "SELECT * FROM startup WHERE accountId = ?";
+            return jdbc.queryForObject(sql, new Object[] { accountId }, this::mapRowToModel);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
 
 	/**
 	 * Update startup

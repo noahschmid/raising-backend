@@ -1,5 +1,4 @@
 package ch.raising.raisingbackend.data;
-
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -31,11 +30,14 @@ public class BoardMemberRepositoryTest {
 	@Autowired
 	JdbcTemplate jdbc;
 	
+<<<<<<< HEAD:src/test/java/ch/raising/raisingbackend/data/BoardMemberRepositoryTest.java
 	
 	@BeforeAll
 	public void setup() {
 		
 	}
+=======
+>>>>>>> c1e2333027054891b58d67be94510f4622e3697c:src/test/java/ch/rasing/raisingbackend/data/BoardMemberRepositoryTest.java
 
 	@Test
 	public void findABoardmember() {

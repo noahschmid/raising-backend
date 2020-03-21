@@ -11,5 +11,4 @@ public class Country implements IAssignmentTableModel {
 	private String name;
 	private long id;
 	private long continentId;
-
 }
