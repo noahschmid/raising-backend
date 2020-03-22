@@ -27,7 +27,6 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 		this.jdbc = jdbc;
 	}
 
-
 	@Override
 	public void addMemberByStartupId(Boardmember bmem, long startupid) {
 		jdbc.execute(
@@ -37,27 +36,26 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 
 	@Override
 	public long getStartupIdByMemberId(long bmemId) {
-		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { bmemId },
-				this::mapRowToId);
+		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { bmemId }, this::mapRowToId);
 	}
 
 	@Override
 	public Boardmember find(long id) {
-		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { id },
-				this::mapRowToModel);
+		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM boardmember WHERE tableEntryId = ?", deleteById(id));
+		jdbc.execute("DELETE FROM boardmember WHERE startupid = ?", deleteById(id));
 	}
 
 	@Override
 	public Boardmember mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return Boardmember.builder().id(rs.getLong("tableEntryId")).startupid(rs.getLong("startupid"))
-				.lastName(rs.getString("lastname")).firstName("firstname").position("position")
-				.education(rs.getString("education")).profession(rs.getString("profession"))
-				.membersince(rs.getInt("pulldownduration")).coutryId(rs.getLong("countryId")).build();
+		return Boardmember.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
+				.lastName(rs.getString("lastname")).firstName(rs.getString("firstname"))
+				.position(rs.getString("position")).education(rs.getString("education"))
+				.profession(rs.getString("profession")).membersince(rs.getInt("membersince"))
+				.coutryId(rs.getLong("countryId")).build();
 	}
 
 	@Override
@@ -82,6 +80,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 				ps.setString(c++, bmem.getLastName());
 				ps.setString(c++, bmem.getEducation());
 				ps.setString(c++, bmem.getProfession());
+				ps.setString(c++, bmem.getPosition());
 				ps.setInt(c++, bmem.getMembersince());
 				ps.setLong(c++, bmem.getCountryId());
 				return ps.execute();

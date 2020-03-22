@@ -30,7 +30,7 @@ public interface IAdditionalInformationRepository<Model>{
 	public List<Model> findByStartupId(long startupId);
 	
 	public default long mapRowToId(ResultSet rs, int row) throws SQLException {
-		return rs.getInt("accountId");
+		return rs.getInt("startupId");
 	}
 	
 	public Model mapRowToModel(ResultSet rs, int row) throws SQLException;

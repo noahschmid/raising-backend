@@ -97,7 +97,7 @@ public class QueryBuilder {
 	
 	public String select() {
 		assert tableName != null;
-		whereStatement = whereStatement!= null?"": " WHERE " + whereStatement;
+		whereStatement = whereStatement== null?"": " WHERE " + whereStatement;
 		return "SELECT " + selectStatement + " FROM " + tableName + whereStatement;
 	}
 	
