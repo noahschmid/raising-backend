@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ch.raising.services.PublicInformationService;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/public")
 public class PublicInformationController {
 	
 	@Autowired

@@ -35,7 +35,7 @@ public class StartupController {
      * @param tableEntryId the tableEntryId of the account the startup belongs to
      * @return ResponseEntity instance with status code and startup in body
      */
-    @GetMapping("/{tableEntryId}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getInvestorProfile(@PathVariable int id) {
         return startupService.getProfile(id);
 	}
@@ -45,7 +45,7 @@ public class StartupController {
      * @param request the tableEntryId of the account the investor belongs to
      * @return ResponseEntity with status code and error message (if exists)
      */
-    @PatchMapping("/{tableEntryId}")
+    @PatchMapping("/{id}")
     public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Startup request) {
         return startupService.updateStartup(id, request);
     }
@@ -63,7 +63,7 @@ public class StartupController {
 	 * Deletes a contact specified by tableEntryId.
 	 * @param tableEntryId of the contact to be deleted
 	 */
-	@DeleteMapping("/contact/{tableEntryId}")
+	@DeleteMapping("/contact/{id}")
 	public ResponseEntity<?> deleteContact(@PathVariable int id){
 		//TODO check if the contact is part of the startup
 		return startupService.deleteContactByStartupId(id);
@@ -82,7 +82,7 @@ public class StartupController {
 	 * @param tableEntryId to be deleted
 	 * @return response with statuscode
 	 */
-	@DeleteMapping("/boardmemeber/{tableEntryId}")
+	@DeleteMapping("/boardmemeber/{id}")
 	public ResponseEntity<?> deleteBoardmember(@PathVariable int id){
 		return startupService.deleteBoardmemberByStartupId(id);
 	}
@@ -100,7 +100,7 @@ public class StartupController {
 	 * @param tableEntryId to be deleted
 	 * @return response with statuscode
 	 */
-	@DeleteMapping("/founder/{tableEntryId}")
+	@DeleteMapping("/founder/{id}")
 	public ResponseEntity<?> deleteFounder(@PathVariable int id){
 		return startupService.deleteFounderByStartupId(id);
 	}
@@ -118,7 +118,7 @@ public class StartupController {
 	 * @param tableEntryId to be deleted
 	 * @return response with statuscode
 	 */
-	@DeleteMapping("/label/{tableEntryId}")
+	@DeleteMapping("/label/{id}")
 	public ResponseEntity<?> deleteLabel(@PathVariable int id){
 		return startupService.deleteLabelByStartupId(id);
 	}
@@ -127,7 +127,7 @@ public class StartupController {
 	 * @param contact to be added
 	 * @return a response with a code
 	 */
-	@PostMapping("/label/{tableEntryId}")
+	@PostMapping("/label/{id}")
 	public ResponseEntity<?> addLabel(int id){
 		return startupService.addLabelByStartupId(id);
 	}
@@ -137,7 +137,7 @@ public class StartupController {
 	 * @param tableEntryId to be deleted
 	 * @return response with statuscode
 	 */
-	@DeleteMapping("/investmenttype/{tableEntryId}")
+	@DeleteMapping("/investmenttype/{id}")
 	public ResponseEntity<?> deleteInvestmentPhase(@PathVariable int id){
 		return startupService.deleteInvestorTypeByStartupId(id);
 	}
@@ -146,7 +146,7 @@ public class StartupController {
 	 * @param contact to be added
 	 * @return a response with a code
 	 */
-	@PostMapping("/investmenttype/{tableEntryId}")
+	@PostMapping("/investmenttype/{id}")
 	public ResponseEntity<?> addInvestmentphase(int id){
 		return startupService.addInvestorTypeByStartupId(id);
 	}

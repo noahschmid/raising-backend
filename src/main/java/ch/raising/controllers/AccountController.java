@@ -144,7 +144,7 @@ public class AccountController {
      * @param request instance of the http request
 	 * @return details of specific account
 	 */
-	@GetMapping("/{tableEntryId}")
+	@GetMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> getAccountById(@PathVariable int id, HttpServletRequest request) {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
@@ -159,7 +159,7 @@ public class AccountController {
      * @param request instance of the http request 
 	 * @return response object with status text
 	 */
-	@DeleteMapping("/{tableEntryId}")
+	@DeleteMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> deleteAccount(@PathVariable int id, HttpServletRequest request) {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
@@ -172,7 +172,7 @@ public class AccountController {
      * Update account
      * @return Response entity with status code and message
      */
-    @PatchMapping("/{tableEntryId}")
+    @PatchMapping("/{id}")
     @ResponseBody
     public ResponseEntity<?> updateAccount(@PathVariable int id, 
                                             @RequestBody Account updateRequest,
