@@ -16,9 +16,10 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
+import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
-
 
 @Repository
 public class AccountRepository implements IRepository<Account, UpdateQueryBuilder> {
@@ -50,7 +51,7 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 */
 	public boolean accountExists(Account account) {
 		String query = "SELECT * FROM account WHERE emailhash = ? AND password = ?";
-		Object[] params = new Object[] { account.getEmail(), account.getPassword()};
+		Object[] params = new Object[] { account.getEmail(), account.getPassword() };
 		try {
 			jdbc.queryForObject(query, params, this::mapRowToModel);
 			return true;
@@ -58,32 +59,30 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Find user account by username
+	 * Find user account by email
 	 * 
-	 * @param email the username to search for
+	 * @param email the email to search for
 	 * @return instance of the found user account
+	 * @throws EmailNotFoundException
 	 */
-	public Account findByEmail(String email) {
-        List<Account> accounts = getAll();        
-        for (Account acc : accounts) {
-            if (encoder.matches(email, acc.getEmail()))
-                return acc;
-        }
-        return null;
-    }
+	public Account findByEmail(String email) throws EmailNotFoundException {
+		List<Account> accounts = getAll();
+		for (Account acc : accounts) {
+			if (encoder.matches(email, acc.getEmail()))
+				return acc;
+		}
+		throw new EmailNotFoundException("Email " + email + "was not found.");
+	}
 
 	/**
 	 * Add a new account to the database
 	 * 
 	 * @param acc the account to add
-	 * @return 
+	 * @return
 	 */
-	public long add(Account acc) throws Exception {
-		if(emailExists(acc.getEmail())) {
-			 throw new Exception("Account with same email already exists");
-		}
+	public long add(Account acc) throws DatabaseOperationException {
 		try {
 			String query = "INSERT INTO account(name, password, emailHash) VALUES (?, ?, ?)";
 			String emailHash = encoder.encode(acc.getEmail());
@@ -99,10 +98,10 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 					return ps.execute();
 				}
 			});
-			return jdbc.queryForObject("SELECT * FROM account WHERE emailhash = ?", new Object[] {emailHash}, this::mapRowToId);
+			return findByEmail(acc.getEmail()).getAccountId();
 		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
+			e.printStackTrace();
+			throw new DatabaseOperationException("could not add account");
 		}
 	}
 
@@ -152,8 +151,8 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 */
 	public boolean emailExists(String email) {
 		List<Account> accounts = getAll();
-		for(Account account: accounts) {
-			if(encoder.matches(email, account.getEmail()))
+		for (Account account : accounts) {
+			if (encoder.matches(email, account.getEmail()))
 				return true;
 		}
 		return false;
@@ -169,9 +168,10 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 */
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
-				.email(rs.getString("emailHash")).roles(rs.getString("roles")).password(rs.getString("password")).build();
+				.email(rs.getString("emailHash")).roles(rs.getString("roles")).password(rs.getString("password"))
+				.build();
 	}
-	
+
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
 		return rs.getLong("id");
 	}
@@ -179,8 +179,8 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	/**
 	 * Update user account
 	 * 
-	 * @param tableEntryId  the tableEntryId of the account to update
-	 * @param req request containing fields to update
+	 * @param tableEntryId the tableEntryId of the account to update
+	 * @param req          request containing fields to update
 	 */
 	public void update(long id, Account req) throws Exception {
 		throw new NotImplementedException();
@@ -200,6 +200,6 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	@Override
 	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

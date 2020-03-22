@@ -3,20 +3,21 @@ package ch.raising.models;
 import java.util.Date;
 import java.util.List;
 
-import ch.raising.interfaces.IAssignmentTableModel;
+import ch.raising.models.AssignmentTableModel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
+import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Startup extends Account {
 
 	private long investmentPhaseId = -1;
 	private int boosts = 0;
 	private String street;
 	private String city;
-	private String zipCode;
+	private int zipCode;
 	private String website;
 	private int breakEvenYear = -1;
 	private int numberOfFTE = -1;
@@ -30,8 +31,8 @@ public class Startup extends Account {
 	private int foundingyear;
 	private long financeTypeId = -1;
 
-	private List<IAssignmentTableModel> invTypes;
-	private List<IAssignmentTableModel> labels;
+	private List<AssignmentTableModel> investorTypes;
+	private List<AssignmentTableModel> labels;
 	private Contact contact;
 	private List<Founder> founders;
 	private List<PrivateShareholder> privateShareholders;
@@ -43,14 +44,14 @@ public class Startup extends Account {
 	 * 
 	 * @param account            the account with all lists initialized
 	 * @param su                 as represented by the startup table in the database
-	 * @param invTypes
+	 * @param investorTypes
 	 * @param labels
 	 * @param contact
 	 * @param founders
 	 * @param preMoneyevaluation
 	 */
-	public Startup(Account account, Startup su, List<IAssignmentTableModel> invTypes,
-			List<IAssignmentTableModel> labels, Contact contact, List<Founder> founders,
+	public Startup(Account account, Startup su, List<AssignmentTableModel> invTypes,
+			List<AssignmentTableModel> labels, Contact contact, List<Founder> founders,
 			List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders) {
 		super(account);
 		this.investmentPhaseId = su.getInvestmentPhaseId();
@@ -70,7 +71,7 @@ public class Startup extends Account {
 		this.foundingyear = su.getFoundingyear();
 		this.financeTypeId = su.getFinanceTypeId();
 		this.closingtime = su.getClosingtime();
-		this.invTypes = invTypes;
+		this.investorTypes = invTypes;
 		this.labels = labels;
 		this.contact = contact;
 		this.founders = founders;
@@ -99,7 +100,7 @@ public class Startup extends Account {
 	 */
 	@Builder(builderMethodName = "startupBuilder")
 	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFTE, int turnover, String street,
-			String city, String website, int breakEvenYear, String zipCode, int preMoneyevaluation, int revenueMax,
+			String city, String website, int breakEvenYear, int zipCode, int preMoneyevaluation, int revenueMax,
 			long financeTypeId, Date closingtime, int revenueMin, int scope, String uId, int foundingyear) {
 		super();
 		this.accountId = accountId;
@@ -124,10 +125,10 @@ public class Startup extends Account {
 
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() || investmentPhaseId == -1 || boosts != 0 || street == null || city == null
-				|| zipCode == null || website == null || breakEvenYear == -1 || numberOfFTE == -1 || turnover == -1
-				|| financeTypeId == -1 || closingtime == null || contact == null || invTypes == null || labels == null
-				|| founders == null || invTypes.isEmpty() || labels.isEmpty() || founders.isEmpty();
+		return super.isInComplete() ;//|| investmentPhaseId == -1 || boosts != 0 || street == null || city == null
+//				|| zipCode == null || website == null || breakEvenYear == -1 || numberOfFTE == -1 || turnover == -1
+//				|| financeTypeId == -1 || closingtime == null || contact == null || investorTypes == null || labels == null
+//				|| founders == null || investorTypes.isEmpty() || labels.isEmpty() || founders.isEmpty();
 	}
 
 }

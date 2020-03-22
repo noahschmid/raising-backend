@@ -1,5 +1,6 @@
 package ch.raising.services;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -19,11 +20,16 @@ import org.springframework.stereotype.Service;
 
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
+import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
+import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
+import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.EmailNotFoundException;
+import ch.raising.utils.InValidProfileException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
@@ -37,7 +43,7 @@ import ch.raising.interfaces.IAssignmentTableModel;
 @Service
 public class AccountService implements UserDetailsService {
 	@Autowired
-	private AccountRepository accountRepository;
+	protected AccountRepository accountRepository;
 
 	@Autowired
 	private MailUtil mailUtil;
@@ -76,20 +82,26 @@ public class AccountService implements UserDetailsService {
 
 	@Override
 	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		Account account = accountRepository.findByEmail(email);
-		return new AccountDetails(account);
+		try {
+			Account account = accountRepository.findByEmail(email);
+			return new AccountDetails(account);
+		} catch (EmailNotFoundException e) {
+			throw new UsernameNotFoundException(e.getMessage());
+		}
 	}
 
 	/**
 	 * Check whether given email is already registered
+	 * 
 	 * @param email the email to check
-	 * @return 
+	 * @return
 	 */
 	public ResponseEntity<?> isEmailFree(String email) {
-		Account account = accountRepository.findByEmail(email);
-		if(account == null)
+		if (accountRepository.emailExists(email)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		} else {
 			return ResponseEntity.ok().build();
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
 	}
 
 	/**
@@ -102,9 +114,11 @@ public class AccountService implements UserDetailsService {
 		try {
 			registerAccount(account);
 			return ResponseEntity.ok().build();
-		} catch (Exception e) {
+		} catch (DatabaseOperationException e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		} catch (Error e) {
+		} catch (NullPointerException e) {
+			return ResponseEntity.status(500).body(new ErrorResponse("NullpointerException: "+e.getMessage()));
+		}catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
@@ -117,17 +131,24 @@ public class AccountService implements UserDetailsService {
 	 * @throws Exception
 	 */
 	protected long registerAccount(Account req) throws Exception {
-		checkRequestValid(req);
+		if (req.isInComplete()) {
+			throw new InValidProfileException("Profile is invalid");
+		} else if (accountRepository.emailExists(req.getEmail())) {
+			throw new InValidProfileException("Email already exists");
+		}
 
-		long accountId = accountRepository.add(Account.accountBuilder().name(req.getName()).password(req.getPassword())
-				.roles(req.getRoles()).email(req.getEmail()).investmentMin(req.getInvestmentMin())
-				.investmentMax(req.getInvestmentMax()).build());
+		long accountId = accountRepository.add(req);
 
-		req.getCountries().forEach(country -> countryRepository.addEntryToAccountById(accountId, country.getId()));
-		req.getContinents()
+		if(req.getCountries() != null)
+			req.getCountries().forEach(country -> countryRepository.addEntryToAccountById(country.getId(), accountId));
+		if(req.getContinents() != null)
+			req.getContinents()
 				.forEach(continent -> continentRepository.addEntryToAccountById(continent.getId(), accountId));
-		req.getSupport().forEach(sup -> supportRepository.addEntryToAccountById(sup.getId(), accountId));
-		req.getIndustries().forEach(ind -> industryRepository.addEntryToAccountById(ind.getId(), accountId));
+		if(req.getSupport() != null)
+			req.getSupport().forEach(sup -> supportRepository.addEntryToAccountById(sup.getId(), accountId));
+		if(req.getIndustries() != null)
+			req.getIndustries().forEach(ind -> industryRepository.addEntryToAccountById(ind.getId(), accountId));
+
 		return accountId;
 	}
 
@@ -182,10 +203,10 @@ public class AccountService implements UserDetailsService {
 	 *         initialized with all lists and objects non null.
 	 */
 	protected Account getAccount(long id) {
-		List<IAssignmentTableModel> countries = countryRepository.findByAccountId(id);
-		List<IAssignmentTableModel> continents = continentRepository.findByAccountId(id);
-		List<IAssignmentTableModel> support = supportRepository.findByAccountId(id);
-		List<IAssignmentTableModel> industries = industryRepository.findByAccountId(id);
+		List<AssignmentTableModel> countries = countryRepository.findByAccountId(id);
+		List<AssignmentTableModel> continents = continentRepository.findByAccountId(id);
+		List<AssignmentTableModel> support = supportRepository.findByAccountId(id);
+		List<AssignmentTableModel> industries = industryRepository.findByAccountId(id);
 
 		Account acc = accountRepository.find(id);
 
@@ -214,7 +235,7 @@ public class AccountService implements UserDetailsService {
 	 * @param tableEntryId the tableEntryId of the desired account
 	 * @return Account instance of the desired account
 	 */
-	public Account findById(int id) {
+	public Account findById(long id) {
 		return accountRepository.find(id);
 	}
 
@@ -225,7 +246,7 @@ public class AccountService implements UserDetailsService {
 	 * @param isAdmin      indicates whether the user is admin
 	 * @return true if account belongs to request, false otherwise
 	 */
-	public boolean isOwnAccount(int id) {
+	public boolean isOwnAccount(long id) {
 		Account account = findById(id);
 		String username = SecurityContextHolder.getContext().getAuthentication().getName().toLowerCase();
 		if (account == null || username == null)
@@ -256,14 +277,15 @@ public class AccountService implements UserDetailsService {
 	 * @return response entity with status code
 	 */
 	public ResponseEntity<?> forgotPassword(ForgotPasswordRequest request) {
-		Account account = accountRepository.findByEmail(request.getEmail());
 		try {
-			if (account != null) {
-				String code = resetCodeUtil.createResetCode(account);
-				mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
-			}
+			Account account = accountRepository.findByEmail(request.getEmail());
+			String code = resetCodeUtil.createResetCode(account);
+			mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
+
 		} catch (MessagingException e) {
 			return ResponseEntity.status(500).body(e.getStackTrace());
+		} catch (EmailNotFoundException e) {
+			return ResponseEntity.status(500).body(e.getMessage());
 		}
 
 		return ResponseEntity.ok().build();
@@ -427,13 +449,6 @@ public class AccountService implements UserDetailsService {
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
-	}
-
-	protected void checkRequestValid(Account account) throws Error {
-		if (accountRepository.findByEmail(account.getEmail()) != null)
-			throw new Error("Account with same email exists");
-		if (account.isInComplete())
-			throw new Error("Profile is incomplete");
 	}
 
 }

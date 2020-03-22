@@ -16,7 +16,7 @@ import ch.raising.models.Investor;
 import ch.raising.services.InvestorService;
 
 @Controller
-@RequestMapping("/investor/")
+@RequestMapping("/investor")
 public class InvestorController {
     @Autowired
     InvestorService investorService;
@@ -30,7 +30,7 @@ public class InvestorController {
      * @param tableEntryId the tableEntryId of the account the investor belongs to
      * @return ResponseEntity instance with status code and investor or startup in body
      */
-    @GetMapping("/{tableEntryId}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getInvestorProfile(@PathVariable int id) {
         return investorService.getProfile(id);
     }
@@ -40,7 +40,7 @@ public class InvestorController {
      * @param request the tableEntryId of the account the investor belongs to
      * @return ResponseEntity with status code and error message (if exists)
      */
-    @PatchMapping("/{tableEntryId}")
+    @PatchMapping("/{id}")
     public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Investor request) {
         return investorService.updateInvestor(id, request);
     }

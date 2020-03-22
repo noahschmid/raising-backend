@@ -80,7 +80,7 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 		return Startup.startupBuilder().accountId(rs.getLong("accountId"))
 				.investmentPhaseId(rs.getLong("investmentphaseid")).boosts(rs.getInt("boosts"))
 				.numberOfFTE(rs.getInt("numberOfFTE")).turnover(rs.getInt("turnover")).street(rs.getString("street"))
-				.breakEvenYear(rs.getInt("breakevenYear")).city(rs.getString("city")).zipCode(rs.getString("zipCode"))
+				.breakEvenYear(rs.getInt("breakevenYear")).city(rs.getString("city")).zipCode(rs.getInt("zipCode"))
 				.website(rs.getString("website")).investmentPhaseId(rs.getLong("investmentPhaseId"))
 				.revenueMax(rs.getInt("revenuemax")).revenueMin(rs.getInt("revenuemin")).scope(rs.getInt("scope"))
 				.uId(rs.getString("uid")).foundingyear(rs.getInt("foundingyear"))
@@ -96,31 +96,31 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	public void add(Startup su) throws Exception {
 
 		try {
-			String query = "INSERT INTO startup(accountid, investmentphaseid, boosts, numberoffte, turnover, "
-					+ "street, city, website, breakevenyear, zipcode, premoneyevaluation, revenueMax, financetypeid, "
-					+ "closingtime, revenuemin, scope, uid, foundingyear) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			String query = "INSERT INTO startup(accountid, boosts, numberoffte, turnover, street, "
+					+ "city, website, breakevenyear, zipcode, premoneyvaluation, closingtime, finacetypeid, investmentphaseid, "
+					+ "revenuemax, revenuemin, scope, uid, foundingyear) VALUES ( ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 					int c = 1;
 					ps.setLong(c++, su.getAccountId());
-					ps.setLong(c++, su.getInvestmentPhaseId());
-					ps.setInt(c++, su.getBoosts());
+					ps.setInt(c++, 0);
 					ps.setInt(c++, su.getNumberOfFTE());
 					ps.setInt(c++, su.getTurnover());
 					ps.setString(c++, su.getStreet());
 					ps.setString(c++, su.getCity());
 					ps.setString(c++, su.getWebsite());
 					ps.setInt(c++, su.getBreakEvenYear());
-					ps.setString(c++, su.getZipCode());
+					ps.setInt(c++, su.getZipCode());
 					ps.setInt(c++, su.getPreMoneyevaluation());
-					ps.setInt(c++, su.getRevenueMax());
-					ps.setLong(c++, su.getFinanceTypeId());
 					ps.setDate(c++, (Date) su.getClosingtime());
-					ps.setInt(c++, su.getRevenueMin());
+					ps.setInt(c++, (int) su.getFinanceTypeId());
+					ps.setInt(c++, (int) su.getInvestmentPhaseId());
+					ps.setInt(c++, su.getRevenueMax());
+					ps.setInt(c++,su.getRevenueMin());
 					ps.setInt(c++, su.getScope());
+					ps.setString(c++, su.getUId());
 					ps.setInt(c++, su.getFoundingyear());
-					
 					return ps.execute();
 				}
 			});

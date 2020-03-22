@@ -16,7 +16,6 @@ public class Account{
 	protected long accountId = -1l;
 	protected String company;
 	protected String name;
-	@JsonIgnore
 	private String password;
 	private String roles;
 	private String email;
@@ -25,11 +24,10 @@ public class Account{
 	private int investmentMin = -1;
 	private int investmentMax = -1;
 
-	private List<IAssignmentTableModel> countries;
-	private List<IAssignmentTableModel> continents;
-	private List<IAssignmentTableModel> support;
-	private List<IAssignmentTableModel> industries;
-
+	private List<AssignmentTableModel> countries;
+	private List<AssignmentTableModel> continents;
+	private List<AssignmentTableModel> support;
+	private List<AssignmentTableModel> industries;
 	/**
 	 * This constructor makes an Account represented by the account table in the
 	 * database. That means the country, continent, support, industries lists will
@@ -100,11 +98,6 @@ public class Account{
 	}
 	
 	public boolean isInComplete() {
-		return email == null || password == null || name == null;
-//				|| investmentMin == -1 || investmentMax == -1 || countries == null
-//				|| continents == null || support == null ||industries == null
-//				||industries.isEmpty() || support.isEmpty() || continents.isEmpty()
-//				||countries.isEmpty();
+		return email == "" || password == ""|| name == "";
 	}
-
 }

@@ -36,7 +36,7 @@ public class MapUtil {
 	}
 	
 	public static AssignmentTableModelWithDescription mapRowToAssignmentTableWithDescription(ResultSet rs, int row) throws SQLException{
-		return new AssignmentTableModelWithDescription(rs.getLong("id"), rs.getString("name"), rs.getString("description"));
+		return new AssignmentTableModelWithDescription(rs.getString("name"), rs.getLong("id"), rs.getString("description"));
 	}
 	
 	public static Country mapRowToCountry(ResultSet rs, int row) throws SQLException{

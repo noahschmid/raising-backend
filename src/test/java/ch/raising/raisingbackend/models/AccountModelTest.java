@@ -16,9 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import ch.raising.interfaces.IAssignmentTableModel;
+import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Account;
 import ch.raising.raisingbackend.data.TestConfig;
 
@@ -39,10 +37,10 @@ public class AccountModelTest {
 	private int investmentMin = 10;
 	private int investmentMax = 15;
 
-	private List<IAssignmentTableModel> countries;
-	private List<IAssignmentTableModel> continents;
-	private List<IAssignmentTableModel> support;
-	private List<IAssignmentTableModel> industries;
+	private List<AssignmentTableModel> countries;
+	private List<AssignmentTableModel> continents;
+	private List<AssignmentTableModel> support;
+	private List<AssignmentTableModel> industries;
 	
 	@Test
 	public void testModelFromRepositoryWithBuilder() {
@@ -66,7 +64,7 @@ public class AccountModelTest {
 				.roles(roles).email(email).description(description).investmentMin(investmentMin)
 				.investmentMax(investmentMax).build();
 		
-		assertTrue(acc.isInComplete());
+		assertFalse(acc.isInComplete());
 		assertEquals(accountId, acc.getAccountId());
 		assertEquals(company, acc.getCompany());
 		assertEquals(password, acc.getPassword());
@@ -78,14 +76,14 @@ public class AccountModelTest {
 		assertEquals(investmentMin, acc.getInvestmentMin());
 		assertNull(acc.getName());
 	}
-	
+
 	@Test 
 	public void testModelForFrontend() {
 		Account acc = getFullRepoAccount();
-		countries = new ArrayList<IAssignmentTableModel>();
-		continents = new ArrayList<IAssignmentTableModel>();
-		support = new ArrayList<IAssignmentTableModel>();
-		industries = new ArrayList<IAssignmentTableModel>();
+		countries = new ArrayList<AssignmentTableModel>();
+		continents = new ArrayList<AssignmentTableModel>();
+		support = new ArrayList<AssignmentTableModel>();
+		industries = new ArrayList<AssignmentTableModel>();
 		
 		Account fullAcc = new Account(acc);
 		fullAcc.setContinents(continents);

@@ -22,7 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import ch.raising.data.AssignmentTableRepository;
-import ch.raising.interfaces.IAssignmentTableModel;
+import ch.raising.models.AssignmentTableModel;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
@@ -99,20 +99,20 @@ public class AssignmentTableTest {
 	
 	@Test
 	public void testFind() {
-		IAssignmentTableModel model = repo.find(tableEntryId);
+		AssignmentTableModel model = repo.find(tableEntryId);
 		assertEquals(name, model.getName());
 	}
 
 	@Test
 	public void testFindAll() {
-		List<IAssignmentTableModel> models = repo.findAll();
+		List<AssignmentTableModel> models = repo.findAll();
 		assertNotNull(models);
 		assertEquals(1, models.size());
 	}
 
 	@Test
 	public void testFindByAccountId() {
-		List<IAssignmentTableModel> models = repo.findByAccountId(99);
+		List<AssignmentTableModel> models = repo.findByAccountId(99);
 		assertNotNull(models);
 		assertNotEquals(0, models.size());
 		assertEquals(name, models.get(0).getName());

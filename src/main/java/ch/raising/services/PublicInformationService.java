@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import ch.raising.data.AssignmentTableRepository;
-import ch.raising.interfaces.IAssignmentTableModel;
+import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.ErrorResponse;
 import ch.raising.utils.MapUtil;
 
@@ -24,7 +24,7 @@ public class PublicInformationService {
 
 	public ResponseEntity<?> getAll(String name) {
 		try {
-			List<IAssignmentTableModel> info = new AssignmentTableRepository(jdbc, name).findAll();
+			List<AssignmentTableModel> info = new AssignmentTableRepository(jdbc, name).findAll();
 			return ResponseEntity.ok().body(info);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -35,7 +35,7 @@ public class PublicInformationService {
 
 	public ResponseEntity<?> getAllWithDescription(String name) {
 		try {
-			List<IAssignmentTableModel> info = new AssignmentTableRepository(jdbc, name,
+			List<AssignmentTableModel> info = new AssignmentTableRepository(jdbc, name,
 					MapUtil::mapRowToAssignmentTableWithDescription).findAll();
 			return ResponseEntity.ok().body(info);
 		} catch (Exception e) {
@@ -47,7 +47,7 @@ public class PublicInformationService {
 
 	public ResponseEntity<?> getAllCountries(String name) {
 		try {
-			List<IAssignmentTableModel> info = new AssignmentTableRepository(jdbc, name, MapUtil::mapRowToCountry)
+			List<AssignmentTableModel> info = new AssignmentTableRepository(jdbc, name, MapUtil::mapRowToCountry)
 					.findAll();
 			return ResponseEntity.ok().body(info);
 		} catch (Exception e) {
@@ -59,7 +59,7 @@ public class PublicInformationService {
 
 	public ResponseEntity<?> getAllRevenueSteps(String name) {
 		try {
-			List<IAssignmentTableModel> info = new AssignmentTableRepository(jdbc, name, MapUtil::mapRowToRevenue)
+			List<AssignmentTableModel> info = new AssignmentTableRepository(jdbc, name, MapUtil::mapRowToRevenue)
 					.findAll();
 			return ResponseEntity.ok().body(info);
 		} catch (Exception e) {

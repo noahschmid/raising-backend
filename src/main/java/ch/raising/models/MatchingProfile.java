@@ -3,7 +3,6 @@ package ch.raising.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.raising.interfaces.IAssignmentTableModel;
 import lombok.Data;
 
 @Data
@@ -14,43 +13,35 @@ public class MatchingProfile {
     private Long accountId = -1L;
     private int investmentMin = -1;
     private int investmentMax = -1;
-    private List<IAssignmentTableModel> investorTypes;
-    private List<IAssignmentTableModel> industries;
-    private List<IAssignmentTableModel> investmentPhases;
-    private List<IAssignmentTableModel> countries;
-    private List<IAssignmentTableModel> continents;
-    private List<IAssignmentTableModel> support;
+    private List<AssignmentTableModel> investorTypes;
+    private List<AssignmentTableModel> industries;
+    private List<AssignmentTableModel> investmentPhases;
+    private List<AssignmentTableModel> countries;
+    private List<AssignmentTableModel> continents;
+    private List<AssignmentTableModel> support;
 
     public MatchingProfile() {
-        investorTypes = new ArrayList<IAssignmentTableModel>();
-        industries = new ArrayList<IAssignmentTableModel>();
-        investmentPhases = new ArrayList<IAssignmentTableModel>();
-        countries = new ArrayList<IAssignmentTableModel>();
-        continents = new ArrayList<IAssignmentTableModel>();
-        support = new ArrayList<IAssignmentTableModel>();
+        investorTypes = new ArrayList<AssignmentTableModel>();
+        industries = new ArrayList<AssignmentTableModel>();
+        investmentPhases = new ArrayList<AssignmentTableModel>();
+        countries = new ArrayList<AssignmentTableModel>();
+        continents = new ArrayList<AssignmentTableModel>();
+        support = new ArrayList<AssignmentTableModel>();
     }
-
-    public void addSupport(IAssignmentTableModel support) {
-        this.support.add(support);
+    
+    public void addInvestorType(AssignmentTableModel invType) {
+    	investorTypes.add(invType);
     }
-
-    public void addCountry(Country country) {
-        this.countries.add(country);
+    
+    public void addInvestmentPhase(AssignmentTableModel invType) {
+    	investmentPhases.add(invType);
     }
-
-    public void addContinent(IAssignmentTableModel continent) {
-        this.continents.add(continent);
+    
+    public void addCountry(AssignmentTableModel country) {
+    	countries.add(country);
     }
-
-    public void addIndustry(IAssignmentTableModel industry) {
-        this.industries.add(industry);
-    }
-
-    public void addInvestorType(IAssignmentTableModel type) {
-        this.investorTypes.add(type);
-    }
-
-    public void addInvestmentPhase(IAssignmentTableModel phase) {
-        this.investmentPhases.add(phase);
+    
+    public void addIndustry(AssignmentTableModel industry) {
+    	industries.add(industry);
     }
 }

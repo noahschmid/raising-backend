@@ -93,13 +93,12 @@ public class InvestorRepository implements IRepository<Investor, Investor> {
 	public void add(Investor investor) {
 
 		try {
-			String query = "INSERT INTO investor(accountid, description, investorTypeId) VALUES (?, ?, ?);";
+			String query = "INSERT INTO investor(accountid, investorTypeId) VALUES (?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 					int c = 1;
 					ps.setLong(c++, investor.getAccountId());
-					ps.setString(c++, investor.getCompany());
 					ps.setLong(c++, investor.getInvestorTypeId());
 					return ps.execute();
 				}

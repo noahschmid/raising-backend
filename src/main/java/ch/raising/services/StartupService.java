@@ -8,12 +8,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ch.raising.models.*;
+import ch.raising.utils.InValidProfileException;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.data.*;
 import ch.raising.interfaces.IAdditionalInformationRepository;
-import ch.raising.interfaces.IAssignmentTableModel;
+import ch.raising.models.AssignmentTableModel;
 
 @Service
 public class StartupService extends AccountService {
@@ -64,24 +65,31 @@ public class StartupService extends AccountService {
 
 	@Override
 	protected long registerAccount(Account account) throws Exception {
-		Startup suReq = (Startup) account;
-
-		checkRequestValid(account);
+		Startup su = (Startup) account;
+		
+		if (su.isInComplete()) {
+			throw new InValidProfileException("Profile is invalid");
+		} else if (accountRepository.emailExists(su.getEmail())) {
+			throw new InValidProfileException("Email already exists");
+		}
 
 		long accountId = super.registerAccount(account);
-		Startup su = Startup.startupBuilder().accountId(accountId).investmentPhaseId(suReq.getInvestmentPhaseId())
-				.street(suReq.getStreet()).city(suReq.getCity()).zipCode(suReq.getZipCode()).website(suReq.getWebsite())
-				.breakEvenYear(suReq.getBreakEvenYear()).numberOfFTE(suReq.getNumberOfFTE())
-				.turnover(suReq.getTurnover()).build();
-
+		su.setAccountId(accountId);
 		startupRepository.add(su);
 
-		contactRepository.addMemberByStartupId(suReq.getContact(), accountId);
-
-		suReq.getLabels().forEach(label -> labelRepository.addEntryToAccountById(label.getId(), accountId));
-		suReq.getInvTypes().forEach(it -> investorTypeRepository.addEntryToAccountById(accountId, it.getId()));
-		suReq.getFounders().forEach(founder -> founderRepository.addByStartupId(founder, accountId));
-
+		if(su.getContact() != null)
+			contactRepository.addMemberByStartupId(su.getContact(), accountId);
+	
+		if(su.getLabels() != null)
+			su.getLabels().forEach(label -> labelRepository.addEntryToAccountById(label.getId(), accountId));
+		if(su.getInvestorTypes() != null)
+			su.getInvestorTypes().forEach(it -> investorTypeRepository.addEntryToAccountById(it.getId(), accountId));
+		if(su.getFounders() != null)
+			su.getFounders().forEach(founder -> founderRepository.addByStartupId(founder, accountId));
+		if(su.getPrivateShareholders() != null)
+			su.getPrivateShareholders().forEach(ps -> pshRepository.addByStartupId(ps, accountId));
+		if(su.getCorporateShareholders() != null)
+			su.getCorporateShareholders().forEach(cs -> cshRepository.addByStartupId(cs, accountId));
 		return accountId;
 	}
 
@@ -92,8 +100,8 @@ public class StartupService extends AccountService {
 	 */
 	public Account getAccount(long startupId) {
 
-		List<IAssignmentTableModel> invTypes = investorTypeRepository.findByAccountId(startupId);
-		List<IAssignmentTableModel> labels = labelRepository.findByAccountId(startupId);
+		List<AssignmentTableModel> invTypes = investorTypeRepository.findByAccountId(startupId);
+		List<AssignmentTableModel> labels = labelRepository.findByAccountId(startupId);
 		Contact contact = contactRepository.findByStartupId(startupId).get(0);
 		List<Founder> founders = founderRepository.findByStartupId(startupId);
 
@@ -285,12 +293,12 @@ public class StartupService extends AccountService {
             return null;
         
         MatchingProfile profile = new MatchingProfile();
-        List<IAssignmentTableModel> types = investorTypeRepository.findByAccountId(startup.getAccountId());
-        List<IAssignmentTableModel> continents = continentRepository.findByAccountId(startup.getAccountId());
-        List<IAssignmentTableModel> countries = countryRepository.findByAccountId(startup.getAccountId());
-        List<IAssignmentTableModel> industries = industryRepository.findByAccountId(startup.getAccountId());
-        List<IAssignmentTableModel> investmentPhases = investmentPhaseRepository.findByAccountId(startup.getAccountId());
-        List<IAssignmentTableModel> supports = supportRepository.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> types = investorTypeRepository.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> continents = continentRepository.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> countries = countryRepository.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> industries = industryRepository.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> investmentPhases = investmentPhaseRepository.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> supports = supportRepository.findByAccountId(startup.getAccountId());
 
         profile.setAccountId(startup.getAccountId());
         profile.setName(startup.getName());

@@ -6,13 +6,15 @@ import ch.raising.interfaces.IAssignmentTableModel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Investor extends Account{
 	
 	private long investorTypeId = -1;
-	private List<IAssignmentTableModel> invPhases;
+	private List<AssignmentTableModel> investmentPhases;
 
 	/**
 	 * makes the investor represented for the fronted, with all lists initialised
@@ -21,13 +23,13 @@ public class Investor extends Account{
 	 * @param account   a complete account with countries, continents, support,
 	 *                  industries initialized
 	 * @param inv       represent by the database table investor
-	 * @param invPhases
+	 * @param investmentPhases
 	 */
-	public Investor(Account account, Investor inv, List<IAssignmentTableModel> invPhases) {
+	public Investor(Account account, Investor inv, List<AssignmentTableModel> invPhases) {
 
 		super(account);
 		this.investorTypeId = inv.getInvestorTypeId();
-		this.invPhases = invPhases;
+		this.investmentPhases = invPhases;
 
 	}
 
@@ -51,7 +53,7 @@ public class Investor extends Account{
 	@Override
 	public boolean isInComplete() {
 		return super.isInComplete() || investorTypeId == -1
-				||invPhases == null || invPhases.isEmpty();
+				||investmentPhases == null || investmentPhases.isEmpty();
 	}
 
 }

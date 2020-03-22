@@ -22,7 +22,8 @@ public class AssignmentTableRepository {
 	private JdbcTemplate jdbc;
 	private String tableName;
 	private String tableAssignment;
-	protected RowMapper<ResultSet, Integer, IAssignmentTableModel> rowMapper;
+	protected RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper;
+	private String accountIdName = "accountId";
 
 	/**
 	 * uses the default rowmapper
@@ -36,41 +37,53 @@ public class AssignmentTableRepository {
 		this.rowMapper = MapUtil::mapRowToAssignmentTable;
 	}
 	/**
+	 * uses the default rowmapper
+	 * @param jdbc
+	 * @param tableName
+	 */
+	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName, String accountIdName) {
+		this.jdbc = jdbc;
+		this.tableName = tableName;
+		this.tableAssignment = tableName + "assignment";
+		this.rowMapper = MapUtil::mapRowToAssignmentTable;
+		this.accountIdName = accountIdName;
+	}
+	/**
 	 * Is used if an assignmenttable contains more fields than name and id. then a custom rowmapper can be added.
 	 * @param jdbc
 	 * @param tableName
 	 * @param rowMapper method from {@link MapUtil}
 	 */
-	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName, RowMapper<ResultSet, Integer, IAssignmentTableModel> rowMapper) {
+	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName, RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper) {
 		this.jdbc = jdbc;
 		this.tableName = tableName;
 		this.tableAssignment = tableName + "assignment";
 		this.rowMapper = rowMapper;
 	}
 
-	public IAssignmentTableModel find(long id) {
+	public AssignmentTableModel find(long id) {
 		return jdbc.queryForObject("SELECT * FROM " + tableName + " WHERE id = ?", new Object[] { id },
 				rowMapper::mapRowToModel);
 	}
 
-	public List<IAssignmentTableModel> findAll() {
+	public List<AssignmentTableModel> findAll() {
 		return jdbc.query("SELECT * FROM " + tableName, rowMapper::mapRowToModel);
 	}
 
-	public List<IAssignmentTableModel> findByAccountId(long accountId) {
+	public List<AssignmentTableModel> findByAccountId(long accountId) {
 		return jdbc.query(
 				"SELECT * FROM " + tableAssignment + " INNER JOIN " + tableName + " ON " + tableAssignment
-						+ "."+tableName+"Id = " + tableName + ".id WHERE accountId = ?",
+						+ "."+tableName+"Id = " + tableName + ".id WHERE "+accountIdName+" = ?",
 				new Object[] { accountId }, rowMapper::mapRowToModel);
 	}
 
 	public void addEntryToAccountById(long id, long accountId) {
-		String query = "INSERT INTO " + tableAssignment + "(accountId, "+ tableName +"Id) VALUES (?, ?);";
+		String query = "INSERT INTO " + tableAssignment + "("+accountIdName+", "+ tableName +"Id) VALUES (?, ?);";
 		jdbc.execute(query, getAddEntryToAccountById(id, accountId));
 	}
 
 	public void deleteEntryFromAccountById(long id, long accountId) {
-		String query = "DELETE FROM "+ tableAssignment +" WHERE accountid = ? AND "+ tableName +"id = ?";
+		String query = "DELETE FROM "+ tableAssignment +" WHERE "+accountIdName+" = ? AND "+ tableName +"id = ?";
 		jdbc.execute(query, getDeleteEntryFromAccountById(id, accountId));
 	}
 	

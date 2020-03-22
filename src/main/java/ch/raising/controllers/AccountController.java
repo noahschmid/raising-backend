@@ -30,6 +30,7 @@ import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.services.AccountService;
+import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
 import ch.raising.models.ForgotPasswordRequest;
@@ -84,14 +85,7 @@ public class AccountController {
 	@PostMapping("/register")
 	@ResponseBody
 	public ResponseEntity<?> register(@RequestBody Account account) {
-        try {
-            accountService.registerProfile(account);
-            return login(new LoginRequest(account.getEmail(), account.getPassword()));
-        } catch (Error e) {
-            return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
-        } catch (Exception e) {
-        	return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage()));
-        }
+		return accountService.registerProfile(account);
     }
     
     /**
@@ -139,14 +133,14 @@ public class AccountController {
     }
     
     /**
-	 * Searches for an account by tableEntryId
+	 * Searches for an account by id
 	 * @param tableEntryId the tableEntryId of the desired account
-     * @param request instance of the http request
+     * @param request instance of the https request
 	 * @return details of specific account
 	 */
 	@GetMapping("/{id}")
 	@ResponseBody
-	public ResponseEntity<?> getAccountById(@PathVariable int id, HttpServletRequest request) {
+	public ResponseEntity<?> getAccountById(@PathVariable long id, HttpServletRequest request) {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(403).body(new ErrorResponse("Access denied"));
 
@@ -155,7 +149,7 @@ public class AccountController {
     
     /**
 	 * Delete account
-	 * @param tableEntryId
+	 * @param id
      * @param request instance of the http request 
 	 * @return response object with status text
 	 */

@@ -6,6 +6,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
+import java.util.List;
 
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
@@ -37,7 +38,7 @@ class MatchingUtilTest {
     void testContains() {
         ArrayList<Country> countries = new ArrayList<>();
         countries.add(new Country("Switzerland", 1, 1));
-        boolean result = countries.contains(new Country("Germany", 2, 1));
+        boolean result = countries.contains(new Country("Germany", 2, 2));
         assertEquals(false, result, "Country list doesn't contain Germany");
     }
 
@@ -89,7 +90,7 @@ class MatchingUtilTest {
         int score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(0, score, "No countries match 0");
         subject.addCountry(new Country("Switzerland", 1, 1));
-        object.addCountry(new Country("Germany", 2, 1));
+        object.addCountry(new Country("Germany", 2, 2));
         score = MatchingUtil.getMatchingScore(subject, object);
         assertEquals(0, score, "No countries match 1");
 

@@ -1,13 +1,15 @@
 package ch.raising.models;
 
-import ch.raising.interfaces.IAssignmentTableModel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-@AllArgsConstructor
-public class Country implements IAssignmentTableModel {
-	private String name;
-	private long id;
+@EqualsAndHashCode(callSuper=false)
+public class Country extends AssignmentTableModel {
 	private long continentId;
+	
+	public Country(String name, long id, long continentId) {
+		super(name, id);
+		this.continentId = continentId;
+	}
 }

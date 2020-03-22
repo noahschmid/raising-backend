@@ -1,14 +1,15 @@
 package ch.raising.models;
 
-import ch.raising.interfaces.IAssignmentTableModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class AssignmentTableModel implements IAssignmentTableModel{
-
+@NoArgsConstructor
+public class AssignmentTableModel{
 	private String name;
 	private long id;
-
+	
+	
 }

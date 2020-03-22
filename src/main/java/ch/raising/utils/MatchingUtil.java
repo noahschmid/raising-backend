@@ -11,6 +11,7 @@ import ch.raising.data.InvestorRepository;
 import ch.raising.data.RelationshipRepository;
 import ch.raising.data.StartupRepository;
 import ch.raising.interfaces.IAssignmentTableModel;
+import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Investor;
 import ch.raising.models.MatchingProfile;
 import ch.raising.models.Relationship;
@@ -100,35 +101,35 @@ public class MatchingUtil {
                 object.getInvestmentMin() <= subject.getInvestmentMax())
                 ++score;
         }
-        for(IAssignmentTableModel cntry : object.getCountries()) {
+        for(AssignmentTableModel cntry : object.getCountries()) {
             if(subject.getCountries().contains(cntry)) {
                 ++score;
                 break;
             }
         }
 
-        for(IAssignmentTableModel phase : object.getInvestmentPhases()) {
+        for(AssignmentTableModel phase : object.getInvestmentPhases()) {
             if(subject.getInvestmentPhases().contains(phase)) {
                 ++score;
                 break;
             }
         }
 
-        for(IAssignmentTableModel type : object.getInvestorTypes()) {
+        for(AssignmentTableModel type : object.getInvestorTypes()) {
             if(subject.getInvestorTypes().contains(type)) {
                 ++score;
                 break;
             }
         }
 
-        for(IAssignmentTableModel industry : object.getIndustries()) {
+        for(AssignmentTableModel industry : object.getIndustries()) {
             if(subject.getIndustries().contains(industry)) {
                 ++score;
                 break;
             }
         }
 
-        for(IAssignmentTableModel support : object.getSupport()) {
+        for(AssignmentTableModel support : object.getSupport()) {
             if(subject.getSupport().contains(support)) {
                 ++score;
                 break;

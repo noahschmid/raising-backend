@@ -14,8 +14,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>raising-backend</name>
 	<description>Web Api for Raising App</description>
-
 	<properties>
+		<start-class>ch.raising.raisingbackend.RaisingBackendApplication</start-class>
 		<java.version>1.8</java.version>
 		<thymeleaf-layout-dialect.version>2.2.1
 		</thymeleaf-layout-dialect.version>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
-			</dependency>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
