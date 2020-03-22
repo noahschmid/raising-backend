@@ -1,6 +1,5 @@
 ch\raising\data\BoardmemberRepository.class
 ch\raising\models\Country.class
-ch\raising\data\CorporateBodyRepository.class
 ch\raising\controllers\AdminController.class
 ch\raising\utils\UpdateQueryBuilder$1.class
 ch\raising\controllers\AccountController.class
@@ -13,10 +12,10 @@ ch\raising\controllers\InvestorController.class
 ch\raising\data\RelationshipRepository$1.class
 ch\raising\utils\MatchingUtil.class
 ch\raising\data\FounderRepository$1.class
+ch\raising\utils\EmailNotFoundException.class
 ch\raising\controllers\PublicInformationController.class
 ch\raising\data\BoardmemberRepository$1.class
 ch\raising\raisingbackend\RaisingBackendApplication.class
-ch\raising\utils\ExtendedAssignmentTableModel.class
 ch\raising\data\ResetCodeRepository.class
 ch\raising\models\MatchingProfile.class
 ch\raising\models\CorporateShareholder$CorporateShareholderBuilder.class
@@ -33,7 +32,6 @@ ch\raising\models\Founder$FounderBuilder.class
 ch\raising\models\CorporateShareholder$1.class
 ch\raising\models\CorporateShareholder.class
 ch\raising\services\StartupService.class
-ch\raising\services\FinanceService.class
 ch\raising\data\AssignmentTableRepository.class
 ch\raising\services\ProfileService.class
 ch\raising\models\Account.class
@@ -44,6 +42,7 @@ ch\raising\utils\JwtRequestFilter.class
 ch\raising\data\FounderRepository.class
 ch\raising\models\AccountDetails.class
 ch\raising\models\Contact$ContactBuilder.class
+ch\raising\utils\DatabaseOperationException.class
 ch\raising\utils\QueryBuilder.class
 ch\raising\data\StartupRepository.class
 ch\raising\data\AccountRepository.class
@@ -54,6 +53,7 @@ ch\raising\models\FreeEmailRequest.class
 ch\raising\models\Relationship.class
 ch\raising\data\PrivateShareholderRepository.class
 ch\raising\models\ErrorResponse.class
+ch\raising\utils\InValidProfileException.class
 ch\raising\models\LoginRequest.class
 ch\raising\models\PrivateShareholder.class
 ch\raising\data\AssignmentTableRepository$2.class
@@ -70,7 +70,6 @@ ch\raising\controllers\StartupController.class
 ch\raising\models\Contact.class
 ch\raising\data\InvestorRepository.class
 ch\raising\config\SecurityConfig.class
-ch\raising\services\RevenueService.class
 ch\raising\data\ContactRepository$1.class
 ch\raising\utils\MailUtil.class
 ch\raising\data\FounderRepository$2.class
@@ -81,8 +80,6 @@ ch\raising\utils\RowMapper.class
 ch\raising\data\CorporateShareholderRepository$2.class
 ch\raising\data\StartupRepository$1.class
 ch\raising\models\Founder.class
-ch\raising\data\FinanceRepository.class
-ch\raising\data\RevenueRepository.class
 ch\raising\models\Investor$InvestorBuilder.class
 ch\raising\config\CorsConfig.class
 ch\raising\data\ResetCodeRepository$1.class
@@ -90,7 +87,6 @@ ch\raising\models\RelationshipState.class
 ch\raising\interfaces\IAssignmentTableRepository.class
 ch\raising\models\AssignmentTableModel.class
 ch\raising\controllers\ProfileController.class
-ch\raising\services\CorporateBodyService.class
 ch\raising\models\Startup.class
 ch\raising\services\PublicInformationService.class
 ch\raising\models\Support.class
