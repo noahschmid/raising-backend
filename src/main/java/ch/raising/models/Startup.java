@@ -33,6 +33,7 @@ public class Startup extends Account {
 
 	private List<AssignmentTableModel> investorTypes;
 	private List<AssignmentTableModel> labels;
+	private List<Boardmember> boardmembers;
 	private Contact contact;
 	private List<Founder> founders;
 	private List<PrivateShareholder> privateShareholders;
@@ -52,7 +53,7 @@ public class Startup extends Account {
 	 */
 	public Startup(Account account, Startup su, List<AssignmentTableModel> invTypes,
 			List<AssignmentTableModel> labels, Contact contact, List<Founder> founders,
-			List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders) {
+			List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders, List<Boardmember> boardmembers) {
 		super(account);
 		this.investmentPhaseId = su.getInvestmentPhaseId();
 		this.boosts = su.getBoosts();
@@ -77,6 +78,7 @@ public class Startup extends Account {
 		this.founders = founders;
 		this.privateShareholders = pShareholders;
 		this.corporateShareholders = cShareholders;
+		this.boardmembers = boardmembers;
 	}
 
 	/**
