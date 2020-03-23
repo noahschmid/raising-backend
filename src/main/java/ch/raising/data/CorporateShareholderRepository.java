@@ -34,26 +34,28 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 
 	@Override
 	public CorporateShareholder mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return CorporateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid")).name(rs.getString("name")).website(rs.getString("website"))
-				.equityShare(rs.getInt("equityshare")).corporateBodyId(rs.getLong("corporatebodyid")).countryId(rs.getInt("countryid")).build();
+		return CorporateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid"))
+				.lastName(rs.getString("lastname")).firstName(rs.getString("firstname"))
+				.website(rs.getString("website")).equityShare(rs.getInt("equityshare"))
+				.corporateBodyId(rs.getLong("corporatebodyid")).countryId(rs.getInt("countryid")).build();
 	}
 
 	@Override
 	public long getStartupIdByMemberId(long id) {
-		return jdbc.queryForObject("SELECT * FROM corporateshareholder WHERE id = ?",
-				new Object[] { id }, this::mapRowToId);
+		return jdbc.queryForObject("SELECT * FROM corporateshareholder WHERE id = ?", new Object[] { id },
+				this::mapRowToId);
 	}
 
 	@Override
 	public void addMemberByStartupId(CorporateShareholder sumem, long startupId) {
 		jdbc.execute(
-				"INSERT INTO corporateshareholder(startupid, name, website, equityshare, coporatebodyid, countryid) VALUES (?,?,?,?,?,?)",
+				"INSERT INTO corporateshareholder(startupid, firstname, lastname, website, equityshare, corporatebodyid, countryid) VALUES (?,?,?,?,?,?,?)",
 				addByStartupId(sumem, startupId));
 	}
 
 	@Override
 	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM privateshareholder WHERE startupid = ?", deleteById(id));
+		jdbc.execute("DELETE FROM corporateshareholder WHERE startupid = ?", deleteById(id));
 	}
 
 	@Override
@@ -74,7 +76,8 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
 				ps.setLong(c++, csh.getStartupId());
-				ps.setString(c++, csh.getName());
+				ps.setString(c++, csh.getFirstName());
+				ps.setString(c++, csh.getLastName());
 				ps.setString(c++, csh.getWebsite());
 				ps.setInt(c++, csh.getEquityShare());
 				ps.setLong(c++, csh.getCorporateBodyId());

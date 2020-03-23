@@ -24,7 +24,7 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { TestConfig.class, BoardmemberRepository.class })
+@ContextConfiguration(classes = { TestConfig.class})
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
@@ -57,7 +57,7 @@ public class BoardMemberRepositoryTest {
 	}
 
 	@BeforeEach
-	public void makeMember() {
+	public void addMember() {
 		String sql = QueryBuilder.getInstance().tableName("boardmember").attribute("startupid").attribute("firstname")
 				.attribute("lastname").attribute("education").attribute("profession").attribute("position")
 				.attribute("membersince").attribute("countryId").value(""+2).value("Aloysius").value("Pendergast").value("lawyer")
@@ -73,7 +73,7 @@ public class BoardMemberRepositoryTest {
 	}
 
 	@AfterEach
-	public void deleteBoardmember() {
+	public void deleteMember() {
 		JdbcTestUtils.deleteFromTables(jdbc, "boardmember");
 		jdbc.execute("ALTER SEQUENCE boardmember_id_seq RESTART WITH 1");
 	}

@@ -34,10 +34,10 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 
 	@Override
 	public PrivateShareholder mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return PrivateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid"))
-				.firstName(rs.getString("fistname")).lastName(rs.getString("lastname")).city(rs.getString("city"))
+		return PrivateShareholder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
+				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).city(rs.getString("city"))
 				.equityShare(rs.getInt("equityshare")).investortypeId(rs.getLong("investortypeid"))
-				.startupId(rs.getLong("startupid")).countryId(rs.getLong("countryid")).build();
+				.countryId(rs.getLong("countryid")).build();
 	}
 
 	@Override

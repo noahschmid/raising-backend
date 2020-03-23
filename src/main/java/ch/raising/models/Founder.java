@@ -3,10 +3,11 @@ package ch.raising.models;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
-
+@NoArgsConstructor
 public class Founder extends StartupMember{
 	private String education;
 	private String position;

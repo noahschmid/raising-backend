@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class StartupMember {
 	
 	private long id = -1l;
-	private long startupId;
+	protected long startupId;
 	private String firstName;
 	private String lastName;
 }
