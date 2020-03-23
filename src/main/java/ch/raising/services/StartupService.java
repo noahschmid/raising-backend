@@ -79,8 +79,8 @@ public class StartupService extends AccountService {
 
 		if(su.getContact() != null)	
 			contactRepository.addMemberByStartupId(su.getContact(), accountId);
-		if(su.getBoardmembers() != null)
-			su.getBoardmembers().forEach(bmem -> bmemRepository.addMemberByStartupId(bmem, accountId));
+		if(su.getBoardMembers() != null)
+			su.getBoardMembers().forEach(bmem -> bmemRepository.addMemberByStartupId(bmem, accountId));
 		if(su.getLabels() != null)
 			su.getLabels().forEach(label -> labelRepository.addEntryToAccountById(label.getId(), accountId));
 		if(su.getInvestorTypes() != null)

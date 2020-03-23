@@ -79,13 +79,13 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	public Startup mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return Startup.startupBuilder().accountId(rs.getLong("accountId"))
 				.investmentPhaseId(rs.getLong("investmentphaseid")).boosts(rs.getInt("boosts"))
-				.numberOfFTE(rs.getInt("numberOfFTE")).turnover(rs.getInt("turnover")).street(rs.getString("street"))
+				.numberOfFte(rs.getInt("numberOfFte")).turnover(rs.getInt("turnover")).street(rs.getString("street"))
 				.breakEvenYear(rs.getInt("breakevenYear")).city(rs.getString("city")).zipCode(rs.getInt("zipCode"))
 				.website(rs.getString("website")).investmentPhaseId(rs.getLong("investmentPhaseId"))
 				.revenueMax(rs.getInt("revenuemax")).revenueMin(rs.getInt("revenuemin")).scope(rs.getInt("scope"))
-				.uId(rs.getString("uid")).foundingyear(rs.getInt("foundingyear"))
-				.financeTypeId(rs.getLong("financetype")).closingtime(rs.getDate("closingtime"))
-				.preMoneyevaluation(rs.getInt("premoneyvaluation")).build();
+				.uId(rs.getString("uid")).foundingYear(rs.getInt("foundingYear"))
+				.financeTypeId(rs.getLong("financetype")).closingTime(rs.getDate("closingTime"))
+				.preMoneyEvaluation(rs.getInt("premoneyvaluation")).build();
 	}
 
 	/**
@@ -105,22 +105,22 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 					int c = 1;
 					ps.setLong(c++, su.getAccountId());
 					ps.setInt(c++, 0);
-					ps.setInt(c++, su.getNumberOfFTE());
+					ps.setInt(c++, su.getNumberOfFte());
 					ps.setInt(c++, su.getTurnover());
 					ps.setString(c++, su.getStreet());
 					ps.setString(c++, su.getCity());
 					ps.setString(c++, su.getWebsite());
 					ps.setInt(c++, su.getBreakEvenYear());
 					ps.setInt(c++, su.getZipCode());
-					ps.setInt(c++, su.getPreMoneyevaluation());
-					ps.setDate(c++, (Date) su.getClosingtime());
+					ps.setInt(c++, su.getPreMoneyEvaluation());
+					ps.setDate(c++, (Date) su.getClosingTime());
 					ps.setInt(c++, (int) su.getFinanceTypeId());
 					ps.setInt(c++, (int) su.getInvestmentPhaseId());
 					ps.setInt(c++, su.getRevenueMax());
 					ps.setInt(c++,su.getRevenueMin());
 					ps.setInt(c++, su.getScope());
 					ps.setString(c++, su.getUId());
-					ps.setInt(c++, su.getFoundingyear());
+					ps.setInt(c++, su.getFoundingYear());
 					return ps.execute();
 				}
 			});
