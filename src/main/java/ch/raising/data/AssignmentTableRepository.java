@@ -54,6 +54,19 @@ public class AssignmentTableRepository {
 	 * @param tableName
 	 * @param rowMapper method from {@link MapUtil}
 	 */
+	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName, String accountIdName, RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper) {
+		this.jdbc = jdbc;
+		this.tableName = tableName;
+		this.tableAssignment = tableName + "assignment";
+		this.rowMapper = rowMapper;
+		this.accountIdName = accountIdName;
+	}
+	/**
+	 * Is used if an assignmenttable contains more fields than name and id. then a custom rowmapper can be added.
+	 * @param jdbc
+	 * @param tableName
+	 * @param rowMapper method from {@link MapUtil}
+	 */
 	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName, RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper) {
 		this.jdbc = jdbc;
 		this.tableName = tableName;
