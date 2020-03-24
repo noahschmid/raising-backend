@@ -126,7 +126,7 @@ public class AccountController {
      * @param request the request containing the email to test
      * @return response with status 400 if email is already registered, 200 else
      */
-    @GetMapping("/valid")
+    @PostMapping("/valid")
     @ResponseBody
     public ResponseEntity<?> isEmailFree(@RequestBody FreeEmailRequest request) {
         return accountService.isEmailFree(request.getEmail());
