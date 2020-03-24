@@ -75,9 +75,8 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
-				ps.setLong(c++, csh.getStartupId());
-				ps.setString(c++, csh.getFirstName());
-				ps.setString(c++, csh.getLastName());
+				ps.setLong(c++, startupId);
+				ps.setString(c++, csh.getCorpName());
 				ps.setString(c++, csh.getWebsite());
 				ps.setInt(c++, csh.getEquityShare());
 				ps.setLong(c++, csh.getCorporateBodyId());

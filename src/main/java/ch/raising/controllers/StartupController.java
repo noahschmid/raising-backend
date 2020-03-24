@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.models.Boardmember;
 import ch.raising.models.Contact;
+import ch.raising.models.ErrorResponse;
 import ch.raising.models.Founder;
 import ch.raising.models.Startup;
 import ch.raising.services.StartupService;
@@ -36,8 +37,13 @@ public class StartupController {
      * @return ResponseEntity instance with status code and startup in body
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getInvestorProfile(@PathVariable int id) {
+    public ResponseEntity<?> getStartupProfile(@PathVariable int id) {
         return startupService.getProfile(id);
+	}
+    
+    @GetMapping("/test")
+    public ResponseEntity<?> getStartupProfile() {
+        return ResponseEntity.status(200).body(new Startup());
 	}
     
     /**

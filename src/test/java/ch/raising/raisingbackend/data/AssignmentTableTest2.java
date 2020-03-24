@@ -31,13 +31,14 @@ import ch.raising.utils.Type;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
-public class AssignmentTableTest {
+public class AssignmentTableTest2 {
 	
 	AssignmentTableRepository repo;
 
 	@Autowired
 	JdbcTemplate jdbc;
 	
+
 	String tableName;
 	String tableIdName;
 	String accountId = "accountid";
@@ -53,11 +54,11 @@ public class AssignmentTableTest {
 		name = "testcontinent";
 		tableIdName = tableName + "Id";
 		assignmentTableName = tableName + "assignment";
+		accountId = "startupid";
 		
-		repo = new AssignmentTableRepository(jdbc, tableName);
+		repo = new AssignmentTableRepository(jdbc, tableName, accountId, MapUtil::mapRowToAssignmentTableWithDescription);
 		
-		
-		String sql = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.SERIAL).pair("name", Type.VARCHAR)
+		String sql = QueryBuilder.getInstance().tableName(tableName).pair("description", Type.VARCHAR).pair("id", Type.SERIAL).pair("name", Type.VARCHAR)
 				.createTable();
 		jdbc.execute(sql);
 		sql = QueryBuilder.getInstance().tableName(assignmentTableName).pair(tableIdName, Type.BIGINT)

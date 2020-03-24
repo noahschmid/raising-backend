@@ -84,7 +84,7 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 				.website(rs.getString("website")).investmentPhaseId(rs.getLong("investmentPhaseId"))
 				.revenueMax(rs.getInt("revenuemax")).revenueMin(rs.getInt("revenuemin")).scope(rs.getInt("scope"))
 				.uId(rs.getString("uid")).foundingYear(rs.getInt("foundingYear"))
-				.financeTypeId(rs.getLong("financetype")).closingTime(rs.getDate("closingTime"))
+				.financeTypeId(rs.getLong("finacetypeid")).closingTime(rs.getDate("closingTime"))
 				.preMoneyEvaluation(rs.getInt("premoneyvaluation")).build();
 	}
 
@@ -97,7 +97,7 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 
 		try {
 			String query = "INSERT INTO startup(accountid, boosts, numberoffte, turnover, street, "
-					+ "city, website, breakevenyear, zipcode, premoneyvaluation, closingtime, finacetypeid, investmentphaseid, "
+					+ "city, website, breakevenyear, zipcode, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
 					+ "revenuemax, revenuemin, scope, uid, foundingyear) VALUES ( ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
@@ -112,8 +112,8 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 					ps.setString(c++, su.getWebsite());
 					ps.setInt(c++, su.getBreakEvenYear());
 					ps.setInt(c++, su.getZipCode());
-					ps.setInt(c++, su.getPreMoneyEvaluation());
-					ps.setDate(c++, (Date) su.getClosingTime());
+					ps.setInt(c++, su.getPreMoneyValuation());
+					ps.setDate(c++, su.getClosingTime());
 					ps.setInt(c++, (int) su.getFinanceTypeId());
 					ps.setInt(c++, (int) su.getInvestmentPhaseId());
 					ps.setInt(c++, su.getRevenueMax());

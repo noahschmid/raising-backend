@@ -83,7 +83,7 @@ public class AccountService implements UserDetailsService {
 	@Override
 	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		try {
-			Account account = accountRepository.findByEmail(email);
+			Account account = accountRepository.findByEmailHash(email);
 			return new AccountDetails(account);
 		} catch (EmailNotFoundException e) {
 			throw new UsernameNotFoundException(e.getMessage());
@@ -111,15 +111,27 @@ public class AccountService implements UserDetailsService {
 	 * @return ResponseEntity with status code and message
 	 */
 	public ResponseEntity<?> registerProfile(Account account) {
+		long id = 0;
 		try {
-			registerAccount(account);
+			id = registerAccount(account);
 			return ResponseEntity.ok().build();
 		} catch (DatabaseOperationException e) {
+			rollback(account);
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		} catch (NullPointerException e) {
-			return ResponseEntity.status(500).body(new ErrorResponse("NullpointerException: "+e.getMessage()));
+		} catch (InValidProfileException e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage(), e.getAccount()));
 		}catch (Exception e) {
+			rollback(account);
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
+	private void rollback(Account account) {
+		try {
+			Account found = accountRepository.findByEmail(account.getEmail());
+			accountRepository.delete(found.getAccountId());
+		}catch(Exception e) {
+			
 		}
 	}
 

@@ -73,7 +73,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
-				ps.setLong(c++, founder.getStartupId());
+				ps.setLong(c++, accountId);
 				ps.setString(c++, founder.getFirstName());
 				ps.setString(c++, founder.getLastName());
 				ps.setString(c++, founder.getEducation());

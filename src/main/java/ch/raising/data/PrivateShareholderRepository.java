@@ -75,7 +75,7 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
-				ps.setLong(c++, psh.getStartupId());
+				ps.setLong(c++, startupId);
 				ps.setString(c++, psh.getFirstName());
 				ps.setString(c++, psh.getLastName());
 				ps.setString(c++, psh.getCity());

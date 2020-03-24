@@ -75,11 +75,26 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 		}
 		throw new EmailNotFoundException("Email " + email + "was not found.");
 	}
+	/**
+	 * Find user account by emailhash
+	 * 
+	 * @param email the emailhash to search for
+	 * @return instance of the found user account
+	 * @throws EmailNotFoundException
+	 */
+	public Account findByEmailHash(String email) throws EmailNotFoundException {
+		List<Account> accounts = getAll();
+		for (Account acc : accounts) {
+			if (email.equals(acc.getEmail()))
+				return acc;
+		}
+		throw new EmailNotFoundException("Email " + email + "was not found.");
+	}
 
 	/**
 	 * Add a new account to the database
 	 * 
-	 * @param acc the account to add
+	 * @param account the account to add
 	 * @return
 	 */
 	public long add(Account acc) throws DatabaseOperationException {

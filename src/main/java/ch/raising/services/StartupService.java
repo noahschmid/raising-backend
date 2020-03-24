@@ -53,7 +53,7 @@ public class StartupService extends AccountService {
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc);
 
 		this.investorTypeRepository = new AssignmentTableRepository(jdbc, "investortype", "startupid");
-		this.labelRepository = new AssignmentTableRepository(jdbc, "label", "startupid",MapUtil::mapRowToAssignmentTableWithDescription);
+		this.labelRepository = new AssignmentTableRepository(jdbc, "label", "startupid", MapUtil::mapRowToAssignmentTableWithDescription);
 		this.startupRepository = startupRepository;
 		this.contactRepository = contactRepository;
 		this.bmemRepository = bmemRepository;
@@ -68,7 +68,7 @@ public class StartupService extends AccountService {
 		Startup su = (Startup) account;
 		
 		if (su.isInComplete()) {
-			throw new InValidProfileException("Profile is invalid");
+			throw new InValidProfileException("Profile is incomplete", su);
 		} else if (accountRepository.emailExists(su.getEmail())) {
 			throw new InValidProfileException("Email already exists");
 		}
@@ -79,18 +79,18 @@ public class StartupService extends AccountService {
 
 		if(su.getContact() != null)	
 			contactRepository.addMemberByStartupId(su.getContact(), accountId);
-		if(su.getBoardMembers() != null)
-			su.getBoardMembers().forEach(bmem -> bmemRepository.addMemberByStartupId(bmem, accountId));
+		if(su.getBoardmembers() != null)
+			su.getBoardmembers().forEach(bmem -> bmemRepository.addMemberByStartupId(bmem, accountId));
 		if(su.getLabels() != null)
 			su.getLabels().forEach(label -> labelRepository.addEntryToAccountById(label.getId(), accountId));
 		if(su.getInvestorTypes() != null)
 			su.getInvestorTypes().forEach(it -> investorTypeRepository.addEntryToAccountById(it.getId(), accountId));
 		if(su.getFounders() != null)
-			su.getFounders().forEach(founder -> founderRepository.addByStartupId(founder, accountId));
+			su.getFounders().forEach(founder -> founderRepository.addMemberByStartupId(founder, accountId));
 		if(su.getPrivateShareholders() != null)
-			su.getPrivateShareholders().forEach(ps -> pshRepository.addByStartupId(ps, accountId));
+			su.getPrivateShareholders().forEach(ps -> pshRepository.addMemberByStartupId(ps, accountId));
 		if(su.getCorporateShareholders() != null)
-			su.getCorporateShareholders().forEach(cs -> cshRepository.addByStartupId(cs, accountId));
+			su.getCorporateShareholders().forEach(cs -> cshRepository.addMemberByStartupId(cs, accountId));
 		return accountId;
 	}
 
@@ -105,12 +105,13 @@ public class StartupService extends AccountService {
 		List<AssignmentTableModel> labels = labelRepository.findByAccountId(startupId);
 		Contact contact = contactRepository.findByStartupId(startupId).get(0);
 		List<Founder> founders = founderRepository.findByStartupId(startupId);
-
-		Account acc = super.getAccount(startupId);
-		Startup su = startupRepository.find(startupId);
 		List<PrivateShareholder> psh = pshRepository.findByStartupId(startupId);
 		List<CorporateShareholder> csh = cshRepository.findByStartupId(startupId);
 		List<Boardmember> bmems = bmemRepository.findByStartupId(startupId);
+		
+		Account acc = super.getAccount(startupId);
+		Startup su = startupRepository.find(startupId);
+		
 		
 		return new Startup(acc, su, invTypes, labels, contact, founders, psh, csh, bmems);
 	}

@@ -32,7 +32,8 @@ public class JwtUtil {
     }
     
     public long extractId(String token) {
-    	return (long) extractAllClaims(token).get("id");
+    	long id = Long.parseUnsignedLong(extractAllClaims(token).get("id").toString());
+    	return id;
     }
     
     public Date extractExpiration(String token) {

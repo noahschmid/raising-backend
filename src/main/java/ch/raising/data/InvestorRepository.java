@@ -81,7 +81,7 @@ public class InvestorRepository implements IRepository<Investor, Investor> {
 	 */
 	@Override
 	public Investor mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Investor.investorBuilder().accountId(rs.getLong("accountId")).company(rs.getString("company"))
+		return Investor.investorBuilder().accountId(rs.getLong("accountId"))//.company(rs.getString("company"))
 				.investorTypeId(rs.getInt("investorTypeId")).build();
 	}
 

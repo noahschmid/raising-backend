@@ -46,7 +46,6 @@ public class InvestorService extends AccountService {
 	private AssignmentTableRepository investorTypeRepository;
 
 	@Autowired
-
 	public InvestorService(AccountRepository accountRepository, InvestorRepository investorRepository,
 			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc) {
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc);

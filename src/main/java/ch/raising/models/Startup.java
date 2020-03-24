@@ -1,6 +1,6 @@
 package ch.raising.models;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import ch.raising.models.AssignmentTableModel;
@@ -8,31 +8,32 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class Startup extends Account {
 	private long investmentPhaseId = -1;
 	private int boosts = 0;
-	private String street;
-	private String city;
+	private String street = "";
+	private String city = "";
 	private int zipCode;
-	private String website;
+	private String website = "";
 	private int breakEvenYear = -1;
 	private int numberOfFte = -1;
 	private int turnover = -1;
-	private int preMoneyEvaluation = -1;
+	private int preMoneyValuation = -1;
 	private Date closingTime;
 	private int revenueMax;
 	private int revenueMin;
 	private int scope;
-	private String uId;
+	private String uId = "";
 	private int foundingYear;
 	private long financeTypeId = -1;
 
 	private List<AssignmentTableModel> investorTypes;
 	private List<AssignmentTableModel> labels;
-	private List<Boardmember> boardMembers;
+	private List<Boardmember> boardmembers;
 	private Contact contact;
 	private List<Founder> founders;
 	private List<PrivateShareholder> privateShareholders;
@@ -42,17 +43,17 @@ public class Startup extends Account {
 	 * creates the startup with all lists initialized. should be used to return a
 	 * fully initialized startup to the {@link AccountController}.
 	 * 
-	 * @param account            the account with all lists initialized
-	 * @param su                 as represented by the startup table in the database
+	 * @param account           the account with all lists initialized
+	 * @param su                as represented by the startup table in the database
 	 * @param investorTypes
 	 * @param labels
 	 * @param contact
 	 * @param founders
-	 * @param preMoneyEvaluation
+	 * @param preMoneyValuation
 	 */
-	public Startup(Account account, Startup su, List<AssignmentTableModel> invTypes,
-			List<AssignmentTableModel> labels, Contact contact, List<Founder> founders,
-			List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders, List<Boardmember> boardMembers) {
+	public Startup(Account account, Startup su, List<AssignmentTableModel> invTypes, List<AssignmentTableModel> labels,
+			Contact contact, List<Founder> founders, List<PrivateShareholder> pShareholders,
+			List<CorporateShareholder> cShareholders, List<Boardmember> boardMembers) {
 		super(account);
 		this.investmentPhaseId = su.getInvestmentPhaseId();
 		this.boosts = su.getBoosts();
@@ -63,7 +64,7 @@ public class Startup extends Account {
 		this.website = su.getWebsite();
 		this.breakEvenYear = su.getBreakEvenYear();
 		this.zipCode = su.getZipCode();
-		this.preMoneyEvaluation = su.getPreMoneyEvaluation();
+		this.preMoneyValuation = su.getPreMoneyValuation();
 		this.revenueMax = su.getRevenueMax();
 		this.revenueMin = su.getRevenueMin();
 		this.scope = su.getScope();
@@ -77,7 +78,7 @@ public class Startup extends Account {
 		this.founders = founders;
 		this.privateShareholders = pShareholders;
 		this.corporateShareholders = cShareholders;
-		this.boardMembers = boardMembers;
+		this.boardmembers = boardMembers;
 	}
 
 	/**
@@ -114,7 +115,7 @@ public class Startup extends Account {
 		this.website = website;
 		this.breakEvenYear = breakEvenYear;
 		this.zipCode = zipCode;
-		this.preMoneyEvaluation = preMoneyEvaluation;
+		this.preMoneyValuation = preMoneyEvaluation;
 		this.revenueMax = revenueMax;
 		this.revenueMin = revenueMin;
 		this.scope = scope;
@@ -126,10 +127,11 @@ public class Startup extends Account {
 
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() ;//|| investmentPhaseId == -1 || boosts != 0 || street == null || city == null
-//				|| zipCode == null || website == null || breakEvenYear == -1 || numberOfFte == -1 || turnover == -1
-//				|| financeTypeId == -1 || closingTime == null || contact == null || investorTypes == null || labels == null
-//				|| founders == null || investorTypes.isEmpty() || labels.isEmpty() || founders.isEmpty();
+		return super.isInComplete() ;//|| investmentPhaseId == -1 || street == "" || city == "" || zipCode == 0;
+//				|| website == "" || breakEvenYear == -1 || numberOfFte == -1 || turnover == -1 || financeTypeId == -1
+//				|| revenueMax == 0 || revenueMin == 0 || contact == null || investorTypes == null
+//				|| boardmembers == null || founders == null || investorTypes.isEmpty() || founders.isEmpty()
+//				|| boardmembers.isEmpty();
 	}
 
 }

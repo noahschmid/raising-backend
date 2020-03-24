@@ -11,16 +11,16 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Account{
+public class Account {
 
 	protected long accountId = -1l;
-	protected String company;
-	protected String name;
-	private String password;
-	private String roles;
-	private String email;
-	private String pitch;
-	private String description;
+	protected String company = "";
+	protected String name = "";
+	private String password = "";
+	private String roles = "";
+	private String email = "";
+	private String pitch = "";
+	private String description = "";
 	private int investmentMin = -1;
 	private int investmentMax = -1;
 
@@ -28,6 +28,7 @@ public class Account{
 	private List<AssignmentTableModel> continents;
 	private List<AssignmentTableModel> support;
 	private List<AssignmentTableModel> industries;
+
 	/**
 	 * This constructor makes an Account represented by the account table in the
 	 * database. That means the country, continent, support, industries lists will
@@ -63,7 +64,8 @@ public class Account{
 
 	/**
 	 * this constructor makes a complete Account object
-	 * @param support 
+	 * 
+	 * @param support
 	 * 
 	 * @param accountId
 	 * @param name
@@ -75,9 +77,9 @@ public class Account{
 	 * @param countries
 	 * @param continents
 	 * @param support
-	 * @param continents 
-	 * @param countries 
-	 * @param industries 
+	 * @param continents
+	 * @param countries
+	 * @param industries
 	 * @param industries
 	 */
 	public Account(Account acc) {
@@ -96,8 +98,10 @@ public class Account{
 		this.support = acc.support;
 		this.industries = acc.industries;
 	}
-	
+
 	public boolean isInComplete() {
-		return email == "" || password == ""|| name == "";
+		return name == "" || password == "" || email == "" || investmentMin == -1 || investmentMax == -1
+				|| countries == null || continents == null || support == null || industries == null
+				|| countries.isEmpty() || continents.isEmpty() || support.isEmpty() || industries.isEmpty();
 	}
 }
