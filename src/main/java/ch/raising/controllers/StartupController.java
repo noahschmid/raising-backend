@@ -1,7 +1,7 @@
 package ch.raising.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -18,6 +18,7 @@ import ch.raising.models.Contact;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.Founder;
 import ch.raising.models.Investor;
+import ch.raising.models.LoginRequest;
 import ch.raising.models.Startup;
 import ch.raising.services.StartupService;
 
@@ -26,6 +27,8 @@ import ch.raising.services.StartupService;
 public class StartupController {
 	
 	StartupService startupService;
+	
+	private AccountController accountController;
 	
 	@Autowired
 	public StartupController(StartupService startupService) {

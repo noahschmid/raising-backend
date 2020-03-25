@@ -1,7 +1,7 @@
 package ch.raising.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.models.Investor;
+import ch.raising.models.LoginRequest;
+import ch.raising.services.AccountService;
 import ch.raising.services.InvestorService;
 
 @Controller
@@ -20,6 +22,9 @@ import ch.raising.services.InvestorService;
 public class InvestorController {
     @Autowired
     InvestorService investorService;
+    
+    @Autowired
+    AccountController accountController;
 
     @Autowired
     public InvestorController() {
@@ -52,7 +57,7 @@ public class InvestorController {
      */
     @PostMapping("/register")
     public ResponseEntity<?> addInvestor(@RequestBody Investor investor) {
-        return investorService.registerProfile(investor);
+    	return investorService.registerProfile(investor);
     }
     /**
      * deletes the investmentphase of investor

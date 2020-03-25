@@ -58,11 +58,12 @@ public class Investor extends Account{
 				||investmentPhases == null || investmentPhases.isEmpty();
 	}
 	
+	@Override
 	public boolean isStartup() {
 		return false;
 	}
 	
-	
+	@Override
 	public boolean isInvestor() {
 		return true;
 	}

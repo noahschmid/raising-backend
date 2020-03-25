@@ -24,6 +24,16 @@ public class AccountDetails implements UserDetails {
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
         this.id = account.getAccountId();
+        this.startup = account.isStartup();
+        this.investor = account.isInvestor();
+    }
+    
+    public boolean isStartup() {
+    	return this.startup;
+    }
+    
+    public boolean isInvestor() {
+    	return this.investor;
     }
 
     @Override

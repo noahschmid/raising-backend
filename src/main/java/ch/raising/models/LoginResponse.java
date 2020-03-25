@@ -8,4 +8,10 @@ import lombok.Getter;
 public class LoginResponse {
     private final String token;
     private final Long id;
+    private boolean startup;
+    private boolean investor;
+    public LoginResponse(String token, Long id){
+    	this.token = token;
+    	this.id = id;
+    }
 }

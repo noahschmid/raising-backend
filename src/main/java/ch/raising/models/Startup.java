@@ -137,10 +137,12 @@ public class Startup extends Account {
 				|| boardmembers.isEmpty();
 	}
 	
+	@Override
 	public boolean isStartup() {
 		return true;
 	}
 	
+	@Override
 	public boolean isInvestor() {
 		return false;
 	}

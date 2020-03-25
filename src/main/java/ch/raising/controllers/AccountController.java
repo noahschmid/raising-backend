@@ -73,7 +73,7 @@ public class AccountController {
         }
         final AccountDetails userDetails = accountService.loadUserByUsername(request.getEmail());
         final String token = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new LoginResponse(token, userDetails.getId()));
+        return ResponseEntity.ok(new LoginResponse(token, userDetails.getId(), userDetails.isStartup(), userDetails.isInvestor()));
 	}
 
 	/**

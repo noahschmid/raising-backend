@@ -147,7 +147,6 @@ public class AccountService implements UserDetailsService {
 		} else if (accountRepository.emailExists(req.getEmail())) {
 			throw new InValidProfileException("Email already exists");
 		}
-		System.out.println("Im in the super method");
 		long accountId = accountRepository.add(req);
 
 		if(req.getCountries() != null)

@@ -1,1 +1,0 @@
-ALTER TABLE startup ADD COLUMN company varchar;

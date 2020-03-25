@@ -60,6 +60,7 @@ public class Account {
 
 	/**
 	 * this constructor makes a complete Account object
+	 * @param continents 
 	 * 
 	 * @param support
 	 * 
@@ -95,15 +96,23 @@ public class Account {
 		this.industries = acc.industries;
 		this.pitch = acc.pitch;
 		this.description = acc.description;
-		this.countries = countries;
-		this.continents = continents;
-		this.support = support;
-		this.industries = industries;
+		this.countries = acc.countries;
+		this.continents = acc.continents;
+		this.support = acc.support;
+		this.industries = acc.industries;
 	}
 
 	public boolean isInComplete() {
 		return name == "" || password == "" || email == "" || investmentMin == -1 || investmentMax == -1
 				|| countries == null || continents == null || support == null || industries == null
 				|| countries.isEmpty() || continents.isEmpty() || support.isEmpty() || industries.isEmpty();
+	}
+	
+	public boolean isStartup() {
+		return false;
+	}
+	
+	public boolean isInvestor() {
+		return false;
 	}
 }
