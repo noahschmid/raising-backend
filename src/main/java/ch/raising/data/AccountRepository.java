@@ -73,6 +73,10 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 			if (encoder.matches(email, acc.getEmail()))
 				return acc;
 		}
+		for(Account acc : accounts) {
+			if(email.equals(acc.getEmail()))
+				return acc;
+		}
 		throw new EmailNotFoundException("Email " + email + "was not found.");
 	}
 	/**
