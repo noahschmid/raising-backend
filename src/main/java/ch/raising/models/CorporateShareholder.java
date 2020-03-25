@@ -17,9 +17,9 @@ public class CorporateShareholder extends StartupMember {
 	private long countryId;
 
 	@Builder
-	private CorporateShareholder(long id, long startupId, long corporateBodyId, int equityShare, String corpName, String website,
-			String firstName, String lastName, long countryId) {
-		super(id, startupId, firstName, lastName);
+	private CorporateShareholder(long id, long startupId, long corporateBodyId, int equityShare, String corpName,
+			String website, long countryId) {
+		super(id, startupId, "", "");
 		this.corpName = corpName;
 		this.website = website;
 		this.equityShare = equityShare;

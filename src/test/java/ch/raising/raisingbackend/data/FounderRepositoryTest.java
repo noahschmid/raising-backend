@@ -91,7 +91,7 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 	public void testAddMemberByStartupId() {
 		Founder founder = Founder.builder().startupid(5).firstName("Vincent").lastName("D' Agosta").education("Plumber")
 				.position("Detective").countryId(345).build();
-		fr.addMemberByStartupId(founder, 4);
+		fr.addMemberByStartupId(founder, 5);
 		assertEquals(2, JdbcTestUtils.countRowsInTable(jdbc, "founder"));
 
 		String sql = QueryBuilder.getInstance().tableName("founder").whereEquals("firstname", "Vincent").select();

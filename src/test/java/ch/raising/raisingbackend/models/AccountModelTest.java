@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.raising.models.AssignmentTableModel;
+import ch.raising.models.Country;
 import ch.raising.models.Account;
 import ch.raising.raisingbackend.data.TestConfig;
 
@@ -64,7 +65,7 @@ public class AccountModelTest {
 				.roles(roles).email(email).description(description).investmentMin(investmentMin)
 				.investmentMax(investmentMax).build();
 		
-		assertFalse(acc.isInComplete());
+		assertTrue(acc.isInComplete());
 		assertEquals(accountId, acc.getAccountId());
 		assertEquals(company, acc.getCompany());
 		assertEquals(password, acc.getPassword());
@@ -84,6 +85,11 @@ public class AccountModelTest {
 		continents = new ArrayList<AssignmentTableModel>();
 		support = new ArrayList<AssignmentTableModel>();
 		industries = new ArrayList<AssignmentTableModel>();
+		
+		countries.add(new Country("testland", 1, 1));
+		continents.add(new AssignmentTableModel());
+		support.add(new AssignmentTableModel());
+		industries.add(new AssignmentTableModel());
 		
 		Account fullAcc = new Account(acc);
 		fullAcc.setContinents(continents);
@@ -111,9 +117,25 @@ public class AccountModelTest {
 	}
 	
 	private Account getFullRepoAccount() {
-		return Account.accountBuilder().accountId(accountId).company(company).name(name).password(password)
+		Account acc = Account.accountBuilder().accountId(accountId).company(company).name(name).password(password)
 				.roles(roles).email(email).pitch(pitch).description(description).investmentMin(investmentMin)
 				.investmentMax(investmentMax).build();
+		
+		List<AssignmentTableModel> countries = new ArrayList<AssignmentTableModel>();
+		List<AssignmentTableModel> continents= new ArrayList<AssignmentTableModel>();
+		List<AssignmentTableModel> support= new ArrayList<AssignmentTableModel>();
+		List<AssignmentTableModel> industries= new ArrayList<AssignmentTableModel>();
+		
+		countries.add(new Country("testland", 1, 1));
+		continents.add(new AssignmentTableModel());
+		support.add(new AssignmentTableModel());
+		industries.add(new AssignmentTableModel());
+		
+		acc.setCountries(countries);
+		acc.setContinents(continents);
+		acc.setSupport(support);
+		acc.setIndustries(industries);
+		return acc;
 	}
 
 }

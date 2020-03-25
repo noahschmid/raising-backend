@@ -90,7 +90,6 @@ public class BoardMemberRepositoryTest {
 				.education("Detective").profession("Detective").membersince(9).coutryId(113).build();
 		bmemRepo.addMemberByStartupId(bmem, 7);
 		String sql = QueryBuilder.getInstance().tableName("boardmember").whereEquals("startupid", "" + 7).select();
-		System.out.println(sql);
 		long id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
 		assertEquals(2, id);
 		assertEquals(2, JdbcTestUtils.countRowsInTable(jdbc, "boardmember"));

@@ -74,7 +74,7 @@ public class MapUtil {
 	
 	public static CorporateShareholder mapRowToCorporateShareholder(ResultSet rs, int row) throws SQLException {
 		return CorporateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid"))
-				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).website(rs.getString("website"))
+				.corpName(rs.getString("name")).website(rs.getString("website"))
 				.equityShare(rs.getInt("equityshare")).corporateBodyId(rs.getLong("corporatebodyid"))
 				.countryId(rs.getLong("countryid")).build();
 	}

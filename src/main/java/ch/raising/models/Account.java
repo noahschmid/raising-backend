@@ -1,10 +1,6 @@
 package ch.raising.models;
 
 import java.util.List;
-import ch.raising.interfaces.IAssignmentTableModel;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -99,6 +95,10 @@ public class Account {
 		this.industries = acc.industries;
 		this.pitch = acc.pitch;
 		this.description = acc.description;
+		this.countries = countries;
+		this.continents = continents;
+		this.support = support;
+		this.industries = industries;
 	}
 
 	public boolean isInComplete() {
