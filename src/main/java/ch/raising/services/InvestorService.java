@@ -1,6 +1,7 @@
 package ch.raising.services;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 
@@ -17,13 +18,11 @@ import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 
 import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 
 import ch.raising.models.Investor;
 import ch.raising.utils.InValidProfileException;
 import ch.raising.utils.MailUtil;
-import ch.raising.utils.MapUtil;
 import ch.raising.utils.ResetCodeUtil;
 
 import ch.raising.models.MatchingProfile;
@@ -65,6 +64,7 @@ public class InvestorService extends AccountService {
 			throw new InValidProfileException("Email already exists");
 		}
 
+		System.out.println("Im in the child method");
 		long accountId = super.registerAccount(invReq);
 		invReq.setAccountId(accountId);
 

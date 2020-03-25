@@ -57,8 +57,10 @@ public class AccountRepositoryTest {
 		tableName = "account";
 
 		String createTable = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.SERIAL)
-				.pair("name", Type.VARCHAR).pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR).pair("emailhash", Type.VARCHAR)
-				.pair("investmentmin", Type.INT).pair("investmentmax", Type.INT).createTable();
+				.pair("pitch", Type.VARCHAR).pair("description", Type.VARCHAR).pair("company", Type.VARCHAR)
+				.pair("name", Type.VARCHAR).pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR)
+				.pair("emailhash", Type.VARCHAR).pair("investmentmin", Type.INT).pair("investmentmax", Type.INT)
+				.createTable();
 
 		jdbc.execute(createTable);
 
@@ -91,7 +93,7 @@ public class AccountRepositoryTest {
 	public void cleanAccounts() {
 		JdbcTestUtils.deleteFromTables(jdbc, tableName);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, tableName));
-		jdbc.execute("ALTER SEQUENCE "+tableName+"_id_seq RESTART WITH 1");
+		jdbc.execute("ALTER SEQUENCE " + tableName + "_id_seq RESTART WITH 1");
 	}
 
 	@AfterEach
@@ -105,6 +107,12 @@ public class AccountRepositoryTest {
 		Account account = accountRepo.find(id);
 		assertNotNull(account);
 		assertEquals("testname", account.getName());
+	}
+	@Test
+	public void findByEmailHash() throws EmailNotFoundException {
+		Account found = accountRepo.findByEmailHash(emailhash);
+		assertNotNull(found);
+		assertEquals(1,found.getAccountId());
 	}
 
 	@Test
@@ -126,19 +134,20 @@ public class AccountRepositoryTest {
 	}
 
 	@Test
-	public void findByEmail() throws EmailNotFoundException{
+	public void findByEmail() throws EmailNotFoundException {
 		Account foundByMail = accountRepo.findByEmail(email);
 		assertNotNull(foundByMail);
 		assertEquals(account, foundByMail);
 	}
 
-	//@Test
+	// @Test
 	public void testAddAccountNotUniqeMail() throws Exception {
 		Account sameMail = Account.accountBuilder().name("testname3").email(email).password("testpw").build();
-		try{
+		try {
 			accountRepo.add(sameMail);
 			fail("should not work");
-		}catch(Exception e) {}
+		} catch (Exception e) {
+		}
 		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbc, tableName));
 	}
 
@@ -153,7 +162,7 @@ public class AccountRepositoryTest {
 		assertTrue(accountRepo.emailExists(email));
 	}
 
-	//@Test
+	// @Test
 	public void testUpdateAccount() throws Exception {
 		String newMail = "testmail3";
 		String newMailHash = encoder.encode(newMail);
@@ -166,8 +175,7 @@ public class AccountRepositoryTest {
 		accup.setRoles("ROLE_TESTER");
 		accup.setName(newName);
 		accountRepo.update(1, accup);
-		String sql = QueryBuilder.getInstance().tableName(tableName)
-				.whereEquals("emailhash", newMailHash).select();
+		String sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("emailhash", newMailHash).select();
 		Account updated = jdbc.queryForObject(sql, MapUtil::mapRowToAccount);
 		assertNotNull(updated);
 		assertEquals(newName, updated.getName());

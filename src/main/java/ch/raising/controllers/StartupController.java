@@ -17,6 +17,7 @@ import ch.raising.models.Boardmember;
 import ch.raising.models.Contact;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.Founder;
+import ch.raising.models.Investor;
 import ch.raising.models.Startup;
 import ch.raising.services.StartupService;
 
@@ -43,7 +44,7 @@ public class StartupController {
     
     @GetMapping("/test")
     public ResponseEntity<?> getStartupProfile() {
-        return ResponseEntity.status(200).body(new Startup());
+        return ResponseEntity.status(200).body(new Investor());
 	}
     
     /**

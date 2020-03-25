@@ -2,6 +2,8 @@ package ch.raising.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import ch.raising.interfaces.IAssignmentTableModel;
 import lombok.Builder;
 import lombok.Data;
@@ -54,6 +56,15 @@ public class Investor extends Account{
 	public boolean isInComplete() {
 		return super.isInComplete() || investorTypeId == -1
 				||investmentPhases == null || investmentPhases.isEmpty();
+	}
+	
+	public boolean isStartup() {
+		return false;
+	}
+	
+	
+	public boolean isInvestor() {
+		return true;
 	}
 
 }

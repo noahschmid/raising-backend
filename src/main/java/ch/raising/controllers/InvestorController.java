@@ -59,7 +59,7 @@ public class InvestorController {
      * @param tableEntryId
      * @return
      */
-    @DeleteMapping("/investmentphase/{tableEntryId}")
+    @DeleteMapping("/investmentphase/{id}")
     public ResponseEntity<?> deleteInvestmentphaseByInvestorId(@PathVariable long id){
     	return investorService.deleteInvestmentPhaseByIvestorId(id);
     }
@@ -70,7 +70,7 @@ public class InvestorController {
      * @return
      */
     
-    @PostMapping("/investmentphase/{tableEntryId}")
+    @PostMapping("/investmentphase/{id}")
     public ResponseEntity<?> addInvestmentphaseByInvestorId(@PathVariable long id){
     		return investorService.addInvestmentPhaseByIvestorId(id);
     	}

@@ -97,6 +97,8 @@ public class Account {
 		this.continents = acc.continents;
 		this.support = acc.support;
 		this.industries = acc.industries;
+		this.pitch = acc.pitch;
+		this.description = acc.description;
 	}
 
 	public boolean isInComplete() {

@@ -34,8 +34,7 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 
 	@Override
 	public CorporateShareholder mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return CorporateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid"))
-				.lastName(rs.getString("lastname")).firstName(rs.getString("firstname"))
+		return CorporateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid")).corpName("name")
 				.website(rs.getString("website")).equityShare(rs.getInt("equityshare"))
 				.corporateBodyId(rs.getLong("corporatebodyid")).countryId(rs.getInt("countryid")).build();
 	}
@@ -49,7 +48,7 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 	@Override
 	public void addMemberByStartupId(CorporateShareholder sumem, long startupId) {
 		jdbc.execute(
-				"INSERT INTO corporateshareholder(startupid, firstname, lastname, website, equityshare, corporatebodyid, countryid) VALUES (?,?,?,?,?,?,?)",
+				"INSERT INTO corporateshareholder(startupid, name, website, equityshare, corporatebodyid, countryid) VALUES (?,?,?,?,?,?)",
 				addByStartupId(sumem, startupId));
 	}
 

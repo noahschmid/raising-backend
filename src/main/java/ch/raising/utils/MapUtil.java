@@ -29,13 +29,13 @@ public class MapUtil {
 	}
 
 	public static Account mapRowToAccount(ResultSet rs, int row) throws SQLException {
-		return Account.accountBuilder().name(rs.getString("name")).email(rs.getString("emailhash"))
-				.accountId(rs.getLong("tableEntryId")).investmentMax(rs.getInt("investmentmax"))
+		return Account.accountBuilder().name(rs.getString("name")).email(rs.getString("emailhash")).company(rs.getString("company"))
+				.accountId(rs.getLong("id")).investmentMax(rs.getInt("investmentmax"))
 				.investmentMin(rs.getInt("investmentmin")).build();
 	}
 
 	public static AssignmentTableModel mapRowToAssignmentTable(ResultSet rs, int row) throws SQLException {
-		return new AssignmentTableModel(rs.getString("name"), rs.getLong("id"));
+		return new AssignmentTableModel(rs.getString("name"), rs.getInt("id"));
 	}
 
 	public static AssignmentTableModelWithDescription mapRowToAssignmentTableWithDescription(ResultSet rs, int row)

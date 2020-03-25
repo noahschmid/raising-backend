@@ -83,7 +83,7 @@ public class AccountService implements UserDetailsService {
 	@Override
 	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		try {
-			Account account = accountRepository.findByEmailHash(email);
+			Account account = accountRepository.findByEmail(email);
 			return new AccountDetails(account);
 		} catch (EmailNotFoundException e) {
 			throw new UsernameNotFoundException(e.getMessage());
@@ -148,7 +148,7 @@ public class AccountService implements UserDetailsService {
 		} else if (accountRepository.emailExists(req.getEmail())) {
 			throw new InValidProfileException("Email already exists");
 		}
-
+		System.out.println("Im in the super method");
 		long accountId = accountRepository.add(req);
 
 		if(req.getCountries() != null)

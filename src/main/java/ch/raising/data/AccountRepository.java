@@ -99,22 +99,29 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 */
 	public long add(Account acc) throws DatabaseOperationException {
 		try {
-			String query = "INSERT INTO account(name, password, emailHash) VALUES (?, ?, ?)";
+			String query = "INSERT INTO account(company, name, password, emailhash, pitch, description, investmentmin, investmentmax) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			String emailHash = encoder.encode(acc.getEmail());
 			String passwordHash = encoder.encode(acc.getPassword());
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-
-					ps.setString(1, acc.getName());
-					ps.setString(2, passwordHash);
-					ps.setString(3, emailHash);
-
+					int c = 1;
+					ps.setString(c++, acc.getCompany());
+					ps.setString(c++, acc.getName());
+					ps.setString(c++, passwordHash);
+					ps.setString(c++, emailHash);
+					ps.setString(c++, acc.getPitch());
+					ps.setString(c++, acc.getDescription());
+					ps.setInt(c++, acc.getInvestmentMin());
+					ps.setInt(c++, acc.getInvestmentMax());
 					return ps.execute();
 				}
 			});
 			return findByEmail(acc.getEmail()).getAccountId();
-		} catch (Exception e) {
+		} catch (EmailNotFoundException e) {
+			e.printStackTrace();
+			throw new DatabaseOperationException("could not find added account");
+		}catch (Exception e) {
 			e.printStackTrace();
 			throw new DatabaseOperationException("could not add account");
 		}
@@ -182,7 +189,7 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 * @throws SQLException
 	 */
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
+		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name")).company(rs.getString("company")).pitch(rs.getString("pitch")).description(rs.getString("description"))
 				.email(rs.getString("emailHash")).roles(rs.getString("roles")).password(rs.getString("password"))
 				.build();
 	}
