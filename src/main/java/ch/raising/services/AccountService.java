@@ -111,9 +111,8 @@ public class AccountService implements UserDetailsService {
 	 * @return ResponseEntity with status code and message
 	 */
 	public ResponseEntity<?> registerProfile(Account account) {
-		long id = 0;
 		try {
-			id = registerAccount(account);
+			registerAccount(account);
 			return ResponseEntity.ok().build();
 		} catch (DatabaseOperationException e) {
 			rollback(account);
@@ -221,7 +220,9 @@ public class AccountService implements UserDetailsService {
 		List<AssignmentTableModel> industries = industryRepository.findByAccountId(id);
 
 		Account acc = accountRepository.find(id);
-
+		acc.setPassword("");
+		acc.setRoles("");
+		
 		acc.setCountries(countries);
 		acc.setContinents(continents);
 		acc.setSupport(support);

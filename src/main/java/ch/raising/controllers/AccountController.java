@@ -69,10 +69,8 @@ public class AccountController {
 		try {
             authenticationManager.authenticate(unamePwToken);
         } catch (Exception e) {
-        	e.printStackTrace();
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
         }
-
         final AccountDetails userDetails = accountService.loadUserByUsername(request.getEmail());
         final String token = jwtUtil.generateToken(userDetails);
         return ResponseEntity.ok(new LoginResponse(token, userDetails.getId()));

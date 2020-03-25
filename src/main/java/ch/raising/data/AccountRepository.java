@@ -73,12 +73,13 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 			if (encoder.matches(email, acc.getEmail()))
 				return acc;
 		}
-		for(Account acc : accounts) {
-			if(email.equals(acc.getEmail()))
+		for (Account acc : accounts) {
+			if (email.equals(acc.getEmail()))
 				return acc;
 		}
 		throw new EmailNotFoundException("Email " + email + "was not found.");
 	}
+
 	/**
 	 * Find user account by emailhash
 	 * 
@@ -125,7 +126,7 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 		} catch (EmailNotFoundException e) {
 			e.printStackTrace();
 			throw new DatabaseOperationException("could not find added account");
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new DatabaseOperationException("could not add account");
 		}
@@ -193,9 +194,10 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 * @throws SQLException
 	 */
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name")).company(rs.getString("company")).pitch(rs.getString("pitch")).description(rs.getString("description"))
-				.email(rs.getString("emailHash")).roles(rs.getString("roles")).password(rs.getString("password"))
-				.build();
+		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
+				.company(rs.getString("company")).pitch(rs.getString("pitch")).description(rs.getString("description"))
+				.email(rs.getString("emailHash")).roles(rs.getString("roles")).investmentMax(rs.getInt("investmentmax"))
+				.investmentMin(rs.getInt("investmentmin")).password(rs.getString("password")).build();
 	}
 
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {

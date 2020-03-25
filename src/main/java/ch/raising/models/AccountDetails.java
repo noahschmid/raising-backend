@@ -14,6 +14,8 @@ public class AccountDetails implements UserDetails {
     private String password;
     private List<GrantedAuthority> authorities;
     private long id;
+    private boolean startup;
+    private boolean investor;
 
     public AccountDetails(Account account) {
         this.email = account.getEmail();
