@@ -24,6 +24,7 @@ import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
+import ch.raising.models.Image;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
@@ -37,6 +38,7 @@ import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
 import ch.raising.data.AssignmentTableRepository;
+import ch.raising.data.ImageRepository;
 import ch.raising.interfaces.IAssignmentTableModel;
 
 @Primary
@@ -67,6 +69,10 @@ public class AccountService implements UserDetailsService {
 
 	protected AssignmentTableRepository industryRepository;
 
+	private ImageRepository galleryRepository;
+	
+	private ImageRepository pPicRepository;
+
 	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
 			JdbcTemplate jdbc) {
@@ -78,6 +84,8 @@ public class AccountService implements UserDetailsService {
 		this.continentRepository = new AssignmentTableRepository(jdbc, "continent");
 		this.supportRepository = new AssignmentTableRepository(jdbc, "support");
 		this.industryRepository = new AssignmentTableRepository(jdbc, "industry");
+		this.galleryRepository = new ImageRepository(jdbc, "gallery");
+		this.pPicRepository = new ImageRepository(jdbc, "profilepicture");
 	}
 
 	@Override
@@ -149,6 +157,12 @@ public class AccountService implements UserDetailsService {
 		}
 		long accountId = accountRepository.add(req);
 
+		if(req.getGallery() != null) 
+			for(Image pic: req.getGallery()) {
+				galleryRepository.addImageToAccount(pic, accountId);
+			}
+		if(req.getProfilePicture() != null)
+			pPicRepository.addImageToAccount(req.getProfilePicture(), accountId);
 		if(req.getCountries() != null)
 			req.getCountries().forEach(country -> countryRepository.addEntryToAccountById(country.getId(), accountId));
 		if(req.getContinents() != null)
@@ -217,10 +231,14 @@ public class AccountService implements UserDetailsService {
 		List<AssignmentTableModel> continents = continentRepository.findByAccountId(id);
 		List<AssignmentTableModel> support = supportRepository.findByAccountId(id);
 		List<AssignmentTableModel> industries = industryRepository.findByAccountId(id);
-
+		List<Image> pPic = pPicRepository.findImagesByAccountId(id);
+		List<Image> gallery = galleryRepository.findImagesByAccountId(id);
 		Account acc = accountRepository.find(id);
 		acc.setPassword("");
 		acc.setRoles("");
+		
+		acc.setProfilePicture(pPic.get(0));
+		acc.setGallery(gallery);
 		
 		acc.setCountries(countries);
 		acc.setContinents(continents);
@@ -450,7 +468,7 @@ public class AccountService implements UserDetailsService {
 	 * adds industry to account
 	 * 
 	 * @param industryId
-	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @return Responsenetitiy with a statuscode <ul><li>200: If action succeded</li><li>500: If an error occured</li><li>403: If unauthorized</li></ul> and an optional body
 	 */
 	public ResponseEntity<?> addIndustryToAccountById(long industryId) {
 		try {
@@ -462,4 +480,76 @@ public class AccountService implements UserDetailsService {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
+	
+	public ResponseEntity<?> addGalleryImageToAccountById(Image img){
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		if(accDet.getId() != img.getAccountId())
+			return ResponseEntity.status(403).body(new ErrorResponse("Not authorized to add picture to foreign account"));
+		try {
+			galleryRepository.addImageToAccount(img, accDet.getId());
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> deleteGalleryImageFromAccountById(long imgId){
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		try {
+			galleryRepository.deleteImageFromAccount(imgId, accDet.getId());
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> findGalleryImageFromAccountById(long accountId){
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		if(accDet.getId() != accountId)
+			return ResponseEntity.status(403).body(new ErrorResponse("Not authorized to add picture to foreign gallery"));
+		try {
+			List<Image> images =  galleryRepository.findImagesByAccountId(accDet.getId());
+			return ResponseEntity.ok().body(images);
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> addProfilePictureToAccountById(Image img){
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		long currentPPicId = pPicRepository.containsPictureOf(accDet.getId());
+		if(accDet.getId() != img.getAccountId())
+			return ResponseEntity.status(403).body(new ErrorResponse("Not authorized to add profile picture to foreign account"));		
+		try {
+			if(currentPPicId != 0) 
+				pPicRepository.deleteImageFromAccount(currentPPicId, accDet.getId());
+			pPicRepository.addImageToAccount(img, accDet.getId());
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> deleteProfilePictureFromAccountById(long imgId){
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		try {
+			pPicRepository.deleteImageFromAccount(imgId, accDet.getId());
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+	
+	public ResponseEntity<?> findProfilePictureFromAccountById(long accountId){
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		if(accDet.getId() != accountId)
+			return ResponseEntity.status(403).body(new ErrorResponse("Not authorized to add picture to foreign account"));
+		try {
+			List<Image> images =  pPicRepository.findImagesByAccountId(accDet.getId());
+			return ResponseEntity.ok().body(images);
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
+	}
+
 }

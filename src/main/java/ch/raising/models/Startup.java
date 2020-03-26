@@ -26,12 +26,14 @@ public class Startup extends Account {
 	private int turnover = -1;
 	private int preMoneyValuation = -1;
 	private Date closingTime;
-	private int revenueMax;
-	private int revenueMin;
+	private int revenueMaxId;
+	private int revenueMinId;
 	private int scope;
 	private String uId = "";
 	private int foundingYear;
 	private long financeTypeId = -1;
+	private String companyName = "";
+	private int raised;
 
 	private List<AssignmentTableModel> investorTypes;
 	private List<AssignmentTableModel> labels;
@@ -67,13 +69,15 @@ public class Startup extends Account {
 		this.breakEvenYear = su.getBreakEvenYear();
 		this.zipCode = su.getZipCode();
 		this.preMoneyValuation = su.getPreMoneyValuation();
-		this.revenueMax = su.getRevenueMax();
-		this.revenueMin = su.getRevenueMin();
+		this.revenueMaxId = su.getRevenueMaxId();
+		this.revenueMinId= su.getRevenueMinId();
 		this.scope = su.getScope();
 		this.uId = su.getUId();
 		this.foundingYear = su.getFoundingYear();
 		this.financeTypeId = su.getFinanceTypeId();
 		this.closingTime = su.getClosingTime();
+		this.company = su.getCompany();
+		this.raised = su.getRaised();
 		this.investorTypes = invTypes;
 		this.labels = labels;
 		this.contact = contact;
@@ -97,17 +101,18 @@ public class Startup extends Account {
 	 * @param website
 	 * @param breakEvenYear
 	 * @param zipCode
-	 * @param revenueMin
+	 * @param revenueMinId
 	 * @param scope
 	 * @param uId
 	 * @param foundingYear
 	 */
 	@Builder(builderMethodName = "startupBuilder")
 	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte, int turnover, String street,
-			String city, String website, int breakEvenYear, int zipCode, int preMoneyEvaluation, int revenueMax,
-			long financeTypeId, Date closingTime, int revenueMin, int scope, String uId, int foundingYear) {
+			String city, String website, int breakEvenYear, int zipCode, int preMoneyEvaluation, int revenueMaxId,
+			long financeTypeId, Date closingTime, int revenueMinId, int scope, String uId, int foundingYear,
+			String companyName, int raised) {
 		super();
-	
+
 		this.accountId = accountId;
 		this.investmentPhaseId = investmentPhaseId;
 		this.boosts = boosts;
@@ -119,29 +124,31 @@ public class Startup extends Account {
 		this.breakEvenYear = breakEvenYear;
 		this.zipCode = zipCode;
 		this.preMoneyValuation = preMoneyEvaluation;
-		this.revenueMax = revenueMax;
-		this.revenueMin = revenueMin;
+		this.revenueMaxId = revenueMaxId;
+		this.revenueMinId = revenueMinId;
 		this.scope = scope;
 		this.uId = uId;
 		this.foundingYear = foundingYear;
 		this.financeTypeId = financeTypeId;
 		this.closingTime = closingTime;
+		this.companyName = companyName;
+		this.raised = raised;
 	}
 
 	@Override
 	public boolean isInComplete() {
 		return super.isInComplete() || investmentPhaseId == -1 || street == "" || city == "" || zipCode == 0
 				|| website == "" || breakEvenYear == -1 || numberOfFte == -1 || turnover == -1 || financeTypeId == -1
-				|| revenueMax == 0 || revenueMin == 0 || contact == null || investorTypes == null
+				|| revenueMaxId == 0 || revenueMinId == 0 || contact == null || investorTypes == null
 				|| boardmembers == null || founders == null || investorTypes.isEmpty() || founders.isEmpty()
 				|| boardmembers.isEmpty();
 	}
-	
+
 	@Override
 	public boolean isStartup() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean isInvestor() {
 		return false;

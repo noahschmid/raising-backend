@@ -306,8 +306,8 @@ public class StartupService extends AccountService {
         profile.setAccountId(startup.getAccountId());
         profile.setName(startup.getName());
         profile.setDescription(startup.getDescription());
-        profile.setInvestmentMax(startup.getInvestmentMax());
-        profile.setInvestmentMin(startup.getInvestmentMin());
+        profile.setInvestmentMax(startup.getTicketMaxId());
+        profile.setInvestmentMin(startup.getTicketMinId());
         profile.setStartup(true);
         
         profile.setContinents(continents);

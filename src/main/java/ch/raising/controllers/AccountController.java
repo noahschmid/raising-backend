@@ -2,8 +2,6 @@ package ch.raising.controllers;
 
 import java.util.List;
 
-
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +28,11 @@ import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.services.AccountService;
-import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.FreeEmailRequest;
+import ch.raising.models.Image;
 
 @RequestMapping("/account")
 @Controller
@@ -75,17 +73,6 @@ public class AccountController {
         final String token = jwtUtil.generateToken(userDetails);
         return ResponseEntity.ok(new LoginResponse(token, userDetails.getId(), userDetails.isStartup(), userDetails.isInvestor()));
 	}
-
-	/**
-	 * Register a new user account
-	 * @param account has to include an unique username, email and a password
-	 * @return JSON response with status code and error message (if exists)
-	 */
-	@PostMapping("/register")
-	@ResponseBody
-	public ResponseEntity<?> register(@RequestBody Account account) {
-		return accountService.registerProfile(account);
-    }
     
     /**
      * Forgot password endpoint. Returns reset code if request is valid 
@@ -254,6 +241,58 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<?> deleteIndustryFromAccount(@PathVariable long industryId){
     	return accountService.deleteIndustryFromAccountById(industryId);
+    }
+    /**
+     * add image to gallery of account    
+     * @param industryId
+     * @return
+     */
+    @PostMapping("/gallery")
+    @ResponseBody
+    public ResponseEntity<?> addImageToAccount(@RequestBody Image img){
+    	return accountService.addGalleryImageToAccountById(img);
+    }
+    /**
+     * delete image form gallery account
+     * @param industryId
+     * @return
+     */
+    @DeleteMapping("/gallery/{imageId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteImageFromAccount(@PathVariable long imageId){
+    	return accountService.deleteGalleryImageFromAccountById(imageId);
+    }
+    
+    @GetMapping("/gallery/{accountId}")
+    @ResponseBody
+    public ResponseEntity<?> getGalleryOfAccount(@PathVariable long accountId){
+    	return accountService.findGalleryImageFromAccountById(accountId);
+    }
+    /**
+     * add profile pic to account    
+     * @param industryId
+     * @return
+     */
+    @PostMapping("/profilepicture")
+    @ResponseBody
+    public ResponseEntity<?> addProfilePictureToAccount(@RequestBody Image img){
+    	return accountService.addProfilePictureToAccountById(img);
+    }
+    /**
+     * delete image form gallery account
+     * @param industryId
+     * @return
+     */
+    @DeleteMapping("/profilepicture/{imageId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteProfilePictureFromAccount(@PathVariable long imageId){
+    	return accountService.deleteProfilePictureFromAccountById(imageId);
+    }
+    
+    @GetMapping("/profilepicture/{accountId}")
+    @ResponseBody
+    public ResponseEntity<?> getProfilePictureOfAccount(@PathVariable long accountId){
+    	return accountService.findProfilePictureFromAccountById(accountId);
     }
     
     

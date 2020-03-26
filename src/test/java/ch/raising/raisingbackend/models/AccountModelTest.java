@@ -35,8 +35,8 @@ public class AccountModelTest {
 	private String email = "so@real.ch";
 	private String pitch = "diligent";
 	private String description = "still diligent";
-	private int investmentMin = 10;
-	private int investmentMax = 15;
+	private int ticketMinId = 10;
+	private int ticketMaxId = 15;
 
 	private List<AssignmentTableModel> countries;
 	private List<AssignmentTableModel> continents;
@@ -55,15 +55,15 @@ public class AccountModelTest {
 		assertEquals(email, acc.getEmail());
 		assertEquals(pitch, acc.getPitch());
 		assertEquals(description, acc.getDescription());
-		assertEquals(investmentMax, acc.getInvestmentMax());
-		assertEquals(investmentMin, acc.getInvestmentMin());
+		assertEquals(ticketMaxId, acc.getTicketMaxId());
+		assertEquals(ticketMinId, acc.getTicketMinId());
 		assertEquals(name, acc.getName());
 	}
 	@Test
 	public void testBuilderNotAllFieldsInitialized() {
 		Account acc = Account.accountBuilder().accountId(accountId).company(company).name(null).password(password)
-				.roles(roles).email(email).description(description).investmentMin(investmentMin)
-				.investmentMax(investmentMax).build();
+				.roles(roles).email(email).description(description).ticketMinId(ticketMinId)
+				.ticketMaxId(ticketMaxId).build();
 		
 		assertTrue(acc.isInComplete());
 		assertEquals(accountId, acc.getAccountId());
@@ -73,8 +73,8 @@ public class AccountModelTest {
 		assertEquals(email, acc.getEmail());
 		assertNull( acc.getPitch());
 		assertEquals(description, acc.getDescription());
-		assertEquals(investmentMax, acc.getInvestmentMax());
-		assertEquals(investmentMin, acc.getInvestmentMin());
+		assertEquals(ticketMaxId, acc.getTicketMaxId());
+		assertEquals(ticketMinId, acc.getTicketMinId());
 		assertNull(acc.getName());
 	}
 
@@ -111,15 +111,15 @@ public class AccountModelTest {
 		assertEquals(email, fullAcc.getEmail());
 		assertEquals(pitch, fullAcc.getPitch());
 		assertEquals(description, fullAcc.getDescription());
-		assertEquals(investmentMax, fullAcc.getInvestmentMax());
-		assertEquals(investmentMin, fullAcc.getInvestmentMin());
+		assertEquals(ticketMaxId, fullAcc.getTicketMaxId());
+		assertEquals(ticketMinId, fullAcc.getTicketMinId());
 		assertEquals(name, fullAcc.getName());
 	}
 	
 	private Account getFullRepoAccount() {
 		Account acc = Account.accountBuilder().accountId(accountId).company(company).name(name).password(password)
-				.roles(roles).email(email).pitch(pitch).description(description).investmentMin(investmentMin)
-				.investmentMax(investmentMax).build();
+				.roles(roles).email(email).pitch(pitch).description(description).ticketMinId(ticketMinId)
+				.ticketMaxId(ticketMaxId).build();
 		
 		List<AssignmentTableModel> countries = new ArrayList<AssignmentTableModel>();
 		List<AssignmentTableModel> continents= new ArrayList<AssignmentTableModel>();

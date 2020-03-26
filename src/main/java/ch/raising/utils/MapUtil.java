@@ -3,6 +3,7 @@ package ch.raising.utils;
 import java.sql.ResultSet;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.Account;
@@ -12,13 +13,10 @@ import ch.raising.models.Contact;
 import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Country;
 import ch.raising.models.Founder;
+import ch.raising.models.Image;
 import ch.raising.models.PrivateShareholder;
 
 public class MapUtil {
-
-	public static MapUtil getInstance() {
-		return new MapUtil();
-	}
 
 	public static long mapRowToId(ResultSet rs, int row) throws SQLException {
 		return rs.getLong("id");
@@ -30,8 +28,8 @@ public class MapUtil {
 
 	public static Account mapRowToAccount(ResultSet rs, int row) throws SQLException {
 		return Account.accountBuilder().name(rs.getString("name")).email(rs.getString("emailhash")).company(rs.getString("company"))
-				.accountId(rs.getLong("id")).investmentMax(rs.getInt("investmentmax"))
-				.investmentMin(rs.getInt("investmentmin")).build();
+				.accountId(rs.getLong("id")).ticketMaxId(rs.getInt("ticketmaxid"))
+				.ticketMinId(rs.getInt("ticketminid")).build();
 	}
 
 	public static AssignmentTableModel mapRowToAssignmentTable(ResultSet rs, int row) throws SQLException {
@@ -77,6 +75,10 @@ public class MapUtil {
 				.corpName(rs.getString("name")).website(rs.getString("website"))
 				.equityShare(rs.getInt("equityshare")).corporateBodyId(rs.getLong("corporatebodyid"))
 				.countryId(rs.getLong("countryid")).build();
+	}
+	
+	public static Image mapRowToImage(ResultSet rs, int row) throws SQLException{
+		return Image.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid")).image(new String(rs.getBytes("image"))).build();
 	}
 
 }

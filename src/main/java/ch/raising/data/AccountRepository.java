@@ -104,7 +104,7 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 */
 	public long add(Account acc) throws DatabaseOperationException {
 		try {
-			String query = "INSERT INTO account(company, name, password, emailhash, pitch, description, investmentmin, investmentmax) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			String query = "INSERT INTO account(company, name, password, emailhash, pitch, description, ticketminid, ticketmaxid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			String emailHash = encoder.encode(acc.getEmail());
 			String passwordHash = encoder.encode(acc.getPassword());
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
@@ -117,8 +117,8 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 					ps.setString(c++, emailHash);
 					ps.setString(c++, acc.getPitch());
 					ps.setString(c++, acc.getDescription());
-					ps.setInt(c++, acc.getInvestmentMin());
-					ps.setInt(c++, acc.getInvestmentMax());
+					ps.setInt(c++, acc.getTicketMinId());
+					ps.setInt(c++, acc.getTicketMaxId());
 					return ps.execute();
 				}
 			});
@@ -196,8 +196,8 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
 				.company(rs.getString("company")).pitch(rs.getString("pitch")).description(rs.getString("description"))
-				.email(rs.getString("emailHash")).roles(rs.getString("roles")).investmentMax(rs.getInt("investmentmax"))
-				.investmentMin(rs.getInt("investmentmin")).password(rs.getString("password")).build();
+				.email(rs.getString("emailHash")).roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
+				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password")).build();
 	}
 
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
