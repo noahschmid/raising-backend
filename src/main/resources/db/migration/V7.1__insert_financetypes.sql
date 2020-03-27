@@ -1,4 +1,4 @@
-INSERT INTO financetype(name) VALUES 
+INSERT INTO financetype(type) VALUES 
 ('Equity'),
 ('Loan'),
 ('Deposit'),
