@@ -130,8 +130,8 @@ public class Startup extends Account {
 
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() || investmentPhaseId == -1 || street == "" || city == "" || zipCode == 0
-				|| website == "" || breakEvenYear == -1 || numberOfFte == -1 || turnover == -1 || financeTypeId == -1
+		return super.isInComplete() || investmentPhaseId == -1 
+				|| website == "" || breakEvenYear == -1 || numberOfFte == -1 || financeTypeId == -1
 				|| revenueMax == 0 || revenueMin == 0 || contact == null || investorTypes == null
 				|| boardmembers == null || founders == null || investorTypes.isEmpty() || founders.isEmpty()
 				|| boardmembers.isEmpty();
