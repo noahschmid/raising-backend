@@ -26,8 +26,8 @@ public class Startup extends Account {
 	private int turnover = -1;
 	private int preMoneyValuation = -1;
 	private Date closingTime;
-	private int revenueMax;
-	private int revenueMin;
+	private int revenueMax = -1;
+	private int revenueMin = -1;
 	private int scope;
 	private String uId = "";
 	private int foundingYear;
@@ -132,9 +132,8 @@ public class Startup extends Account {
 	public boolean isInComplete() {
 		return super.isInComplete() || investmentPhaseId == -1 
 				|| website == "" || breakEvenYear == -1 || numberOfFte == -1 || financeTypeId == -1
-				|| revenueMax == 0 || revenueMin == 0 || contact == null || investorTypes == null
-				|| boardmembers == null || founders == null || investorTypes.isEmpty() || founders.isEmpty()
-				|| boardmembers.isEmpty();
+				|| revenueMax == -1 || revenueMin == -1 || investorTypes == null
+				|| founders == null || investorTypes.isEmpty() || founders.isEmpty();
 	}
 	
 	@Override
