@@ -1,0 +1,1 @@
+ALTER TABLE financetype RENAME COLUMN type TO name;
