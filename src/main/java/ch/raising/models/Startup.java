@@ -1,9 +1,8 @@
 package ch.raising.models;
 
 import java.sql.Date;
-import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 
 import ch.raising.models.AssignmentTableModel;
 import lombok.Builder;
@@ -26,8 +25,10 @@ public class Startup extends Account {
 	private int turnover = -1;
 	private int preMoneyValuation = -1;
 	private Date closingTime;
+
 	private int revenueMaxId;
 	private int revenueMinId;
+
 	private int scope;
 	private String uId = "";
 	private int foundingYear;
@@ -138,10 +139,10 @@ public class Startup extends Account {
 	@Override
 	public boolean isInComplete() {
 		return super.isInComplete() || investmentPhaseId == -1 || street == "" || city == "" || zipCode == 0
-				|| website == "" || breakEvenYear == -1 || numberOfFte == -1 || turnover == -1 || financeTypeId == -1
+				|| website == "" || breakEvenYear == -1  || financeTypeId == -1
 				|| revenueMaxId == 0 || revenueMinId == 0 || contact == null || investorTypes == null
-				|| boardmembers == null || founders == null || investorTypes.isEmpty() || founders.isEmpty()
-				|| boardmembers.isEmpty();
+				|| founders == null || investorTypes.isEmpty() || founders.isEmpty();
+		
 	}
 
 	@Override

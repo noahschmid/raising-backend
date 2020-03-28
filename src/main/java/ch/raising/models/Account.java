@@ -109,7 +109,7 @@ public class Account {
 	public boolean isInComplete() {
 		return name == "" || password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1
 				|| countries == null || continents == null || support == null || industries == null
-				|| countries.isEmpty() || continents.isEmpty() || support.isEmpty() || industries.isEmpty();
+				|| (countries.isEmpty() && continents.isEmpty()) || support.isEmpty() || industries.isEmpty();
 	}
 	
 	public boolean isStartup() {

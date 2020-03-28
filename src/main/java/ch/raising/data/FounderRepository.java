@@ -40,7 +40,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	@Override
 	public void addMemberByStartupId(Founder founder, long accountId) {
 		jdbc.execute(
-				"INSERT INTO founder(startupid, firstname, lastname, education, position, countryid) VALUES (?,?,?,?,?,?)",
+				"INSERT INTO founder(startupid, firstname, lastname, education, position) VALUES (?,?,?,?,?)",
 				addByStartupId(founder, accountId));
 	}
 
@@ -53,7 +53,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	public Founder mapRowToModel(ResultSet rs, int row) throws SQLException {
 		return Founder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
 				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).position(rs.getString("position"))
-				.countryId(rs.getLong("countryId")).education(rs.getString("education")).build();
+				.education(rs.getString("education")).build();
 	}
 
 	@Override
@@ -78,7 +78,6 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 				ps.setString(c++, founder.getLastName());
 				ps.setString(c++, founder.getEducation());
 				ps.setString(c++, founder.getPosition());
-				ps.setLong(c++, founder.getCountryId());
 				return ps.execute();
 			}
 		};

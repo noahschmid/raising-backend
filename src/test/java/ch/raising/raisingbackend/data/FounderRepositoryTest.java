@@ -90,7 +90,7 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 	@Override
 	public void testAddMemberByStartupId() {
 		Founder founder = Founder.builder().startupid(5).firstName("Vincent").lastName("D' Agosta").education("Plumber")
-				.position("Detective").countryId(345).build();
+				.position("Detective").build();
 		fr.addMemberByStartupId(founder, 5);
 		assertEquals(2, JdbcTestUtils.countRowsInTable(jdbc, "founder"));
 
@@ -102,7 +102,6 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 		assertEquals("D' Agosta", added.getLastName());
 		assertEquals("Plumber", added.getEducation());
 		assertEquals("Detective", added.getPosition());
-		assertEquals(345, added.getCountryId());
 	}
 
 	@Test
@@ -126,7 +125,6 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 		assertEquals("Pendergast", found.getLastName());
 		assertEquals("Lawyer", found.getEducation());
 		assertEquals("Lawless", found.getPosition());
-		assertEquals(324, found.getCountryId());
 	}
 
 	@Test
@@ -140,7 +138,6 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 		assertEquals("Pendergast", found.getLastName());
 		assertEquals("Lawyer", found.getEducation());
 		assertEquals("Lawless", found.getPosition());
-		assertEquals(324, found.getCountryId());
 	}
 
 }

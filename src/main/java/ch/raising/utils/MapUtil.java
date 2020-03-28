@@ -53,8 +53,7 @@ public class MapUtil {
 	public static Founder mapRowToFounder(ResultSet rs, int row) throws SQLException {
 		return Founder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
 				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname"))
-				.education(rs.getString("education")).position(rs.getString("position"))
-				.countryId(rs.getLong("countryid")).build();
+				.education(rs.getString("education")).position(rs.getString("position")).build();
 	}
 
 	public static Contact mapRowToContact(ResultSet rs, int row) throws SQLException {
