@@ -59,17 +59,6 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	}
 
 	@Override
-	public PreparedStatementCallback<Boolean> deleteById(long id) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, id);
-				return ps.execute();
-			}
-		};
-	}
-
-	@Override
 	public PreparedStatementCallback<Boolean> addByStartupId(Boardmember bmem, long accountId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override

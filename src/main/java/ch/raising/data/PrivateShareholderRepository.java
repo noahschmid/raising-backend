@@ -59,17 +59,6 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 	}
 
 	@Override
-	public PreparedStatementCallback<Boolean> deleteById(long id) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, id);
-				return ps.execute();
-			}
-		};
-	}
-
-	@Override
 	public PreparedStatementCallback<Boolean> addByStartupId(PrivateShareholder psh, long startupId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
