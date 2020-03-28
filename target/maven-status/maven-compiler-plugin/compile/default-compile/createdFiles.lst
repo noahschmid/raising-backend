@@ -9,6 +9,7 @@ ch\raising\data\ContactRepository$2.class
 ch\raising\data\ResetCodeRepository$3.class
 ch\raising\data\RelationshipRepository.class
 ch\raising\controllers\InvestorController.class
+ch\raising\models\Image.class
 ch\raising\data\RelationshipRepository$1.class
 ch\raising\utils\MatchingUtil.class
 ch\raising\data\FounderRepository$1.class
@@ -34,6 +35,7 @@ ch\raising\models\CorporateShareholder.class
 ch\raising\services\StartupService.class
 ch\raising\data\AssignmentTableRepository.class
 ch\raising\services\ProfileService.class
+ch\raising\utils\PreparedStatementUtil$2.class
 ch\raising\models\Account.class
 ch\raising\models\PrivateShareholder$PrivateShareholderBuilder.class
 ch\raising\data\InvestorRepository$1.class
@@ -46,14 +48,17 @@ ch\raising\utils\DatabaseOperationException.class
 ch\raising\utils\QueryBuilder.class
 ch\raising\data\StartupRepository.class
 ch\raising\data\AccountRepository.class
+ch\raising\models\Image$ImageBuilder.class
 ch\raising\services\AccountService.class
 ch\raising\models\PasswordResetRequest.class
+ch\raising\utils\PreparedStatementUtil$1.class
 ch\raising\utils\NotImplementedInSuperTypeException.class
 ch\raising\models\FreeEmailRequest.class
 ch\raising\models\Relationship.class
 ch\raising\data\PrivateShareholderRepository.class
 ch\raising\models\ErrorResponse.class
 ch\raising\utils\InValidProfileException.class
+ch\raising\interfaces\IAdditionalInformationRepository$1.class
 ch\raising\models\LoginRequest.class
 ch\raising\models\PrivateShareholder.class
 ch\raising\data\AssignmentTableRepository$2.class
@@ -64,6 +69,7 @@ ch\raising\models\Investor.class
 ch\raising\interfaces\IRepository.class
 ch\raising\utils\JwtUtil.class
 ch\raising\data\ResetCodeRepository$2.class
+ch\raising\utils\PreparedStatementGetter.class
 ch\raising\config\AppConfig.class
 ch\raising\models\Startup$StartupBuilder.class
 ch\raising\controllers\StartupController.class
@@ -82,6 +88,7 @@ ch\raising\data\StartupRepository$1.class
 ch\raising\models\Founder.class
 ch\raising\models\Investor$InvestorBuilder.class
 ch\raising\config\CorsConfig.class
+ch\raising\utils\PreparedStatementUtil.class
 ch\raising\data\ResetCodeRepository$1.class
 ch\raising\models\RelationshipState.class
 ch\raising\interfaces\IAssignmentTableRepository.class
@@ -93,6 +100,7 @@ ch\raising\models\Support.class
 ch\raising\data\AccountRepository$2.class
 ch\raising\data\PrivateShareholderRepository$2.class
 ch\raising\models\StartupMember.class
+ch\raising\data\ImageRepository.class
 ch\raising\interfaces\IExtendedAssignmentTableModel.class
 ch\raising\utils\Type.class
 ch\raising\models\LoginResponse.class
