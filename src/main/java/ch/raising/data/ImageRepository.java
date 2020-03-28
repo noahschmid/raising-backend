@@ -30,6 +30,14 @@ public class ImageRepository {
 	private final RowMapper<ResultSet, Integer, Image> rowMapper;
 	
 	@Autowired
+	public ImageRepository(JdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+		this.tableName = "";
+		this.preps = PreparedStatementUtil::addImageByIdCallback;
+		this.psDelete = PreparedStatementUtil::deleteByIdAndAccountIdCallback;
+		this.rowMapper = MapUtil::mapRowToImage;
+	}
+	
 	public ImageRepository(JdbcTemplate jdbc, String tableName) {
 		this.jdbc = jdbc;
 		this.tableName = tableName;
