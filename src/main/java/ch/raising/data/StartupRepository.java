@@ -51,7 +51,7 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	 * @return list of all startups
 	 */
 	public List<Startup> getAll() {
-		String getAll = "SELECT * FROM account";
+		String getAll = "SELECT * FROM startup";
 		List<Startup> users = jdbc.query(getAll, this::mapRowToModel);
 		return users;
 	}
@@ -82,10 +82,11 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 				.numberOfFte(rs.getInt("numberOfFte")).turnover(rs.getInt("turnover")).street(rs.getString("street"))
 				.breakEvenYear(rs.getInt("breakevenYear")).city(rs.getString("city")).zipCode(rs.getInt("zipCode"))
 				.website(rs.getString("website")).investmentPhaseId(rs.getLong("investmentPhaseId"))
-				.revenueMax(rs.getInt("revenuemax")).revenueMin(rs.getInt("revenuemin")).scope(rs.getInt("scope"))
+				.revenueMaxId(rs.getInt("revenuemaxid")).revenueMinId(rs.getInt("revenueminid")).scope(rs.getInt("scope"))
 				.uId(rs.getString("uid")).foundingYear(rs.getInt("foundingYear"))
 				.financeTypeId(rs.getLong("financetypeid")).closingTime(rs.getDate("closingTime"))
-				.preMoneyEvaluation(rs.getInt("premoneyvaluation")).build();
+				.preMoneyEvaluation(rs.getInt("premoneyvaluation")).companyName(rs.getString("companyname"))
+				.raised(rs.getInt("raised")).build();
 	}
 
 	/**
@@ -96,15 +97,14 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	public void add(Startup su) throws Exception {
 
 		try {
-			String query = "INSERT INTO startup(accountid, company, boosts, numberoffte, turnover, street,"
+			String query = "INSERT INTO startup(accountid, boosts, numberoffte, turnover, street,"
 					+ "city, website, breakevenyear, zipcode, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
-					+ "revenuemax, revenuemin, scope, uid, foundingyear) VALUES ( ?, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, companyname, raised) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 					int c = 1;
 					ps.setLong(c++, su.getAccountId());
-					ps.setString(c++, su.getCompany());
 					ps.setInt(c++, 0);
 					ps.setInt(c++, su.getNumberOfFte());
 					ps.setInt(c++, su.getTurnover());
@@ -117,11 +117,13 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 					ps.setDate(c++, su.getClosingTime());
 					ps.setInt(c++, (int) su.getFinanceTypeId());
 					ps.setInt(c++, (int) su.getInvestmentPhaseId());
-					ps.setInt(c++, su.getRevenueMax());
-					ps.setInt(c++, su.getRevenueMin());
+					ps.setInt(c++, su.getRevenueMaxId());
+					ps.setInt(c++, su.getRevenueMinId());
 					ps.setInt(c++, su.getScope());
 					ps.setString(c++, su.getUId());
 					ps.setInt(c++, su.getFoundingYear());
+					ps.setString(c++, su.getCompanyName());
+					ps.setInt(c++, su.getRaised());
 					return ps.execute();
 				}
 			});

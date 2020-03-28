@@ -9,7 +9,7 @@ public class QueryBuilder {
 	String tableName;
 	String attributeDatatypePair;
 	String attributesForInsertion;
-	String valuesForInsertion;
+	String valuesForInsertion = "";
 	String selectStatement = "*";
 	String whereStatement = "";
 	
@@ -71,10 +71,19 @@ public class QueryBuilder {
 	}
 	
 	public QueryBuilder value(String value) {
-		if(valuesForInsertion == null) {
+		if(valuesForInsertion == "") {
 			valuesForInsertion = "'" + value + "'";
 		}else {
 			valuesForInsertion += ", '" + value + "'"; 
+		}
+		return this;
+	}
+	
+	public QueryBuilder qMark() {
+		if(valuesForInsertion == "") {
+			valuesForInsertion = "?";
+		}else {
+			valuesForInsertion += ", " + "?"; 
 		}
 		return this;
 	}
@@ -90,6 +99,15 @@ public class QueryBuilder {
 			this.whereStatement = field + " = '" + value + "'";
 		}else {
 			this.whereStatement += " AND " + field + " = '" + value + "'";
+		}
+		
+		return this;
+	}
+	public QueryBuilder whereEqualsQmark(String field) {
+		if(whereStatement == "") {
+			this.whereStatement = field + " = " + "?";
+		}else {
+			this.whereStatement += " AND " + field + " = " + "?" + "";
 		}
 		
 		return this;
@@ -116,5 +134,10 @@ public class QueryBuilder {
 	
 	public String dropTable(String tablename) {
 		return "DROP TABLE " + tablename;
+	}
+
+	public String delete() {
+		assert whereStatement != "";
+		return "DELETE FROM " + tableName + " WHERE " + whereStatement + ";";
 	}
 }

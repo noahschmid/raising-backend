@@ -59,7 +59,7 @@ public class AccountRepositoryTest {
 		String createTable = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.SERIAL)
 				.pair("pitch", Type.VARCHAR).pair("description", Type.VARCHAR).pair("company", Type.VARCHAR)
 				.pair("name", Type.VARCHAR).pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR)
-				.pair("emailhash", Type.VARCHAR).pair("investmentmin", Type.INT).pair("investmentmax", Type.INT)
+				.pair("emailhash", Type.VARCHAR).pair("ticketminid", Type.INT).pair("ticketmaxid", Type.INT)
 				.createTable();
 
 		jdbc.execute(createTable);
@@ -108,11 +108,12 @@ public class AccountRepositoryTest {
 		assertNotNull(account);
 		assertEquals("testname", account.getName());
 	}
+
 	@Test
 	public void findByEmailHash() throws EmailNotFoundException {
 		Account found = accountRepo.findByEmailHash(emailhash);
 		assertNotNull(found);
-		assertEquals(1,found.getAccountId());
+		assertEquals(1, found.getAccountId());
 	}
 
 	@Test

@@ -17,8 +17,10 @@ public class Account {
 	private String email = "";
 	private String pitch = "";
 	private String description = "";
-	private int investmentMin = -1;
-	private int investmentMax = -1;
+	private int ticketMinId = -1;
+	private int ticketMaxId = -1;
+	private Image profilePicture;
+	private List<Image> gallery;
 
 	private List<AssignmentTableModel> countries;
 	private List<AssignmentTableModel> continents;
@@ -27,7 +29,7 @@ public class Account {
 
 	/**
 	 * This constructor makes an Account represented by the account table in the
-	 * database. That means the country, continent, support, industries lists will
+	 * database. That means the country, continent, support, industries lists, profilepicture and gallery will
 	 * not be initialized. It should be used by the
 	 * {@link ch.raising.data.AccountRepository} and
 	 * {@link ch.raising.services.AccountService#registerAccount()}.
@@ -37,13 +39,13 @@ public class Account {
 	 * @param password
 	 * @param roles
 	 * @param email
-	 * @param investmentMin
-	 * @param investmentMax
+	 * @param ticketMinId
+	 * @param ticketmentId
 	 */
 
 	@Builder(builderMethodName = "accountBuilder")
-	public Account(long accountId, String name, String password, String roles, String email, int investmentMin,
-			int investmentMax, String company, String description, String pitch) {
+	public Account(long accountId, String name, String password, String roles, String email, int ticketMinId,
+			int ticketMaxId, String company, String description, String pitch) {
 
 		this.company = company;
 		this.accountId = accountId;
@@ -53,8 +55,8 @@ public class Account {
 		this.email = email;
 		this.description = description;
 		this.pitch = pitch;
-		this.investmentMin = investmentMin;
-		this.investmentMax = investmentMax;
+		this.ticketMinId = ticketMinId;
+		this.ticketMaxId = ticketMaxId;
 
 	}
 
@@ -69,7 +71,7 @@ public class Account {
 	 * @param password
 	 * @param roles
 	 * @param email
-	 * @param investmentMin
+	 * @param ticketMinId
 	 * @param investmentMax
 	 * @param countries
 	 * @param continents
@@ -88,8 +90,8 @@ public class Account {
 		this.email = acc.email;
 		this.description = acc.description;
 		this.pitch = acc.pitch;
-		this.investmentMin = acc.investmentMin;
-		this.investmentMax = acc.investmentMax;
+		this.ticketMinId = acc.ticketMinId;
+		this.ticketMaxId = acc.ticketMaxId;
 		this.countries = acc.countries;
 		this.continents = acc.continents;
 		this.support = acc.support;
@@ -100,10 +102,12 @@ public class Account {
 		this.continents = acc.continents;
 		this.support = acc.support;
 		this.industries = acc.industries;
+		this.profilePicture = acc.profilePicture;
+		this.gallery = acc.gallery;
 	}
 
 	public boolean isInComplete() {
-		return name == "" || password == "" || email == "" || investmentMin == -1 || investmentMax == -1
+		return name == "" || password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1
 				|| countries == null || continents == null || support == null || industries == null
 				|| (countries.isEmpty() && continents.isEmpty()) || support.isEmpty() || industries.isEmpty();
 	}

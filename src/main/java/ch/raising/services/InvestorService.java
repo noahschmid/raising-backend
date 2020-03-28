@@ -120,8 +120,8 @@ public class InvestorService extends AccountService {
         profile.setAccountId(investor.getAccountId());
         profile.setName(investor.getName());
         profile.setDescription(investor.getDescription());
-        profile.setInvestmentMax(investor.getInvestmentMax());
-        profile.setInvestmentMin(investor.getInvestmentMin());
+        profile.setInvestmentMax(investor.getTicketMaxId());
+        profile.setInvestmentMin(investor.getTicketMinId());
         profile.setStartup(false);
 
         profile.addInvestorType(investorType);

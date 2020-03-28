@@ -45,11 +45,6 @@ public class StartupController {
         return startupService.getProfile(id);
 	}
     
-    @GetMapping("/test")
-    public ResponseEntity<?> getStartupProfile() {
-        return ResponseEntity.status(200).body(new Investor());
-	}
-    
     /**
      * Update profile of startup by given accountId
      * @param request the tableEntryId of the account the investor belongs to

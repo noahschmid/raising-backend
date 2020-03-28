@@ -40,7 +40,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	@Override
 	public void addMemberByStartupId(Founder founder, long accountId) {
 		jdbc.execute(
-				"INSERT INTO founder(startupid, firstname, lastname, education, position) VALUES (?,?,?,?,?)",
+				"INSERT INTO founder(startupid, firstname, lastname, education, position, countryid) VALUES (?, ?,?,?,?,?)",
 				addByStartupId(founder, accountId));
 	}
 
@@ -52,19 +52,8 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	@Override
 	public Founder mapRowToModel(ResultSet rs, int row) throws SQLException {
 		return Founder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
-				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).position(rs.getString("position"))
+				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).position(rs.getString("position")).countryId(rs.getLong("countryid"))
 				.education(rs.getString("education")).build();
-	}
-
-	@Override
-	public PreparedStatementCallback<Boolean> deleteById(long id) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(1, id);
-				return ps.execute();
-			}
-		};
 	}
 
 	@Override
@@ -78,6 +67,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 				ps.setString(c++, founder.getLastName());
 				ps.setString(c++, founder.getEducation());
 				ps.setString(c++, founder.getPosition());
+				ps.setLong(c++, founder.getCountryId());
 				return ps.execute();
 			}
 		};

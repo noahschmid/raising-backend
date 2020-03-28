@@ -1,0 +1,2 @@
+ALTER TABLE profilepicture DROP CONSTRAINT profilepicture_accountid_fkey;
+ALTER TABLE profilepicture ADD CONSTRAINT profilepicture_accountid_fkey FOREIGN KEY (accountid) REFERENCES account(id)  ON DELETE CASCADE;

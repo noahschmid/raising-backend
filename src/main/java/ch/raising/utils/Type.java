@@ -6,7 +6,8 @@ public enum Type {
 	DATE ("date"), 
 	LONG ("long"), 
 	BIGINT ("bigint"),
-	SERIAL ("serial");
+	SERIAL ("serial"), 
+	BYTEA ("bytea");
 	
 	String name;
 	Type(String name){
