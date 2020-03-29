@@ -37,6 +37,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\CorsC
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\InvestorController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\ContactRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ProfileService.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\DocumentationController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtRequestFilter.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotImplementedException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Image.java

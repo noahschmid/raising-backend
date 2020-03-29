@@ -49,7 +49,7 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 		fr = new FounderRepository(jdbc);
 		String sql = QueryBuilder.getInstance().tableName("founder").pair("id", Type.SERIAL)
 				.pair("startupid", Type.BIGINT).pair("firstname", Type.VARCHAR).pair("lastname", Type.VARCHAR)
-				.pair("education", Type.VARCHAR).pair("position", Type.VARCHAR)
+				.pair("education", Type.VARCHAR).pair("countryid", Type.BIGINT).pair("position", Type.VARCHAR)
 				.createTable();
 		jdbc.execute(sql);
 	}
@@ -58,8 +58,8 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 	@Override
 	public void addMember() {
 		String sql = QueryBuilder.getInstance().tableName("founder")
-				.attribute("startupid, firstname, lastname, education, position").value("" + 2)
-				.value("Aloysius").value("Pendergast").value("Lawyer").value("Lawless").insert();
+				.attribute("startupid, firstname, lastname, education, position, countryid").value("" + 2)
+				.value("Aloysius").value("Pendergast").value("Lawyer").value("Lawless").value("211").insert();
 		jdbc.execute(sql);
 		sql = QueryBuilder.getInstance().tableName("founder").whereEquals("firstname", "Aloysius").select();
 		id = jdbc.queryForObject(sql, MapUtil::mapRowToId);

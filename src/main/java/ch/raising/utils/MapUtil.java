@@ -27,8 +27,8 @@ public class MapUtil {
 	}
 
 	public static Account mapRowToAccount(ResultSet rs, int row) throws SQLException {
-		return Account.accountBuilder().name(rs.getString("name")).email(rs.getString("emailhash")).company(rs.getString("company"))
-				.accountId(rs.getLong("id")).ticketMaxId(rs.getInt("ticketmaxid"))
+		return Account.accountBuilder().name(rs.getString("name")).email(rs.getString("emailhash"))
+				.company(rs.getString("company")).accountId(rs.getLong("id")).ticketMaxId(rs.getInt("ticketmaxid"))
 				.ticketMinId(rs.getInt("ticketminid")).build();
 	}
 
@@ -53,7 +53,8 @@ public class MapUtil {
 	public static Founder mapRowToFounder(ResultSet rs, int row) throws SQLException {
 		return Founder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
 				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname"))
-				.education(rs.getString("education")).position(rs.getString("position")).build();
+				.education(rs.getString("education")).position(rs.getString("position"))
+				.countryId(rs.getLong("countryid")).build();
 	}
 
 	public static Contact mapRowToContact(ResultSet rs, int row) throws SQLException {
@@ -68,16 +69,16 @@ public class MapUtil {
 				.equityShare(rs.getInt("equityshare")).investortypeId(rs.getLong("investortypeid"))
 				.countryId(rs.getLong("countryid")).build();
 	}
-	
+
 	public static CorporateShareholder mapRowToCorporateShareholder(ResultSet rs, int row) throws SQLException {
 		return CorporateShareholder.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid"))
-				.corpName(rs.getString("name")).website(rs.getString("website"))
-				.equityShare(rs.getInt("equityshare")).corporateBodyId(rs.getLong("corporatebodyid"))
-				.countryId(rs.getLong("countryid")).build();
+				.corpName(rs.getString("name")).website(rs.getString("website")).equityShare(rs.getInt("equityshare"))
+				.corporateBodyId(rs.getLong("corporatebodyid")).countryId(rs.getLong("countryid")).build();
 	}
-	
-	public static Image mapRowToImage(ResultSet rs, int row) throws SQLException{
-		return Image.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid")).image(new String(rs.getBytes("image"))).build();
+
+	public static Image mapRowToImage(ResultSet rs, int row) throws SQLException {
+		return Image.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid"))
+				.image(new String(rs.getBytes("image"))).build();
 	}
 
 }
