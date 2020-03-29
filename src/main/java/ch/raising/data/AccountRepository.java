@@ -128,7 +128,7 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 			throw new DatabaseOperationException("could not find added account");
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new DatabaseOperationException("could not add account");
+			throw new DatabaseOperationException("could not add account: " + e.getMessage());
 		}
 	}
 
@@ -211,18 +211,13 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 * @param req          request containing fields to update
 	 */
 	public void update(long id, Account req) throws Exception {
-		throw new NotImplementedException();
-//		try {
-//			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this, "asd");
-//			updateQuery.setJdbc(jdbc);
-//			updateQuery.addField(req.getName(), "name");
-//			updateQuery.addField(req.getPassword(), "password");
-//			updateQuery.addField(req.getRoles(), "roles");
-//			updateQuery.addField(req.getEmail(), "emailHash");
-//			updateQuery.execute();
-//		} catch (Exception e) {
-//			throw new Exception(e.getMessage());
-//		}
+		try {
+			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this, "id");
+			updateQuery.setJdbc(jdbc);
+			updateQuery.execute();
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
 	}
 
 	@Override

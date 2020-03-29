@@ -79,13 +79,12 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	public Startup mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return Startup.startupBuilder().accountId(rs.getLong("accountId"))
 				.investmentPhaseId(rs.getLong("investmentphaseid")).boosts(rs.getInt("boosts"))
-				.numberOfFte(rs.getInt("numberOfFte")).turnover(rs.getInt("turnover")).street(rs.getString("street"))
-				.breakEvenYear(rs.getInt("breakevenYear")).city(rs.getString("city")).zipCode(rs.getInt("zipCode"))
-				.website(rs.getString("website")).investmentPhaseId(rs.getLong("investmentPhaseId"))
-				.revenueMaxId(rs.getInt("revenuemaxid")).revenueMinId(rs.getInt("revenueminid")).scope(rs.getInt("scope"))
-				.uId(rs.getString("uid")).foundingYear(rs.getInt("foundingYear"))
-				.financeTypeId(rs.getLong("financetypeid")).closingTime(rs.getDate("closingTime"))
-				.preMoneyEvaluation(rs.getInt("premoneyvaluation"))
+				.numberOfFte(rs.getInt("numberOfFte")).turnover(rs.getInt("turnover"))
+				.breakEvenYear(rs.getInt("breakevenYear")).website(rs.getString("website"))
+				.investmentPhaseId(rs.getLong("investmentPhaseId")).revenueMaxId(rs.getInt("revenuemaxid"))
+				.revenueMinId(rs.getInt("revenueminid")).scope(rs.getInt("scope")).uId(rs.getString("uid"))
+				.foundingYear(rs.getInt("foundingYear")).financeTypeId(rs.getLong("financetypeid"))
+				.closingTime(rs.getDate("closingTime")).preMoneyEvaluation(rs.getInt("premoneyvaluation"))
 				.raised(rs.getInt("raised")).build();
 	}
 
@@ -97,9 +96,9 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	public void add(Startup su) throws Exception {
 
 		try {
-			String query = "INSERT INTO startup(accountid, boosts, numberoffte, turnover, street,"
-					+ "city, website, breakevenyear, zipcode, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
-					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised) VALUES (?, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			String query = "INSERT INTO startup(accountid, boosts, numberoffte, turnover,"
+					+ " website, breakevenyear, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
+					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised) VALUES ( ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -108,11 +107,8 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 					ps.setInt(c++, 0);
 					ps.setInt(c++, su.getNumberOfFte());
 					ps.setInt(c++, su.getTurnover());
-					ps.setString(c++, su.getStreet());
-					ps.setString(c++, su.getCity());
 					ps.setString(c++, su.getWebsite());
 					ps.setInt(c++, su.getBreakEvenYear());
-					ps.setInt(c++, su.getZipCode());
 					ps.setInt(c++, su.getPreMoneyValuation());
 					ps.setDate(c++, su.getClosingTime());
 					ps.setInt(c++, (int) su.getFinanceTypeId());

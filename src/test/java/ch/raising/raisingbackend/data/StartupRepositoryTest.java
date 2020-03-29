@@ -37,7 +37,7 @@ public class StartupRepositoryTest {
 
 	private Startup su;
 	private Startup su2;
-	
+
 	@Autowired
 	public StartupRepositoryTest(JdbcTemplate jdbc, StartupRepository suRepo) {
 		this.jdbc = jdbc;
@@ -49,18 +49,17 @@ public class StartupRepositoryTest {
 	public void setup() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).pair("accountid", Type.SERIAL)
 				.pair("boosts", Type.INT).pair("numberoffte", Type.INT).pair("turnover", Type.INT)
-				.pair("street", Type.VARCHAR).pair("city", Type.VARCHAR).pair("website", Type.VARCHAR)
-				.pair("breakevenyear", Type.INT).pair("zipcode", Type.INT).pair("premoneyvaluation", Type.INT)
+				.pair("website", Type.VARCHAR).pair("breakevenyear", Type.INT).pair("premoneyvaluation", Type.INT)
 				.pair("closingtime", Type.DATE).pair("financetypeid", Type.INT).pair("investmentphaseid", Type.INT)
 				.pair("revenuemaxid", Type.INT).pair("revenueminid", Type.INT).pair("scope", Type.INT)
-				.pair("uid", Type.VARCHAR).pair("foundingyear", Type.INT).pair("raised", Type.INT)
-				.createTable();
+				.pair("uid", Type.VARCHAR).pair("foundingyear", Type.INT).pair("raised", Type.INT).createTable();
 
 		jdbc.execute(sql);
-		
-		su = Startup.startupBuilder().numberOfFte(2).turnover(1).street("Chumgässli").city("Aeschi").website("soreal.ch").breakEvenYear(2025)
-				.zipCode(3703).preMoneyEvaluation(1234).closingTime(Date.valueOf("2020-10-10")).financeTypeId(6).investmentPhaseId(5).revenueMaxId(22).revenueMinId(20).scope(8)
-				.uId("CH-132").foundingYear(1997).raised(100).build();
+
+		su = Startup.startupBuilder().numberOfFte(2).turnover(1)
+				.website("soreal.ch").breakEvenYear(2025).preMoneyEvaluation(1234)
+				.closingTime(Date.valueOf("2020-10-10")).financeTypeId(6).investmentPhaseId(5).revenueMaxId(22)
+				.revenueMinId(20).scope(8).uId("CH-132").foundingYear(1997).raised(100).build();
 
 	}
 
@@ -73,27 +72,15 @@ public class StartupRepositoryTest {
 	@BeforeEach
 	public void addStartup() {
 		String sql = QueryBuilder.getInstance().tableName(tableName)
-				.attribute("numberoffte, turnover, street, city, website, breakevenyear, zipcode")
+				.attribute("numberoffte, turnover, website, breakevenyear")
 				.attribute("premoneyvaluation, closingtime, financetypeid, investmentphaseid")
 				.attribute("revenuemaxid, revenueminid, scope, uid, foundingyear, raised")
-				.value(""+su.getNumberOfFte())
-				.value(""+su.getTurnover())
-				.value(""+su.getStreet())
-				.value(""+su.getCity())
-				.value(""+su.getWebsite())
-				.value(""+su.getBreakEvenYear())
-				.value(""+su.getZipCode())
-				.value(""+su.getPreMoneyValuation())
-				.value(su.getClosingTime().toString())
-				.value(""+su.getFinanceTypeId())
-				.value(""+su.getInvestmentPhaseId())
-				.value(""+su.getRevenueMaxId())
-				.value(""+su.getRevenueMinId())
-				.value(""+su.getScope())
-				.value(""+su.getUId())
-				.value(""+su.getFoundingYear())
-				.value(""+su.getRaised())
-				.insert();
+				.value("" + su.getNumberOfFte()).value("" + su.getTurnover())
+				.value("" + su.getWebsite()).value("" + su.getBreakEvenYear())
+				.value("" + su.getPreMoneyValuation()).value(su.getClosingTime().toString())
+				.value("" + su.getFinanceTypeId()).value("" + su.getInvestmentPhaseId())
+				.value("" + su.getRevenueMaxId()).value("" + su.getRevenueMinId()).value("" + su.getScope())
+				.value("" + su.getUId()).value("" + su.getFoundingYear()).value("" + su.getRaised()).insert();
 
 		jdbc.execute(sql);
 	}
@@ -102,7 +89,7 @@ public class StartupRepositoryTest {
 	public void cleanAccounts() {
 		JdbcTestUtils.deleteFromTables(jdbc, tableName);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, tableName));
-		jdbc.execute("ALTER SEQUENCE "+tableName+"_accountid_seq RESTART WITH 1");
+		jdbc.execute("ALTER SEQUENCE " + tableName + "_accountid_seq RESTART WITH 1");
 	}
 
 	@Test
@@ -128,8 +115,8 @@ public class StartupRepositoryTest {
 
 	@Test
 	public void testAdd() throws Exception {
-		Startup su = Startup.startupBuilder().boosts(0).numberOfFte(1).turnover(2).street("fischermätteli").city("hood")
-				.website("gang.ch").breakEvenYear(2000).zipCode(3000).preMoneyEvaluation(10000)
+		Startup su = Startup.startupBuilder().boosts(0).numberOfFte(1).turnover(2)
+				.website("gangDaLang.ch").breakEvenYear(2000).preMoneyEvaluation(10000)
 				.closingTime(Date.valueOf("2021-10-10")).financeTypeId(3).investmentPhaseId(4).revenueMaxId(5)
 				.revenueMinId(6).scope(7).uId("DE-9999").foundingYear(2020).build();
 		suRepo.add(su);

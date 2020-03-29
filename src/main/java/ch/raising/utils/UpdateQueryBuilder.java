@@ -31,7 +31,7 @@ public class UpdateQueryBuilder {
     private String tableName;
     private IRepository<?,?> repository;
     private JdbcTemplate jdbc;
-    private String idField = "tableEntryId";
+    private String idField = "id";
 
     public UpdateQueryBuilder(String tableName, long id, IRepository<?,?> repository) {
         this.tableName = tableName;

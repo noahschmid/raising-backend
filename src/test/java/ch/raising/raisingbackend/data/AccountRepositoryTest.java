@@ -36,13 +36,9 @@ import ch.raising.utils.Type;
 @TestInstance(Lifecycle.PER_CLASS)
 public class AccountRepositoryTest {
 
-	@Autowired
-	AccountRepository accountRepo;
-
-	@Autowired
-	JdbcTemplate jdbc;
-
-	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	private AccountRepository accountRepo;
+	private JdbcTemplate jdbc;
+	private BCryptPasswordEncoder encoder;
 
 	long id = -1;
 	Account account;
@@ -51,6 +47,13 @@ public class AccountRepositoryTest {
 	String emailhash;
 	String email;
 	String name;
+	
+	@Autowired
+	public AccountRepositoryTest(JdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+		this.accountRepo = new AccountRepository(jdbc);
+		this.encoder = new BCryptPasswordEncoder();
+	}
 
 	@BeforeAll
 	public void setup() {

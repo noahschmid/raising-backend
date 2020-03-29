@@ -12,61 +12,66 @@ import ch.raising.services.PublicInformationService;
 @RequestMapping("/public")
 public class PublicInformationController {
 	
-	@Autowired
-	PublicInformationService pis;
+	
+	PublicInformationService publicInformationService;
 	
 	@Autowired
 	public PublicInformationController(PublicInformationService pis) {
-		this.pis =pis;
+		this.publicInformationService =pis;
+	}
+	
+	@GetMapping("/ticketsize")
+	public ResponseEntity<?> ticketsize(){
+		return publicInformationService.getAll("ticketsize");
 	}
 	
 	@GetMapping("/continent")
 	public ResponseEntity<?> getContinent(){
-		return pis.getAll("continent");
+		return publicInformationService.getAll("continent");
 	}
 	
 	@GetMapping("/country")
 	public ResponseEntity<?> getCountry(){
-		return pis.getAllCountries("country");
+		return publicInformationService.getAllCountries("country");
 	}
 	
 	@GetMapping("/industry")
 	public ResponseEntity<?> getIndustry(){
-		return pis.getAll("industry");
+		return publicInformationService.getAll("industry");
 	}
 	
 	@GetMapping("/investmentphase")
 	public ResponseEntity<?> getInvestmentPhase(){
-		return pis.getAll("investmentphase");
+		return publicInformationService.getAll("investmentphase");
 	}
 
 	@GetMapping("/investortype")
 	public ResponseEntity<?> getInvestorType(){
-		return pis.getAllWithDescription("investortype");
+		return publicInformationService.getAllWithDescription("investortype");
 	}
 	
 	@GetMapping("/label")
 	public ResponseEntity<?> getLabel(){
-		return pis.getAllWithDescription("label");
+		return publicInformationService.getAllWithDescription("label");
 	}
 	
 	@GetMapping("/support")
 	public ResponseEntity<?> getSupport(){
-		return pis.getAll("support");
+		return publicInformationService.getAll("support");
 	}
 	
 	@GetMapping("/corporatebody")
 	public ResponseEntity<?> getCorporatebody(){
-		return pis.getAll("corporatebody");
+		return publicInformationService.getAll("corporatebody");
 	}
 	
 	@GetMapping("/financetype")
 	public ResponseEntity<?> getFinanceType(){
-		return pis.getAll("financetype");
+		return publicInformationService.getAll("financetype");
 	}
 	
 	@GetMapping("/revenue")
 	public ResponseEntity<?> getRevenueSteps(){
-		return pis.getAllRevenueSteps("revenue");
+		return publicInformationService.getAllRevenueSteps("revenue");
 	}
  }

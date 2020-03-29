@@ -15,9 +15,6 @@ import lombok.NoArgsConstructor;
 public class Startup extends Account {
 	private long investmentPhaseId = -1;
 	private int boosts = 0;
-	private String street = "";
-	private String city = "";
-	private int zipCode;
 	private String website = "";
 	private int breakEvenYear = -1;
 	private int numberOfFte = -1;
@@ -62,14 +59,11 @@ public class Startup extends Account {
 		this.boosts = su.getBoosts();
 		this.numberOfFte = su.getNumberOfFte();
 		this.turnover = su.getTurnover();
-		this.street = su.getStreet();
-		this.city = su.getCity();
 		this.website = su.getWebsite();
 		this.breakEvenYear = su.getBreakEvenYear();
-		this.zipCode = su.getZipCode();
 		this.preMoneyValuation = su.getPreMoneyValuation();
 		this.revenueMaxId = su.getRevenueMaxId();
-		this.revenueMinId= su.getRevenueMinId();
+		this.revenueMinId = su.getRevenueMinId();
 		this.scope = su.getScope();
 		this.uId = su.getUId();
 		this.foundingYear = su.getFoundingYear();
@@ -105,10 +99,9 @@ public class Startup extends Account {
 	 * @param foundingYear
 	 */
 	@Builder(builderMethodName = "startupBuilder")
-	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte, int turnover, String street,
-			String city, String website, int breakEvenYear, int zipCode, int preMoneyEvaluation, int revenueMaxId,
-			long financeTypeId, Date closingTime, int revenueMinId, int scope, String uId, int foundingYear,
-			int raised) {
+	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte, int turnover, String website,
+			int breakEvenYear, int preMoneyEvaluation, int revenueMaxId, long financeTypeId, Date closingTime,
+			int revenueMinId, int scope, String uId, int foundingYear, int raised) {
 		super();
 
 		this.accountId = accountId;
@@ -116,11 +109,10 @@ public class Startup extends Account {
 		this.boosts = boosts;
 		this.numberOfFte = numberOfFte;
 		this.turnover = turnover;
-		this.street = street;
-		this.city = city;
+
 		this.website = website;
 		this.breakEvenYear = breakEvenYear;
-		this.zipCode = zipCode;
+
 		this.preMoneyValuation = preMoneyEvaluation;
 		this.revenueMaxId = revenueMaxId;
 		this.revenueMinId = revenueMinId;
@@ -134,11 +126,10 @@ public class Startup extends Account {
 
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() || investmentPhaseId == -1 
-				|| website == "" || breakEvenYear == -1  || financeTypeId == -1
-				|| revenueMaxId == -1 || revenueMinId == -1 || investorTypes == null
+		return super.isInComplete() || investmentPhaseId == -1 || website == "" || breakEvenYear == -1
+				|| financeTypeId == -1 || revenueMaxId == -1 || revenueMinId == -1 || investorTypes == null
 				|| founders == null || investorTypes.isEmpty() || founders.isEmpty();
-		
+
 	}
 
 	@Override

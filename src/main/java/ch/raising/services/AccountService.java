@@ -184,25 +184,12 @@ public class AccountService implements UserDetailsService {
 	 */
 	public ResponseEntity<?> deleteProfile(long id) {
 		try {
-			deleteAccount(id);
+			accountRepository.delete(id);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-
-	/**
-	 * is overwritten by subtype {@link InvestorService} and {@link StartupService}
-	 * to allow the retrieving of a specific accounttype.
-	 * 
-	 * @param tableEntryId
-	 * @return the account with the specified tableEntryId. the account is fully
-	 *         initialized with all lists and objects non null.
-	 */
-	protected void deleteAccount(long id) {
-		accountRepository.delete(id);
-	}
-
 	/**
 	 * gets the requested Profile and handles all the Responses for the request
 	 * 
@@ -296,8 +283,26 @@ public class AccountService implements UserDetailsService {
 	 *                     is admin
 	 * @return Response entity with status code and message
 	 */
-	public ResponseEntity<?> updateAccount(int id, Account acc) {
-		return ResponseEntity.status(500).body(new ErrorResponse("Not Implemented yet"));
+	public ResponseEntity<?> updateProfile(int id, Account acc){
+		if(!isOwnAccount(id)) {
+			return ResponseEntity.status(403).body(new ErrorResponse("You can not update a foreign account"));
+		}
+		try {
+			updateAccount(id, acc);
+			return ResponseEntity.ok().build();
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));		
+		}
+	}
+	/**
+	 * updates the account. should be overwritten and called by subtypes {@link InvestorService} and {@link StartupService}
+	 * @param id
+	 * @param acc
+	 * @return
+	 * @throws Exception 
+	 */
+	protected void updateAccount(int id, Account acc) throws Exception {
+		accountRepository.update(id, acc);
 	}
 
 	/**
