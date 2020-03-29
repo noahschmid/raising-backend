@@ -85,7 +85,7 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 				.revenueMaxId(rs.getInt("revenuemaxid")).revenueMinId(rs.getInt("revenueminid")).scope(rs.getInt("scope"))
 				.uId(rs.getString("uid")).foundingYear(rs.getInt("foundingYear"))
 				.financeTypeId(rs.getLong("financetypeid")).closingTime(rs.getDate("closingTime"))
-				.preMoneyEvaluation(rs.getInt("premoneyvaluation")).companyName(rs.getString("companyname"))
+				.preMoneyEvaluation(rs.getInt("premoneyvaluation"))
 				.raised(rs.getInt("raised")).build();
 	}
 
@@ -99,7 +99,7 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 		try {
 			String query = "INSERT INTO startup(accountid, boosts, numberoffte, turnover, street,"
 					+ "city, website, breakevenyear, zipcode, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
-					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, companyname, raised) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised) VALUES (?, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -122,7 +122,6 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 					ps.setInt(c++, su.getScope());
 					ps.setString(c++, su.getUId());
 					ps.setInt(c++, su.getFoundingYear());
-					ps.setString(c++, su.getCompanyName());
 					ps.setInt(c++, su.getRaised());
 					return ps.execute();
 				}

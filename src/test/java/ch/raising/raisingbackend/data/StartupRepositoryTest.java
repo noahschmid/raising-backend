@@ -53,14 +53,14 @@ public class StartupRepositoryTest {
 				.pair("breakevenyear", Type.INT).pair("zipcode", Type.INT).pair("premoneyvaluation", Type.INT)
 				.pair("closingtime", Type.DATE).pair("financetypeid", Type.INT).pair("investmentphaseid", Type.INT)
 				.pair("revenuemaxid", Type.INT).pair("revenueminid", Type.INT).pair("scope", Type.INT)
-				.pair("uid", Type.VARCHAR).pair("foundingyear", Type.INT).pair("companyname", Type.VARCHAR).pair("raised", Type.INT)
+				.pair("uid", Type.VARCHAR).pair("foundingyear", Type.INT).pair("raised", Type.INT)
 				.createTable();
 
 		jdbc.execute(sql);
 		
 		su = Startup.startupBuilder().numberOfFte(2).turnover(1).street("Chumgässli").city("Aeschi").website("soreal.ch").breakEvenYear(2025)
 				.zipCode(3703).preMoneyEvaluation(1234).closingTime(Date.valueOf("2020-10-10")).financeTypeId(6).investmentPhaseId(5).revenueMaxId(22).revenueMinId(20).scope(8)
-				.uId("CH-132").foundingYear(1997).companyName("soReal CORP").raised(100).build();
+				.uId("CH-132").foundingYear(1997).raised(100).build();
 
 	}
 
@@ -75,7 +75,7 @@ public class StartupRepositoryTest {
 		String sql = QueryBuilder.getInstance().tableName(tableName)
 				.attribute("numberoffte, turnover, street, city, website, breakevenyear, zipcode")
 				.attribute("premoneyvaluation, closingtime, financetypeid, investmentphaseid")
-				.attribute("revenuemaxid, revenueminid, scope, uid, foundingyear, companyname, raised")
+				.attribute("revenuemaxid, revenueminid, scope, uid, foundingyear, raised")
 				.value(""+su.getNumberOfFte())
 				.value(""+su.getTurnover())
 				.value(""+su.getStreet())
@@ -92,7 +92,6 @@ public class StartupRepositoryTest {
 				.value(""+su.getScope())
 				.value(""+su.getUId())
 				.value(""+su.getFoundingYear())
-				.value(""+su.getCompanyName())
 				.value(""+su.getRaised())
 				.insert();
 
@@ -132,7 +131,7 @@ public class StartupRepositoryTest {
 		Startup su = Startup.startupBuilder().boosts(0).numberOfFte(1).turnover(2).street("fischermätteli").city("hood")
 				.website("gang.ch").breakEvenYear(2000).zipCode(3000).preMoneyEvaluation(10000)
 				.closingTime(Date.valueOf("2021-10-10")).financeTypeId(3).investmentPhaseId(4).revenueMaxId(5)
-				.revenueMinId(6).scope(7).uId("DE-9999").foundingYear(2020).companyName("pls").build();
+				.revenueMinId(6).scope(7).uId("DE-9999").foundingYear(2020).build();
 		suRepo.add(su);
 		assertEquals(2, JdbcTestUtils.countRowsInTable(jdbc, tableName));
 	}

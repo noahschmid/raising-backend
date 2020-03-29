@@ -33,7 +33,6 @@ public class Startup extends Account {
 	private String uId = "";
 	private int foundingYear;
 	private long financeTypeId = -1;
-	private String companyName = "";
 	private int raised;
 
 	private List<AssignmentTableModel> investorTypes;
@@ -77,7 +76,6 @@ public class Startup extends Account {
 		this.foundingYear = su.getFoundingYear();
 		this.financeTypeId = su.getFinanceTypeId();
 		this.closingTime = su.getClosingTime();
-		this.company = su.getCompany();
 		this.raised = su.getRaised();
 		this.investorTypes = invTypes;
 		this.labels = labels;
@@ -111,7 +109,7 @@ public class Startup extends Account {
 	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte, int turnover, String street,
 			String city, String website, int breakEvenYear, int zipCode, int preMoneyEvaluation, int revenueMaxId,
 			long financeTypeId, Date closingTime, int revenueMinId, int scope, String uId, int foundingYear,
-			String companyName, int raised) {
+			int raised) {
 		super();
 
 		this.accountId = accountId;
@@ -132,7 +130,6 @@ public class Startup extends Account {
 		this.foundingYear = foundingYear;
 		this.financeTypeId = financeTypeId;
 		this.closingTime = closingTime;
-		this.companyName = companyName;
 		this.raised = raised;
 	}
 

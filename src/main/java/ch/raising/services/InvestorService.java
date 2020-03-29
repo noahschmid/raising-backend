@@ -59,12 +59,12 @@ public class InvestorService extends AccountService {
 		Investor invReq = (Investor) requestInvestor;
 		
 		if (invReq.isInComplete()) {
-			throw new InValidProfileException("Profile is invalid");
+			throw new InValidProfileException("Profile is incomplete", invReq);
 		} else if (accountRepository.emailExists(invReq.getEmail())) {
 			throw new InValidProfileException("Email already exists");
 		}
 
-		System.out.println("Im in the child method");
+		
 		long accountId = super.registerAccount(invReq);
 		invReq.setAccountId(accountId);
 
