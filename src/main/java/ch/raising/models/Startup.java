@@ -1,7 +1,6 @@
 package ch.raising.models;
 
 import java.sql.Date;
-
 import java.util.List;
 
 import ch.raising.models.AssignmentTableModel;
@@ -135,9 +134,9 @@ public class Startup extends Account {
 
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() || investmentPhaseId == -1 || street == "" || city == "" || zipCode == 0
+		return super.isInComplete() || investmentPhaseId == -1 
 				|| website == "" || breakEvenYear == -1  || financeTypeId == -1
-				|| revenueMaxId == 0 || revenueMinId == 0 || contact == null || investorTypes == null
+				|| revenueMaxId == -1 || revenueMinId == -1 || investorTypes == null
 				|| founders == null || investorTypes.isEmpty() || founders.isEmpty();
 		
 	}
