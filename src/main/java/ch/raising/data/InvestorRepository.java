@@ -25,7 +25,7 @@ import ch.raising.models.Investor;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class InvestorRepository implements IRepository<Investor, Investor> {
+public class InvestorRepository implements IRepository<Investor> {
 	private JdbcTemplate jdbc;
 
 	@Autowired

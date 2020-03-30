@@ -1,6 +1,5 @@
 package ch.raising.services;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -21,11 +20,9 @@ import org.springframework.stereotype.Service;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.Image;
-import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.utils.DatabaseOperationException;
@@ -39,7 +36,6 @@ import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
 import ch.raising.data.AssignmentTableRepository;
 import ch.raising.data.ImageRepository;
-import ch.raising.interfaces.IAssignmentTableModel;
 
 @Primary
 @Service

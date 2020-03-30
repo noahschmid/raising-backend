@@ -28,7 +28,7 @@ import ch.raising.utils.Type;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
-public class BoardMemberRepositoryTest {
+public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 
 	@Autowired
 	JdbcTemplate jdbc;
@@ -46,6 +46,7 @@ public class BoardMemberRepositoryTest {
 	private long countryId;
 	Boardmember bmem;
 
+	@Override
 	@BeforeAll
 	public void setup() {
 		bmemRepo = new BoardmemberRepository(jdbc);
@@ -56,6 +57,7 @@ public class BoardMemberRepositoryTest {
 		jdbc.execute(sql);
 	}
 
+	@Override
 	@BeforeEach
 	public void addMember() {
 		String sql = QueryBuilder.getInstance().tableName("boardmember").attribute("startupid").attribute("firstname")
@@ -67,11 +69,13 @@ public class BoardMemberRepositoryTest {
 		id = jdbc.queryForObject(sql,MapUtil::mapRowToId);
 	}
 
+	@Override
 	@AfterAll
 	public void cleanup() {
 		JdbcTestUtils.dropTables(jdbc, "boardmember");
 	}
 
+	@Override
 	@AfterEach
 	public void deleteMember() {
 		JdbcTestUtils.deleteFromTables(jdbc, "boardmember");
@@ -79,12 +83,7 @@ public class BoardMemberRepositoryTest {
 	}
 
 	@Test
-	public void testGetStartupIdByMemberId() {
-		long id = bmemRepo.getStartupIdByMemberId(1);
-		assertEquals(2, id);
-	}
-
-	@Test
+	@Override
 	public void testAddMemberByStartupId() {
 		Boardmember bmem = Boardmember.builder().startupid(7).firstName("Vincent").lastName("D' Agosta")
 				.education("Detective").profession("Detective").membersince(9).coutryId(113).build();
@@ -94,13 +93,53 @@ public class BoardMemberRepositoryTest {
 		assertEquals(2, id);
 		assertEquals(2, JdbcTestUtils.countRowsInTable(jdbc, "boardmember"));
 	}
-
+	
 	@Test
-	public void deleteMemberByStartupId() {
+	@Override
+	public void testFind() {
+		Boardmember found = bmemRepo.find(1);
+		assertNotNull(found);
+		assertEquals(1, found.getId());
+		assertEquals("Aloysius", found.getFirstName());
+		assertEquals("Pendergast", found.getLastName());
+		assertEquals("Special Agent", found.getProfession());
+		assertEquals("lawyer", found.getEducation());
+		assertEquals("lawless", found.getPosition());
+		assertEquals(10, found.getMembersince());
+		assertEquals(123, found.getCountryId());
+	}
+
+	
+	@Test
+	@Override
+	public void testGetStartupIdByMemberId() {
+		assertEquals(2, bmemRepo.getStartupIdByMemberId(1));
+	}
+
+	@Override
+	@Test
+	public void testDeleteMemberByStartupId() {
 		bmemRepo.deleteMemberByStartupId(2);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, "boardmember"));
 	}
 
+	@Override
+	@Test
+	public void testupdate() throws Exception {
+		Boardmember bmem = Boardmember.builder().firstName("Moritz").lastName("Schönbächler")
+				.education("Holzfäller").profession("Nope").membersince(12).coutryId(13).build();
+		bmemRepo.update(1, bmem);
+		String sql = QueryBuilder.getInstance().tableName("boardmember").whereEquals("id", "1").select();
+		Boardmember found = jdbc.queryForObject(sql, bmemRepo::mapRowToModel);
+		assertEquals("Moritz", found.getFirstName());
+		assertEquals("Schönbächler", found.getLastName());
+		assertEquals("Holzfäller", found.getEducation());
+		assertEquals("Nope", found.getProfession());
+		assertEquals(12, found.getMembersince());
+		assertEquals(13, found.getCountryId());
+	}
+
+	@Override
 	@Test
 	public void testFindByStartupId() {
 		List<Boardmember> bmems = bmemRepo.findByStartupId(2);
@@ -117,19 +156,4 @@ public class BoardMemberRepositoryTest {
 		assertEquals(10, bmem.getMembersince());
 		assertEquals(123, bmem.getCountryId());
 	}
-
-	@Test
-	public void testFind() {
-		Boardmember found = bmemRepo.find(1);
-		assertNotNull(found);
-		assertEquals(1, found.getId());
-		assertEquals("Aloysius", found.getFirstName());
-		assertEquals("Pendergast", found.getLastName());
-		assertEquals("Special Agent", found.getProfession());
-		assertEquals("lawyer", found.getEducation());
-		assertEquals("lawless", found.getPosition());
-		assertEquals(10, found.getMembersince());
-		assertEquals(123, found.getCountryId());
-	}
-
 }

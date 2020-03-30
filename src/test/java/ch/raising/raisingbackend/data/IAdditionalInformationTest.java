@@ -6,9 +6,10 @@ public interface IAdditionalInformationTest {
 	public void addMember();
 	public void cleanup();
 	public void deleteMember();
-	public void testGetStartupByMemberId();
+	public void testGetStartupIdByMemberId();
 	public void testAddMemberByStartupId();
 	public void testDeleteMemberByStartupId();
 	public void testFindByStartupId();
 	public void testFind();
+	public void testupdate() throws Exception;
 }

@@ -18,7 +18,7 @@ import ch.raising.models.Startup;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class StartupRepository implements IRepository<Startup, Startup> {
+public class StartupRepository implements IRepository<Startup> {
 	private JdbcTemplate jdbc;
 
 	@Autowired
@@ -66,7 +66,6 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 			UpdateQueryBuilder update = new UpdateQueryBuilder("startup", id, this, "accountid");
 			update.setJdbc(jdbc);
 			update.addField(req.getInvestmentPhaseId(), "investmentphaseid");
-			update.addField(req.getBoosts(), "boosts");
 			update.addField(req.getWebsite(), "website");
 			update.addField(req.getBreakEvenYear(), "breakevenyear");
 			update.addField(req.getNumberOfFte(), "numberoffte");

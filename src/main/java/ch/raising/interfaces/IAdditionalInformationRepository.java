@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 
 import ch.raising.models.Boardmember;
 import ch.raising.models.Contact;
+import ch.raising.utils.UpdateQueryBuilder;
 
 /**
  * An additionalInformationRepository represents a table that holds additional information for the startup table. 
@@ -17,7 +18,7 @@ import ch.raising.models.Contact;
  * @version 1.0
  *
  */
-public interface IAdditionalInformationRepository<Model>{
+public interface IAdditionalInformationRepository<Model> extends IRepository<Model>{
 	
 	public long getStartupIdByMemberId(long id);
 	
@@ -25,18 +26,18 @@ public interface IAdditionalInformationRepository<Model>{
 	
 	public void deleteMemberByStartupId(long id);
 	
-	public PreparedStatementCallback<Boolean> addByStartupId(Model model, long startupId);
-	
 	public List<Model> findByStartupId(long startupId);
-	
-	public default long mapRowToId(ResultSet rs, int row) throws SQLException {
-		return rs.getInt("startupId");
-	}
 	
 	public Model mapRowToModel(ResultSet rs, int row) throws SQLException;
 	
 	public Model find(long id);
 	
+	
+	
+	public PreparedStatementCallback<Boolean> addByStartupId(Model model, long startupId);
+	public default long mapRowToId(ResultSet rs, int row) throws SQLException {
+		return rs.getInt("startupId");
+	}
 	public default PreparedStatementCallback<Boolean> deleteById(long id){
 		return new PreparedStatementCallback<Boolean>() {
 			@Override

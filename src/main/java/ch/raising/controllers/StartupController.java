@@ -1,7 +1,7 @@
 package ch.raising.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.models.Boardmember;
 import ch.raising.models.Contact;
-import ch.raising.models.ErrorResponse;
+import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Founder;
-import ch.raising.models.Investor;
-import ch.raising.models.LoginRequest;
+import ch.raising.models.PrivateShareholder;
 import ch.raising.models.Startup;
+import ch.raising.services.AdditionalInformationService;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.StartupService;
 
@@ -27,8 +27,9 @@ import ch.raising.services.StartupService;
 @RequestMapping("/startup")
 public class StartupController {
 	
-	StartupService startupService;
+	private StartupService startupService;
 	private AssignmentTableService assignmentTableService;
+	private AdditionalInformationService additionalInformationService;
 	
 	@Autowired
 	public StartupController(StartupService startupService, AssignmentTableService assignmentTableService) {
@@ -52,7 +53,7 @@ public class StartupController {
      * @return ResponseEntity with status code and error message (if exists)
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Startup request) {
+    public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request) {
         return startupService.updateProfile(id, request);
     }
 	
@@ -72,7 +73,16 @@ public class StartupController {
 	@DeleteMapping("/contact/{id}")
 	public ResponseEntity<?> deleteContact(@PathVariable int id){
 		//TODO check if the contact is part of the startup
-		return startupService.deleteContactByStartupId(id);
+		return additionalInformationService.deleteContactByStartupId(id);
+	}
+	/**
+	 * Updates a contact specified by id.
+	 * @param id of the contact to be deleted
+	 */
+	@PatchMapping("/contact/{id}")
+	public ResponseEntity<?> updateContact(@PathVariable int id, @RequestBody Contact contact){
+		//TODO check if the contact is part of the startup
+		return additionalInformationService.updateContactByStartupId(contact, id);
 	}
 	/**
 	 * Add a contact to a startup
@@ -81,7 +91,7 @@ public class StartupController {
 	 */
 	@PostMapping("/contact")
 	public ResponseEntity<?> addContact(@RequestBody Contact contact){
-		return startupService.addContactByStartupId(contact);
+		return additionalInformationService.addContactByStartupId(contact);
 	}
 	/**
 	 * Deletes a boardmember specified by id.
@@ -90,7 +100,16 @@ public class StartupController {
 	 */
 	@DeleteMapping("/boardmemeber/{id}")
 	public ResponseEntity<?> deleteBoardmember(@PathVariable int id){
-		return startupService.deleteBoardmemberByStartupId(id);
+		return additionalInformationService.deleteBoardmemberByStartupId(id);
+	}
+	/**
+	 * Deletes a boardmember specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@PatchMapping("/boardmemeber/{id}")
+	public ResponseEntity<?> updateBoardmember(@PathVariable int id, @RequestBody Boardmember bmem){
+		return additionalInformationService.updateBoardmemberByStartupId(bmem, id);
 	}
 	/**
 	 * Add a boardmember to a startup
@@ -99,7 +118,7 @@ public class StartupController {
 	 */
 	@PostMapping("/boardmember")
 	public ResponseEntity<?> addBoardmemeber(Boardmember bmem){
-		return startupService.addBoardmemberByStartupId(bmem);
+		return additionalInformationService.addBoardmemberByStartupId(bmem);
 	}
 	/**
 	 * Deletes a founder specified by id.
@@ -108,7 +127,16 @@ public class StartupController {
 	 */
 	@DeleteMapping("/founder/{id}")
 	public ResponseEntity<?> deleteFounder(@PathVariable int id){
-		return startupService.deleteFounderByStartupId(id);
+		return additionalInformationService.deleteFounderByStartupId(id);
+	}
+	/**
+	 * Deletes a founder specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@PatchMapping("/founder/{id}")
+	public ResponseEntity<?> updateFounder(@PathVariable int id, @RequestBody Founder founder ){
+		return additionalInformationService.updateFounderByStartupId(founder, id);
 	}
 	/**
 	 * Add a founder to a startup
@@ -117,7 +145,61 @@ public class StartupController {
 	 */
 	@PostMapping("/founder")
 	public ResponseEntity<?> addFounder(Founder founder){
-		return startupService.addFounderByStartupId(founder);
+		return additionalInformationService.addFounderByStartupId(founder);
+	}
+	/**
+	 * Deletes a privateshareholder specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@DeleteMapping("/privateshareholder/{id}")
+	public ResponseEntity<?> deletePrivateShareholder(@PathVariable int id){
+		return additionalInformationService.deletePShareholderByStartupId(id);
+	}
+	/**
+	 * Deletes a privateshareholder specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@PatchMapping("/privateshareholder/{id}")
+	public ResponseEntity<?> updatePrivateShareholder(@PathVariable int id, @RequestBody PrivateShareholder psh ){
+		return additionalInformationService.updatePShareholderByStartupId(psh, id);
+	}
+	/**
+	 * Add a privateshareholder to a startup
+	 * @param contact to be added
+	 * @return a response with a code
+	 */
+	@PostMapping("/privateshareholder")
+	public ResponseEntity<?> addPrivateShareholder(PrivateShareholder psh){
+		return additionalInformationService.addPShareholderByStartupId(psh);
+	}
+	/**
+	 * Deletes a corporateshareholder specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@DeleteMapping("/corporateshareholder/{id}")
+	public ResponseEntity<?> deleteCorporateShareholder(@PathVariable int id){
+		return additionalInformationService.deleteCShareholderByStartupId(id);
+	}
+	/**
+	 * Deletes a corporateshareholder specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 */
+	@PatchMapping("/corporateshareholder/{id}")
+	public ResponseEntity<?> updateCorporateShareholder(@PathVariable int id, @RequestBody CorporateShareholder csh ){
+		return additionalInformationService.updateCShareholderByStartupId(csh, id);
+	}
+	/**
+	 * Add a corporateshareholder to a startup
+	 * @param contact to be added
+	 * @return a response with a code
+	 */
+	@PostMapping("/corporateshreholder")
+	public ResponseEntity<?> addCorporateShareholder(CorporateShareholder csh){
+		return additionalInformationService.addCShareholderByStartupId(csh);
 	}
 	/**
 	 * Deletes a label specified by id.
@@ -126,7 +208,7 @@ public class StartupController {
 	 */
 	@DeleteMapping("/label/{id}")
 	public ResponseEntity<?> deleteLabel(@PathVariable int id){
-		return startupService.deleteLabelByStartupId(id);
+		return assignmentTableService.deleteFromStartupById("label",id);
 	}
 	/**
 	 * Add a label to a startup
@@ -135,7 +217,7 @@ public class StartupController {
 	 */
 	@PostMapping("/label/{id}")
 	public ResponseEntity<?> addLabel(int id){
-		return startupService.addLabelByStartupId(id);
+		return assignmentTableService.addToStartupById("label", id);
 	}
 	
 	/**

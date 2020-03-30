@@ -50,6 +50,18 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	}
 
 	@Override
+	public void update(long id, Founder req) throws Exception {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("founder", id, this);
+		update.setJdbc(jdbc);
+		update.addField(req.getFirstName(), "firstname");
+		update.addField(req.getLastName(), "lastname");
+		update.addField(req.getEducation(), "education");
+		update.addField(req.getPosition(), "position");
+		update.addField(req.getCountryId(), "countryid");
+		update.execute();
+	}
+
+	@Override
 	public Founder mapRowToModel(ResultSet rs, int row) throws SQLException {
 		return Founder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
 				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).position(rs.getString("position")).countryId(rs.getLong("countryid"))

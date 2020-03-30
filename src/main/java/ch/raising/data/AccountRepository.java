@@ -22,7 +22,7 @@ import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class AccountRepository implements IRepository<Account, UpdateQueryBuilder> {
+public class AccountRepository implements IRepository<Account> {
 
 	private JdbcTemplate jdbc;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -229,11 +229,5 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
-	}
-
-	@Override
-	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
-		// TODO Auto-generated method stub
-
 	}
 }

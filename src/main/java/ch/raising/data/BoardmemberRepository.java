@@ -83,4 +83,19 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 				this::mapRowToModel);
 	}
 
+	@Override
+	public void update(long id, Boardmember req) throws Exception {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("boardmember", id, this);
+		update.setJdbc(jdbc);
+		update.addField(req.getFirstName(), "firstname");
+		update.addField(req.getLastName(), "lastname");
+		update.addField(req.getEducation(), "education");
+		update.addField(req.getProfession(), "profession");
+		update.addField(req.getPosition(), "position");
+		update.addField(req.getMembersince(), "membersince");
+		update.addField(req.getCountryId(), "countryId");
+		update.execute();
+		
+	}
+
 }

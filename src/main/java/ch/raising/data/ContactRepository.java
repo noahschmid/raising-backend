@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.Boardmember;
 import ch.raising.models.Contact;
+import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -76,5 +77,17 @@ public class ContactRepository implements IAdditionalInformationRepository<Conta
 	@Override
 	public List<Contact> findByStartupId(long startupId) {
 		return jdbc.query("SELECT * FROM contact WHERE startupid = ?", new Object[] { startupId }, this::mapRowToModel);
+	}
+
+	@Override
+	public void update(long id, Contact req) throws Exception {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("contact", id, this);
+		update.setJdbc(jdbc);
+		update.addField(req.getFirstName(), "firstname");
+		update.addField(req.getLastName(), "lastname");
+		update.addField(req.getPosition(), "position");
+		update.addField(req.getEmail(), "email");
+		update.addField(req.getPhone(), "phone");
+		update.execute();
 	}
 }

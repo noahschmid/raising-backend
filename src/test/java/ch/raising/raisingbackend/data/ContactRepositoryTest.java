@@ -80,7 +80,7 @@ public class ContactRepositoryTest implements IAdditionalInformationTest {
 
 	@Test
 	@Override
-	public void testGetStartupByMemberId() {
+	public void testGetStartupIdByMemberId() {
 		long suId = cr.getStartupIdByMemberId(1);
 		assertEquals(2, suId);
 	}
@@ -125,7 +125,7 @@ public class ContactRepositoryTest implements IAdditionalInformationTest {
 		assertEquals("Pendergast", found.getLastName());
 		assertEquals("so@real.ch", found.getEmail());
 		assertEquals("Lawyer", found.getPosition());
-		assertEquals(""+1234567890, found.getPhone());
+		assertEquals("" + 1234567890, found.getPhone());
 	}
 
 	@Test
@@ -139,7 +139,22 @@ public class ContactRepositoryTest implements IAdditionalInformationTest {
 		assertEquals("Pendergast", found.getLastName());
 		assertEquals("so@real.ch", found.getEmail());
 		assertEquals("Lawyer", found.getPosition());
-		assertEquals(""+1234567890, found.getPhone());
+		assertEquals("" + 1234567890, found.getPhone());
+	}
+
+	@Override
+	public void testupdate() throws Exception {
+		Contact contact = Contact.builder().startupid(99).firstName("Moritz").lastName("Schönbächler").position("CEO")
+				.email("so@real.ch").phone("1234").build();
+		cr.update(1, contact);
+		String sql = QueryBuilder.getInstance().tableName("contact").whereEquals("id", "1").select();
+		Contact found = jdbc.queryForObject(sql, cr::mapRowToModel);
+		assertEquals(2, found.getStartupId());
+		assertEquals("Moritz", found.getFirstName());
+		assertEquals("Schönbächler", found.getLastName());
+		assertEquals("CEO", found.getPosition());
+		assertEquals("so@real.ch", found.getEmail());
+		assertEquals("123", found.getPhone());
 	}
 
 }

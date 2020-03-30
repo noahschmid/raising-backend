@@ -29,18 +29,18 @@ public class UpdateQueryBuilder {
     private float unitializedFloatValue = -1f;
     private long id;
     private String tableName;
-    private IRepository<?,?> repository;
+    private IRepository<?> repository;
     private JdbcTemplate jdbc;
     private String idField = "id";
 
-    public UpdateQueryBuilder(String tableName, long id, IRepository<?,?> repository) {
+    public UpdateQueryBuilder(String tableName, long id, IRepository<?> repository) {
         this.tableName = tableName;
         this.id = id;
         this.repository = repository;
         fields = new ArrayList<>();
     }
 
-    public UpdateQueryBuilder(String tableName, long id, IRepository<?,?> repository, String idField) {
+    public UpdateQueryBuilder(String tableName, long id, IRepository<?> repository, String idField) {
         this.tableName = tableName;
         this.id = id;
         this.repository = repository;

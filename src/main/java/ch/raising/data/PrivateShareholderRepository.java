@@ -82,4 +82,16 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 				this::mapRowToModel);
 	}
 
+	@Override
+	public void update(long id, PrivateShareholder req) throws Exception {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("privateshareholder", id, this);
+		update.setJdbc(jdbc);
+		update.addField(req.getFirstName(), "firstname");
+		update.addField(req.getLastName(), "lastname");
+		update.addField(req.getCity(), "city");
+		update.addField(req.getEquityShare(), "equityshare");
+		update.addField(req.getInvestortypeId(), "investortypeid");
+		update.addField(req.getCountryId(), "countryid");
+	}
+
 }

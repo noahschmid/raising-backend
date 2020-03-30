@@ -84,7 +84,7 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 
 	@Test
 	@Override
-	public void testGetStartupByMemberId() {
+	public void testGetStartupIdByMemberId() {
 		long suId = psr.getStartupIdByMemberId(1);
 		assertEquals(2, suId);
 	}
@@ -148,6 +148,23 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 		assertEquals(100, found.getEquityShare());
 		assertEquals(12, found.getInvestortypeId());
 		assertEquals(456, found.getCountryId());
+	}
+
+	@Override
+	public void testupdate() throws Exception {
+		PrivateShareholder psh = PrivateShareholder.builder().id(123).startupid(1000).firstName("Moritz").lastName("schönbächler")
+				.city("Shangnau").equityShare(32).investortypeId(5).countryId(45).build();
+		psr.update(1, psh);
+		String sql = QueryBuilder.getInstance().tableName("boardmember").whereEquals("id", "1").select();
+		PrivateShareholder found = jdbc.queryForObject(sql, psr::mapRowToModel);
+		assertEquals(1,found.getId());
+		assertEquals(2, found.getStartupId());
+		assertEquals("Moritz", found.getFirstName());
+		assertEquals("schönbächler", found.getLastName());
+		assertEquals("Shangnau", found.getCity());
+		assertEquals(32, found.getEquityShare());
+		assertEquals(5, found.getInvestortypeId());
+		assertEquals(45, found.getCountryId());
 	}
 
 }

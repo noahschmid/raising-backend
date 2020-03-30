@@ -81,4 +81,18 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 				this::mapRowToModel);
 	}
 
+	@Override
+	public void update(long id, CorporateShareholder req) throws Exception {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("corporateshareholder", id, this);
+		update.setJdbc(jdbc);
+		update.addField(req.getFirstName(), "firstname");
+		update.addField(req.getLastName(), "lastname");
+		update.addField(req.getCorpName(), "name");
+		update.addField(req.getWebsite(), "website");
+		update.addField(req.getEquityShare(), "equityshare");
+		update.addField(req.getCorporateBodyId(), "corporatebodyid");
+		update.addField(req.getCountryId(), "countryid");
+		update.execute();
+	}
+
 }

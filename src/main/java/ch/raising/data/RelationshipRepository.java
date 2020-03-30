@@ -15,7 +15,7 @@ import ch.raising.models.Relationship;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class RelationshipRepository implements IRepository<Relationship, Relationship> {
+public class RelationshipRepository implements IRepository<Relationship> {
     private JdbcTemplate jdbc;
 
     @Autowired
