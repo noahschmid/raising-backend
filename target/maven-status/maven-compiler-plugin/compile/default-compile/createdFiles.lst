@@ -3,7 +3,10 @@ ch\raising\models\Country.class
 ch\raising\controllers\AdminController.class
 ch\raising\utils\UpdateQueryBuilder$1.class
 ch\raising\controllers\AccountController.class
+ch\raising\services\AdditionalInformationService.class
 ch\raising\data\PrivateShareholderRepository$1.class
+ch\raising\utils\functionalInterface\PreparedStatementGetter.class
+ch\raising\services\AssignmentTableService.class
 ch\raising\interfaces\IAdditionalInformationRepository.class
 ch\raising\data\ResetCodeRepository$3.class
 ch\raising\data\RelationshipRepository.class
@@ -24,7 +27,6 @@ ch\raising\interfaces\IAssignmentTableModel.class
 ch\raising\utils\UpdateQueryBuilder.class
 ch\raising\services\InvestorService.class
 ch\raising\data\CorporateShareholderRepository$1.class
-ch\raising\utils\NotImplementedException.class
 ch\raising\data\ContactRepository.class
 ch\raising\data\CorporateShareholderRepository.class
 ch\raising\utils\MapUtil.class
@@ -51,7 +53,6 @@ ch\raising\models\Image$ImageBuilder.class
 ch\raising\services\AccountService.class
 ch\raising\models\PasswordResetRequest.class
 ch\raising\utils\PreparedStatementUtil$1.class
-ch\raising\utils\NotImplementedInSuperTypeException.class
 ch\raising\models\FreeEmailRequest.class
 ch\raising\controllers\DocumentationController.class
 ch\raising\models\Relationship.class
@@ -69,7 +70,7 @@ ch\raising\models\Investor.class
 ch\raising\interfaces\IRepository.class
 ch\raising\utils\JwtUtil.class
 ch\raising\data\ResetCodeRepository$2.class
-ch\raising\utils\PreparedStatementGetter.class
+ch\raising\utils\functionalInterface\RowMapper.class
 ch\raising\config\AppConfig.class
 ch\raising\models\Startup$StartupBuilder.class
 ch\raising\controllers\StartupController.class
@@ -81,7 +82,6 @@ ch\raising\utils\MailUtil.class
 ch\raising\models\ResetCode.class
 ch\raising\models\ForgotPasswordRequest.class
 ch\raising\data\AccountRepository$1.class
-ch\raising\utils\RowMapper.class
 ch\raising\data\StartupRepository$1.class
 ch\raising\models\Founder.class
 ch\raising\models\Investor$InvestorBuilder.class
@@ -91,9 +91,7 @@ ch\raising\data\ResetCodeRepository$1.class
 ch\raising\models\RelationshipState.class
 ch\raising\interfaces\IAssignmentTableRepository.class
 ch\raising\models\AssignmentTableModel.class
-ch\raising\controllers\ProfileController.class
 ch\raising\models\Startup.class
-ch\raising\services\PublicInformationService.class
 ch\raising\models\Support.class
 ch\raising\data\AccountRepository$2.class
 ch\raising\models\StartupMember.class

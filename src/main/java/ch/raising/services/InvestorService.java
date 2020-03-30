@@ -49,7 +49,7 @@ public class InvestorService extends AccountService {
 			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc) {
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc);
 
-		this.investmentPhaseRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investor").withAccountIdName("investorid");
+		this.investmentPhaseRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investmentphase").withAccountIdName("investorid");
 		this.investorRepository = investorRepository;
 	}
 
