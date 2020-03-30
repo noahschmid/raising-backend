@@ -23,6 +23,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import ch.raising.data.InvestorRepository;
 import ch.raising.models.Investor;
 import ch.raising.models.Startup;
+import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
@@ -85,9 +86,15 @@ public class InvestorRepositoryTest {
 		assertEquals(1, foundList.size());
 		assertEquals(inv, foundList.get(0));
 	}
-	//@Test 
-	public void testUpdate() {
-		
+	@Test 
+	public void testUpdate() throws Exception {
+		Investor update = Investor.investorBuilder().investorTypeId(4).build();
+		invRepo.update(1, update);
+		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbc, tableName));
+		String sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("accountid", "1").select();
+		Investor found = jdbc.queryForObject(sql, MapUtil::mapRowToInvestor);
+		assertEquals(1, found.getAccountId());
+		assertEquals(update.getInvestorTypeId(), found.getInvestorTypeId());
 	}
 	@Test
 	public void testAdd() {

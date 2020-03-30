@@ -15,19 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ch.raising.models.Investor;
 import ch.raising.models.LoginRequest;
 import ch.raising.services.AccountService;
+import ch.raising.services.AssignmentTableService;
 import ch.raising.services.InvestorService;
 
 @Controller
 @RequestMapping("/investor")
 public class InvestorController {
-    @Autowired
+    
     InvestorService investorService;
+    AssignmentTableService assignmentService;
     
     @Autowired
-    AccountController accountController;
-
-    @Autowired
-    public InvestorController() {
+    public InvestorController(InvestorService investorService, AssignmentTableService assignmentService) {
+    	this.investorService = investorService;
+    	this.assignmentService = assignmentService;
     }
 
     /**
@@ -47,7 +48,7 @@ public class InvestorController {
      */
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Investor request) {
-        return investorService.updateInvestor(id, request);
+        return investorService.updateProfile(id, request);
     }
 
     /**
@@ -66,7 +67,7 @@ public class InvestorController {
      */
     @DeleteMapping("/investmentphase/{id}")
     public ResponseEntity<?> deleteInvestmentphaseByInvestorId(@PathVariable long id){
-    	return investorService.deleteInvestmentPhaseByIvestorId(id);
+    	return assignmentService.deleteFromInvestorById("investmentphase", id);
     }
     
     /**
@@ -77,6 +78,6 @@ public class InvestorController {
     
     @PostMapping("/investmentphase/{id}")
     public ResponseEntity<?> addInvestmentphaseByInvestorId(@PathVariable long id){
-    		return investorService.addInvestmentPhaseByIvestorId(id);
+    		return assignmentService.addToInvestorById("investmentphase", id);
     	}
 }

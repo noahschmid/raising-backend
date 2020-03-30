@@ -29,18 +29,18 @@ public class UpdateQueryBuilder {
     private float unitializedFloatValue = -1f;
     private long id;
     private String tableName;
-    private IRepository<?,?> repository;
+    private IRepository<?> repository;
     private JdbcTemplate jdbc;
     private String idField = "id";
 
-    public UpdateQueryBuilder(String tableName, long id, IRepository<?,?> repository) {
+    public UpdateQueryBuilder(String tableName, long id, IRepository<?> repository) {
         this.tableName = tableName;
         this.id = id;
         this.repository = repository;
         fields = new ArrayList<>();
     }
 
-    public UpdateQueryBuilder(String tableName, long id, IRepository<?,?> repository, String idField) {
+    public UpdateQueryBuilder(String tableName, long id, IRepository<?> repository, String idField) {
         this.tableName = tableName;
         this.id = id;
         this.repository = repository;
@@ -84,28 +84,35 @@ public class UpdateQueryBuilder {
         if(field instanceof Integer) {
             if((int)field != unitializedIntValue) {
                 fields.add(field);
-                if(updates != "")
-                    updates += ", ";
-                updates += fieldName + " = ?";
+                setFieldName(fieldName);
             }
         }
 
         if(field instanceof Float) {
             if((float)field != unitializedFloatValue) {
                 fields.add(field);
-                if(updates != "")
-                    updates += ", ";
-                updates += fieldName + " = ?";
+                setFieldName(fieldName);
             }
         }
 
         if(field instanceof String) {
+        	if(field != "" || field != null) {
+        		 fields.add(field);
+                 setFieldName(fieldName);
+        	}
+        }
+        
+        if(field instanceof Long) {
             fields.add(field);
-            if(updates != "")
-                updates += ", ";
-            updates += fieldName + " = ?";
+            setFieldName(fieldName);
         }
     }
+
+	private void setFieldName(String fieldName) {
+		if(updates != "")
+		    updates += ", ";
+		updates += fieldName + " = ?";
+	}
 
     /**
      * Creates update query string
@@ -145,6 +152,8 @@ public class UpdateQueryBuilder {
                             ps.setInt(i, (int)o);
                         if(o instanceof Float)
                             ps.setFloat(i, (float)o);
+                        if(o instanceof Long)
+                        	ps.setLong(i, (long) o);
                     }
                     
                     ps.setLong(fields.size()+1, id);

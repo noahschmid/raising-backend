@@ -34,7 +34,7 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 	@Autowired
 	JdbcTemplate jdbc;
 
-	CorporateShareholderRepository psr;
+	CorporateShareholderRepository csr;
 
 	private long id = -1l;
 	private long startupId;
@@ -48,11 +48,11 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 	@BeforeAll
 	@Override
 	public void setup() {
-		psr = new CorporateShareholderRepository(jdbc);
+		csr = new CorporateShareholderRepository(jdbc);
 		String sql = QueryBuilder.getInstance().tableName("corporateshareholder").pair("id", Type.SERIAL)
-				.pair("startupid", Type.BIGINT).pair("name", Type.VARCHAR)
-				.pair("website", Type.VARCHAR).pair("equityshare", Type.INT).pair("corporatebodyid", Type.BIGINT)
-				.pair("countryid", Type.BIGINT).createTable();
+				.pair("startupid", Type.BIGINT).pair("name", Type.VARCHAR).pair("website", Type.VARCHAR)
+				.pair("equityshare", Type.INT).pair("corporatebodyid", Type.BIGINT).pair("countryid", Type.BIGINT)
+				.createTable();
 		jdbc.execute(sql);
 	}
 
@@ -82,17 +82,17 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 
 	@Test
 	@Override
-	public void testGetStartupByMemberId() {
-		long suId = psr.getStartupIdByMemberId(1);
+	public void testGetStartupIdByMemberId() {
+		long suId = csr.getStartupIdByMemberId(1);
 		assertEquals(2, suId);
 	}
 
 	@Test
 	@Override
 	public void testAddMemberByStartupId() {
-		CorporateShareholder psh = CorporateShareholder.builder().startupId(7).corpName("D Agosta")
-				.website("soreal.ch").equityShare(99).corporateBodyId(1).countryId(768).build();
-		psr.addMemberByStartupId(psh, 7);
+		CorporateShareholder psh = CorporateShareholder.builder().startupId(7).corpName("D Agosta").website("soreal.ch")
+				.equityShare(99).corporateBodyId(1).countryId(768).build();
+		csr.addMemberByStartupId(psh, 7);
 		assertEquals(2, JdbcTestUtils.countRowsInTable(jdbc, "corporateshareholder"));
 
 		String sql = QueryBuilder.getInstance().tableName("corporateshareholder").whereEquals("name", "D Agosta")
@@ -110,14 +110,14 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 	@Test
 	@Override
 	public void testDeleteMemberByStartupId() {
-		psr.deleteMemberByStartupId(2);
+		csr.deleteMemberByStartupId(2);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, "corporateshareholder"));
 	}
 
 	@Test
 	@Override
 	public void testFindByStartupId() {
-		List<CorporateShareholder> foundList = psr.findByStartupId(2);
+		List<CorporateShareholder> foundList = csr.findByStartupId(2);
 		assertNotNull(foundList);
 		assertEquals(1, foundList.size());
 		CorporateShareholder found = foundList.get(0);
@@ -134,7 +134,7 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 	@Test
 	@Override
 	public void testFind() {
-		CorporateShareholder found = psr.find(1);
+		CorporateShareholder found = csr.find(1);
 		assertNotNull(found);
 		assertEquals(1, found.getId());
 		assertEquals(2, found.getStartupId());
@@ -143,6 +143,23 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 		assertEquals(100, found.getEquityShare());
 		assertEquals(12, found.getCorporateBodyId());
 		assertEquals(456, found.getCountryId());
+	}
+
+	@Override
+	public void testupdate() throws Exception {
+		CorporateShareholder csh = CorporateShareholder.builder().startupId(234).corpName("umbrellaCorp").website("soreal.ch")
+				.equityShare(12).corporateBodyId(13).countryId(123).build();
+		csr.update(1, csh);
+
+		String sql = QueryBuilder.getInstance().tableName("boardmember").whereEquals("id", "1").select();
+		CorporateShareholder found = jdbc.queryForObject(sql, csr::mapRowToModel);
+		assertEquals(7, found.getStartupId());
+		assertEquals("umbrellacopr", found.getCorpName());
+		assertEquals("soreal.ch", found.getWebsite());
+		assertEquals(12, found.getEquityShare());
+		assertEquals(13, found.getCorporateBodyId());
+		assertEquals(123, found.getCountryId());
+		
 	}
 
 }

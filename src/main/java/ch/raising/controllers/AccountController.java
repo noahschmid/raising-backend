@@ -28,8 +28,10 @@ import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.services.AccountService;
+import ch.raising.services.AssignmentTableService;
 import ch.raising.utils.JwtUtil;
 import ch.raising.controllers.AccountController;
+import ch.raising.data.AccountRepository;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.FreeEmailRequest;
 import ch.raising.models.Image;
@@ -37,22 +39,23 @@ import ch.raising.models.Image;
 @RequestMapping("/account")
 @Controller
 public class AccountController {
-	@Autowired
+	
     private final AccountService accountService;
-    
-    @Autowired
+	private final AssignmentTableService assignmentTableService;
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
+    
     private final JwtUtil jwtUtil;
 	
 	@Autowired
     public AccountController(AccountService accountService, 
                             AuthenticationManager authenticationManager,
-                            JwtUtil jwtUtil) {
+                            JwtUtil jwtUtil,
+                            AssignmentTableService assignmentTableService) {
         this.accountService = accountService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.assignmentTableService = assignmentTableService;
 	}
 
 	/**
@@ -170,7 +173,7 @@ public class AccountController {
     @PostMapping("/country/{countryId}")
     @ResponseBody
     public ResponseEntity<?> addCountryToAccount(@PathVariable long countryId){
-    	return accountService.addCountryToAccountById(countryId);
+    	return assignmentTableService.addToAccountById( "country", countryId);
     }
     /**
      * delete country from account
@@ -180,7 +183,7 @@ public class AccountController {
     @DeleteMapping("/country/{countryId}")
     @ResponseBody
     public ResponseEntity<?> deleteCountryFromAccount(@PathVariable long countryId){
-    	return accountService.deleteCountryFromAccountById(countryId);
+    	return assignmentTableService.deleteFromAccountById("country",countryId);
     }
     /**
      * add continent to account
@@ -190,7 +193,7 @@ public class AccountController {
     @PostMapping("/continent/{continentId}")
     @ResponseBody
     public ResponseEntity<?> addContinentToAccount(@PathVariable long continentId){
-    	return accountService.addContinentToAccountById(continentId);
+    	return assignmentTableService.addToAccountById("continent", continentId);
     }
     /**
      * delete continent from account
@@ -200,7 +203,7 @@ public class AccountController {
     @DeleteMapping("/continent/{continentId}")
     @ResponseBody
     public ResponseEntity<?> deleteContinentFromAccount(@PathVariable long continentId){
-    	return accountService.deleteContinentFromAccountById(continentId);
+    	return assignmentTableService.deleteFromAccountById("continent", continentId);
     }
     /**
      * add supporttype to account
@@ -210,7 +213,7 @@ public class AccountController {
     @PostMapping("/support/{supportId}")
     @ResponseBody
     public ResponseEntity<?> addSupportToAccount(@PathVariable long supportId){
-    	return accountService.addSupportToAccountById(supportId);
+    	return assignmentTableService.addToAccountById("support", supportId);
     }
     /**
      * delete supporttype from account
@@ -220,7 +223,7 @@ public class AccountController {
     @DeleteMapping("/support/{supportId}")
     @ResponseBody
     public ResponseEntity<?> deleteSupportFromAccount(@PathVariable long supportId){
-    	return accountService.deleteSupportFromAccountById(supportId);
+    	return assignmentTableService.deleteFromAccountById("support", supportId);
     }
     /**
      * add industry to account    
@@ -230,7 +233,7 @@ public class AccountController {
     @PostMapping("/industry/{industryId}")
     @ResponseBody
     public ResponseEntity<?> addIndustryToAccount(@PathVariable long industryId){
-    	return accountService.addIndustryToAccountById(industryId);
+    	return assignmentTableService.addToAccountById("industry", industryId);
     }
     /**
      * delete industry form account
@@ -240,7 +243,7 @@ public class AccountController {
     @DeleteMapping("/industry/{industryId}")
     @ResponseBody
     public ResponseEntity<?> deleteIndustryFromAccount(@PathVariable long industryId){
-    	return accountService.deleteIndustryFromAccountById(industryId);
+    	return assignmentTableService.deleteFromAccountById("industry", industryId);
     }
     /**
      * add image to gallery of account    
@@ -266,7 +269,7 @@ public class AccountController {
     @GetMapping("/gallery/{accountId}")
     @ResponseBody
     public ResponseEntity<?> getGalleryOfAccount(@PathVariable long accountId){
-    	return accountService.findGalleryImageFromAccountById(accountId);
+    	return accountService.findGalleryImagesFromAccountById(accountId);
     }
     /**
      * add profile pic to account    
@@ -277,6 +280,7 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<?> addProfilePictureToAccount(@RequestBody Image img){
     	return accountService.addProfilePictureToAccountById(img);
+ 
     }
     /**
      * delete image form gallery account

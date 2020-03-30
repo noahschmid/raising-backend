@@ -1,6 +1,7 @@
 package ch.raising.data;
 
 import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,11 +19,10 @@ import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
-import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
-public class AccountRepository implements IRepository<Account, UpdateQueryBuilder> {
+public class AccountRepository implements IRepository<Account> {
 
 	private JdbcTemplate jdbc;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -211,18 +211,23 @@ public class AccountRepository implements IRepository<Account, UpdateQueryBuilde
 	 * @param req          request containing fields to update
 	 */
 	public void update(long id, Account req) throws Exception {
+		String emailHash = "";
+		if(req.getEmail() != "") {
+			emailHash = encoder.encode(req.getEmail());
+		}
 		try {
-			UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, this, "id");
-			updateQuery.setJdbc(jdbc);
-			updateQuery.execute();
+			UpdateQueryBuilder update = new UpdateQueryBuilder("account", id, this, "id");
+			update.setJdbc(jdbc);
+			update.addField(req.getCompany(), "company");
+			update.addField(req.getName(), "name");
+			update.addField(emailHash, "emailhash");
+			update.addField(req.getPitch(), "pitch");
+			update.addField(req.getDescription(), "description");
+			update.addField(req.getTicketMaxId(), "ticketmaxid");
+			update.addField(req.getTicketMinId(), "ticketminid");
+			update.execute();
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
-	}
-
-	@Override
-	public void update(long id, UpdateQueryBuilder updateRequest) throws Exception {
-		// TODO Auto-generated method stub
-
 	}
 }

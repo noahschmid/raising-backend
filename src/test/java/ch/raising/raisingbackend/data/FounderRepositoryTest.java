@@ -80,7 +80,7 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 
 	@Test
 	@Override
-	public void testGetStartupByMemberId() {
+	public void testGetStartupIdByMemberId() {
 		long suId = fr.getStartupIdByMemberId(1);
 		assertEquals(2, suId);
 	}
@@ -137,6 +137,22 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 		assertEquals("Pendergast", found.getLastName());
 		assertEquals("Lawyer", found.getEducation());
 		assertEquals("Lawless", found.getPosition());
+	}
+
+	@Override
+	public void testupdate() throws Exception {
+		Founder founder = Founder.builder().startupid(324).firstName("Moritz").lastName("Schönbächler").education("Holzfäller").position("CEO").countryId(123).build();
+		fr.update(1, founder);
+
+		String sql = QueryBuilder.getInstance().tableName("founder").whereEquals("id", "1").select();
+		Founder found = jdbc.queryForObject(sql, fr::mapRowToModel);
+		assertEquals(2, found.getStartupId());
+		assertEquals("Moritz", found.getFirstName());
+		assertEquals("Schönbächler", found.getLastName());
+		assertEquals("Holzfäller", found.getEducation());
+		assertEquals("CEO", found.getPosition());
+		assertEquals(123, found.getCountryId());
+		
 	}
 
 }

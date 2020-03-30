@@ -1,4 +1,4 @@
-package ch.raising.utils;
+package ch.raising.utils.functionalInterface;
 
 import java.sql.SQLException;
 

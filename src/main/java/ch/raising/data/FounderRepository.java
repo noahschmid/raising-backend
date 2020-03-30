@@ -1,6 +1,7 @@
 package ch.raising.data;
 
 import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.Founder;
-import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -47,6 +47,18 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	@Override
 	public void deleteMemberByStartupId(long id) {
 		jdbc.execute("DELETE FROM founder WHERE id = ?", deleteById(id));
+	}
+
+	@Override
+	public void update(long id, Founder req) throws Exception {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("founder", id, this);
+		update.setJdbc(jdbc);
+		update.addField(req.getFirstName(), "firstname");
+		update.addField(req.getLastName(), "lastname");
+		update.addField(req.getEducation(), "education");
+		update.addField(req.getPosition(), "position");
+		update.addField(req.getCountryId(), "countryid");
+		update.execute();
 	}
 
 	@Override

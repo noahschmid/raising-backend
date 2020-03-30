@@ -1,6 +1,5 @@
 package ch.raising.services;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -21,11 +20,9 @@ import org.springframework.stereotype.Service;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.Image;
-import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.utils.DatabaseOperationException;
@@ -39,7 +36,6 @@ import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
 import ch.raising.data.AssignmentTableRepository;
 import ch.raising.data.ImageRepository;
-import ch.raising.interfaces.IAssignmentTableModel;
 
 @Primary
 @Service
@@ -61,17 +57,13 @@ public class AccountService implements UserDetailsService {
 
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-	protected AssignmentTableRepository countryRepository;
-
-	protected AssignmentTableRepository continentRepository;
-
-	protected AssignmentTableRepository supportRepository;
-
-	protected AssignmentTableRepository industryRepository;
-
 	private ImageRepository galleryRepository;
-	
 	private ImageRepository pPicRepository;
+
+	protected AssignmentTableRepository countryRepo;
+	protected AssignmentTableRepository continentRepo;
+	protected AssignmentTableRepository supportRepo;
+	protected AssignmentTableRepository industryRepo;
 
 	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
@@ -80,10 +72,11 @@ public class AccountService implements UserDetailsService {
 		this.mailUtil = mailUtil;
 		this.resetCodeUtil = resetCodeUtil;
 		this.jdbc = jdbc;
-		this.countryRepository = new AssignmentTableRepository(jdbc, "country", MapUtil::mapRowToCountry);
-		this.continentRepository = new AssignmentTableRepository(jdbc, "continent");
-		this.supportRepository = new AssignmentTableRepository(jdbc, "support");
-		this.industryRepository = new AssignmentTableRepository(jdbc, "industry");
+		this.countryRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("country")
+				.withRowMapper(MapUtil::mapRowToCountry);
+		this.continentRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("continent");
+		this.supportRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("support");
+		this.industryRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("industry");
 		this.galleryRepository = new ImageRepository(jdbc, "gallery");
 		this.pPicRepository = new ImageRepository(jdbc, "profilepicture");
 	}
@@ -127,7 +120,7 @@ public class AccountService implements UserDetailsService {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		} catch (InValidProfileException e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage(), e.getAccount()));
-		}catch (Exception e) {
+		} catch (Exception e) {
 			rollback(account);
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
@@ -137,8 +130,8 @@ public class AccountService implements UserDetailsService {
 		try {
 			Account found = accountRepository.findByEmail(account.getEmail());
 			accountRepository.delete(found.getAccountId());
-		}catch(Exception e) {
-			
+		} catch (Exception e) {
+
 		}
 	}
 
@@ -157,21 +150,20 @@ public class AccountService implements UserDetailsService {
 		}
 		long accountId = accountRepository.add(req);
 
-		if(req.getGallery() != null) 
-			for(Image pic: req.getGallery()) {
+		if (req.getGallery() != null)
+			for (Image pic : req.getGallery()) {
 				galleryRepository.addImageToAccount(pic, accountId);
 			}
-		if(req.getProfilePicture() != null)
+		if (req.getProfilePicture() != null)
 			pPicRepository.addImageToAccount(req.getProfilePicture(), accountId);
-		if(req.getCountries() != null)
-			req.getCountries().forEach(country -> countryRepository.addEntryToAccountById(country.getId(), accountId));
-		if(req.getContinents() != null)
-			req.getContinents()
-				.forEach(continent -> continentRepository.addEntryToAccountById(continent.getId(), accountId));
-		if(req.getSupport() != null)
-			req.getSupport().forEach(sup -> supportRepository.addEntryToAccountById(sup.getId(), accountId));
-		if(req.getIndustries() != null)
-			req.getIndustries().forEach(ind -> industryRepository.addEntryToAccountById(ind.getId(), accountId));
+		if (req.getCountries() != null)
+			req.getCountries().forEach(country -> countryRepo.addEntryToAccountById(country.getId(), accountId));
+		if (req.getContinents() != null)
+			req.getContinents().forEach(continent -> continentRepo.addEntryToAccountById(continent.getId(), accountId));
+		if (req.getSupport() != null)
+			req.getSupport().forEach(sup -> supportRepo.addEntryToAccountById(sup.getId(), accountId));
+		if (req.getIndustries() != null)
+			req.getIndustries().forEach(ind -> industryRepo.addEntryToAccountById(ind.getId(), accountId));
 
 		return accountId;
 	}
@@ -190,6 +182,7 @@ public class AccountService implements UserDetailsService {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
+
 	/**
 	 * gets the requested Profile and handles all the Responses for the request
 	 * 
@@ -214,19 +207,19 @@ public class AccountService implements UserDetailsService {
 	 *         initialized with all lists and objects non null.
 	 */
 	protected Account getAccount(long id) {
-		List<AssignmentTableModel> countries = countryRepository.findByAccountId(id);
-		List<AssignmentTableModel> continents = continentRepository.findByAccountId(id);
-		List<AssignmentTableModel> support = supportRepository.findByAccountId(id);
-		List<AssignmentTableModel> industries = industryRepository.findByAccountId(id);
+		List<AssignmentTableModel> countries = countryRepo.findByAccountId(id);
+		List<AssignmentTableModel> continents = continentRepo.findByAccountId(id);
+		List<AssignmentTableModel> support = supportRepo.findByAccountId(id);
+		List<AssignmentTableModel> industries = industryRepo.findByAccountId(id);
 		List<Image> pPic = pPicRepository.findImagesByAccountId(id);
 		List<Image> gallery = galleryRepository.findImagesByAccountId(id);
 		Account acc = accountRepository.find(id);
 		acc.setPassword("");
 		acc.setRoles("");
-		
+
 		acc.setProfilePicture(pPic.get(0));
 		acc.setGallery(gallery);
-		
+
 		acc.setCountries(countries);
 		acc.setContinents(continents);
 		acc.setSupport(support);
@@ -275,31 +268,32 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * Update user account
+	 * Update user account, is called by the
+	 * {@link ch.raising.controllers.StartupController},{@link ch.raising.controllersAccountController},{@link ch.raising.controllersInvestorController}
 	 * 
-	 * @param tableEntryId the tableEntryId of the account to be updated
-	 * @param req          the http request instance
-	 * @param isAdmin      indicates whether or not the user requesting the update
-	 *                     is admin
+	 * @param id      the tableEntryId of the account to be updated
+	 * @param req     the http request instance
+	 * @param isAdmin indicates whether or not the user requesting the update is
+	 *                admin
 	 * @return Response entity with status code and message
 	 */
-	public ResponseEntity<?> updateProfile(int id, Account acc){
-		if(!isOwnAccount(id)) {
-			return ResponseEntity.status(403).body(new ErrorResponse("You can not update a foreign account"));
-		}
+	public ResponseEntity<?> updateProfile(int id, Account acc) {
 		try {
 			updateAccount(id, acc);
 			return ResponseEntity.ok().build();
-		}catch(Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));		
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
+
 	/**
-	 * updates the account. should be overwritten and called by subtypes {@link InvestorService} and {@link StartupService}
+	 * updates the account. should be overwritten and called by subtypes
+	 * {@link InvestorService} and {@link StartupService}
+	 * 
 	 * @param id
 	 * @param acc
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	protected void updateAccount(int id, Account acc) throws Exception {
 		accountRepository.update(id, acc);
@@ -350,209 +344,83 @@ public class AccountService implements UserDetailsService {
 		}
 	}
 
-	/**
-	 * Add entry in assignmenttable with both ids
-	 * 
-	 * @param countryId
-	 * @return Responsenetitiy with a statuscode and an optional body
-	 */
-	public ResponseEntity<?> addCountryToAccountById(long countryId) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			countryRepository.addEntryToAccountById(countryId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	/**
-	 * remove entry in countryrepository specified by those ids
-	 * 
-	 * @param countryId
-	 * @return Responsenetitiy with a statuscode and an optional body
-	 */
-	public ResponseEntity<?> deleteCountryFromAccountById(long countryId) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			countryRepository.deleteEntryFromAccountById(countryId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	/**
-	 * Add Continent to account
-	 * 
-	 * @param continentId
-	 * @return Responsenetitiy with a statuscode and an optional body
-	 */
-	public ResponseEntity<?> addContinentToAccountById(long continentId) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			continentRepository.addEntryToAccountById(continentId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	/**
-	 * deletes continent from account
-	 * 
-	 * @param continentId
-	 * @return Responsenetitiy with a statuscode and an optional body
-	 */
-	public ResponseEntity<?> deleteContinentFromAccountById(long continentId) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			continentRepository.deleteEntryFromAccountById(continentId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	/**
-	 * adds support to account
-	 * 
-	 * @param supportId
-	 * @return Responsenetitiy with a statuscode and an optional body
-	 */
-	public ResponseEntity<?> addSupportToAccountById(long supportId) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			supportRepository.addEntryToAccountById(accDet.getId(), supportId);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	/**
-	 * deletes support form account
-	 * 
-	 * @param supportId
-	 * @return Responsenetitiy with a statuscode and an optional body
-	 */
-	public ResponseEntity<?> deleteSupportFromAccountById(long supportId) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			supportRepository.deleteEntryFromAccountById(supportId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	/**
-	 * deletes industry form account
-	 * 
-	 * @param industryId
-	 * @return Responsenetitiy with a statuscode and an optional body
-	 */
-	public ResponseEntity<?> deleteIndustryFromAccountById(long industryId) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			industryRepository.deleteEntryFromAccountById(industryId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	/**
-	 * adds industry to account
-	 * 
-	 * @param industryId
-	 * @return Responsenetitiy with a statuscode <ul><li>200: If action succeded</li><li>500: If an error occured</li><li>403: If unauthorized</li></ul> and an optional body
-	 */
-	public ResponseEntity<?> addIndustryToAccountById(long industryId) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			industryRepository.addEntryToAccountById(industryId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-	
-	public ResponseEntity<?> addGalleryImageToAccountById(Image img){
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		if(accDet.getId() != img.getAccountId())
-			return ResponseEntity.status(403).body(new ErrorResponse("Not authorized to add picture to foreign account"));
+	public ResponseEntity<?> addGalleryImageToAccountById(Image img) {
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getAuthorities();
+		if (accDet.getId() != img.getAccountId())
+			return ResponseEntity.status(403)
+					.body(new ErrorResponse("Not authorized to add picture to foreign account"));
 		try {
 			galleryRepository.addImageToAccount(img, accDet.getId());
 			return ResponseEntity.ok().build();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-	
-	public ResponseEntity<?> deleteGalleryImageFromAccountById(long imgId){
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+	public ResponseEntity<?> deleteGalleryImageFromAccountById(long imgId) {
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getAuthorities();
 		try {
 			galleryRepository.deleteImageFromAccount(imgId, accDet.getId());
 			return ResponseEntity.ok().build();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-	
-	public ResponseEntity<?> findGalleryImageFromAccountById(long accountId){
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		if(accDet.getId() != accountId)
-			return ResponseEntity.status(403).body(new ErrorResponse("Not authorized to add picture to foreign gallery"));
+
+	public ResponseEntity<?> findGalleryImagesFromAccountById(long accountId) {
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getAuthorities();
+		if (accDet.getId() != accountId)
+			return ResponseEntity.status(403)
+					.body(new ErrorResponse("Not authorized to add picture to foreign gallery"));
 		try {
-			List<Image> images =  galleryRepository.findImagesByAccountId(accDet.getId());
+			List<Image> images = galleryRepository.findImagesByAccountId(accDet.getId());
 			return ResponseEntity.ok().body(images);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-	
-	public ResponseEntity<?> addProfilePictureToAccountById(Image img){
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+	public ResponseEntity<?> addProfilePictureToAccountById(Image img) {
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getAuthorities();
 		long currentPPicId = pPicRepository.containsPictureOf(accDet.getId());
-		if(accDet.getId() != img.getAccountId())
-			return ResponseEntity.status(403).body(new ErrorResponse("Not authorized to add profile picture to foreign account"));		
+		if (accDet.getId() != img.getAccountId())
+			return ResponseEntity.status(403)
+					.body(new ErrorResponse("Not authorized to add profile picture to foreign account"));
 		try {
-			if(currentPPicId != 0) 
+			if (currentPPicId != 0)
 				pPicRepository.deleteImageFromAccount(currentPPicId, accDet.getId());
 			pPicRepository.addImageToAccount(img, accDet.getId());
 			return ResponseEntity.ok().build();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-	
-	public ResponseEntity<?> deleteProfilePictureFromAccountById(long imgId){
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+	public ResponseEntity<?> deleteProfilePictureFromAccountById(long imgId) {
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getAuthorities();
 		try {
 			pPicRepository.deleteImageFromAccount(imgId, accDet.getId());
 			return ResponseEntity.ok().build();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-	
-	public ResponseEntity<?> findProfilePictureFromAccountById(long accountId){
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		if(accDet.getId() != accountId)
-			return ResponseEntity.status(403).body(new ErrorResponse("Not authorized to add picture to foreign account"));
+
+	public ResponseEntity<?> findProfilePictureFromAccountById(long accountId) {
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getAuthorities();
+		if (accDet.getId() != accountId)
+			return ResponseEntity.status(403)
+					.body(new ErrorResponse("Not authorized to add picture to foreign account"));
 		try {
-			List<Image> images =  pPicRepository.findImagesByAccountId(accDet.getId());
+			List<Image> images = pPicRepository.findImagesByAccountId(accDet.getId());
 			return ResponseEntity.ok().body(images);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
