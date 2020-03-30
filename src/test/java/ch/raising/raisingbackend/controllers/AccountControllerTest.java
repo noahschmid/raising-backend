@@ -50,7 +50,7 @@ public class AccountControllerTest {
     
     @Autowired
 	JdbcTemplate jdbc;
-/*
+
     @BeforeAll
 	public void setup() {
 		tableName = "account";
@@ -79,6 +79,15 @@ public class AccountControllerTest {
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(account)))
         .andExpect(status().is(400));
+
+        // valid account registration request should return 200
+        account.setEmail("email");
+        account.setName("name");
+        account.setPassword("password");
+        mockMvc.perform(post("/account/register")
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(account)))
+        .andExpect(status().isOk());
     }
 
     @Test
@@ -105,5 +114,5 @@ public class AccountControllerTest {
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(freeEmailRequest)))
         .andExpect(status().is(500));
-    }*/
+    }
 }
