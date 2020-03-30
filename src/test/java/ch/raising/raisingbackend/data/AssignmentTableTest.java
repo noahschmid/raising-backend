@@ -54,8 +54,7 @@ public class AssignmentTableTest {
 		tableIdName = tableName + "Id";
 		assignmentTableName = tableName + "assignment";
 		
-		repo = new AssignmentTableRepository(jdbc, tableName);
-		
+		repo = AssignmentTableRepository.getInstance(jdbc).withTableName(tableName);		
 		
 		String sql = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.SERIAL).pair("name", Type.VARCHAR)
 				.createTable();

@@ -14,6 +14,7 @@ import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Country;
 import ch.raising.models.Founder;
 import ch.raising.models.Image;
+import ch.raising.models.Investor;
 import ch.raising.models.PrivateShareholder;
 
 public class MapUtil {
@@ -79,6 +80,10 @@ public class MapUtil {
 	public static Image mapRowToImage(ResultSet rs, int row) throws SQLException {
 		return Image.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid"))
 				.image(new String(rs.getBytes("image"))).build();
+	}
+	
+	public static Investor mapRowToInvestor(ResultSet rs, int row) throws SQLException {
+		return Investor.investorBuilder().accountId(rs.getLong("accountid")).investorTypeId(rs.getLong("investortypeid")).build();
 	}
 
 }

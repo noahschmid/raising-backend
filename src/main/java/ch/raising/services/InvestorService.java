@@ -49,7 +49,7 @@ public class InvestorService extends AccountService {
 			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc) {
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc);
 
-		this.investmentPhaseRepository = new AssignmentTableRepository(jdbc, "investmentphase", "investorid");
+		this.investmentPhaseRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investor").withAccountIdName("investorid");
 		this.investorRepository = investorRepository;
 	}
 
@@ -91,13 +91,11 @@ public class InvestorService extends AccountService {
 	 * @param request the data to update
 	 * @return response entity with status code and message
 	 */
-	public ResponseEntity<?> updateInvestor(int id, Investor request) {
-		try {
-			investorRepository.update(id, request);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	@Override
+	protected void updateAccount(int id, Account acc) throws Exception {
+		super.updateAccount(id, acc);
+		Investor inv = (Investor) acc;
+		investorRepository.update(id, inv);
 	}
 
 
@@ -152,25 +150,5 @@ public class InvestorService extends AccountService {
         return profiles;
 	}
 
-	public ResponseEntity<?> addInvestmentPhaseByIvestorId(long id) {
-		try {
-			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getPrincipal();
-			investmentPhaseRepository.addEntryToAccountById(accdet.getId(), id);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(e.getMessage());
-		}
-	}
-
-	public ResponseEntity<?> deleteInvestmentPhaseByIvestorId(long id) {
-		try {
-			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getPrincipal();
-			investmentPhaseRepository.deleteEntryFromAccountById(accdet.getId(), id);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(e.getMessage());
-		}
-	}
+	
 }

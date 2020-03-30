@@ -15,10 +15,10 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Image;
 import ch.raising.utils.MapUtil;
-import ch.raising.utils.PreparedStatementGetter;
 import ch.raising.utils.PreparedStatementUtil;
 import ch.raising.utils.QueryBuilder;
-import ch.raising.utils.RowMapper;
+import ch.raising.utils.functionalInterface.PreparedStatementGetter;
+import ch.raising.utils.functionalInterface.RowMapper;
 
 @Repository
 public class ImageRepository {

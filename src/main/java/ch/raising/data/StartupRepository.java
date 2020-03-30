@@ -2,9 +2,9 @@ package ch.raising.data;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
+
 import org.springframework.jdbc.core.PreparedStatementCallback;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,11 +13,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
-
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Startup;
-import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -65,7 +62,28 @@ public class StartupRepository implements IRepository<Startup, Startup> {
 	 */
 	@Override
 	public void update(long id, Startup req) throws Exception {
-		throw new NotImplementedException();
+		try {
+			UpdateQueryBuilder update = new UpdateQueryBuilder("startup", id, this, "accountid");
+			update.setJdbc(jdbc);
+			update.addField(req.getInvestmentPhaseId(), "investmentphaseid");
+			update.addField(req.getBoosts(), "boosts");
+			update.addField(req.getWebsite(), "website");
+			update.addField(req.getBreakEvenYear(), "breakevenyear");
+			update.addField(req.getNumberOfFte(), "numberoffte");
+			update.addField(req.getTurnover(), "turnover");
+			update.addField(req.getPreMoneyValuation(), "premoneyvaluation");
+			update.addField(req.getClosingTime(), "closingtime");
+			update.addField(req.getRevenueMaxId(), "revenuemaxid");
+			update.addField(req.getRevenueMinId(), "revenueMinId");
+			update.addField(req.getScope(), "scope");
+			update.addField(req.getUId(), "uid");
+			update.addField(req.getFoundingYear(), "foundingyear");
+			update.addField(req.getFinanceTypeId(), "financetypeid");
+			update.addField(req.getRaised(), "raised");
+			update.execute();
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
 	}
 
 	/**

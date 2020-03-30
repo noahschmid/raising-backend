@@ -3,6 +3,7 @@ package ch.raising.data;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 
+
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Repository;
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
 import ch.raising.models.Investor;
-import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -68,7 +68,11 @@ public class InvestorRepository implements IRepository<Investor, Investor> {
 	 * @throws Exception
 	 */
 	public void update(long id, Investor inv) throws Exception {
-		throw new NotImplementedException();
+		UpdateQueryBuilder update = new UpdateQueryBuilder("investor", id, this, "accountid");
+		System.out.println(inv.getInvestorTypeId());
+		update.setJdbc(jdbc);
+		update.addField(inv.getInvestorTypeId(), "investortypeid");
+		update.execute();
 	}
 
 	/**
@@ -81,7 +85,7 @@ public class InvestorRepository implements IRepository<Investor, Investor> {
 	 */
 	@Override
 	public Investor mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Investor.investorBuilder().accountId(rs.getLong("accountId"))//.company(rs.getString("company"))
+		return Investor.investorBuilder().accountId(rs.getLong("accountId"))
 				.investorTypeId(rs.getInt("investorTypeId")).build();
 	}
 

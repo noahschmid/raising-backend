@@ -14,7 +14,6 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.data.*;
 import ch.raising.interfaces.IAdditionalInformationRepository;
-import ch.raising.models.AssignmentTableModel;
 
 @Service
 public class StartupService extends AccountService {
@@ -52,8 +51,8 @@ public class StartupService extends AccountService {
 
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc);
 
-		this.investorTypeRepository = new AssignmentTableRepository(jdbc, "investortype", "startupid");
-		this.labelRepository = new AssignmentTableRepository(jdbc, "label", "startupid", MapUtil::mapRowToAssignmentTableWithDescription);
+		this.investorTypeRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investorType").withAccountIdName("startupid");
+		this.labelRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("label").withAccountIdName("startupid");
 		this.startupRepository = startupRepository;
 		this.contactRepository = contactRepository;
 		this.bmemRepository = bmemRepository;
@@ -122,8 +121,11 @@ public class StartupService extends AccountService {
 	 * @param request the data to update
 	 * @return response entity with status code and message
 	 */
-	public ResponseEntity<?> updateStartup(long id, Startup su) {
-		return ResponseEntity.status(500).body(new ErrorResponse("Not implemented yet"));
+	@Override
+	protected void updateAccount(int id, Account acc) throws Exception {
+		super.updateAccount(id, acc);
+		Startup su = (Startup) acc;
+		startupRepository.update(id, su);
 	}
 
 	/**
@@ -268,25 +270,6 @@ public class StartupService extends AccountService {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
-
-	/**
-	 * Adds a new entry in the investortypeassignment repository
-	 * 
-	 * @param investortyped of the label a new founder
-	 * @return response with code and optional body
-	 */
-
-	public ResponseEntity<?> addInvestorTypeByStartupId(long invTypeId) {
-		try {
-			AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getPrincipal();
-			investorTypeRepository.addEntryToAccountById(invTypeId, accdetails.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
 	/**
      * Get matching profile of startup (the required information for matching)
      * @return Matching profile of startup
@@ -297,11 +280,11 @@ public class StartupService extends AccountService {
         
         MatchingProfile profile = new MatchingProfile();
         List<AssignmentTableModel> types = investorTypeRepository.findByAccountId(startup.getAccountId());
-        List<AssignmentTableModel> continents = continentRepository.findByAccountId(startup.getAccountId());
-        List<AssignmentTableModel> countries = countryRepository.findByAccountId(startup.getAccountId());
-        List<AssignmentTableModel> industries = industryRepository.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> continents = continentRepo.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> countries = countryRepo.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> industries = industryRepo.findByAccountId(startup.getAccountId());
         List<AssignmentTableModel> investmentPhases = investmentPhaseRepository.findByAccountId(startup.getAccountId());
-        List<AssignmentTableModel> supports = supportRepository.findByAccountId(startup.getAccountId());
+        List<AssignmentTableModel> supports = supportRepo.findByAccountId(startup.getAccountId());
 
         profile.setAccountId(startup.getAccountId());
         profile.setName(startup.getName());
@@ -336,24 +319,7 @@ public class StartupService extends AccountService {
 
         return profiles;
     }
-	
-	/**
-	 * Deletes the entry in investortypeassignment with the specified labelId and
-	 * the tableEntryId in tokens.
-	 * 
-	 * @param investortypeid
-	 * @return response with code and optional body
-	 */
-	public ResponseEntity<?> deleteInvestorTypeByStartupId(long invTypeId) {
-		try {
-			AccountDetails accdet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getPrincipal();
-			investorTypeRepository.deleteEntryFromAccountById(invTypeId, accdet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getLocalizedMessage()));
-		}
-	}
+
 
 	/**
 	 * Checks if a requesting startup belongs to the StartupMember

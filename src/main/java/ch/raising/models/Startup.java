@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class Startup extends Account {
+	
+/* =========================================================================
+	Stored in the accounttable*/
 	private long investmentPhaseId = -1;
 	private int boosts = 0;
 	private String website = "";
@@ -21,16 +24,18 @@ public class Startup extends Account {
 	private int turnover = -1;
 	private int preMoneyValuation = -1;
 	private Date closingTime;
-
 	private int revenueMaxId;
 	private int revenueMinId;
-
 	private int scope;
 	private String uId = "";
 	private int foundingYear;
 	private long financeTypeId = -1;
 	private int raised;
+/* =========================================================================*/
 
+
+/* =========================================================================
+	Stored in the respective tables*/
 	private List<AssignmentTableModel> investorTypes;
 	private List<AssignmentTableModel> labels;
 	private List<Boardmember> boardmembers;
@@ -38,6 +43,7 @@ public class Startup extends Account {
 	private List<Founder> founders;
 	private List<PrivateShareholder> privateShareholders;
 	private List<CorporateShareholder> corporateShareholders;
+/* =========================================================================*/
 
 	/**
 	 * creates the startup with all lists initialized. should be used to return a

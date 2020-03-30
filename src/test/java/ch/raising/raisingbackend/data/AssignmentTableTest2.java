@@ -56,7 +56,7 @@ public class AssignmentTableTest2 {
 		assignmentTableName = tableName + "assignment";
 		accountId = "startupid";
 		
-		repo = new AssignmentTableRepository(jdbc, tableName, accountId, MapUtil::mapRowToAssignmentTableWithDescription);
+		repo = AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName(accountId).withRowMapper( MapUtil::mapRowToAssignmentTableWithDescription);
 		
 		String sql = QueryBuilder.getInstance().tableName(tableName).pair("description", Type.VARCHAR).pair("id", Type.SERIAL).pair("name", Type.VARCHAR)
 				.createTable();

@@ -144,17 +144,6 @@ public class AccountRepositoryTest {
 		assertEquals(account, foundByMail);
 	}
 
-	// @Test
-	public void testAddAccountNotUniqeMail() throws Exception {
-		Account sameMail = Account.accountBuilder().name("testname3").email(email).password("testpw").build();
-		try {
-			accountRepo.add(sameMail);
-			fail("should not work");
-		} catch (Exception e) {
-		}
-		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbc, tableName));
-	}
-
 	@Test
 	public void testDeleteAccount() {
 		accountRepo.delete(2);
@@ -166,12 +155,10 @@ public class AccountRepositoryTest {
 		assertTrue(accountRepo.emailExists(email));
 	}
 
-	// @Test
+	@Test
 	public void testUpdateAccount() throws Exception {
 		String newMail = "testmail3";
-		String newMailHash = encoder.encode(newMail);
 		String newPassword = "newpassword";
-		String newPasswordHash = encoder.encode(newPassword);
 		String newName = "aloysius pendergast";
 		Account accup = new Account();
 		accup.setEmail(newMail);
@@ -179,9 +166,11 @@ public class AccountRepositoryTest {
 		accup.setRoles("ROLE_TESTER");
 		accup.setName(newName);
 		accountRepo.update(1, accup);
-		String sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("emailhash", newMailHash).select();
-		Account updated = jdbc.queryForObject(sql, MapUtil::mapRowToAccount);
-		assertNotNull(updated);
-		assertEquals(newName, updated.getName());
+		String sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("id", "1").select();
+		Account found = jdbc.queryForObject(sql, MapUtil::mapRowToAccount);
+		assertNotNull(found);
+		assertTrue(encoder.matches(newMail, found.getEmail()));
+		assertEquals(newName, found.getName());
+		
 	}
 }

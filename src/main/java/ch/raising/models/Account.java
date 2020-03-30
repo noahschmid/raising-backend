@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Account {
 
+/* =========================================================================
+	Stored in the accounttable*/
 	protected long accountId = -1l;
 	protected String company = "";
 	protected String name = "";
@@ -19,13 +21,19 @@ public class Account {
 	private String description = "";
 	private int ticketMinId = -1;
 	private int ticketMaxId = -1;
+
+/* =========================================================================*/
+
+/* =========================================================================
+	Stored in seperate tables with respective naes*/
 	private Image profilePicture;
 	private List<Image> gallery;
-
 	private List<AssignmentTableModel> countries;
 	private List<AssignmentTableModel> continents;
 	private List<AssignmentTableModel> support;
 	private List<AssignmentTableModel> industries;
+/* =========================================================================*/
+
 
 	/**
 	 * This constructor makes an Account represented by the account table in the

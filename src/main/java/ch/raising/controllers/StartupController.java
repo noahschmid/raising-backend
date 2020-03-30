@@ -20,6 +20,7 @@ import ch.raising.models.Founder;
 import ch.raising.models.Investor;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.Startup;
+import ch.raising.services.AssignmentTableService;
 import ch.raising.services.StartupService;
 
 @Controller
@@ -27,17 +28,17 @@ import ch.raising.services.StartupService;
 public class StartupController {
 	
 	StartupService startupService;
-	
-	private AccountController accountController;
+	private AssignmentTableService assignmentTableService;
 	
 	@Autowired
-	public StartupController(StartupService startupService) {
+	public StartupController(StartupService startupService, AssignmentTableService assignmentTableService) {
 		this.startupService = startupService;
+		this.assignmentTableService = assignmentTableService;
 	}
 	
 	/**
      * Return profile of investor by given accountId
-     * @param tableEntryId the tableEntryId of the account the startup belongs to
+     * @param id the id of the account the startup belongs to
      * @return ResponseEntity instance with status code and startup in body
      */
     @GetMapping("/{id}")
@@ -47,12 +48,12 @@ public class StartupController {
     
     /**
      * Update profile of startup by given accountId
-     * @param request the tableEntryId of the account the investor belongs to
+     * @param request the id of the account the investor belongs to
      * @return ResponseEntity with status code and error message (if exists)
      */
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Startup request) {
-        return startupService.updateStartup(id, request);
+        return startupService.updateProfile(id, request);
     }
 	
 	/**
@@ -65,8 +66,8 @@ public class StartupController {
 		return startupService.registerProfile(startup);
 	}
 	/**
-	 * Deletes a contact specified by tableEntryId.
-	 * @param tableEntryId of the contact to be deleted
+	 * Deletes a contact specified by id.
+	 * @param id of the contact to be deleted
 	 */
 	@DeleteMapping("/contact/{id}")
 	public ResponseEntity<?> deleteContact(@PathVariable int id){
@@ -83,8 +84,8 @@ public class StartupController {
 		return startupService.addContactByStartupId(contact);
 	}
 	/**
-	 * Deletes a boardmember specified by tableEntryId.
-	 * @param tableEntryId to be deleted
+	 * Deletes a boardmember specified by id.
+	 * @param id to be deleted
 	 * @return response with statuscode
 	 */
 	@DeleteMapping("/boardmemeber/{id}")
@@ -101,8 +102,8 @@ public class StartupController {
 		return startupService.addBoardmemberByStartupId(bmem);
 	}
 	/**
-	 * Deletes a founder specified by tableEntryId.
-	 * @param tableEntryId to be deleted
+	 * Deletes a founder specified by id.
+	 * @param id to be deleted
 	 * @return response with statuscode
 	 */
 	@DeleteMapping("/founder/{id}")
@@ -119,8 +120,8 @@ public class StartupController {
 		return startupService.addFounderByStartupId(founder);
 	}
 	/**
-	 * Deletes a label specified by tableEntryId.
-	 * @param tableEntryId to be deleted
+	 * Deletes a label specified by id.
+	 * @param id to be deleted
 	 * @return response with statuscode
 	 */
 	@DeleteMapping("/label/{id}")
@@ -138,22 +139,22 @@ public class StartupController {
 	}
 	
 	/**
-	 * Deletes a founder specified by tableEntryId.
-	 * @param tableEntryId to be deleted
+	 * Deletes a founder specified by id.
+	 * @param id to be deleted
 	 * @return response with statuscode
 	 */
-	@DeleteMapping("/investmenttype/{id}")
+	@DeleteMapping("/investortype/{id}")
 	public ResponseEntity<?> deleteInvestmentPhase(@PathVariable int id){
-		return startupService.deleteInvestorTypeByStartupId(id);
+		return assignmentTableService.deleteFromStartupById("investortype", id);
 	}
 	/**
 	 * Add a founder to a startup
 	 * @param contact to be added
 	 * @return a response with a code
 	 */
-	@PostMapping("/investmenttype/{id}")
+	@PostMapping("/investortype/{id}")
 	public ResponseEntity<?> addInvestmentphase(int id){
-		return startupService.addInvestorTypeByStartupId(id);
+		return assignmentTableService.addToStartupById("investortype", id);
 	}
 	
 	

@@ -1,6 +1,7 @@
 package ch.raising.data;
 
 import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.Boardmember;
-import ch.raising.utils.NotImplementedException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository

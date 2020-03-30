@@ -6,17 +6,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ch.raising.services.PublicInformationService;
+import ch.raising.services.AssignmentTableService;
 
 @Controller
 @RequestMapping("/public")
 public class PublicInformationController {
 	
 	
-	PublicInformationService publicInformationService;
+	AssignmentTableService publicInformationService;
 	
 	@Autowired
-	public PublicInformationController(PublicInformationService pis) {
+	public PublicInformationController(AssignmentTableService pis) {
 		this.publicInformationService =pis;
 	}
 	
@@ -32,7 +32,7 @@ public class PublicInformationController {
 	
 	@GetMapping("/country")
 	public ResponseEntity<?> getCountry(){
-		return publicInformationService.getAllCountries("country");
+		return publicInformationService.getAllCountries();
 	}
 	
 	@GetMapping("/industry")
@@ -72,6 +72,6 @@ public class PublicInformationController {
 	
 	@GetMapping("/revenue")
 	public ResponseEntity<?> getRevenueSteps(){
-		return publicInformationService.getAllRevenueSteps("revenue");
+		return publicInformationService.getAllRevenueSteps();
 	}
  }
