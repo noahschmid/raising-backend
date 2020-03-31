@@ -1,5 +1,7 @@
 package ch.raising.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Investor;
 import ch.raising.models.LoginRequest;
 import ch.raising.services.AccountService;
@@ -65,9 +68,9 @@ public class InvestorController {
      * @param tableEntryId
      * @return
      */
-    @DeleteMapping("/investmentphase/{id}")
-    public ResponseEntity<?> deleteInvestmentphaseByInvestorId(@PathVariable long id){
-    	return assignmentService.deleteFromInvestorById("investmentphase", id);
+    @PostMapping("/investmentphase/delete")
+    public ResponseEntity<?> deleteInvestmentphaseByInvestorId(@RequestBody List<AssignmentTableModel> invPhases){
+    	return assignmentService.deleteFromInvestorById("investmentphase", invPhases);
     }
     
     /**
@@ -76,8 +79,8 @@ public class InvestorController {
      * @return
      */
     
-    @PostMapping("/investmentphase/{id}")
-    public ResponseEntity<?> addInvestmentphaseByInvestorId(@PathVariable long id){
-    		return assignmentService.addToInvestorById("investmentphase", id);
+    @PostMapping("/investmentphase")
+    public ResponseEntity<?> addInvestmentphaseByInvestorId(@RequestBody List<AssignmentTableModel> invPhases){
+    		return assignmentService.addToInvestorById("investmentphase", invPhases);
     	}
 }

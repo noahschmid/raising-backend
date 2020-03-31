@@ -1,5 +1,7 @@
 package ch.raising.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ch.raising.models.AssignmentTableModel;
+import ch.raising.models.AssignmentTableModelWithDescription;
 import ch.raising.models.Boardmember;
 import ch.raising.models.Contact;
 import ch.raising.models.CorporateShareholder;
@@ -206,18 +210,18 @@ public class StartupController {
 	 * @param id to be deleted
 	 * @return response with statuscode
 	 */
-	@DeleteMapping("/label/{id}")
-	public ResponseEntity<?> deleteLabel(@PathVariable int id){
-		return assignmentTableService.deleteFromStartupById("label",id);
+	@PostMapping("/label/delete")
+	public ResponseEntity<?> deleteLabel(@RequestBody List<AssignmentTableModel> labels){
+		return assignmentTableService.deleteFromStartupById("label",labels);
 	}
 	/**
 	 * Add a label to a startup
 	 * @param contact to be added
 	 * @return a response with a code
 	 */
-	@PostMapping("/label/{id}")
-	public ResponseEntity<?> addLabel(int id){
-		return assignmentTableService.addToStartupById("label", id);
+	@PostMapping("/label")
+	public ResponseEntity<?> addLabel(@RequestBody List<AssignmentTableModel> labels){
+		return assignmentTableService.addToStartupById("label", labels);
 	}
 	
 	/**
@@ -225,18 +229,18 @@ public class StartupController {
 	 * @param id to be deleted
 	 * @return response with statuscode
 	 */
-	@DeleteMapping("/investortype/{id}")
-	public ResponseEntity<?> deleteInvestmentPhase(@PathVariable int id){
-		return assignmentTableService.deleteFromStartupById("investortype", id);
+	@PostMapping("/investortype/delete")
+	public ResponseEntity<?> deleteInvestmentPhase(@RequestBody List<AssignmentTableModel> invTypes){
+		return assignmentTableService.deleteFromStartupById("investortype", invTypes);
 	}
 	/**
 	 * Add a founder to a startup
 	 * @param contact to be added
 	 * @return a response with a code
 	 */
-	@PostMapping("/investortype/{id}")
-	public ResponseEntity<?> addInvestmentphase(int id){
-		return assignmentTableService.addToStartupById("investortype", id);
+	@PostMapping("/investortype")
+	public ResponseEntity<?> addInvestmentphase(@RequestBody List<AssignmentTableModel> invTypes){
+		return assignmentTableService.addToStartupById("investortype", invTypes);
 	}
 	
 	

@@ -25,7 +25,7 @@ public class Account {
 /* =========================================================================*/
 
 /* =========================================================================
-	Stored in seperate tables with respective naes*/
+	Stored in seperate tables with respective respecitve names*/
 	private Image profilePicture;
 	private List<Image> gallery;
 	private List<AssignmentTableModel> countries;

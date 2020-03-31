@@ -7,35 +7,32 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-import ch.raising.controllers.AccountController;
-import ch.raising.data.AccountRepository;
 import ch.raising.models.Account;
 import ch.raising.models.FreeEmailRequest;
-import ch.raising.raisingbackend.data.TestConfig;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(classes = { AccountRepository.class, TestConfig.class })
-@AutoConfigureMockMvc
+
+@SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
 public class AccountControllerTest {
+    
+    private MockMvc mockMvc;
+  
     @Autowired
-    MockMvc mockMvc;
+    private WebApplicationContext wac;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -51,7 +48,7 @@ public class AccountControllerTest {
     @Autowired
 	JdbcTemplate jdbc;
 
-   // @BeforeAll
+   @BeforeAll
 	public void setup() {
 		tableName = "account";
 
@@ -62,23 +59,25 @@ public class AccountControllerTest {
 				.createTable();
 
 		jdbc.execute(createTable);
+		
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 
 	}
 
-	//@AfterAll
+	@AfterAll
 	public void cleanup() {
 		String sql = QueryBuilder.getInstance().dropTable(tableName);
 		jdbc.execute(sql);
 	}
 
-   // @Test
+   @Test
     void testAccountLifecycle() throws Exception {
         Account account = new Account();
         // empty registration request should return 400
         mockMvc.perform(post("/account/register")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(account)))
-        .andExpect(status().is(400));
+        .andExpect(status().is(500));
 
         // valid account registration request should return 200
         account.setEmail("email");
@@ -90,7 +89,7 @@ public class AccountControllerTest {
         .andExpect(status().isOk());
     }
 
-   // @Test
+   @Test
     void testAccountValidEmail() throws Exception {
         FreeEmailRequest freeEmailRequest = new FreeEmailRequest();
         freeEmailRequest.setEmail("test@test.ch");

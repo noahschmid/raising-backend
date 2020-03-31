@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +23,15 @@ import ch.raising.models.ErrorResponse;
 
 import ch.raising.models.Investor;
 import ch.raising.utils.InValidProfileException;
+import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
 
 import ch.raising.models.MatchingProfile;
 @Service
 public class InvestorService extends AccountService {
+
+	
 
 	private AssignmentTableRepository investmentPhaseRepository;
 
@@ -46,8 +50,8 @@ public class InvestorService extends AccountService {
 
 	@Autowired
 	public InvestorService(AccountRepository accountRepository, InvestorRepository investorRepository,
-			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc) {
-		super(accountRepository, mailUtil, resetCodeUtil, jdbc);
+			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, JwtUtil jwtUtil ) {
+		super(accountRepository, mailUtil, resetCodeUtil, jdbc, jwtUtil);
 
 		this.investmentPhaseRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investmentphase").withAccountIdName("investorid");
 		this.investorRepository = investorRepository;

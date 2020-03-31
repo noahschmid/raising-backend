@@ -19,6 +19,7 @@ import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
+import ch.raising.utils.MapUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -197,7 +198,7 @@ public class AccountRepository implements IRepository<Account> {
 		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
 				.company(rs.getString("company")).pitch(rs.getString("pitch")).description(rs.getString("description"))
 				.email(rs.getString("emailHash")).roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
-				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password")).build();
+				.ticketMinId(rs.getInt("ticketminid")).build();
 	}
 
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
@@ -228,6 +229,22 @@ public class AccountRepository implements IRepository<Account> {
 			update.execute();
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
+		}
+	}
+	public boolean isStartup(long id) {
+		try {
+			long foundId = jdbc.queryForObject("SELECT accountid FROM startup WHERE accountid = ?", new Object[] {id}, MapUtil::mapRowToAccountId);
+			return foundId == id;
+		}catch(EmptyResultDataAccessException e) {
+			return false;
+		}
+	}
+	public boolean isInvestor(long id) {
+		try {
+			long foundId = jdbc.queryForObject("SELECT accountid FROM investor WHERE accountid = ?", new Object[] {id}, MapUtil::mapRowToAccountId);
+			return foundId == id;
+		}catch(EmptyResultDataAccessException e) {
+			return false;
 		}
 	}
 }

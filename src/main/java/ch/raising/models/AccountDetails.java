@@ -27,12 +27,17 @@ public class AccountDetails implements UserDetails {
         this.startup = account.isStartup();
         this.investor = account.isInvestor();
     }
-    
-    public boolean isStartup() {
+
+    public void setStartup(boolean isStartup){
+    	this.startup = isStartup;
+    }
+    public boolean getStartup(){
     	return this.startup;
     }
-    
-    public boolean isInvestor() {
+    public void setInvestor(boolean isInvestor){
+    	this.investor = isInvestor;
+    }
+    public boolean getInvestor(){
     	return this.investor;
     }
 

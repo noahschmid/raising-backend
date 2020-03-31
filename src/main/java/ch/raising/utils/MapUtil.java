@@ -24,7 +24,7 @@ public class MapUtil {
 	}
 
 	public static long mapRowToAccountId(ResultSet rs, int row) throws SQLException {
-		return rs.getLong("accountid");
+		return rs == null? -1:rs.getLong("accountid");
 	}
 
 	public static Account mapRowToAccount(ResultSet rs, int row) throws SQLException {

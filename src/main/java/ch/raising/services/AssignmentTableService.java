@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import ch.raising.data.AssignmentTableRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
+import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.utils.MapUtil;
 
@@ -79,11 +80,13 @@ public class AssignmentTableService {
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 */
-	private ResponseEntity<?> addById(AssignmentTableRepository assignmentRepo, long modelId) {
+	private ResponseEntity<?> addById(AssignmentTableRepository assignmentRepo, List<AssignmentTableModel> models) {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			assignmentRepo.addEntryToAccountById(modelId, accDet.getId());
+			for (AssignmentTableModel m : models) {
+				assignmentRepo.addEntryToAccountById(m.getId(), accDet.getId());
+			}
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -96,8 +99,8 @@ public class AssignmentTableService {
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 */
-	public ResponseEntity<?> addToAccountById(String tableName, long modelId) {
-		return addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName), modelId);
+	public ResponseEntity<?> addToAccountById(String tableName, List<AssignmentTableModel> models) {
+		return addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName), models);
 	}
 
 	/**
@@ -106,10 +109,10 @@ public class AssignmentTableService {
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 */
-	public ResponseEntity<?> addToInvestorById(String tableName, long modelId) {
+	public ResponseEntity<?> addToInvestorById(String tableName, List<AssignmentTableModel> models) {
 		return addById(
 				AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName("investorid"),
-				modelId);
+				models);
 	}
 
 	/**
@@ -118,10 +121,10 @@ public class AssignmentTableService {
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 */
-	public ResponseEntity<?> addToStartupById(String tableName, long modelId) {
+	public ResponseEntity<?> addToStartupById(String tableName, List<AssignmentTableModel> models) {
 		return addById(
 				AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName("startupid"),
-				modelId);
+				models);
 	}
 
 	/**
@@ -130,43 +133,54 @@ public class AssignmentTableService {
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 */
-	private ResponseEntity<?> deleteById(AssignmentTableRepository assignmentRepo, long modelId) {
+	private ResponseEntity<?> deleteById(AssignmentTableRepository assignmentRepo, List<AssignmentTableModel> models) {
 		try {
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getAuthorities();
-			assignmentRepo.deleteEntryFromAccountById(modelId,
-					accDet.getId());
+			for (AssignmentTableModel model : models) {
+				assignmentRepo.deleteEntryFromAccountById(model.getId(), accDet.getId());
+			}
+
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
+
 	/**
-	 * remove entry in assignmenttable specified by those ids and the name from account
+	 * remove entry in assignmenttable specified by those ids and the name from
+	 * account
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 */
-	public ResponseEntity<?> deleteFromAccountById(String name, long modelId) {
-		return deleteById(AssignmentTableRepository.getInstance(jdbc).withTableName(name), modelId);
+	public ResponseEntity<?> deleteFromAccountById(String name, List<AssignmentTableModel> models) {
+		return deleteById(AssignmentTableRepository.getInstance(jdbc).withTableName(name), models);
 	}
+
 	/**
-	 * remove entry in assignmenttable specified by those ids and the name from investor
+	 * remove entry in assignmenttable specified by those ids and the name from
+	 * investor
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 */
-	public ResponseEntity<?> deleteFromInvestorById(String name, long modelId) {
-		return deleteById(AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("investorid"), modelId);
+	public ResponseEntity<?> deleteFromInvestorById(String name, List<AssignmentTableModel> models) {
+		return deleteById(
+				AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("investorid"),
+				models);
 	}
+
 	/**
-	 * remove entry in assignmenttable specified by those ids and the name from startup
+	 * remove entry in assignmenttable specified by those ids and the name from
+	 * startup
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 */
-	public ResponseEntity<?> deleteFromStartupById(String name, long modelId) {
-		return deleteById(AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("startupid"), modelId);
+	public ResponseEntity<?> deleteFromStartupById(String name, List<AssignmentTableModel> models) {
+		return deleteById(
+				AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("startupid"), models);
 	}
 
 }

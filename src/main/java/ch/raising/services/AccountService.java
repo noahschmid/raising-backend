@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +25,7 @@ import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.Image;
+import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.utils.DatabaseOperationException;
@@ -40,26 +43,17 @@ import ch.raising.data.ImageRepository;
 @Primary
 @Service
 public class AccountService implements UserDetailsService {
-	@Autowired
+	
 	protected AccountRepository accountRepository;
-
-	@Autowired
 	private MailUtil mailUtil;
-
-	@Autowired
 	private ResetCodeUtil resetCodeUtil;
-
-	@Autowired
 	private JdbcTemplate jdbc;
-
-	@Autowired
 	private JwtUtil jwtUtil;
-
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
 	private ImageRepository galleryRepository;
 	private ImageRepository pPicRepository;
-
+	@Autowired
+    private AuthenticationManager authenticationManager ;
 	protected AssignmentTableRepository countryRepo;
 	protected AssignmentTableRepository continentRepo;
 	protected AssignmentTableRepository supportRepo;
@@ -67,11 +61,12 @@ public class AccountService implements UserDetailsService {
 
 	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
-			JdbcTemplate jdbc) {
+			JdbcTemplate jdbc, JwtUtil jwtUtil) {
 		this.accountRepository = accountRepository;
 		this.mailUtil = mailUtil;
 		this.resetCodeUtil = resetCodeUtil;
 		this.jdbc = jdbc;
+		this.jwtUtil = jwtUtil;
 		this.countryRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("country")
 				.withRowMapper(MapUtil::mapRowToCountry);
 		this.continentRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("continent");
@@ -84,8 +79,10 @@ public class AccountService implements UserDetailsService {
 	@Override
 	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		try {
-			Account account = accountRepository.findByEmail(email);
-			return new AccountDetails(account);
+			AccountDetails accDet = new AccountDetails(accountRepository.findByEmail(email));
+			accDet.setStartup(accountRepository.isStartup(accDet.getId()));
+			accDet.setInvestor(accountRepository.isInvestor(accDet.getId()));
+			return accDet;
 		} catch (EmailNotFoundException e) {
 			throw new UsernameNotFoundException(e.getMessage());
 		}
@@ -114,7 +111,6 @@ public class AccountService implements UserDetailsService {
 	public ResponseEntity<?> registerProfile(Account account) {
 		try {
 			registerAccount(account);
-			return ResponseEntity.ok().build();
 		} catch (DatabaseOperationException e) {
 			rollback(account);
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -124,15 +120,18 @@ public class AccountService implements UserDetailsService {
 			rollback(account);
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
+		try {
+			return login(new LoginRequest(account.getEmail(), account.getPassword()));
+		}catch(Exception e) {
+			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+		}
 	}
 
 	private void rollback(Account account) {
 		try {
 			Account found = accountRepository.findByEmail(account.getEmail());
 			accountRepository.delete(found.getAccountId());
-		} catch (Exception e) {
-
-		}
+		} catch (Exception e) {}
 	}
 
 	/**
@@ -369,12 +368,9 @@ public class AccountService implements UserDetailsService {
 		}
 	}
 
-	public ResponseEntity<?> findGalleryImagesFromAccountById(long accountId) {
+	public ResponseEntity<?> findGalleryImagesFromAccountById() {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
-		if (accDet.getId() != accountId)
-			return ResponseEntity.status(403)
-					.body(new ErrorResponse("Not authorized to add picture to foreign gallery"));
 		try {
 			List<Image> images = galleryRepository.findImagesByAccountId(accDet.getId());
 			return ResponseEntity.ok().body(images);
@@ -411,18 +407,27 @@ public class AccountService implements UserDetailsService {
 		}
 	}
 
-	public ResponseEntity<?> findProfilePictureFromAccountById(long accountId) {
+	public ResponseEntity<?> findProfilePictureFromAccountById() {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
-		if (accDet.getId() != accountId)
-			return ResponseEntity.status(403)
-					.body(new ErrorResponse("Not authorized to add picture to foreign account"));
 		try {
 			List<Image> images = pPicRepository.findImagesByAccountId(accDet.getId());
 			return ResponseEntity.ok().body(images);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
+	}
+
+	public ResponseEntity<?> login(LoginRequest request) {
+		UsernamePasswordAuthenticationToken unamePwToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+		try {
+            authenticationManager.authenticate(unamePwToken);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
+        }
+        final AccountDetails userDetails = loadUserByUsername(request.getEmail());
+        final String token = jwtUtil.generateToken(userDetails);
+        return ResponseEntity.ok(new LoginResponse(token, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor()));
 	}
 
 }

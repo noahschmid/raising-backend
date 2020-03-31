@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
+import ch.raising.models.AssignmentTableModel;
+import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
@@ -42,10 +44,7 @@ public class AccountController {
 	
     private final AccountService accountService;
 	private final AssignmentTableService assignmentTableService;
-    private final AuthenticationManager authenticationManager;
-
     
-    private final JwtUtil jwtUtil;
 	
 	@Autowired
     public AccountController(AccountService accountService, 
@@ -53,8 +52,6 @@ public class AccountController {
                             JwtUtil jwtUtil,
                             AssignmentTableService assignmentTableService) {
         this.accountService = accountService;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
         this.assignmentTableService = assignmentTableService;
 	}
 
@@ -66,15 +63,7 @@ public class AccountController {
 	@PostMapping("/login")
 	@ResponseBody
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-		UsernamePasswordAuthenticationToken unamePwToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-		try {
-            authenticationManager.authenticate(unamePwToken);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
-        }
-        final AccountDetails userDetails = accountService.loadUserByUsername(request.getEmail());
-        final String token = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new LoginResponse(token, userDetails.getId(), userDetails.isStartup(), userDetails.isInvestor()));
+		return accountService.login(request);
 	}
     
     /**
@@ -120,10 +109,20 @@ public class AccountController {
     public ResponseEntity<?> isEmailFree(@RequestBody FreeEmailRequest request) {
         return accountService.isEmailFree(request.getEmail());
     }
+    /**
+     * registers an account that is neither startup nor investor
+     * @param account
+     * @return
+     */
+    @PostMapping("/register")
+    @ResponseBody
+    public ResponseEntity<?> registerAccount(@RequestBody Account account) {
+        return accountService.registerProfile(account);
+    }
     
     /**
 	 * Searches for an account by id
-	 * @param tableEntryId the tableEntryId of the desired account
+	 * @param id the id of the desired account
      * @param request instance of the https request
 	 * @return details of specific account
 	 */
@@ -170,80 +169,80 @@ public class AccountController {
      * @param countryId
      * @return
      */
-    @PostMapping("/country/{countryId}")
+    @PostMapping("/country")
     @ResponseBody
-    public ResponseEntity<?> addCountryToAccount(@PathVariable long countryId){
-    	return assignmentTableService.addToAccountById( "country", countryId);
+    public ResponseEntity<?> addCountryToAccount(@RequestBody List<AssignmentTableModel> countries){
+    	return assignmentTableService.addToAccountById("country", countries);
     }
     /**
      * delete country from account
      * @param countryId
      * @return
      */
-    @DeleteMapping("/country/{countryId}")
+    @PostMapping("/country/delete")
     @ResponseBody
-    public ResponseEntity<?> deleteCountryFromAccount(@PathVariable long countryId){
-    	return assignmentTableService.deleteFromAccountById("country",countryId);
+    public ResponseEntity<?> deleteCountryFromAccount(@RequestBody List<AssignmentTableModel> countries){
+    	return assignmentTableService.deleteFromAccountById("country",countries);
     }
     /**
      * add continent to account
      * @param continentId
      * @return
      */
-    @PostMapping("/continent/{continentId}")
+    @PostMapping("/continent")
     @ResponseBody
-    public ResponseEntity<?> addContinentToAccount(@PathVariable long continentId){
-    	return assignmentTableService.addToAccountById("continent", continentId);
+    public ResponseEntity<?> addContinentToAccount(@RequestBody List<AssignmentTableModel> continents){
+    	return assignmentTableService.addToAccountById("continent", continents);
     }
     /**
      * delete continent from account
      * @param continentId
      * @return
      */
-    @DeleteMapping("/continent/{continentId}")
+    @PostMapping("/continent/delete")
     @ResponseBody
-    public ResponseEntity<?> deleteContinentFromAccount(@PathVariable long continentId){
-    	return assignmentTableService.deleteFromAccountById("continent", continentId);
+    public ResponseEntity<?> deleteContinentFromAccount(@RequestBody List<AssignmentTableModel> continents){
+    	return assignmentTableService.deleteFromAccountById("continent", continents);
     }
     /**
      * add supporttype to account
      * @param supportId
      * @return
      */
-    @PostMapping("/support/{supportId}")
+    @PostMapping("/support")
     @ResponseBody
-    public ResponseEntity<?> addSupportToAccount(@PathVariable long supportId){
-    	return assignmentTableService.addToAccountById("support", supportId);
+    public ResponseEntity<?> addSupportToAccount(@RequestBody List<AssignmentTableModel> support){
+    	return assignmentTableService.addToAccountById("support", support);
     }
     /**
      * delete supporttype from account
      * @param supportId
      * @return
      */
-    @DeleteMapping("/support/{supportId}")
+    @PostMapping("/support/delete")
     @ResponseBody
-    public ResponseEntity<?> deleteSupportFromAccount(@PathVariable long supportId){
-    	return assignmentTableService.deleteFromAccountById("support", supportId);
+    public ResponseEntity<?> deleteSupportFromAccount(@RequestBody List<AssignmentTableModel> support){
+    	return assignmentTableService.deleteFromAccountById("support", support);
     }
     /**
      * add industry to account    
      * @param industryId
      * @return
      */
-    @PostMapping("/industry/{industryId}")
+    @PostMapping("/industry")
     @ResponseBody
-    public ResponseEntity<?> addIndustryToAccount(@PathVariable long industryId){
-    	return assignmentTableService.addToAccountById("industry", industryId);
+    public ResponseEntity<?> addIndustryToAccount(@RequestBody List<AssignmentTableModel> industries){
+    	return assignmentTableService.addToAccountById("industry", industries);
     }
     /**
      * delete industry form account
      * @param industryId
      * @return
      */
-    @DeleteMapping("/industry/{industryId}")
+    @PostMapping("/industry/delete")
     @ResponseBody
-    public ResponseEntity<?> deleteIndustryFromAccount(@PathVariable long industryId){
-    	return assignmentTableService.deleteFromAccountById("industry", industryId);
+    public ResponseEntity<?> deleteIndustryFromAccount(@RequestBody List<AssignmentTableModel> industries){
+    	return assignmentTableService.deleteFromAccountById("industry", industries);
     }
     /**
      * add image to gallery of account    
@@ -266,10 +265,10 @@ public class AccountController {
     	return accountService.deleteGalleryImageFromAccountById(imageId);
     }
     
-    @GetMapping("/gallery/{accountId}")
+    @GetMapping("/gallery")
     @ResponseBody
-    public ResponseEntity<?> getGalleryOfAccount(@PathVariable long accountId){
-    	return accountService.findGalleryImagesFromAccountById(accountId);
+    public ResponseEntity<?> getGalleryOfAccount(){
+    	return accountService.findGalleryImagesFromAccountById();
     }
     /**
      * add profile pic to account    
@@ -293,10 +292,10 @@ public class AccountController {
     	return accountService.deleteProfilePictureFromAccountById(imageId);
     }
     
-    @GetMapping("/profilepicture/{accountId}")
+    @GetMapping("/profilepicture/")
     @ResponseBody
-    public ResponseEntity<?> getProfilePictureOfAccount(@PathVariable long accountId){
-    	return accountService.findProfilePictureFromAccountById(accountId);
+    public ResponseEntity<?> getProfilePictureOfAccount(){
+    	return accountService.findProfilePictureFromAccountById();
     }
     
     
