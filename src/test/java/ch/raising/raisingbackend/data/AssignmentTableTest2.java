@@ -16,6 +16,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,17 +28,16 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { TestConfig.class })
+@ContextConfiguration(classes = { RepositoryTestConfig.class })
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
 public class AssignmentTableTest2 {
-	
+
 	AssignmentTableRepository repo;
 
-	@Autowired
-	JdbcTemplate jdbc;
 	
+	JdbcTemplate jdbc;
 
 	String tableName;
 	String tableIdName;
@@ -48,57 +48,58 @@ public class AssignmentTableTest2 {
 	long tableEntryId;
 
 	
-	@BeforeAll
-	public void setup() {
+	@Autowired
+	public AssignmentTableTest2(JdbcTemplate jdbc) {
 		tableName = "continent";
 		name = "testcontinent";
 		tableIdName = tableName + "Id";
 		assignmentTableName = tableName + "assignment";
 		accountId = "startupid";
-		
-		repo = AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName(accountId).withRowMapper( MapUtil::mapRowToAssignmentTableWithDescription);
-		
-		String sql = QueryBuilder.getInstance().tableName(tableName).pair("description", Type.VARCHAR).pair("id", Type.SERIAL).pair("name", Type.VARCHAR)
-				.createTable();
+		this.jdbc = jdbc;
+		repo = AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName(accountId)
+				.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
+	}
+
+	@BeforeEach
+	public void setup() {
+		createTable();
+		addEntries();
+	}
+
+	@AfterEach
+	public void cleanUp() {
+		JdbcTestUtils.dropTables(jdbc, tableName);
+		JdbcTestUtils.dropTables(jdbc, assignmentTableName);
+
+	}
+	private void createTable() {
+		String sql = QueryBuilder.getInstance().tableName(tableName).pair("description", Type.VARCHAR)
+				.pair("id", Type.SERIAL).pair("name", Type.VARCHAR).createTable();
 		jdbc.execute(sql);
 		sql = QueryBuilder.getInstance().tableName(assignmentTableName).pair(tableIdName, Type.BIGINT)
 				.pair(accountId, Type.BIGINT).createTable();
 		jdbc.execute(sql);
 	}
 
-	@BeforeEach
-	public void addEntries() {
+	private void addEntries() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).attribute("name").value(name).insert();
 		jdbc.execute(sql);
 
 		tableEntryId = getIdFor("name", tableName);
 		sql = QueryBuilder.getInstance().tableName(assignmentTableName).attribute(accountId).attribute(tableIdName)
 				.value("" + accountIdValue).value("" + tableEntryId).insert();
-		
+
 		jdbc.execute(sql);
 	}
-	
-	public long getIdFor(String attribute, String nameOfTable) {
+
+	private long getIdFor(String attribute, String nameOfTable) {
 		long id;
 		String sql = QueryBuilder.getInstance().tableName(nameOfTable).whereEquals(attribute, name).select();
 		id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
 		assertNotNull(id);
 		return id;
 	}
-	
-	@AfterAll
-	public void cleanUp() {
-		JdbcTestUtils.dropTables(jdbc, tableName);
-		JdbcTestUtils.dropTables(jdbc, assignmentTableName);
 
-	}
-
-	@AfterEach
-	public void deleteEntries() {
-		JdbcTestUtils.deleteFromTables(jdbc, tableName);
-		jdbc.execute("ALTER SEQUENCE "+tableName+"_id_seq RESTART WITH 1");
-	}
-	
 	@Test
 	public void testFind() {
 		AssignmentTableModel model = repo.find(tableEntryId);
@@ -133,6 +134,5 @@ public class AssignmentTableTest2 {
 		int count = JdbcTestUtils.countRowsInTable(jdbc, assignmentTableName);
 		assertEquals(0, count);
 	}
-
 
 }

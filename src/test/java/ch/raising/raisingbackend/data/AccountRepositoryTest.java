@@ -1,12 +1,18 @@
 package ch.raising.raisingbackend.data;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +23,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,9 +37,9 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { AccountRepository.class, TestConfig.class })
+@ContextConfiguration(classes = {RepositoryTestConfig.class })
+@ActiveProfiles("RepositoryTest")
 @SpringBootTest
-@ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
 public class AccountRepositoryTest {
 
@@ -47,7 +54,7 @@ public class AccountRepositoryTest {
 	String emailhash;
 	String email;
 	String name;
-	
+
 	@Autowired
 	public AccountRepositoryTest(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
@@ -55,27 +62,27 @@ public class AccountRepositoryTest {
 		this.encoder = new BCryptPasswordEncoder();
 	}
 
-	@BeforeAll
-	public void setup() {
+	@BeforeEach
+	public void setup() throws SQLException {
 		tableName = "account";
 
-		String createTable = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.SERIAL)
+		String createTable = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.IDENTITY)
 				.pair("pitch", Type.VARCHAR).pair("description", Type.VARCHAR).pair("company", Type.VARCHAR)
 				.pair("name", Type.VARCHAR).pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR)
 				.pair("emailhash", Type.VARCHAR).pair("ticketminid", Type.INT).pair("ticketmaxid", Type.INT)
 				.createTable();
-
 		jdbc.execute(createTable);
-
+		
+		makeAccounts();
 	}
 
-	@AfterAll
+	@AfterEach
 	public void cleanup() {
 		String sql = QueryBuilder.getInstance().dropTable(tableName);
 		jdbc.execute(sql);
 	}
 
-	@BeforeEach
+	
 	public void makeAccounts() {
 		email = "testmail";
 		emailhash = encoder.encode(email);
@@ -90,18 +97,6 @@ public class AccountRepositoryTest {
 
 		sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("account.name", name).select();
 		id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
-	}
-
-	@AfterEach
-	public void cleanAccounts() {
-		JdbcTestUtils.deleteFromTables(jdbc, tableName);
-		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, tableName));
-		jdbc.execute("ALTER SEQUENCE " + tableName + "_id_seq RESTART WITH 1");
-	}
-
-	@AfterEach
-	public void deleteAccounts() {
-		JdbcTestUtils.deleteFromTables(jdbc, tableName);
 	}
 
 	@Test
@@ -171,6 +166,6 @@ public class AccountRepositoryTest {
 		assertNotNull(found);
 		assertTrue(encoder.matches(newMail, found.getEmail()));
 		assertEquals(newName, found.getName());
-		
+
 	}
 }

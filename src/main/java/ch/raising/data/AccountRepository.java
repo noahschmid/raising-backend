@@ -198,7 +198,7 @@ public class AccountRepository implements IRepository<Account> {
 		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
 				.company(rs.getString("company")).pitch(rs.getString("pitch")).description(rs.getString("description"))
 				.email(rs.getString("emailHash")).roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
-				.ticketMinId(rs.getInt("ticketminid")).build();
+				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password")).build();
 	}
 
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {

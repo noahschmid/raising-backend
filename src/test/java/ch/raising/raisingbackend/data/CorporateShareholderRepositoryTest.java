@@ -14,6 +14,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,9 +26,9 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { TestConfig.class })
+@ContextConfiguration(classes = { RepositoryTestConfig.class })
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
 public class CorporateShareholderRepositoryTest implements IAdditionalInformationTest {
 
@@ -45,7 +46,7 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 	private long corporateBodyId;
 	private long countryId;
 
-	@BeforeAll
+	@BeforeEach
 	@Override
 	public void setup() {
 		csr = new CorporateShareholderRepository(jdbc);
@@ -54,9 +55,10 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 				.pair("equityshare", Type.INT).pair("corporatebodyid", Type.BIGINT).pair("countryid", Type.BIGINT)
 				.createTable();
 		jdbc.execute(sql);
+		addMember();
 	}
 
-	@BeforeEach
+	
 	@Override
 	public void addMember() {
 		String sql = QueryBuilder.getInstance().tableName("corporateshareholder")
@@ -67,17 +69,10 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 		id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
 	}
 
-	@AfterAll
+	@AfterEach
 	@Override
 	public void cleanup() {
 		JdbcTestUtils.dropTables(jdbc, "corporateshareholder");
-	}
-
-	@AfterEach
-	@Override
-	public void deleteMember() {
-		JdbcTestUtils.deleteFromTables(jdbc, "corporateshareholder");
-		jdbc.execute("ALTER SEQUENCE corporateshareholder_id_seq RESTART WITH 1");
 	}
 
 	@Test

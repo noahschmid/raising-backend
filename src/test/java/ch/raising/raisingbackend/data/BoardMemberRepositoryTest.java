@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,9 +25,9 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { TestConfig.class})
+@ContextConfiguration(classes = { RepositoryTestConfig.class})
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
 public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 
@@ -47,7 +48,7 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 	Boardmember bmem;
 
 	@Override
-	@BeforeAll
+	@BeforeEach
 	public void setup() {
 		bmemRepo = new BoardmemberRepository(jdbc);
 		String sql = QueryBuilder.getInstance().tableName("boardmember").pair("id", Type.SERIAL)
@@ -55,10 +56,10 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 				.pair("education", Type.VARCHAR).pair("profession", Type.VARCHAR).pair("position", Type.VARCHAR)
 				.pair("membersince", Type.VARCHAR).pair("countryId", Type.VARCHAR).createTable();
 		jdbc.execute(sql);
+		addMember();
 	}
 
 	@Override
-	@BeforeEach
 	public void addMember() {
 		String sql = QueryBuilder.getInstance().tableName("boardmember").attribute("startupid").attribute("firstname")
 				.attribute("lastname").attribute("education").attribute("profession").attribute("position")
@@ -70,16 +71,9 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 	}
 
 	@Override
-	@AfterAll
+	@AfterEach
 	public void cleanup() {
 		JdbcTestUtils.dropTables(jdbc, "boardmember");
-	}
-
-	@Override
-	@AfterEach
-	public void deleteMember() {
-		JdbcTestUtils.deleteFromTables(jdbc, "boardmember");
-		jdbc.execute("ALTER SEQUENCE boardmember_id_seq RESTART WITH 1");
 	}
 
 	@Test

@@ -5,7 +5,6 @@ public interface IAdditionalInformationTest {
 	public void setup();
 	public void addMember();
 	public void cleanup();
-	public void deleteMember();
 	public void testGetStartupIdByMemberId();
 	public void testAddMemberByStartupId();
 	public void testDeleteMemberByStartupId();

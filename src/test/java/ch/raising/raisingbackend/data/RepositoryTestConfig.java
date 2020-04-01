@@ -15,27 +15,23 @@ import ch.raising.data.BoardmemberRepository;
 
 
 @Configuration
-public class TestConfig {
+@Profile("RepositoryTest")
+public class RepositoryTestConfig {
 	
-	@Bean
-	@Profile("test")
+	
+	@Bean("javax.sql.DataSource")
 	public DataSource datasource() {
 		DriverManagerDataSource datasource = new DriverManagerDataSource();
-		datasource.setDriverClassName("org.postgresql.Driver");
-		datasource.setUrl("jdbc:postgresql://33384.hostserv.eu:5432/raising_test");
-		datasource.setUsername("raising");
-		datasource.setPassword("1209danu10k?");
+		datasource.setDriverClassName("org.h2.Driver");
+		datasource.setUrl("jdbc:h2:mem:arbitrarydbname;DB_CLOSE_DELAY=-1");
+		datasource.setUsername("sa");
+		datasource.setPassword("");
 		return datasource;
 	}
 	
 	@Bean
 	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
 	    return new JdbcTemplate(dataSource);
-	}
-	
-	@Bean
-	public BCryptPasswordEncoder encoder() {
-		return new BCryptPasswordEncoder();
 	}
 
 }

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,58 +28,54 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { InvestorRepository.class, TestConfig.class })
+@ContextConfiguration(classes = { RepositoryTestConfig.class })
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
 public class InvestorRepositoryTest {
-	
+
 	private JdbcTemplate jdbc;
 	private InvestorRepository invRepo;
 	private Investor inv;
 	private String tableName;
+
 	@Autowired
-	public InvestorRepositoryTest(InvestorRepository invRepo, JdbcTemplate jdbc) {
-		this.invRepo = invRepo;
-		this.jdbc =jdbc;
+	public InvestorRepositoryTest(JdbcTemplate jdbc) {
+		this.invRepo = new InvestorRepository(jdbc);
+		this.jdbc = jdbc;
 		this.tableName = "investor";
 	}
-	@BeforeAll
+
+	@BeforeEach
 	public void setup() {
-		String sql = QueryBuilder.getInstance().tableName(tableName).pair("accountid", Type.SERIAL).pair("investorTypeid", Type.INT).createTable();
+		String sql = QueryBuilder.getInstance().tableName(tableName).pair("accountid", Type.SERIAL)
+				.pair("investorTypeid", Type.INT).createTable();
 
 		jdbc.execute(sql);
-	
-		inv = Investor.investorBuilder().investorTypeId(7).build();
 
+		inv = Investor.investorBuilder().investorTypeId(7).build();
+		addInvestor();
 	}
 
-	@AfterAll
+	@AfterEach
 	public void cleanup() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).dropTable(tableName);
 		jdbc.execute(sql);
 	}
 
-	@BeforeEach
 	public void addInvestor() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).attribute("investorTypeId").value("7").insert();
 
 		jdbc.execute(sql);
 	}
 
-	@AfterEach
-	public void cleanAccounts() {
-		JdbcTestUtils.deleteFromTables(jdbc, tableName);
-		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, tableName));
-		jdbc.execute("ALTER SEQUENCE "+tableName+"_accountid_seq RESTART WITH 1");
-	}
-	
 	@Test
 	public void testFind() {
 		Investor found = invRepo.find(1);
 		assertNotNull(found);
 		assertEquals(found, inv);
 	}
+
 	@Test
 	public void testGetAll() {
 		List<Investor> foundList = invRepo.getAll();
@@ -86,7 +83,8 @@ public class InvestorRepositoryTest {
 		assertEquals(1, foundList.size());
 		assertEquals(inv, foundList.get(0));
 	}
-	@Test 
+
+	@Test
 	public void testUpdate() throws Exception {
 		Investor update = Investor.investorBuilder().investorTypeId(4).build();
 		invRepo.update(1, update);
@@ -96,6 +94,7 @@ public class InvestorRepositoryTest {
 		assertEquals(1, found.getAccountId());
 		assertEquals(update.getInvestorTypeId(), found.getInvestorTypeId());
 	}
+
 	@Test
 	public void testAdd() {
 		invRepo.add(inv);

@@ -25,9 +25,9 @@ import ch.raising.models.Startup;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { StartupRepository.class, TestConfig.class })
+@ContextConfiguration(classes = {RepositoryTestConfig.class })
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
 public class StartupRepositoryTest {
 
@@ -39,13 +39,13 @@ public class StartupRepositoryTest {
 	private Startup su2;
 
 	@Autowired
-	public StartupRepositoryTest(JdbcTemplate jdbc, StartupRepository suRepo) {
+	public StartupRepositoryTest(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
-		this.suRepo = suRepo;
+		this.suRepo = new StartupRepository(jdbc);
 		this.tableName = "startup";
 	}
 
-	@BeforeAll
+	@BeforeEach
 	public void setup() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).pair("accountid", Type.SERIAL)
 				.pair("boosts", Type.INT).pair("numberoffte", Type.INT).pair("turnover", Type.INT)
@@ -59,16 +59,15 @@ public class StartupRepositoryTest {
 		su = Startup.startupBuilder().numberOfFte(2).turnover(1).website("soreal.ch").breakEvenYear(2025)
 				.preMoneyEvaluation(1234).closingTime(Date.valueOf("2020-10-10")).financeTypeId(6).investmentPhaseId(5)
 				.revenueMaxId(22).revenueMinId(20).scope(8).uId("CH-132").foundingYear(1997).raised(100).build();
-
+		addStartup();
 	}
 
-	@AfterAll
+	@AfterEach
 	public void cleanup() {
 		String sql = QueryBuilder.getInstance().dropTable(tableName);
 		jdbc.execute(sql);
 	}
 
-	@BeforeEach
 	public void addStartup() {
 		String sql = QueryBuilder.getInstance().tableName(tableName)
 				.attribute("numberoffte, turnover, website, breakevenyear")
@@ -82,13 +81,6 @@ public class StartupRepositoryTest {
 				.value("" + su.getRaised()).insert();
 
 		jdbc.execute(sql);
-	}
-
-	@AfterEach
-	public void cleanAccounts() {
-		JdbcTestUtils.deleteFromTables(jdbc, tableName);
-		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, tableName));
-		jdbc.execute("ALTER SEQUENCE " + tableName + "_accountid_seq RESTART WITH 1");
 	}
 
 	@Test

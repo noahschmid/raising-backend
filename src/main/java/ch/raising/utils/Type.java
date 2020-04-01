@@ -7,7 +7,9 @@ public enum Type {
 	LONG ("long"), 
 	BIGINT ("bigint"),
 	SERIAL ("serial"), 
-	BYTEA ("bytea");
+	BYTEA ("bytea"),
+	BINARY ("binary"),
+	IDENTITY("identity");
 	
 	String name;
 	Type(String name){

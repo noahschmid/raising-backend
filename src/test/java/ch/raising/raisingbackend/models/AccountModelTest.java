@@ -19,9 +19,9 @@ import org.springframework.test.context.ContextConfiguration;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.Account;
-import ch.raising.raisingbackend.data.TestConfig;
+import ch.raising.raisingbackend.data.RepositoryTestConfig;
 
-@ContextConfiguration(classes = { TestConfig.class })
+@ContextConfiguration(classes = { RepositoryTestConfig.class })
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,15 +28,15 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { TestConfig.class })
+@ContextConfiguration(classes = { RepositoryTestConfig.class })
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
 public class AssignmentTableTest {
 	
 	AssignmentTableRepository repo;
 
-	@Autowired
+	
 	JdbcTemplate jdbc;
 	
 	String tableName;
@@ -46,16 +47,23 @@ public class AssignmentTableTest {
 	String name;
 	long tableEntryId;
 
-	
-	@BeforeAll
-	public void setup() {
+	@Autowired
+	public AssignmentTableTest(JdbcTemplate jdbc) {
+		this.jdbc = jdbc;
 		tableName = "continent";
 		name = "testcontinent";
 		tableIdName = tableName + "Id";
 		assignmentTableName = tableName + "assignment";
-		
-		repo = AssignmentTableRepository.getInstance(jdbc).withTableName(tableName);		
-		
+		repo = AssignmentTableRepository.getInstance(jdbc).withTableName(tableName);	
+	}
+	
+	@BeforeEach
+	public void setup() {
+		createTable();
+		addEntries();
+	}
+
+	private void createTable() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.SERIAL).pair("name", Type.VARCHAR)
 				.createTable();
 		jdbc.execute(sql);
@@ -64,7 +72,6 @@ public class AssignmentTableTest {
 		jdbc.execute(sql);
 	}
 
-	@BeforeEach
 	public void addEntries() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).attribute("name").value(name).insert();
 		jdbc.execute(sql);
@@ -84,17 +91,11 @@ public class AssignmentTableTest {
 		return id;
 	}
 	
-	@AfterAll
+	@AfterEach
 	public void cleanUp() {
 		JdbcTestUtils.dropTables(jdbc, tableName);
 		JdbcTestUtils.dropTables(jdbc, assignmentTableName);
 
-	}
-
-	@AfterEach
-	public void deleteEntries() {
-		JdbcTestUtils.deleteFromTables(jdbc, tableName);
-		jdbc.execute("ALTER SEQUENCE "+tableName+"_id_seq RESTART WITH 1");
 	}
 	
 	@Test

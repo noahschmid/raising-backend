@@ -14,6 +14,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,9 +26,9 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { TestConfig.class })
+@ContextConfiguration(classes = { RepositoryTestConfig.class })
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
 public class ContactRepositoryTest implements IAdditionalInformationTest {
 
@@ -44,7 +45,7 @@ public class ContactRepositoryTest implements IAdditionalInformationTest {
 	private String email;
 	private String phone;
 
-	@BeforeAll
+	@BeforeEach
 	@Override
 	public void setup() {
 		cr = new ContactRepository(jdbc);
@@ -52,9 +53,10 @@ public class ContactRepositoryTest implements IAdditionalInformationTest {
 				.pair("startupid", Type.BIGINT).pair("firstname", Type.VARCHAR).pair("lastname", Type.VARCHAR)
 				.pair("position", Type.VARCHAR).pair("email", Type.VARCHAR).pair("phone", Type.VARCHAR).createTable();
 		jdbc.execute(sql);
+		addMember();
 	}
 
-	@BeforeEach
+	
 	@Override
 	public void addMember() {
 		String sql = QueryBuilder.getInstance().tableName("contact")
@@ -65,17 +67,10 @@ public class ContactRepositoryTest implements IAdditionalInformationTest {
 		id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
 	}
 
-	@AfterAll
+	@AfterEach
 	@Override
 	public void cleanup() {
 		JdbcTestUtils.dropTables(jdbc, "contact");
-	}
-
-	@AfterEach
-	@Override
-	public void deleteMember() {
-		JdbcTestUtils.deleteFromTables(jdbc, "contact");
-		jdbc.execute("ALTER SEQUENCE contact_id_seq RESTART WITH 1");
 	}
 
 	@Test
