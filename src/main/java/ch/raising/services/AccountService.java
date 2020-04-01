@@ -193,6 +193,7 @@ public class AccountService implements UserDetailsService {
 			Account acc = getAccount(id);
 			return ResponseEntity.ok(acc);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
@@ -215,8 +216,9 @@ public class AccountService implements UserDetailsService {
 		Account acc = accountRepository.find(id);
 		acc.setPassword("");
 		acc.setRoles("");
-
-		acc.setProfilePicture(pPic.get(0));
+		
+		if(pPic != null && pPic.size() > 0)
+			acc.setProfilePicture(pPic.get(0));
 		acc.setGallery(gallery);
 
 		acc.setCountries(countries);

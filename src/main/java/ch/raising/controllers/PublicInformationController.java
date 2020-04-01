@@ -74,4 +74,6 @@ public class PublicInformationController {
 	public ResponseEntity<?> getRevenueSteps(){
 		return publicInformationService.getAllRevenueSteps();
 	}
+	
+	
  }

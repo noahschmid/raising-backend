@@ -47,6 +47,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Relationship.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\RelationshipRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Founder.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ProfileController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PrivateShareholder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MailUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableModel.java
