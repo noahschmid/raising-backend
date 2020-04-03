@@ -36,7 +36,7 @@ import ch.raising.controllers.AccountController;
 import ch.raising.data.AccountRepository;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.FreeEmailRequest;
-import ch.raising.models.Image;
+import ch.raising.models.Media;
 
 @RequestMapping("/account")
 @Controller
@@ -251,7 +251,7 @@ public class AccountController {
      */
     @PostMapping("/gallery")
     @ResponseBody
-    public ResponseEntity<?> addImageToAccount(@RequestBody Image img){
+    public ResponseEntity<?> addImageToAccount(@RequestBody Media img){
     	return accountService.addGalleryImageToAccountById(img);
     }
     /**
@@ -277,7 +277,7 @@ public class AccountController {
      */
     @PostMapping("/profilepicture")
     @ResponseBody
-    public ResponseEntity<?> addProfilePictureToAccount(@RequestBody Image img){
+    public ResponseEntity<?> addProfilePictureToAccount(@RequestBody Media img){
     	return accountService.addProfilePictureToAccountById(img);
  
     }

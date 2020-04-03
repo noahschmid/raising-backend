@@ -1,20 +1,19 @@
 package ch.raising.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ch.raising.data.BoardmemberRepository;
-import ch.raising.data.ContactRepository;
 import ch.raising.data.CorporateShareholderRepository;
 import ch.raising.data.FounderRepository;
 import ch.raising.data.PrivateShareholderRepository;
 import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.Boardmember;
-import ch.raising.models.Contact;
 import ch.raising.models.CorporateShareholder;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.Founder;
@@ -23,7 +22,6 @@ import ch.raising.models.PrivateShareholder;
 @Service
 public class AdditionalInformationService {
 	
-	ContactRepository contactRepository;
 	FounderRepository founderRepository;
 	BoardmemberRepository bmemRepository;
 	PrivateShareholderRepository pShareholderRepository;
@@ -33,63 +31,10 @@ public class AdditionalInformationService {
 	
 	@Autowired
 	public AdditionalInformationService(JdbcTemplate jdbc) {
-		this.contactRepository = new ContactRepository(jdbc);
 		this.founderRepository = new FounderRepository(jdbc);
 		this.bmemRepository = new BoardmemberRepository(jdbc);
 		this.pShareholderRepository = new PrivateShareholderRepository(jdbc);
 		this.cShareholderRepository = new CorporateShareholderRepository(jdbc);
-	}
-
-	
-	
-	/**
-	 * Deletes the contact specified by tableEntryId
-	 * 
-	 * @param tableEntryId
-	 * @return
-	 */
-
-	public ResponseEntity<?> deleteContactByStartupId(long id) {
-		try {
-			if (!belongsToStartup(id, contactRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this contact does not belong to that startup"));
-			}
-			contactRepository.deleteMemberByStartupId(id);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-
-	public ResponseEntity<?> updateContactByStartupId(Contact contact, int id) {
-		try {
-			if (!belongsToStartup(id, contactRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this contact does not belong to that startup"));
-			}
-			contactRepository.update(id, contact);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-	
-	/**
-	 * Adds a new contact
-	 * 
-	 * @param contact to be inserted in the DB
-	 * @return a response with tableEntryId and maybe body
-	 */
-
-	public ResponseEntity<?> addContactByStartupId(Contact contact) {
-		try {
-			contactRepository.addMemberByStartupId(contact, contact.getStartupId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
 	}
 
 	/**

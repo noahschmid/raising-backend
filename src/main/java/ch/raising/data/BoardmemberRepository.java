@@ -54,7 +54,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 		return Boardmember.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
 				.lastName(rs.getString("lastname")).firstName(rs.getString("firstname"))
 				.position(rs.getString("position")).education(rs.getString("education"))
-				.profession(rs.getString("profession")).membersince(rs.getInt("membersince"))
+				.profession(rs.getString("profession")).memberSince(rs.getInt("membersince"))
 				.coutryId(rs.getLong("countryId")).build();
 	}
 
@@ -70,7 +70,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 				ps.setString(c++, bmem.getEducation());
 				ps.setString(c++, bmem.getProfession());
 				ps.setString(c++, bmem.getPosition());
-				ps.setInt(c++, bmem.getMembersince());
+				ps.setInt(c++, bmem.getMemberSince());
 				ps.setLong(c++, bmem.getCountryId());
 				return ps.execute();
 			}
@@ -92,7 +92,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 		update.addField(req.getEducation(), "education");
 		update.addField(req.getProfession(), "profession");
 		update.addField(req.getPosition(), "position");
-		update.addField(req.getMembersince(), "membersince");
+		update.addField(req.getMemberSince(), "membersince");
 		update.addField(req.getCountryId(), "countryId");
 		update.execute();
 		

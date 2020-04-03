@@ -49,7 +49,7 @@ public class AccountModelTest {
 		
 		assertFalse(acc.isInComplete());
 		assertEquals(accountId, acc.getAccountId());
-		assertEquals(company, acc.getCompany());
+		assertEquals(company, acc.getCompanyName());
 		assertEquals(password, acc.getPassword());
 		assertEquals(roles, acc.getRoles());
 		assertEquals(email, acc.getEmail());
@@ -57,17 +57,16 @@ public class AccountModelTest {
 		assertEquals(description, acc.getDescription());
 		assertEquals(ticketMaxId, acc.getTicketMaxId());
 		assertEquals(ticketMinId, acc.getTicketMinId());
-		assertEquals(name, acc.getName());
 	}
 	@Test
 	public void testBuilderNotAllFieldsInitialized() {
-		Account acc = Account.accountBuilder().accountId(accountId).company(company).name(null).password(password)
+		Account acc = Account.accountBuilder().accountId(accountId).companyName(company).password(password)
 				.roles(roles).email(email).description(description).ticketMinId(ticketMinId)
 				.ticketMaxId(ticketMaxId).build();
 		
 		assertTrue(acc.isInComplete());
 		assertEquals(accountId, acc.getAccountId());
-		assertEquals(company, acc.getCompany());
+		assertEquals(company, acc.getCompanyName());
 		assertEquals(password, acc.getPassword());
 		assertEquals(roles, acc.getRoles());
 		assertEquals(email, acc.getEmail());
@@ -75,7 +74,6 @@ public class AccountModelTest {
 		assertEquals(description, acc.getDescription());
 		assertEquals(ticketMaxId, acc.getTicketMaxId());
 		assertEquals(ticketMinId, acc.getTicketMinId());
-		assertNull(acc.getName());
 	}
 
 	@Test 
@@ -105,7 +103,7 @@ public class AccountModelTest {
 
 		assertFalse(fullAcc.isInComplete());
 		assertEquals(accountId, fullAcc.getAccountId());
-		assertEquals(company, fullAcc.getCompany());
+		assertEquals(company, fullAcc.getCompanyName());
 		assertEquals(password, fullAcc.getPassword());
 		assertEquals(roles, fullAcc.getRoles());
 		assertEquals(email, fullAcc.getEmail());
@@ -113,11 +111,10 @@ public class AccountModelTest {
 		assertEquals(description, fullAcc.getDescription());
 		assertEquals(ticketMaxId, fullAcc.getTicketMaxId());
 		assertEquals(ticketMinId, fullAcc.getTicketMinId());
-		assertEquals(name, fullAcc.getName());
 	}
 	
 	private Account getFullRepoAccount() {
-		Account acc = Account.accountBuilder().accountId(accountId).company(company).name(name).password(password)
+		Account acc = Account.accountBuilder().accountId(accountId).companyName(company).password(password)
 				.roles(roles).email(email).pitch(pitch).description(description).ticketMinId(ticketMinId)
 				.ticketMaxId(ticketMaxId).build();
 		

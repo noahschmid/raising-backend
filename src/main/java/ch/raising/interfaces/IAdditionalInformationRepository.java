@@ -1,16 +1,13 @@
 package ch.raising.interfaces;
 
 import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCallback;
-
-import ch.raising.models.Boardmember;
-import ch.raising.models.Contact;
-import ch.raising.utils.UpdateQueryBuilder;
 
 /**
  * An additionalInformationRepository represents a table that holds additional information for the startup table. 

@@ -2,25 +2,23 @@ package ch.raising.utils;
 
 import java.sql.ResultSet;
 
-import java.sql.SQLException;
-import java.util.Arrays;
 
-import ch.raising.interfaces.IAssignmentTableModel;
+
+import java.sql.SQLException;
 import ch.raising.models.Account;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.AssignmentTableModelWithDescription;
-import ch.raising.models.Contact;
 import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Country;
 import ch.raising.models.Founder;
-import ch.raising.models.Image;
+import ch.raising.models.Media;
 import ch.raising.models.Investor;
 import ch.raising.models.PrivateShareholder;
 
 public class MapUtil {
 
 	public static long mapRowToId(ResultSet rs, int row) throws SQLException {
-		return rs.getLong("id");
+		return rs == null ? -1: rs.getLong("id");
 	}
 
 	public static long mapRowToAccountId(ResultSet rs, int row) throws SQLException {
@@ -28,8 +26,8 @@ public class MapUtil {
 	}
 
 	public static Account mapRowToAccount(ResultSet rs, int row) throws SQLException {
-		return Account.accountBuilder().name(rs.getString("name")).email(rs.getString("emailhash"))
-				.company(rs.getString("company")).accountId(rs.getLong("id")).ticketMaxId(rs.getInt("ticketmaxid"))
+		return Account.accountBuilder().email(rs.getString("emailhash")).description(rs.getString("description")).pitch(rs.getString("pitch"))
+				.companyName(rs.getString("companyName")).accountId(rs.getLong("id")).ticketMaxId(rs.getInt("ticketmaxid"))
 				.ticketMinId(rs.getInt("ticketminid")).build();
 	}
 
@@ -58,16 +56,10 @@ public class MapUtil {
 				.countryId(rs.getLong("countryid")).build();
 	}
 
-	public static Contact mapRowToContact(ResultSet rs, int row) throws SQLException {
-		return Contact.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
-				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).email(rs.getString("email"))
-				.position(rs.getString("position")).phone(rs.getString("phone")).build();
-	}
-
 	public static PrivateShareholder mapRowToPrivateShareholder(ResultSet rs, int row) throws SQLException {
 		return PrivateShareholder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
 				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).city(rs.getString("city"))
-				.equityShare(rs.getInt("equityshare")).investortypeId(rs.getLong("investortypeid"))
+				.equityShare(rs.getInt("equityshare")).investorTypeId(rs.getLong("investortypeid"))
 				.countryId(rs.getLong("countryid")).build();
 	}
 
@@ -77,9 +69,9 @@ public class MapUtil {
 				.corporateBodyId(rs.getLong("corporatebodyid")).countryId(rs.getLong("countryid")).build();
 	}
 
-	public static Image mapRowToImage(ResultSet rs, int row) throws SQLException {
-		return Image.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid"))
-				.image(new String(rs.getBytes("image"))).build();
+	public static Media mapRowToMedia(ResultSet rs, int row) throws SQLException {
+		return Media.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid"))
+				.media(rs.getBytes("media")).build();
 	}
 	
 	public static Investor mapRowToInvestor(ResultSet rs, int row) throws SQLException {

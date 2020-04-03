@@ -2,7 +2,6 @@ package ch.raising.data;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-
 import org.springframework.jdbc.core.PreparedStatementCallback;
 
 import java.sql.PreparedStatement;
@@ -69,7 +68,6 @@ public class StartupRepository implements IRepository<Startup> {
 			update.addField(req.getWebsite(), "website");
 			update.addField(req.getBreakEvenYear(), "breakevenyear");
 			update.addField(req.getNumberOfFte(), "numberoffte");
-			update.addField(req.getTurnover(), "turnover");
 			update.addField(req.getPreMoneyValuation(), "premoneyvaluation");
 			update.addField(req.getClosingTime(), "closingtime");
 			update.addField(req.getRevenueMaxId(), "revenuemaxid");
@@ -96,13 +94,12 @@ public class StartupRepository implements IRepository<Startup> {
 	public Startup mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
 		return Startup.startupBuilder().accountId(rs.getLong("accountId"))
 				.investmentPhaseId(rs.getLong("investmentphaseid")).boosts(rs.getInt("boosts"))
-				.numberOfFte(rs.getInt("numberOfFte")).turnover(rs.getInt("turnover"))
-				.breakEvenYear(rs.getInt("breakevenYear")).website(rs.getString("website"))
-				.investmentPhaseId(rs.getLong("investmentPhaseId")).revenueMaxId(rs.getInt("revenuemaxid"))
-				.revenueMinId(rs.getInt("revenueminid")).scope(rs.getInt("scope")).uId(rs.getString("uid"))
-				.foundingYear(rs.getInt("foundingYear")).financeTypeId(rs.getLong("financetypeid"))
-				.closingTime(rs.getDate("closingTime")).preMoneyEvaluation(rs.getInt("premoneyvaluation"))
-				.raised(rs.getInt("raised")).build();
+				.numberOfFte(rs.getInt("numberOfFte")).breakEvenYear(rs.getInt("breakevenYear"))
+				.website(rs.getString("website")).investmentPhaseId(rs.getLong("investmentPhaseId"))
+				.revenueMaxId(rs.getInt("revenuemaxid")).revenueMinId(rs.getInt("revenueminid"))
+				.scope(rs.getInt("scope")).uId(rs.getString("uid")).foundingYear(rs.getInt("foundingYear"))
+				.financeTypeId(rs.getLong("financetypeid")).closingTime(rs.getDate("closingTime"))
+				.preMoneyEvaluation(rs.getInt("premoneyvaluation")).raised(rs.getInt("raised")).build();
 	}
 
 	/**
@@ -113,9 +110,9 @@ public class StartupRepository implements IRepository<Startup> {
 	public void add(Startup su) throws Exception {
 
 		try {
-			String query = "INSERT INTO startup(accountid, boosts, numberoffte, turnover,"
+			String query = "INSERT INTO startup(accountid, boosts, numberoffte,"
 					+ " website, breakevenyear, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
-					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised) VALUES ( ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised) VALUES ( ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -123,7 +120,6 @@ public class StartupRepository implements IRepository<Startup> {
 					ps.setLong(c++, su.getAccountId());
 					ps.setInt(c++, 0);
 					ps.setInt(c++, su.getNumberOfFte());
-					ps.setInt(c++, su.getTurnover());
 					ps.setString(c++, su.getWebsite());
 					ps.setInt(c++, su.getBreakEvenYear());
 					ps.setInt(c++, su.getPreMoneyValuation());

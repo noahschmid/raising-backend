@@ -22,7 +22,6 @@ public class StartupService extends AccountService {
 
 	
 	private StartupRepository startupRepository;
-	private ContactRepository contactRepository;
 	private BoardmemberRepository bmemRepository;
 	private FounderRepository founderRepository;
 	private AssignmentTableRepository labelRepository;
@@ -33,7 +32,7 @@ public class StartupService extends AccountService {
 	
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
-			ContactRepository contactRepository, BoardmemberRepository bmemRepository,
+			BoardmemberRepository bmemRepository,
 			FounderRepository founderRepository, InvestorRepository investorRepository, MailUtil mailUtil,
 			ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, PrivateShareholderRepository pshRepository,
 			CorporateShareholderRepository cshRepository, JwtUtil jwtUtil) {
@@ -45,7 +44,6 @@ public class StartupService extends AccountService {
 		this.labelRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("label")
 				.withAccountIdName("startupid").withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
 		this.startupRepository = startupRepository;
-		this.contactRepository = contactRepository;
 		this.bmemRepository = bmemRepository;
 		this.founderRepository = founderRepository;
 
@@ -67,8 +65,6 @@ public class StartupService extends AccountService {
 		su.setAccountId(accountId);
 		startupRepository.add(su);
 
-		if (su.getContact() != null)
-			contactRepository.addMemberByStartupId(su.getContact(), accountId);
 		if (su.getBoardmembers() != null)
 			su.getBoardmembers().forEach(bmem -> bmemRepository.addMemberByStartupId(bmem, accountId));
 		if (su.getLabels() != null)
@@ -93,7 +89,6 @@ public class StartupService extends AccountService {
 
 		List<AssignmentTableModel> invTypes = investorTypeRepository.findByAccountId(startupId);
 		List<AssignmentTableModel> labels = labelRepository.findByAccountId(startupId);
-		Contact contact = contactRepository.findByStartupId(startupId).get(0);
 		List<Founder> founders = founderRepository.findByStartupId(startupId);
 		List<PrivateShareholder> psh = pshRepository.findByStartupId(startupId);
 		List<CorporateShareholder> csh = cshRepository.findByStartupId(startupId);
@@ -102,7 +97,7 @@ public class StartupService extends AccountService {
 		Account acc = super.getAccount(startupId);
 		Startup su = startupRepository.find(startupId);
 
-		return new Startup(acc, su, invTypes, labels, contact, founders, psh, csh, bmems);
+		return new Startup(acc, su, invTypes, labels, founders, psh, csh, bmems);
 	}
 
 	/**
@@ -136,7 +131,7 @@ public class StartupService extends AccountService {
 		List<AssignmentTableModel> supports = supportRepo.findByAccountId(startup.getAccountId());
 
 		profile.setAccountId(startup.getAccountId());
-		profile.setName(startup.getName());
+		profile.setName(startup.getCompanyName());
 		profile.setDescription(startup.getDescription());
 		profile.setInvestmentMax(startup.getTicketMaxId());
 		profile.setInvestmentMin(startup.getTicketMinId());

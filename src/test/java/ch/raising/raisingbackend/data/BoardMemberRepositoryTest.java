@@ -80,7 +80,7 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 	@Override
 	public void testAddMemberByStartupId() {
 		Boardmember bmem = Boardmember.builder().startupid(7).firstName("Vincent").lastName("D' Agosta")
-				.education("Detective").profession("Detective").membersince(9).coutryId(113).build();
+				.education("Detective").profession("Detective").memberSince(9).coutryId(113).build();
 		bmemRepo.addMemberByStartupId(bmem, 7);
 		String sql = QueryBuilder.getInstance().tableName("boardmember").whereEquals("startupid", "" + 7).select();
 		long id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
@@ -99,7 +99,7 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 		assertEquals("Special Agent", found.getProfession());
 		assertEquals("lawyer", found.getEducation());
 		assertEquals("lawless", found.getPosition());
-		assertEquals(10, found.getMembersince());
+		assertEquals(10, found.getMemberSince());
 		assertEquals(123, found.getCountryId());
 	}
 
@@ -121,7 +121,7 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 	@Test
 	public void testupdate() throws Exception {
 		Boardmember bmem = Boardmember.builder().firstName("Moritz").lastName("Schönbächler")
-				.education("Holzfäller").profession("Nope").membersince(12).coutryId(13).build();
+				.education("Holzfäller").profession("Nope").memberSince(12).coutryId(13).build();
 		bmemRepo.update(1, bmem);
 		String sql = QueryBuilder.getInstance().tableName("boardmember").whereEquals("id", "1").select();
 		Boardmember found = jdbc.queryForObject(sql, bmemRepo::mapRowToModel);
@@ -129,7 +129,7 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 		assertEquals("Schönbächler", found.getLastName());
 		assertEquals("Holzfäller", found.getEducation());
 		assertEquals("Nope", found.getProfession());
-		assertEquals(12, found.getMembersince());
+		assertEquals(12, found.getMemberSince());
 		assertEquals(13, found.getCountryId());
 	}
 
@@ -147,7 +147,7 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 		assertEquals("Special Agent", bmem.getProfession());
 		assertEquals("lawyer", bmem.getEducation());
 		assertEquals("lawless", bmem.getPosition());
-		assertEquals(10, bmem.getMembersince());
+		assertEquals(10, bmem.getMemberSince());
 		assertEquals(123, bmem.getCountryId());
 	}
 }

@@ -21,7 +21,6 @@ public class Startup extends Account {
 	private String website = "";
 	private int breakEvenYear = -1;
 	private int numberOfFte = -1;
-	private int turnover = -1;
 	private int preMoneyValuation = -1;
 	private Date closingTime;
 	private int revenueMaxId;
@@ -31,6 +30,7 @@ public class Startup extends Account {
 	private int foundingYear;
 	private long financeTypeId = -1;
 	private int raised;
+	private long videoId = -1;
 /* =========================================================================*/
 
 
@@ -39,7 +39,6 @@ public class Startup extends Account {
 	private List<AssignmentTableModel> investorTypes;
 	private List<AssignmentTableModel> labels;
 	private List<Boardmember> boardmembers;
-	private Contact contact;
 	private List<Founder> founders;
 	private List<PrivateShareholder> privateShareholders;
 	private List<CorporateShareholder> corporateShareholders;
@@ -58,13 +57,12 @@ public class Startup extends Account {
 	 * @param preMoneyValuation
 	 */
 	public Startup(Account account, Startup su, List<AssignmentTableModel> invTypes, List<AssignmentTableModel> labels,
-			Contact contact, List<Founder> founders, List<PrivateShareholder> pShareholders,
+			List<Founder> founders, List<PrivateShareholder> pShareholders,
 			List<CorporateShareholder> cShareholders, List<Boardmember> boardMembers) {
 		super(account);
 		this.investmentPhaseId = su.getInvestmentPhaseId();
 		this.boosts = su.getBoosts();
 		this.numberOfFte = su.getNumberOfFte();
-		this.turnover = su.getTurnover();
 		this.website = su.getWebsite();
 		this.breakEvenYear = su.getBreakEvenYear();
 		this.preMoneyValuation = su.getPreMoneyValuation();
@@ -76,9 +74,9 @@ public class Startup extends Account {
 		this.financeTypeId = su.getFinanceTypeId();
 		this.closingTime = su.getClosingTime();
 		this.raised = su.getRaised();
+		this.videoId = su.getVideoId();
 		this.investorTypes = invTypes;
 		this.labels = labels;
-		this.contact = contact;
 		this.founders = founders;
 		this.privateShareholders = pShareholders;
 		this.corporateShareholders = cShareholders;
@@ -105,16 +103,15 @@ public class Startup extends Account {
 	 * @param foundingYear
 	 */
 	@Builder(builderMethodName = "startupBuilder")
-	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte, int turnover, String website,
+	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte, String website,
 			int breakEvenYear, int preMoneyEvaluation, int revenueMaxId, long financeTypeId, Date closingTime,
-			int revenueMinId, int scope, String uId, int foundingYear, int raised) {
+			int revenueMinId, int scope, String uId, int foundingYear, int raised, long videoId) {
 		super();
 
 		this.accountId = accountId;
 		this.investmentPhaseId = investmentPhaseId;
 		this.boosts = boosts;
 		this.numberOfFte = numberOfFte;
-		this.turnover = turnover;
 
 		this.website = website;
 		this.breakEvenYear = breakEvenYear;
@@ -128,11 +125,12 @@ public class Startup extends Account {
 		this.financeTypeId = financeTypeId;
 		this.closingTime = closingTime;
 		this.raised = raised;
+		this.videoId = videoId;
 	}
 
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() || investmentPhaseId == -1 || website == "" || breakEvenYear == -1
+		return super.isInComplete() || companyName == "" || investmentPhaseId == -1 || website == "" || breakEvenYear == -1
 				|| financeTypeId == -1 || revenueMaxId == -1 || revenueMinId == -1 || investorTypes == null
 				|| founders == null || investorTypes.isEmpty() || founders.isEmpty();
 

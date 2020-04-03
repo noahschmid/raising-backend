@@ -12,8 +12,7 @@ public class Account {
 /* =========================================================================
 	Stored in the accounttable*/
 	protected long accountId = -1l;
-	protected String company = "";
-	protected String name = "";
+	protected String companyName = "";
 	private String password = "";
 	private String roles = "";
 	private String email = "";
@@ -26,8 +25,8 @@ public class Account {
 
 /* =========================================================================
 	Stored in seperate tables with respective respecitve names*/
-	private Image profilePicture;
-	private List<Image> gallery;
+	private Media profilePicture;
+	private List<Media> gallery;
 	private List<AssignmentTableModel> countries;
 	private List<AssignmentTableModel> continents;
 	private List<AssignmentTableModel> support;
@@ -52,12 +51,11 @@ public class Account {
 	 */
 
 	@Builder(builderMethodName = "accountBuilder")
-	public Account(long accountId, String name, String password, String roles, String email, int ticketMinId,
-			int ticketMaxId, String company, String description, String pitch) {
+	public Account(long accountId, String password, String roles, String email, int ticketMinId,
+			int ticketMaxId, String companyName, String description, String pitch) {
 
-		this.company = company;
+		this.companyName = companyName;
 		this.accountId = accountId;
-		this.name = name;
 		this.password = password;
 		this.roles = roles;
 		this.email = email;
@@ -90,9 +88,8 @@ public class Account {
 	 * @param industries
 	 */
 	public Account(Account acc) {
-		this.company = acc.company;
+		this.companyName = acc.companyName;
 		this.accountId = acc.accountId;
-		this.name = acc.name;
 		this.password = acc.password;
 		this.roles = acc.roles;
 		this.email = acc.email;
@@ -115,7 +112,7 @@ public class Account {
 	}
 
 	public boolean isInComplete() {
-		return name == "" || password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1
+		return password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1
 				|| support == null || industries == null
 				|| (countries.isEmpty() && continents.isEmpty()) || support.isEmpty() || industries.isEmpty();
 	}

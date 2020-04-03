@@ -12,17 +12,17 @@ public class Boardmember extends StartupMember {
 	private String education;
 	private String profession;
 	private String position;
-	private int membersince;
+	private int memberSince;
 	private long countryId;
 
 	@Builder
-	public Boardmember(long id, long startupid, String firstName, String lastName, int membersince, String position,
+	public Boardmember(long id, long startupid, String firstName, String lastName, int memberSince, String position,
 			String profession, String education, long coutryId) {
 		super(id, startupid, firstName, lastName);
 		this.education = education;
 		this.profession = profession;
 		this.position = position;
-		this.membersince = membersince;
+		this.memberSince = memberSince;
 		this.countryId = coutryId;
 	}
 }

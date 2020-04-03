@@ -1,28 +1,24 @@
 package ch.raising.raisingbackend.data;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
-import ch.raising.data.ContactRepository;
 import ch.raising.data.PrivateShareholderRepository;
-import ch.raising.models.Contact;
 import ch.raising.models.PrivateShareholder;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
@@ -86,7 +82,7 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 	@Override
 	public void testAddMemberByStartupId() {
 		PrivateShareholder psh = PrivateShareholder.builder().startupid(7).firstName("Vincent").lastName("D' Agosta")
-				.city("New York").equityShare(99).investortypeId(1).countryId(768).build();
+				.city("New York").equityShare(99).investorTypeId(1).countryId(768).build();
 		psr.addMemberByStartupId(psh, 7);
 		assertEquals(2, JdbcTestUtils.countRowsInTable(jdbc, "privateshareholder"));
 
@@ -99,7 +95,7 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 		assertEquals("D' Agosta", added.getLastName());
 		assertEquals("New York", added.getCity());
 		assertEquals(99, added.getEquityShare());
-		assertEquals(1, added.getInvestortypeId());
+		assertEquals(1, added.getInvestorTypeId());
 		assertEquals(768, added.getCountryId());
 	}
 
@@ -124,7 +120,7 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 		assertEquals("Pendergast", found.getLastName());
 		assertEquals("New York", found.getCity());
 		assertEquals(100, found.getEquityShare());
-		assertEquals(12, found.getInvestortypeId());
+		assertEquals(12, found.getInvestorTypeId());
 		assertEquals(456, found.getCountryId());
 	}
 
@@ -139,14 +135,14 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 		assertEquals("Pendergast", found.getLastName());
 		assertEquals("New York", found.getCity());
 		assertEquals(100, found.getEquityShare());
-		assertEquals(12, found.getInvestortypeId());
+		assertEquals(12, found.getInvestorTypeId());
 		assertEquals(456, found.getCountryId());
 	}
 
 	@Override
 	public void testupdate() throws Exception {
 		PrivateShareholder psh = PrivateShareholder.builder().id(123).startupid(1000).firstName("Moritz").lastName("schönbächler")
-				.city("Shangnau").equityShare(32).investortypeId(5).countryId(45).build();
+				.city("Shangnau").equityShare(32).investorTypeId(5).countryId(45).build();
 		psr.update(1, psh);
 		String sql = QueryBuilder.getInstance().tableName("boardmember").whereEquals("id", "1").select();
 		PrivateShareholder found = jdbc.queryForObject(sql, psr::mapRowToModel);
@@ -156,7 +152,7 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 		assertEquals("schönbächler", found.getLastName());
 		assertEquals("Shangnau", found.getCity());
 		assertEquals(32, found.getEquityShare());
-		assertEquals(5, found.getInvestortypeId());
+		assertEquals(5, found.getInvestorTypeId());
 		assertEquals(45, found.getCountryId());
 	}
 

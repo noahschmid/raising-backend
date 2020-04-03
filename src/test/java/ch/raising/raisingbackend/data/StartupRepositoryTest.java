@@ -48,7 +48,7 @@ public class StartupRepositoryTest {
 	@BeforeEach
 	public void setup() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).pair("accountid", Type.SERIAL)
-				.pair("boosts", Type.INT).pair("numberoffte", Type.INT).pair("turnover", Type.INT)
+				.pair("boosts", Type.INT).pair("numberoffte", Type.INT)
 				.pair("website", Type.VARCHAR).pair("breakevenyear", Type.INT).pair("premoneyvaluation", Type.INT)
 				.pair("closingtime", Type.DATE).pair("financetypeid", Type.INT).pair("investmentphaseid", Type.INT)
 				.pair("revenuemaxid", Type.INT).pair("revenueminid", Type.INT).pair("scope", Type.INT)
@@ -56,7 +56,7 @@ public class StartupRepositoryTest {
 
 		jdbc.execute(sql);
 
-		su = Startup.startupBuilder().numberOfFte(2).turnover(1).website("soreal.ch").breakEvenYear(2025)
+		su = Startup.startupBuilder().numberOfFte(2).website("soreal.ch").breakEvenYear(2025)
 				.preMoneyEvaluation(1234).closingTime(Date.valueOf("2020-10-10")).financeTypeId(6).investmentPhaseId(5)
 				.revenueMaxId(22).revenueMinId(20).scope(8).uId("CH-132").foundingYear(1997).raised(100).build();
 		addStartup();
@@ -70,10 +70,10 @@ public class StartupRepositoryTest {
 
 	public void addStartup() {
 		String sql = QueryBuilder.getInstance().tableName(tableName)
-				.attribute("numberoffte, turnover, website, breakevenyear")
+				.attribute("numberoffte, website, breakevenyear")
 				.attribute("premoneyvaluation, closingtime, financetypeid, investmentphaseid")
 				.attribute("revenuemaxid, revenueminid, scope, uid, foundingyear, raised")
-				.value("" + su.getNumberOfFte()).value("" + su.getTurnover()).value("" + su.getWebsite())
+				.value("" + su.getNumberOfFte()).value("" + su.getWebsite())
 				.value("" + su.getBreakEvenYear()).value("" + su.getPreMoneyValuation())
 				.value(su.getClosingTime().toString()).value("" + su.getFinanceTypeId())
 				.value("" + su.getInvestmentPhaseId()).value("" + su.getRevenueMaxId()).value("" + su.getRevenueMinId())
@@ -104,7 +104,7 @@ public class StartupRepositoryTest {
 		Date date = new Date(1633816800000L);
 
 		Startup update = Startup.startupBuilder().accountId(1).investmentPhaseId(1).website("adf.ch").breakEvenYear(1234)
-				.turnover(456).numberOfFte(145).preMoneyEvaluation(12).revenueMaxId(1).revenueMinId(2).scope(45)
+				.numberOfFte(145).preMoneyEvaluation(12).revenueMaxId(1).revenueMinId(2).scope(45)
 				.uId("CH321").foundingYear(3456).financeTypeId(12).raised(0).build();
 		suRepo.update(1, update);
 		String sql = QueryBuilder.getInstance().tableName("startup").whereEquals("accountid", "1").select();
@@ -115,7 +115,7 @@ public class StartupRepositoryTest {
 
 	@Test
 	public void testAdd() throws Exception {
-		Startup su = Startup.startupBuilder().boosts(0).numberOfFte(1).turnover(2).website("gangDaLang.ch")
+		Startup su = Startup.startupBuilder().boosts(0).numberOfFte(1).website("gangDaLang.ch")
 				.breakEvenYear(2000).preMoneyEvaluation(10000).closingTime(Date.valueOf("2021-10-10")).financeTypeId(3)
 				.investmentPhaseId(4).revenueMaxId(5).revenueMinId(6).scope(7).uId("DE-9999").foundingYear(2020)
 				.build();

@@ -67,8 +67,8 @@ public class AccountRepositoryTest {
 		tableName = "account";
 
 		String createTable = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.IDENTITY)
-				.pair("pitch", Type.VARCHAR).pair("description", Type.VARCHAR).pair("company", Type.VARCHAR)
-				.pair("name", Type.VARCHAR).pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR)
+				.pair("pitch", Type.VARCHAR).pair("description", Type.VARCHAR).pair("companyName", Type.VARCHAR)
+				.pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR)
 				.pair("emailhash", Type.VARCHAR).pair("ticketminid", Type.INT).pair("ticketmaxid", Type.INT)
 				.createTable();
 		jdbc.execute(createTable);
@@ -87,15 +87,15 @@ public class AccountRepositoryTest {
 		email = "testmail";
 		emailhash = encoder.encode(email);
 		name = "testname";
-		account = Account.accountBuilder().accountId(1).name(name).password("testpassword").email(emailhash).build();
-		account2 = Account.accountBuilder().name("testname2").password("testpasswordw")
+		account = Account.accountBuilder().accountId(1).companyName(name).password("testpassword").email(emailhash).build();
+		account2 = Account.accountBuilder().companyName("testname2").password("testpasswordw")
 				.email(encoder.encode("testmanil2")).build();
 
-		String sql = QueryBuilder.getInstance().tableName(tableName).attribute("name").attribute("password")
+		String sql = QueryBuilder.getInstance().tableName(tableName).attribute("companyName").attribute("password")
 				.attribute("emailhash").value(name).value("testpassword").value(emailhash).insert();
 		jdbc.execute(sql);
 
-		sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("account.name", name).select();
+		sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("account.companyName", name).select();
 		id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
 	}
 
@@ -104,7 +104,6 @@ public class AccountRepositoryTest {
 		assertNotEquals(-1, id);
 		Account account = accountRepo.find(id);
 		assertNotNull(account);
-		assertEquals("testname", account.getName());
 	}
 
 	@Test
@@ -159,13 +158,13 @@ public class AccountRepositoryTest {
 		accup.setEmail(newMail);
 		accup.setPassword(newPassword);
 		accup.setRoles("ROLE_TESTER");
-		accup.setName(newName);
+		accup.setCompanyName(newName);
 		accountRepo.update(1, accup);
 		String sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("id", "1").select();
 		Account found = jdbc.queryForObject(sql, MapUtil::mapRowToAccount);
 		assertNotNull(found);
 		assertTrue(encoder.matches(newMail, found.getEmail()));
-		assertEquals(newName, found.getName());
+		assertEquals(newName, found.getCompanyName());
 
 	}
 }

@@ -120,7 +120,7 @@ public class InvestorService extends AccountService {
         List<AssignmentTableModel> supports = supportRepository.findByAccountId(investor.getAccountId());
 
         profile.setAccountId(investor.getAccountId());
-        profile.setName(investor.getName());
+        profile.setName(investor.getCompanyName());
         profile.setDescription(investor.getDescription());
         profile.setInvestmentMax(investor.getTicketMaxId());
         profile.setInvestmentMin(investor.getTicketMinId());

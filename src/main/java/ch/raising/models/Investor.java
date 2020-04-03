@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Investor extends Account{
 	
+	private String firstName = "";
+	private String lastName = "";
 	private long investorTypeId = -1;
 	private List<AssignmentTableModel> investmentPhases;
 
@@ -30,6 +32,8 @@ public class Investor extends Account{
 	public Investor(Account account, Investor inv, List<AssignmentTableModel> invPhases) {
 
 		super(account);
+		this.firstName = inv.getFirstName();
+		this.lastName = inv.getLastName();
 		this.investorTypeId = inv.getInvestorTypeId();
 		this.investmentPhases = invPhases;
 
@@ -46,8 +50,9 @@ public class Investor extends Account{
 	 */
 
 	@Builder(builderMethodName = "investorBuilder")
-	public Investor(long accountId, String company, long investorTypeId) {
-		this.company = company;
+	public Investor(long accountId, String firstName, String lastName ,long investorTypeId) {
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.accountId = accountId;
 		this.investorTypeId = investorTypeId;
 	}

@@ -36,7 +36,7 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 	public PrivateShareholder mapRowToModel(ResultSet rs, int row) throws SQLException {
 		return PrivateShareholder.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
 				.firstName(rs.getString("firstname")).lastName(rs.getString("lastname")).city(rs.getString("city"))
-				.equityShare(rs.getInt("equityshare")).investortypeId(rs.getLong("investortypeid"))
+				.equityShare(rs.getInt("equityshare")).investorTypeId(rs.getLong("investortypeid"))
 				.countryId(rs.getLong("countryid")).build();
 	}
 
@@ -69,7 +69,7 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 				ps.setString(c++, psh.getLastName());
 				ps.setString(c++, psh.getCity());
 				ps.setInt(c++, psh.getEquityShare());
-				ps.setLong(c++, psh.getInvestortypeId());
+				ps.setLong(c++, psh.getInvestorTypeId());
 				ps.setLong(c++, psh.getCountryId());
 				return ps.execute();
 			}
@@ -90,7 +90,7 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getCity(), "city");
 		update.addField(req.getEquityShare(), "equityshare");
-		update.addField(req.getInvestortypeId(), "investortypeid");
+		update.addField(req.getInvestorTypeId(), "investortypeid");
 		update.addField(req.getCountryId(), "countryid");
 	}
 

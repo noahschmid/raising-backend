@@ -24,7 +24,7 @@ import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
-import ch.raising.models.Image;
+import ch.raising.models.Media;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
@@ -38,7 +38,8 @@ import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
 import ch.raising.data.AssignmentTableRepository;
-import ch.raising.data.ImageRepository;
+import ch.raising.data.MediaRepository;
+import ch.raising.interfaces.IMediaRepository;
 
 @Primary
 @Service
@@ -50,8 +51,8 @@ public class AccountService implements UserDetailsService {
 	private JdbcTemplate jdbc;
 	private JwtUtil jwtUtil;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-	private ImageRepository galleryRepository;
-	private ImageRepository pPicRepository;
+	private IMediaRepository galleryRepository;
+	private IMediaRepository pPicRepository;
 	@Autowired
     private AuthenticationManager authenticationManager ;
 	protected AssignmentTableRepository countryRepo;
@@ -72,8 +73,8 @@ public class AccountService implements UserDetailsService {
 		this.continentRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("continent");
 		this.supportRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("support");
 		this.industryRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("industry");
-		this.galleryRepository = new ImageRepository(jdbc, "gallery");
-		this.pPicRepository = new ImageRepository(jdbc, "profilepicture");
+		this.galleryRepository = new MediaRepository(jdbc, "gallery");
+		this.pPicRepository = new MediaRepository(jdbc, "profilepicture");
 	}
 
 	@Override
@@ -150,11 +151,11 @@ public class AccountService implements UserDetailsService {
 		long accountId = accountRepository.add(req);
 
 		if (req.getGallery() != null)
-			for (Image pic : req.getGallery()) {
-				galleryRepository.addImageToAccount(pic, accountId);
+			for (Media pic : req.getGallery()) {
+				galleryRepository.addMediaToAccount(pic, accountId);
 			}
 		if (req.getProfilePicture() != null)
-			pPicRepository.addImageToAccount(req.getProfilePicture(), accountId);
+			pPicRepository.addMediaToAccount(req.getProfilePicture(), accountId);
 		if (req.getCountries() != null)
 			req.getCountries().forEach(country -> countryRepo.addEntryToAccountById(country.getId(), accountId));
 		if (req.getContinents() != null)
@@ -170,7 +171,7 @@ public class AccountService implements UserDetailsService {
 	/**
 	 * Delete user account
 	 * 
-	 * @param tableEntryId the tableEntryId of the account to delete
+	 * @param id the id of the account to delete
 	 * @return ResponseEntity with status code and message
 	 */
 	public ResponseEntity<?> deleteProfile(long id) {
@@ -185,7 +186,7 @@ public class AccountService implements UserDetailsService {
 	/**
 	 * gets the requested Profile and handles all the Responses for the request
 	 * 
-	 * @param tableEntryId
+	 * @param id
 	 * @return
 	 */
 	public ResponseEntity<?> getProfile(long id) {
@@ -202,8 +203,8 @@ public class AccountService implements UserDetailsService {
 	 * is overwritten by subtype {@link InvestorService} and {@link StartupService}
 	 * to allow the retrieving of a specific accounttype.
 	 * 
-	 * @param tableEntryId
-	 * @return the account with the specified tableEntryId. the account is fully
+	 * @param id
+	 * @return the account with the specified id. the account is fully
 	 *         initialized with all lists and objects non null.
 	 */
 	protected Account getAccount(long id) {
@@ -211,8 +212,8 @@ public class AccountService implements UserDetailsService {
 		List<AssignmentTableModel> continents = continentRepo.findByAccountId(id);
 		List<AssignmentTableModel> support = supportRepo.findByAccountId(id);
 		List<AssignmentTableModel> industries = industryRepo.findByAccountId(id);
-		List<Image> pPic = pPicRepository.findImagesByAccountId(id);
-		List<Image> gallery = galleryRepository.findImagesByAccountId(id);
+		List<Media> pPic = pPicRepository.findMediaByAccount(id);
+		List<Media> gallery = galleryRepository.findMediaByAccount(id);
 		Account acc = accountRepository.find(id);
 		acc.setPassword("");
 		acc.setRoles("");
@@ -241,9 +242,9 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * Find user account by tableEntryId
+	 * Find user account by id
 	 * 
-	 * @param tableEntryId the tableEntryId of the desired account
+	 * @param id the id of the desired account
 	 * @return Account instance of the desired account
 	 */
 	public Account findById(long id) {
@@ -251,9 +252,9 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * Check if given tableEntryId belongs to own account
+	 * Check if given id belongs to own account
 	 * 
-	 * @param tableEntryId the tableEntryId of the account to check against
+	 * @param id the id of the account to check against
 	 * @param isAdmin      indicates whether the user is admin
 	 * @return true if account belongs to request, false otherwise
 	 */
@@ -263,7 +264,7 @@ public class AccountService implements UserDetailsService {
 		if (account == null || username == null)
 			return false;
 
-		if (!account.getName().equals(username))
+		if (!account.getEmail().equals(username))
 			return false;
 		return true;
 	}
@@ -272,7 +273,7 @@ public class AccountService implements UserDetailsService {
 	 * Update user account, is called by the
 	 * {@link ch.raising.controllers.StartupController},{@link ch.raising.controllersAccountController},{@link ch.raising.controllersInvestorController}
 	 * 
-	 * @param id      the tableEntryId of the account to be updated
+	 * @param id      the id of the account to be updated
 	 * @param req     the http request instance
 	 * @param isAdmin indicates whether or not the user requesting the update is
 	 *                admin
@@ -324,7 +325,7 @@ public class AccountService implements UserDetailsService {
 	/**
 	 * Reset password if valid request
 	 * 
-	 * @param tableEntryId the tableEntryId of the account to reset password
+	 * @param id the id of the account to reset password
 	 * @param request      the request with reset code and new password
 	 * @return response entity with status code
 	 */
@@ -345,14 +346,14 @@ public class AccountService implements UserDetailsService {
 		}
 	}
 
-	public ResponseEntity<?> addGalleryImageToAccountById(Image img) {
+	public ResponseEntity<?> addGalleryImageToAccountById(Media img) {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
 		if (accDet.getId() != img.getAccountId())
 			return ResponseEntity.status(403)
 					.body(new ErrorResponse("Not authorized to add picture to foreign account"));
 		try {
-			galleryRepository.addImageToAccount(img, accDet.getId());
+			galleryRepository.addMediaToAccount(img, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -363,7 +364,7 @@ public class AccountService implements UserDetailsService {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
 		try {
-			galleryRepository.deleteImageFromAccount(imgId, accDet.getId());
+			galleryRepository.deleteMediaFromAccount(imgId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -374,24 +375,25 @@ public class AccountService implements UserDetailsService {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
 		try {
-			List<Image> images = galleryRepository.findImagesByAccountId(accDet.getId());
+			List<Media> images = galleryRepository.findMediaByAccount(accDet.getId());
 			return ResponseEntity.ok().body(images);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 	}
 
-	public ResponseEntity<?> addProfilePictureToAccountById(Image img) {
+	public ResponseEntity<?> addProfilePictureToAccountById(Media img) {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
-		long currentPPicId = pPicRepository.containsPictureOf(accDet.getId());
+		long currentPPicId = pPicRepository.getMediaIdOf(accDet.getId());
+		
 		if (accDet.getId() != img.getAccountId())
 			return ResponseEntity.status(403)
 					.body(new ErrorResponse("Not authorized to add profile picture to foreign account"));
 		try {
-			if (currentPPicId != 0)
-				pPicRepository.deleteImageFromAccount(currentPPicId, accDet.getId());
-			pPicRepository.addImageToAccount(img, accDet.getId());
+			if (currentPPicId != -1)
+				pPicRepository.deleteMediaFromAccount(currentPPicId, accDet.getId());
+			pPicRepository.addMediaToAccount(img, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -402,7 +404,7 @@ public class AccountService implements UserDetailsService {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
 		try {
-			pPicRepository.deleteImageFromAccount(imgId, accDet.getId());
+			pPicRepository.deleteMediaFromAccount(imgId, accDet.getId());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -413,7 +415,7 @@ public class AccountService implements UserDetailsService {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
 		try {
-			List<Image> images = pPicRepository.findImagesByAccountId(accDet.getId());
+			List<Media> images = pPicRepository.findMediaByAccount(accDet.getId());
 			return ResponseEntity.ok().body(images);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));

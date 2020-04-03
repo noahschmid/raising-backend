@@ -12,15 +12,15 @@ public class PrivateShareholder extends StartupMember{
 
 	private String city;
 	private int equityShare;
-	private long investortypeId;
+	private long investorTypeId;
 	private long countryId;
 	
 	@Builder
-	public PrivateShareholder(long id, String firstName, String lastName, String city, int equityShare, long startupid, long investortypeId, long countryId) {
+	public PrivateShareholder(long id, String firstName, String lastName, String city, int equityShare, long startupid, long investorTypeId, long countryId) {
 		super(id, startupid, firstName, lastName);
 		this.city = city;
 		this.equityShare = equityShare;
-		this.investortypeId = investortypeId;
+		this.investorTypeId = investorTypeId;
 		this.countryId = countryId;
 	}
 	

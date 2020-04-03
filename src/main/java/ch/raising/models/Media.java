@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Image {
+public class Media {
 	private long id;
 	private long accountId;
-	private String image;
+	private byte[] media;
 }

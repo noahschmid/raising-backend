@@ -53,8 +53,8 @@ public class AccountControllerTest {
 		tableName = "account";
 
 		String createTable = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.SERIAL)
-				.pair("pitch", Type.VARCHAR).pair("description", Type.VARCHAR).pair("company", Type.VARCHAR)
-				.pair("name", Type.VARCHAR).pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR)
+				.pair("pitch", Type.VARCHAR).pair("description", Type.VARCHAR).pair("companyName", Type.VARCHAR)
+				.pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR)
 				.pair("emailhash", Type.VARCHAR).pair("ticketminid", Type.INT).pair("ticketmaxid", Type.INT)
 				.createTable();
 
@@ -81,7 +81,6 @@ public class AccountControllerTest {
 
         // valid account registration request should return 200
         account.setEmail("email");
-        account.setName("name");
         account.setPassword("password");
         mockMvc.perform(post("/account/register")
         .contentType("application/json")
@@ -96,7 +95,6 @@ public class AccountControllerTest {
 
         Account account = new Account();
         account.setEmail("test@test.ch");
-        account.setName("Jon Doe");
         account.setPassword("12345");
 
         mockMvc.perform(post("/account/valid")

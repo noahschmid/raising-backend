@@ -105,15 +105,14 @@ public class AccountRepository implements IRepository<Account> {
 	 */
 	public long add(Account acc) throws DatabaseOperationException {
 		try {
-			String query = "INSERT INTO account(company, name, password, emailhash, pitch, description, ticketminid, ticketmaxid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			String query = "INSERT INTO account(companyName, password, emailhash, pitch, description, ticketminid, ticketmaxid) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			String emailHash = encoder.encode(acc.getEmail());
 			String passwordHash = encoder.encode(acc.getPassword());
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 					int c = 1;
-					ps.setString(c++, acc.getCompany());
-					ps.setString(c++, acc.getName());
+					ps.setString(c++, acc.getCompanyName());
 					ps.setString(c++, passwordHash);
 					ps.setString(c++, emailHash);
 					ps.setString(c++, acc.getPitch());
@@ -195,9 +194,9 @@ public class AccountRepository implements IRepository<Account> {
 	 * @throws SQLException
 	 */
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Account.accountBuilder().accountId(rs.getLong("id")).name(rs.getString("name"))
-				.company(rs.getString("company")).pitch(rs.getString("pitch")).description(rs.getString("description"))
-				.email(rs.getString("emailHash")).roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
+		return Account.accountBuilder().accountId(rs.getLong("id")).companyName(rs.getString("companyName"))
+				.pitch(rs.getString("pitch")).description(rs.getString("description")).email(rs.getString("emailHash"))
+				.roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
 				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password")).build();
 	}
 
@@ -213,14 +212,13 @@ public class AccountRepository implements IRepository<Account> {
 	 */
 	public void update(long id, Account req) throws Exception {
 		String emailHash = "";
-		if(req.getEmail() != "") {
+		if (req.getEmail() != "") {
 			emailHash = encoder.encode(req.getEmail());
 		}
 		try {
 			UpdateQueryBuilder update = new UpdateQueryBuilder("account", id, this, "id");
 			update.setJdbc(jdbc);
-			update.addField(req.getCompany(), "company");
-			update.addField(req.getName(), "name");
+			update.addField(req.getCompanyName(), "companyName");
 			update.addField(emailHash, "emailhash");
 			update.addField(req.getPitch(), "pitch");
 			update.addField(req.getDescription(), "description");
@@ -231,19 +229,23 @@ public class AccountRepository implements IRepository<Account> {
 			throw new Exception(e.getMessage());
 		}
 	}
+
 	public boolean isStartup(long id) {
 		try {
-			long foundId = jdbc.queryForObject("SELECT accountid FROM startup WHERE accountid = ?", new Object[] {id}, MapUtil::mapRowToAccountId);
+			long foundId = jdbc.queryForObject("SELECT accountid FROM startup WHERE accountid = ?", new Object[] { id },
+					MapUtil::mapRowToAccountId);
 			return foundId == id;
-		}catch(EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			return false;
 		}
 	}
+
 	public boolean isInvestor(long id) {
 		try {
-			long foundId = jdbc.queryForObject("SELECT accountid FROM investor WHERE accountid = ?", new Object[] {id}, MapUtil::mapRowToAccountId);
+			long foundId = jdbc.queryForObject("SELECT accountid FROM investor WHERE accountid = ?",
+					new Object[] { id }, MapUtil::mapRowToAccountId);
 			return foundId == id;
-		}catch(EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			return false;
 		}
 	}

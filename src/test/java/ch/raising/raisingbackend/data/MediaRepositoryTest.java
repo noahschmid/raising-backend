@@ -24,32 +24,33 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
-import ch.raising.data.ImageRepository;
-import ch.raising.models.Image;
+import ch.raising.data.MediaRepository;
+import ch.raising.interfaces.IMediaRepository;
+import ch.raising.models.Media;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.PreparedStatementUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { RepositoryTestConfig.class })
+@ContextConfiguration(classes = {RepositoryTestConfig.class })
 @SpringBootTest
 @ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
-public class ImageRepositoryTest {
+public class MediaRepositoryTest {
 
 	
 	JdbcTemplate jdbc;
 	
-	String imageString;
-	Image image;
-	ImageRepository imgrepo;
+	byte[] imageBytes;
+	Media image;
+	IMediaRepository imgrepo;
 	
 	@Autowired
-	public ImageRepositoryTest(JdbcTemplate jdbc){
+	public MediaRepositoryTest(JdbcTemplate jdbc){
 		this.jdbc = jdbc;
-		this.imageString = "DEADBEEF";
-		imgrepo = new ImageRepository(jdbc, "gallery");
-		image = Image.builder().image(imageString).build();
+		this.imageBytes = "DEADBEEF".getBytes();
+		imgrepo = new MediaRepository(jdbc, "gallery");
+		image = Media.builder().media(imageBytes).build();
 	}
 	
 	@BeforeEach
@@ -60,7 +61,7 @@ public class ImageRepositoryTest {
 
 	private void createTable() {
 		String sql = QueryBuilder.getInstance().tableName("gallery").pair("id", Type.SERIAL)
-				.pair("accountid", Type.BIGINT).pair("image", Type.BYTEA).createTable();
+				.pair("accountid", Type.BIGINT).pair("media", Type.BYTEA).createTable();
 		jdbc.execute(sql);
 	}
 
@@ -70,40 +71,46 @@ public class ImageRepositoryTest {
 	}
 
 	private void addImage() {
-		String sql = QueryBuilder.getInstance().tableName("gallery").attribute("accountid, image").qMark().qMark().insert();
-		jdbc.execute(sql, PreparedStatementUtil.addImageByIdCallback(image, 1));
+		String sql = QueryBuilder.getInstance().tableName("gallery").attribute("accountid, media").qMark().qMark().insert();
+		jdbc.execute(sql, PreparedStatementUtil.addMediaByIdCallback(image, 2));
 	}
 	
 	@Test
 	public void addImageToAccountTest() throws SQLException {
-		Image img = Image.builder().accountId(1).image(imageString).build();
-		imgrepo.addImageToAccount(img, 1);
+		Media img = Media.builder().accountId(1).media(imageBytes).build();
+		imgrepo.addMediaToAccount(img, 2);
 		
-		String sql = QueryBuilder.getInstance().tableName("gallery").whereEquals("accountid", ""+1).select();
-		List<Image> found = jdbc.query(sql, MapUtil::mapRowToImage);
+		String sql = QueryBuilder.getInstance().tableName("gallery").whereEquals("accountid", "2").select();
+		List<Media> found = jdbc.query(sql, MapUtil::mapRowToMedia);
 		assertNotNull(found);
 		assertEquals(2, found.size());
-		Image foundImage = found.get(1);
+		Media foundImage = found.get(1);
 		assertNotNull(foundImage);
-		assertEquals(imageString, foundImage.getImage());
-		assertEquals(1, foundImage.getAccountId());
+		assertEquals(imageBytes.length, foundImage.getMedia().length);
+		for(int i = 0; i < imageBytes.length; i++) {
+			assertEquals(imageBytes[i], foundImage.getMedia()[i]);
+		}
+		assertEquals(2, foundImage.getAccountId());
 		assertEquals(2, foundImage.getId());
 		
 	}
 	@Test 
 	public void findImagesByAccountId() {
-		List<Image> found = imgrepo.findImagesByAccountId(1);
+		List<Media> found = imgrepo.findMediaByAccount(2);
 		assertNotNull(found);
 		assertEquals(1, found.size());
-		Image foundImage = found.get(0);
+		Media foundImage = found.get(0);
 		assertNotNull(foundImage);
-		assertEquals(imageString, foundImage.getImage());
-		assertEquals(1, foundImage.getAccountId());
+		assertEquals(image.getMedia().length, foundImage.getMedia().length);
+		for(int i = 0; i < image.getMedia().length; i++) {
+			assertEquals(image.getMedia()[i], foundImage.getMedia()[i]);
+		}
+		assertEquals(2, foundImage.getAccountId());
 		assertEquals(1, foundImage.getId());
 	}
 	@Test
 	public void deleteImageFromAccount() throws DataAccessException, SQLException {
-		imgrepo.deleteImageFromAccount(1, 1);
+		imgrepo.deleteMediaFromAccount(1, 2);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, "gallery"));
 	}
 

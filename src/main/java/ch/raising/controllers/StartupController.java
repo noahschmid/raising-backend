@@ -2,6 +2,7 @@ package ch.raising.controllers;
 
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.AssignmentTableModelWithDescription;
 import ch.raising.models.Boardmember;
-import ch.raising.models.Contact;
 import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Founder;
 import ch.raising.models.PrivateShareholder;
@@ -69,33 +69,6 @@ public class StartupController {
 	@PostMapping("/register")
 	public ResponseEntity<?> addStartup(@RequestBody Startup startup) {
 		return startupService.registerProfile(startup);
-	}
-	/**
-	 * Deletes a contact specified by id.
-	 * @param id of the contact to be deleted
-	 */
-	@DeleteMapping("/contact/{id}")
-	public ResponseEntity<?> deleteContact(@PathVariable int id){
-		//TODO check if the contact is part of the startup
-		return additionalInformationService.deleteContactByStartupId(id);
-	}
-	/**
-	 * Updates a contact specified by id.
-	 * @param id of the contact to be deleted
-	 */
-	@PatchMapping("/contact/{id}")
-	public ResponseEntity<?> updateContact(@PathVariable int id, @RequestBody Contact contact){
-		//TODO check if the contact is part of the startup
-		return additionalInformationService.updateContactByStartupId(contact, id);
-	}
-	/**
-	 * Add a contact to a startup
-	 * @param contact to be added
-	 * @return a response with a code
-	 */
-	@PostMapping("/contact")
-	public ResponseEntity<?> addContact(@RequestBody Contact contact){
-		return additionalInformationService.addContactByStartupId(contact);
 	}
 	/**
 	 * Deletes a boardmember specified by id.
