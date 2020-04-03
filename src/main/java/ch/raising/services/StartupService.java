@@ -21,19 +21,19 @@ import ch.raising.interfaces.IAdditionalInformationRepository;
 public class StartupService extends AccountService {
 
 	
-	private StartupRepository startupRepository;
-	private BoardmemberRepository bmemRepository;
-	private FounderRepository founderRepository;
-	private AssignmentTableRepository labelRepository;
-	private PrivateShareholderRepository pshRepository;
-	private CorporateShareholderRepository cshRepository;
-	private AssignmentTableRepository investmentPhaseRepository;
-	private AssignmentTableRepository investorTypeRepository;
+	private final StartupRepository startupRepository;
+	private final BoardmemberRepository bmemRepository;
+	private final FounderRepository founderRepository;
+	private final AssignmentTableRepository labelRepository;
+	private final PrivateShareholderRepository pshRepository;
+	private final CorporateShareholderRepository cshRepository;
+	private final AssignmentTableRepository investorTypeRepository;
+	private final MediaRepository videoRepository;
 	
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
 			BoardmemberRepository bmemRepository,
-			FounderRepository founderRepository, InvestorRepository investorRepository, MailUtil mailUtil,
+			FounderRepository founderRepository, MailUtil mailUtil,
 			ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, PrivateShareholderRepository pshRepository,
 			CorporateShareholderRepository cshRepository, JwtUtil jwtUtil) {
 
@@ -46,9 +46,9 @@ public class StartupService extends AccountService {
 		this.startupRepository = startupRepository;
 		this.bmemRepository = bmemRepository;
 		this.founderRepository = founderRepository;
-
 		this.pshRepository = pshRepository;
 		this.cshRepository = cshRepository;
+		this.videoRepository = new MediaRepository(jdbc, "video");
 	}
 
 	@Override
@@ -64,7 +64,9 @@ public class StartupService extends AccountService {
 		long accountId = super.registerAccount(account);
 		su.setAccountId(accountId);
 		startupRepository.add(su);
-
+		
+		if(su.getVideoId() != -1)
+			videoRepository.addAccountIdToMedia(accountId, su.getVideoId());
 		if (su.getBoardmembers() != null)
 			su.getBoardmembers().forEach(bmem -> bmemRepository.addMemberByStartupId(bmem, accountId));
 		if (su.getLabels() != null)
@@ -127,7 +129,6 @@ public class StartupService extends AccountService {
 		List<AssignmentTableModel> continents = continentRepo.findByAccountId(startup.getAccountId());
 		List<AssignmentTableModel> countries = countryRepo.findByAccountId(startup.getAccountId());
 		List<AssignmentTableModel> industries = industryRepo.findByAccountId(startup.getAccountId());
-		List<AssignmentTableModel> investmentPhases = investmentPhaseRepository.findByAccountId(startup.getAccountId());
 		List<AssignmentTableModel> supports = supportRepo.findByAccountId(startup.getAccountId());
 
 		profile.setAccountId(startup.getAccountId());
@@ -141,7 +142,6 @@ public class StartupService extends AccountService {
 		profile.setInvestorTypes(types);
 		profile.setCountries(countries);
 		profile.setIndustries(industries);
-		profile.setInvestmentPhases(investmentPhases);
 		profile.setSupport(supports);
 
 		return profile;

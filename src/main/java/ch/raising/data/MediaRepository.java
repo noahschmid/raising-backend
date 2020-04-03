@@ -21,7 +21,7 @@ import ch.raising.utils.functionalInterface.PSOneParameter;
 import ch.raising.utils.functionalInterface.PSTwoParameters;
 import ch.raising.utils.functionalInterface.RowMapper;
 
-@Repository
+
 public class MediaRepository implements IMediaRepository<Media> {
 	
 	JdbcTemplate jdbc;
@@ -36,8 +36,8 @@ public class MediaRepository implements IMediaRepository<Media> {
 	private final String DELETE_ENTRY_FROM_ACCOUNT;
 	private final String GET_MEDIA_ID_OF;
 	private final String FIND_BY_ID;
+	private final String ADD_ACCOUNTID_TO_MEDIA;
 	
-	@Autowired
 	public MediaRepository(JdbcTemplate jdbc, String tableName) {
 		this.jdbc = jdbc;
 		this.PS_ADD = PreparedStatementUtil::addMediaByIdCallback;
@@ -50,6 +50,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 		this.DELETE_ENTRY_FROM_ACCOUNT = "DELETE FROM " + tableName + " WHERE id = ? AND accountId = ?";
 		this.GET_MEDIA_ID_OF = "SELECT id FROM " + tableName + " WHERE accountId = ?";
 		this.FIND_BY_ID = "SELECT * FROM " + tableName + " WHERE id = ?";
+		this.ADD_ACCOUNTID_TO_MEDIA = "UPDATE " + tableName + " SET accountid = ? WHERE id = ?";
 	}
 	
 	@Override
@@ -83,6 +84,11 @@ public class MediaRepository implements IMediaRepository<Media> {
 	@Override
 	public Media findMediaById(long mediaId) throws DataAccessException, SQLException {
 		return jdbc.queryForObject(FIND_BY_ID, rowMapper::mapRowToModel);
+	}
+	
+	@Override
+	public void addAccountIdToMedia(long accountId, long videoId) throws DataAccessException{
+		jdbc.update(ADD_ACCOUNTID_TO_MEDIA, new Object[] {accountId, videoId});
 	}
 
 	

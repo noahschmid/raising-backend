@@ -51,8 +51,8 @@ public class AccountService implements UserDetailsService {
 	private JdbcTemplate jdbc;
 	private JwtUtil jwtUtil;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-	private IMediaRepository galleryRepository;
-	private IMediaRepository pPicRepository;
+	private IMediaRepository<Media> galleryRepository;
+	private IMediaRepository<Media> pPicRepository;
 	@Autowired
     private AuthenticationManager authenticationManager ;
 	protected AssignmentTableRepository countryRepo;
@@ -422,6 +422,11 @@ public class AccountService implements UserDetailsService {
 		}
 	}
 
+	/**
+	 * Method to login a specific user. used by {@link ch.raising.controllers.AccountController} 
+	 * @param request The Login Request containing the email and password {@link ch.raising.models.LoginRequest }
+	 * @return A login response Model {@link ch.raising.models.LoginResponse}
+	 */
 	public ResponseEntity<?> login(LoginRequest request) {
 		UsernamePasswordAuthenticationToken unamePwToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 		try {

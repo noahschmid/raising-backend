@@ -1,6 +1,5 @@
-CREATE TABLE video(id bigserial PRIMARY KEY, accountid bigint REFERENCES startup.accountid ON DELETE CASCADE, media bytea);
+CREATE TABLE video(id bigserial PRIMARY KEY, accountid bigint REFERENCES startup(accountid) ON DELETE CASCADE, media bytea);
 
-ALTER TABLE startup ADD COLUMN videoid bigint REFERENCES video(id) ON DELETE SET NULL;
 ALTER TABLE startup DROP COLUMN turnover;
 
 ALTER TABLE investor ADD COLUMN firstName varchar;

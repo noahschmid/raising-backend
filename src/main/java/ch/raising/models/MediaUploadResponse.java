@@ -8,5 +8,5 @@ import lombok.Data;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MediaUploadResponse {
-	long MediaId;
+	long mediaId;
 }

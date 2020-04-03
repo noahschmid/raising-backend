@@ -112,7 +112,7 @@ public class Account {
 	}
 
 	public boolean isInComplete() {
-		return password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1
+		return roles == "ROLE_ADMIN" || password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1
 				|| support == null || industries == null
 				|| (countries.isEmpty() && continents.isEmpty()) || support.isEmpty() || industries.isEmpty();
 	}

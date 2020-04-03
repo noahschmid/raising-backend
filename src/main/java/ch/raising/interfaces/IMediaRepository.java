@@ -21,4 +21,6 @@ public interface IMediaRepository<Model> {
 
 	long getMediaIdOf(long accountId);
 
+	void addAccountIdToMedia(long accountId, long videoId) throws DataAccessException;
+
 }

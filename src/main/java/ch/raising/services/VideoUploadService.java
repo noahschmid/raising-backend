@@ -1,10 +1,12 @@
 package ch.raising.services;
 
 import java.sql.SQLException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import ch.raising.data.MediaRepository;
 import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.Media;
@@ -15,17 +17,11 @@ public class VideoUploadService{
 	
 	IMediaRepository<Media> videoRepo;
 	
-	@Autowired
-	public VideoUploadService(IMediaRepository<Media> videoRepo) {
-		this.videoRepo = videoRepo;
+	public VideoUploadService(JdbcTemplate jdbc) {
+		this.videoRepo = new MediaRepository(jdbc, "video");
 	}
 	
 	public long uploadVideoAndReturnId(Media video) throws DataAccessException, SQLException {
-		long accountId = getAccountId();
-		long mediaId = videoRepo.getMediaIdOf(accountId);
-		if(videoRepo.getMediaIdOf(accountId) != -1) {
-			videoRepo.deleteMediaFromAccount(mediaId, accountId);
-		}
 		return videoRepo.addMediaBytes(video.getMedia());
 	}
 	
