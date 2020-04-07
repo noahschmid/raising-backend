@@ -2,7 +2,6 @@ package ch.raising.utils;
 
 import java.util.Map;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 
 public class QueryBuilder {
 	
@@ -71,6 +70,14 @@ public class QueryBuilder {
 	}
 	
 	public QueryBuilder value(String value) {
+		if(valuesForInsertion == "") {
+			valuesForInsertion = "'" + value + "'";
+		}else {
+			valuesForInsertion += ", '" + value + "'"; 
+		}
+		return this;
+	}
+	public QueryBuilder value(long value) {
 		if(valuesForInsertion == "") {
 			valuesForInsertion = "'" + value + "'";
 		}else {

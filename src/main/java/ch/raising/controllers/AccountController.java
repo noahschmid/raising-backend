@@ -246,8 +246,8 @@ public class AccountController {
     }
     /**
      * add image to gallery of account    
-     * @param industryId
-     * @return
+     * @param img {@link ch.raising.models.Media}
+     * @return ResponseEntity with image
      */
     @PostMapping("/gallery")
     @ResponseBody
@@ -256,7 +256,7 @@ public class AccountController {
     }
     /**
      * delete image form gallery account
-     * @param industryId
+     * @param imageId
      * @return
      */
     @DeleteMapping("/gallery/{imageId}")
@@ -272,7 +272,7 @@ public class AccountController {
     }
     /**
      * add profile pic to account    
-     * @param industryId
+     * @param img {@link ch.raising.models.Media}
      * @return
      */
     @PostMapping("/profilepicture")
@@ -283,8 +283,8 @@ public class AccountController {
     }
     /**
      * delete image form gallery account
-     * @param industryId
-     * @return
+     * @param imageId long
+     * @return 200 if ok 500 if error occured 
      */
     @DeleteMapping("/profilepicture/{imageId}")
     @ResponseBody
@@ -292,7 +292,7 @@ public class AccountController {
     	return accountService.deleteProfilePictureFromAccountById(imageId);
     }
     
-    @GetMapping("/profilepicture/")
+    @GetMapping("/profilepicture")
     @ResponseBody
     public ResponseEntity<?> getProfilePictureOfAccount(){
     	return accountService.findProfilePictureFromAccountById();

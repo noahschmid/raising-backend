@@ -37,6 +37,7 @@ public class AccountModelTest {
 	private String description = "still diligent";
 	private int ticketMinId = 10;
 	private int ticketMaxId = 15;
+	private String website = "testsite";
 
 	private List<AssignmentTableModel> countries;
 	private List<AssignmentTableModel> continents;
@@ -57,6 +58,7 @@ public class AccountModelTest {
 		assertEquals(description, acc.getDescription());
 		assertEquals(ticketMaxId, acc.getTicketMaxId());
 		assertEquals(ticketMinId, acc.getTicketMinId());
+		assertEquals(website, acc.getWebsite());
 	}
 	@Test
 	public void testBuilderNotAllFieldsInitialized() {
@@ -111,12 +113,18 @@ public class AccountModelTest {
 		assertEquals(description, fullAcc.getDescription());
 		assertEquals(ticketMaxId, fullAcc.getTicketMaxId());
 		assertEquals(ticketMinId, fullAcc.getTicketMinId());
+		assertEquals(website, fullAcc.getWebsite());
+	}
+	@Test
+	public void testIfAdminNoInfoRequired() {
+		Account acc = Account.accountBuilder().roles("ROLE_ADMIN").build();
+		assertFalse(acc.isInComplete());
 	}
 	
 	private Account getFullRepoAccount() {
 		Account acc = Account.accountBuilder().accountId(accountId).companyName(company).password(password)
 				.roles(roles).email(email).pitch(pitch).description(description).ticketMinId(ticketMinId)
-				.ticketMaxId(ticketMaxId).build();
+				.ticketMaxId(ticketMaxId).website(website).build();
 		
 		List<AssignmentTableModel> countries = new ArrayList<AssignmentTableModel>();
 		List<AssignmentTableModel> continents= new ArrayList<AssignmentTableModel>();

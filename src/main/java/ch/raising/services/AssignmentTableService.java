@@ -1,10 +1,13 @@
 package ch.raising.services;
 
+import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -82,8 +85,9 @@ public class AssignmentTableService {
 	 */
 	private ResponseEntity<?> addById(AssignmentTableRepository assignmentRepo, List<AssignmentTableModel> models) {
 		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
+			Collection<? extends GrantedAuthority> p = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+			assert !p.isEmpty() && p.size() == 1;
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			for (AssignmentTableModel m : models) {
 				assignmentRepo.addEntryToAccountById(m.getId(), accDet.getId());
 			}
@@ -135,8 +139,7 @@ public class AssignmentTableService {
 	 */
 	private ResponseEntity<?> deleteById(AssignmentTableRepository assignmentRepo, List<AssignmentTableModel> models) {
 		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			for (AssignmentTableModel model : models) {
 				assignmentRepo.deleteEntryFromAccountById(model.getId(), accDet.getId());
 			}

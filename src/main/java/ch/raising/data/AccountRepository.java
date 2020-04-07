@@ -45,24 +45,8 @@ public class AccountRepository implements IRepository<Account> {
 	}
 
 	/**
-	 * Check whether a combination of given username and passwort exist in database
-	 * 
-	 * @param account account instance of the desired account
-	 * @return true if account was found, false if no matching entry could be found
-	 */
-	public boolean accountExists(Account account) {
-		String query = "SELECT * FROM account WHERE emailhash = ? AND password = ?";
-		Object[] params = new Object[] { account.getEmail(), account.getPassword() };
-		try {
-			jdbc.queryForObject(query, params, this::mapRowToModel);
-			return true;
-		} catch (EmptyResultDataAccessException e) {
-			return false;
-		}
-	}
-
-	/**
-	 * Find user account by email
+	 * Find user account by email does not care if hashed or not. It checks for
+	 * both.
 	 * 
 	 * @param email the email to search for
 	 * @return instance of the found user account
@@ -105,23 +89,10 @@ public class AccountRepository implements IRepository<Account> {
 	 */
 	public long add(Account acc) throws DatabaseOperationException {
 		try {
-			String query = "INSERT INTO account(companyName, password, emailhash, pitch, description, ticketminid, ticketmaxid) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			String query = "INSERT INTO account(companyname, password, emailhash, pitch, description, ticketminid, ticketmaxid, countryid, website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			String emailHash = encoder.encode(acc.getEmail());
 			String passwordHash = encoder.encode(acc.getPassword());
-			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
-				@Override
-				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-					int c = 1;
-					ps.setString(c++, acc.getCompanyName());
-					ps.setString(c++, passwordHash);
-					ps.setString(c++, emailHash);
-					ps.setString(c++, acc.getPitch());
-					ps.setString(c++, acc.getDescription());
-					ps.setInt(c++, acc.getTicketMinId());
-					ps.setInt(c++, acc.getTicketMaxId());
-					return ps.execute();
-				}
-			});
+			jdbc.execute(query, getAddAccountCallback(acc, emailHash, passwordHash));
 			return findByEmail(acc.getEmail()).getAccountId();
 		} catch (EmailNotFoundException e) {
 			e.printStackTrace();
@@ -135,7 +106,7 @@ public class AccountRepository implements IRepository<Account> {
 	/**
 	 * Delete user account
 	 * 
-	 * @param tableEntryId the tableEntryId of the account
+	 * @param id the id of the account
 	 */
 	public void delete(long id) {
 		try {
@@ -155,9 +126,9 @@ public class AccountRepository implements IRepository<Account> {
 	}
 
 	/**
-	 * Find user account by tableEntryId
+	 * Find user account by id
 	 * 
-	 * @param tableEntryId tableEntryId of the desired account
+	 * @param id id of the desired account
 	 * @return instance of the found account
 	 */
 	public Account find(long id) {
@@ -197,7 +168,8 @@ public class AccountRepository implements IRepository<Account> {
 		return Account.accountBuilder().accountId(rs.getLong("id")).companyName(rs.getString("companyName"))
 				.pitch(rs.getString("pitch")).description(rs.getString("description")).email(rs.getString("emailHash"))
 				.roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
-				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password")).build();
+				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password"))
+				.countryId(rs.getLong("countryId")).website(rs.getString("website")).build();
 	}
 
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
@@ -207,11 +179,11 @@ public class AccountRepository implements IRepository<Account> {
 	/**
 	 * Update user account
 	 * 
-	 * @param tableEntryId the tableEntryId of the account to update
+	 * @param id the id of the account to update
 	 * @param req          request containing fields to update
 	 */
 	public void update(long id, Account req) throws Exception {
-		String emailHash = "";
+		String emailHash = null;
 		if (req.getEmail() != "") {
 			emailHash = encoder.encode(req.getEmail());
 		}
@@ -224,6 +196,7 @@ public class AccountRepository implements IRepository<Account> {
 			update.addField(req.getDescription(), "description");
 			update.addField(req.getTicketMaxId(), "ticketmaxid");
 			update.addField(req.getTicketMinId(), "ticketminid");
+			update.addField(req.getWebsite(), "website");
 			update.execute();
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
@@ -248,5 +221,25 @@ public class AccountRepository implements IRepository<Account> {
 		} catch (EmptyResultDataAccessException e) {
 			return false;
 		}
+	}
+
+	public static PreparedStatementCallback<Boolean> getAddAccountCallback(Account acc, String emailHash,
+			String passwordHash) {
+		return new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				int c = 1;
+				ps.setString(c++, acc.getCompanyName());
+				ps.setString(c++, passwordHash);
+				ps.setString(c++, emailHash);
+				ps.setString(c++, acc.getPitch());
+				ps.setString(c++, acc.getDescription());
+				ps.setInt(c++, acc.getTicketMinId());
+				ps.setInt(c++, acc.getTicketMaxId());
+				ps.setLong(c++, acc.getCountryId());
+				ps.setString(c++,  acc.getWebsite());
+				return ps.execute();
+			}
+		};
 	}
 }

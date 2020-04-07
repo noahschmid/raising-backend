@@ -28,7 +28,7 @@ public class MapUtil {
 	public static Account mapRowToAccount(ResultSet rs, int row) throws SQLException {
 		return Account.accountBuilder().email(rs.getString("emailhash")).description(rs.getString("description")).pitch(rs.getString("pitch"))
 				.companyName(rs.getString("companyName")).accountId(rs.getLong("id")).ticketMaxId(rs.getInt("ticketmaxid"))
-				.ticketMinId(rs.getInt("ticketminid")).build();
+				.ticketMinId(rs.getInt("ticketminid")).website(rs.getString("website")).build();
 	}
 
 	public static AssignmentTableModel mapRowToAssignmentTable(ResultSet rs, int row) throws SQLException {

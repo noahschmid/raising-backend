@@ -65,7 +65,6 @@ public class StartupRepository implements IRepository<Startup> {
 			UpdateQueryBuilder update = new UpdateQueryBuilder("startup", id, this, "accountid");
 			update.setJdbc(jdbc);
 			update.addField(req.getInvestmentPhaseId(), "investmentphaseid");
-			update.addField(req.getWebsite(), "website");
 			update.addField(req.getBreakEvenYear(), "breakevenyear");
 			update.addField(req.getNumberOfFte(), "numberoffte");
 			update.addField(req.getPreMoneyValuation(), "premoneyvaluation");
@@ -95,7 +94,7 @@ public class StartupRepository implements IRepository<Startup> {
 		return Startup.startupBuilder().accountId(rs.getLong("accountId"))
 				.investmentPhaseId(rs.getLong("investmentphaseid")).boosts(rs.getInt("boosts"))
 				.numberOfFte(rs.getInt("numberOfFte")).breakEvenYear(rs.getInt("breakevenYear"))
-				.website(rs.getString("website")).investmentPhaseId(rs.getLong("investmentPhaseId"))
+				.investmentPhaseId(rs.getLong("investmentPhaseId"))
 				.revenueMaxId(rs.getInt("revenuemaxid")).revenueMinId(rs.getInt("revenueminid"))
 				.scope(rs.getInt("scope")).uId(rs.getString("uid")).foundingYear(rs.getInt("foundingYear"))
 				.financeTypeId(rs.getLong("financetypeid")).closingTime(rs.getDate("closingTime"))
@@ -111,8 +110,8 @@ public class StartupRepository implements IRepository<Startup> {
 
 		try {
 			String query = "INSERT INTO startup(accountid, boosts, numberoffte,"
-					+ " website, breakevenyear, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
-					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised) VALUES ( ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+					+ " breakevenyear, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
+					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised) VALUES (?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 				@Override
 				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -120,7 +119,6 @@ public class StartupRepository implements IRepository<Startup> {
 					ps.setLong(c++, su.getAccountId());
 					ps.setInt(c++, 0);
 					ps.setInt(c++, su.getNumberOfFte());
-					ps.setString(c++, su.getWebsite());
 					ps.setInt(c++, su.getBreakEvenYear());
 					ps.setInt(c++, su.getPreMoneyValuation());
 					ps.setDate(c++, su.getClosingTime());

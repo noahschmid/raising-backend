@@ -13,4 +13,8 @@ public class Media {
 	private long id;
 	private long accountId;
 	private byte[] media;
+	
+	public Media(byte[] media) {
+		this.media = media;
+	}
 }

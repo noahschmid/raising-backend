@@ -18,7 +18,6 @@ public class Startup extends Account {
 	Stored in the accounttable*/
 	private long investmentPhaseId = -1;
 	private int boosts = 0;
-	private String website = "";
 	private int breakEvenYear = -1;
 	private int numberOfFte = -1;
 	private int preMoneyValuation = -1;
@@ -63,7 +62,6 @@ public class Startup extends Account {
 		this.investmentPhaseId = su.getInvestmentPhaseId();
 		this.boosts = su.getBoosts();
 		this.numberOfFte = su.getNumberOfFte();
-		this.website = su.getWebsite();
 		this.breakEvenYear = su.getBreakEvenYear();
 		this.preMoneyValuation = su.getPreMoneyValuation();
 		this.revenueMaxId = su.getRevenueMaxId();
@@ -103,7 +101,7 @@ public class Startup extends Account {
 	 * @param foundingYear
 	 */
 	@Builder(builderMethodName = "startupBuilder")
-	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte, String website,
+	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte,
 			int breakEvenYear, int preMoneyEvaluation, int revenueMaxId, long financeTypeId, Date closingTime,
 			int revenueMinId, int scope, String uId, int foundingYear, int raised, long videoId) {
 		super();
@@ -113,7 +111,6 @@ public class Startup extends Account {
 		this.boosts = boosts;
 		this.numberOfFte = numberOfFte;
 
-		this.website = website;
 		this.breakEvenYear = breakEvenYear;
 
 		this.preMoneyValuation = preMoneyEvaluation;
@@ -130,7 +127,7 @@ public class Startup extends Account {
 
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() || companyName == "" || investmentPhaseId == -1 || website == "" || breakEvenYear == -1
+		return super.isInComplete() || companyName == "" || investmentPhaseId == -1 || breakEvenYear == -1
 				|| financeTypeId == -1 || revenueMaxId == -1 || revenueMinId == -1 || investorTypes == null
 				|| founders == null || investorTypes.isEmpty() || founders.isEmpty();
 

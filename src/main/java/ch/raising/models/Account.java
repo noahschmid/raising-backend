@@ -20,6 +20,8 @@ public class Account {
 	private String description = "";
 	private int ticketMinId = -1;
 	private int ticketMaxId = -1;
+	private long countryId = -1;
+	private String website = "";
 
 /* =========================================================================*/
 
@@ -51,8 +53,8 @@ public class Account {
 	 */
 
 	@Builder(builderMethodName = "accountBuilder")
-	public Account(long accountId, String password, String roles, String email, int ticketMinId,
-			int ticketMaxId, String companyName, String description, String pitch) {
+	public Account(long accountId, long countryId, String password, String roles, String email, int ticketMinId,
+			int ticketMaxId, String companyName, String description, String pitch, String website) {
 
 		this.companyName = companyName;
 		this.accountId = accountId;
@@ -63,7 +65,8 @@ public class Account {
 		this.pitch = pitch;
 		this.ticketMinId = ticketMinId;
 		this.ticketMaxId = ticketMaxId;
-
+		this.countryId = countryId;
+		this.website = website;
 	}
 
 	/**
@@ -109,12 +112,14 @@ public class Account {
 		this.industries = acc.industries;
 		this.profilePicture = acc.profilePicture;
 		this.gallery = acc.gallery;
+		this.countryId = acc.countryId;
+		this.website = acc.website;
 	}
 
 	public boolean isInComplete() {
-		return roles == "ROLE_ADMIN" || password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1
+		return roles != "ROLE_ADMIN" && ( password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1
 				|| support == null || industries == null
-				|| (countries.isEmpty() && continents.isEmpty()) || support.isEmpty() || industries.isEmpty();
+				|| (countries.isEmpty() && continents.isEmpty()) || support.isEmpty() || industries.isEmpty());
 	}
 	
 	public boolean isStartup() {

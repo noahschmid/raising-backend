@@ -250,14 +250,6 @@ public class AdditionalInformationService {
 	}
 
 	
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * Checks if a requesting startup belongs to the StartupMember
 	 * 

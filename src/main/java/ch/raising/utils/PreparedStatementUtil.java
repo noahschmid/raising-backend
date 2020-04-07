@@ -1,11 +1,14 @@
 package ch.raising.utils;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 
+import ch.raising.models.Account;
 import ch.raising.models.Media;
 /**
  * Is used to store Prepared statements to be used in the {@see ch.raising.data} package.
@@ -61,6 +64,43 @@ public class PreparedStatementUtil {
 				int c =1;
 				ps.setLong(c++, imageId);
 				ps.setLong(c++, accountId);
+				return ps.execute();
+			}
+		};
+	}
+	public static  PreparedStatementCallback<Boolean> addEntryToAssignmentTableByAccountId(long id, long accountId) {
+		return new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				ps.setLong(1, accountId);
+				ps.setLong(2, id);
+				return ps.execute();
+			}
+		};
+	}
+	/**
+	 * creates callback for adding an account and returns a resultset containing the id of the inserted account.
+	 * @param acc
+	 * @param emailHash
+	 * @param passwordHash
+	 * @return
+	 */
+
+	public static PreparedStatementCallback<Boolean> addAccountCallback(Account acc, String emailHash,
+			String passwordHash) {
+		return new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				int c = 1;
+				ps.setString(c++, acc.getCompanyName());
+				ps.setString(c++, passwordHash);
+				ps.setString(c++, emailHash);
+				ps.setString(c++, acc.getPitch());
+				ps.setString(c++, acc.getDescription());
+				ps.setInt(c++, acc.getTicketMinId());
+				ps.setInt(c++, acc.getTicketMaxId());
+				ps.setLong(c++, acc.getCountryId());
+				ps.setString(c++,  acc.getWebsite());
 				return ps.execute();
 			}
 		};
