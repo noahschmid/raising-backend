@@ -86,6 +86,7 @@ ch\raising\data\StartupRepository$1.class
 ch\raising\models\Founder.class
 ch\raising\models\Investor$InvestorBuilder.class
 ch\raising\config\CorsConfig.class
+ch\raising\utils\PreparedStatementUtil$5.class
 ch\raising\utils\PreparedStatementUtil.class
 ch\raising\data\ResetCodeRepository$1.class
 ch\raising\models\RelationshipState.class

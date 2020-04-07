@@ -1,20 +1,16 @@
 package ch.raising.services;
 
-import java.security.Principal;
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ch.raising.data.AssignmentTableRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.Country;
 import ch.raising.models.ErrorResponse;
 import ch.raising.utils.MapUtil;
 
