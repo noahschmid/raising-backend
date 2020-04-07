@@ -82,8 +82,7 @@ public class AssignmentTableService {
 	 */
 	private ResponseEntity<?> addById(AssignmentTableRepository assignmentRepo, List<AssignmentTableModel> models) {
 		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			for (AssignmentTableModel m : models) {
 				assignmentRepo.addEntryToAccountById(m.getId(), accDet.getId());
 			}
@@ -135,8 +134,7 @@ public class AssignmentTableService {
 	 */
 	private ResponseEntity<?> deleteById(AssignmentTableRepository assignmentRepo, List<AssignmentTableModel> models) {
 		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
+			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			for (AssignmentTableModel model : models) {
 				assignmentRepo.deleteEntryFromAccountById(model.getId(), accDet.getId());
 			}
