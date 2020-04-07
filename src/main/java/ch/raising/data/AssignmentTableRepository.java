@@ -23,11 +23,13 @@ public class AssignmentTableRepository {
 	private String tableName = "";
 	private String tableAssignment;
 	protected RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper;
+	protected RowMapper<ResultSet, Integer, AssignmentTableModel> assignmentRowMapper;
 	private String accountIdName = "accountId";
 	
 	private AssignmentTableRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 		rowMapper = MapUtil::mapRowToAssignmentTable;
+		assignmentRowMapper = MapUtil::mapRowToAssignmentTableAssignment;
 	}
 	
 	public static AssignmentTableRepository getInstance(JdbcTemplate jdbc) {
@@ -61,9 +63,9 @@ public class AssignmentTableRepository {
 
 	public List<AssignmentTableModel> findByAccountId(long accountId) {
 		return jdbc.query(
-				"SELECT * FROM " + tableAssignment + " INNER JOIN " + tableName + " ON " + tableAssignment
+				"SELECT name, " + tableName + "id, " + accountIdName + " FROM " + tableAssignment + " INNER JOIN " + tableName + " ON " + tableAssignment
 						+ "."+tableName+"Id = " + tableName + ".id WHERE "+accountIdName+" = ?",
-				new Object[] { accountId }, rowMapper::mapRowToModel);
+				new Object[] { accountId }, assignmentRowMapper::mapRowToModel);
 	}
 
 	public void addEntryToAccountById(long id, long accountId) {

@@ -34,6 +34,11 @@ public class MapUtil {
 	public static AssignmentTableModel mapRowToAssignmentTable(ResultSet rs, int row) throws SQLException {
 		return new AssignmentTableModel(rs.getString("name"), rs.getInt("id"));
 	}
+	
+	public static AssignmentTableModel mapRowToAssignmentTableAssignment(ResultSet rs, int row) throws SQLException {
+		String assgineeId = rs.getMetaData().getColumnName(2);
+		return new AssignmentTableModel(rs.getString("name"), rs.getInt(assgineeId));
+	}
 
 	public static AssignmentTableModelWithDescription mapRowToAssignmentTableWithDescription(ResultSet rs, int row)
 			throws SQLException {
