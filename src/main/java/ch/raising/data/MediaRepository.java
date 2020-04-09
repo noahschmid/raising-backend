@@ -26,7 +26,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 	
 	JdbcTemplate jdbc;
 	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Media, Long> PS_ADD;
-	private final PSOneParameter<PreparedStatementCallback<Boolean>, byte[]> PS_ADD_BYTES;
+	private final PSOneParameter<PreparedStatementCallback<Boolean>, String> PS_ADD_BYTES;
 	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Long, Long> PS_DELETE;
 	private final RowMapper<ResultSet, Integer, Media> rowMapper;
 	
@@ -59,7 +59,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 	}
 	
 	@Override
-	public long addMediaBytes(byte[] media) throws DataAccessException, SQLException {
+	public long addMediaString(String media) throws DataAccessException, SQLException {
 		KeyHolder kh = new GeneratedKeyHolder();
 		jdbc.update(INSERT_WITHOUT_ACCOUNTID, PS_ADD_BYTES.getCallback(media), kh);
 		return kh.getKey().longValue();

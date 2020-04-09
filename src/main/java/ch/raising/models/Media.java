@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 public class Media {
 	private long id;
 	private long accountId;
-	private byte[] media;
+	private String media;
 	
-	public Media(byte[] media) {
+	public Media(String media) {
 		this.media = media;
 	}
 }

@@ -13,35 +13,38 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class Startup extends Account {
-	
-/* =========================================================================
-	Stored in the accounttable*/
+
+	/*
+	 * =========================================================================
+	 * Stored in the accounttable
+	 */
 	private long investmentPhaseId = -1;
 	private int boosts = 0;
 	private int breakEvenYear = -1;
 	private int numberOfFte = -1;
 	private int preMoneyValuation = -1;
 	private Date closingTime;
-	private int revenueMaxId;
-	private int revenueMinId;
-	private int scope;
+	private int revenueMaxId = -1;
+	private int revenueMinId = -1;
+	private int scope = -1;
 	private String uId = "";
 	private int foundingYear;
 	private long financeTypeId = -1;
-	private int raised;
+	private int raised = -1;
 	private long videoId = -1;
-/* =========================================================================*/
+	/* ========================================================================= */
 
-
-/* =========================================================================
-	Stored in the respective tables*/
+	/*
+	 * =========================================================================
+	 * Stored in the respective tables
+	 */
 	private List<AssignmentTableModel> investorTypes;
 	private List<AssignmentTableModel> labels;
 	private List<Boardmember> boardmembers;
 	private List<Founder> founders;
 	private List<PrivateShareholder> privateShareholders;
 	private List<CorporateShareholder> corporateShareholders;
-/* =========================================================================*/
+	/* ========================================================================= */
 
 	/**
 	 * creates the startup with all lists initialized. should be used to return a
@@ -56,8 +59,8 @@ public class Startup extends Account {
 	 * @param preMoneyValuation
 	 */
 	public Startup(Account account, Startup su, List<AssignmentTableModel> invTypes, List<AssignmentTableModel> labels,
-			List<Founder> founders, List<PrivateShareholder> pShareholders,
-			List<CorporateShareholder> cShareholders, List<Boardmember> boardMembers) {
+			List<Founder> founders, List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders,
+			List<Boardmember> boardMembers) {
 		super(account);
 		this.investmentPhaseId = su.getInvestmentPhaseId();
 		this.boosts = su.getBoosts();
@@ -79,7 +82,8 @@ public class Startup extends Account {
 		this.privateShareholders = pShareholders;
 		this.corporateShareholders = cShareholders;
 		this.boardmembers = boardMembers;
-	}
+		
+		}
 
 	/**
 	 * Builds the startup represented by the startuptable in the database. Should be
@@ -101,9 +105,9 @@ public class Startup extends Account {
 	 * @param foundingYear
 	 */
 	@Builder(builderMethodName = "startupBuilder")
-	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte,
-			int breakEvenYear, int preMoneyEvaluation, int revenueMaxId, long financeTypeId, Date closingTime,
-			int revenueMinId, int scope, String uId, int foundingYear, int raised, long videoId) {
+	public Startup(long accountId, long investmentPhaseId, int boosts, int numberOfFte, int breakEvenYear,
+			int preMoneyEvaluation, int revenueMaxId, long financeTypeId, Date closingTime, int revenueMinId, int scope,
+			String uId, int foundingYear, int raised, long videoId) {
 		super();
 
 		this.accountId = accountId;
@@ -127,9 +131,10 @@ public class Startup extends Account {
 
 	@Override
 	public boolean isInComplete() {
-		return super.isInComplete() || companyName == "" || investmentPhaseId == -1 || breakEvenYear == -1
-				|| financeTypeId == -1 || revenueMaxId == -1 || revenueMinId == -1 || investorTypes == null
-				|| founders == null || investorTypes.isEmpty() || founders.isEmpty();
+		return super.isInComplete() || companyName == "" || foundingYear == -1 || revenueMaxId == -1
+				|| revenueMinId == -1 || closingTime == null || scope == -1 || investmentPhaseId == -1 || breakEvenYear == -1 || financeTypeId == -1 || numberOfFte == -1
+				|| investorTypes == null || founders == null
+				|| investorTypes.isEmpty() || founders.isEmpty();
 
 	}
 

@@ -75,8 +75,8 @@ public class MapUtil {
 	}
 
 	public static Media mapRowToMedia(ResultSet rs, int row) throws SQLException {
-		return Media.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid"))
-				.media(rs.getBytes("media")).build();
+		return rs == null ? Media.builder().build():Media.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid"))
+				.media(new String(rs.getBytes("media"))).build();
 	}
 	
 	public static Investor mapRowToInvestor(ResultSet rs, int row) throws SQLException {

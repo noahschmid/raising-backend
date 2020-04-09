@@ -90,7 +90,7 @@ public class StartupController {
 	}
 	/**
 	 * Add a boardmember to a startup
-	 * @param contact to be added
+	 * @param stakeholder to be added
 	 * @return a response with a code
 	 */
 	@PostMapping("/boardmember")
@@ -117,7 +117,7 @@ public class StartupController {
 	}
 	/**
 	 * Add a founder to a startup
-	 * @param contact to be added
+	 * @param stakeholder to be added
 	 * @return a response with a code
 	 */
 	@PostMapping("/founder")
@@ -144,7 +144,7 @@ public class StartupController {
 	}
 	/**
 	 * Add a privateshareholder to a startup
-	 * @param contact to be added
+	 * @param stakeholder to be added
 	 * @return a response with a code
 	 */
 	@PostMapping("/privateshareholder")
@@ -171,7 +171,7 @@ public class StartupController {
 	}
 	/**
 	 * Add a corporateshareholder to a startup
-	 * @param contact to be added
+	 * @param stakeholder to be added
 	 * @return a response with a code
 	 */
 	@PostMapping("/corporateshreholder")
@@ -189,7 +189,7 @@ public class StartupController {
 	}
 	/**
 	 * Add a label to a startup
-	 * @param contact to be added
+	 * @param stakeholder to be added
 	 * @return a response with a code
 	 */
 	@PostMapping("/label")
@@ -208,7 +208,7 @@ public class StartupController {
 	}
 	/**
 	 * Add a founder to a startup
-	 * @param contact to be added
+	 * @param stakeholder to be added
 	 * @return a response with a code
 	 */
 	@PostMapping("/investortype")

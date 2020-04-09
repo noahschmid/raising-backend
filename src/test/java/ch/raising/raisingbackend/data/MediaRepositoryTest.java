@@ -32,27 +32,26 @@ import ch.raising.utils.PreparedStatementUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = {RepositoryTestConfig.class })
+@ContextConfiguration(classes = { RepositoryTestConfig.class })
 @SpringBootTest
 @ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
 public class MediaRepositoryTest {
 
-	
 	JdbcTemplate jdbc;
-	
-	byte[] imageBytes;
+
+	String imageBytes;
 	Media image;
 	IMediaRepository imgrepo;
-	
+
 	@Autowired
-	public MediaRepositoryTest(JdbcTemplate jdbc){
+	public MediaRepositoryTest(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
-		this.imageBytes = "DEADBEEF".getBytes();
+		this.imageBytes = "DEADBEEF";
 		imgrepo = new MediaRepository(jdbc, "gallery");
 		image = Media.builder().media(imageBytes).build();
 	}
-	
+
 	@BeforeEach
 	private void setup() {
 		createTable();
@@ -71,43 +70,46 @@ public class MediaRepositoryTest {
 	}
 
 	private void addImage() {
-		String sql = QueryBuilder.getInstance().tableName("gallery").attribute("accountid, media").qMark().qMark().insert();
+		String sql = QueryBuilder.getInstance().tableName("gallery").attribute("accountid, media").qMark().qMark()
+				.insert();
 		jdbc.execute(sql, PreparedStatementUtil.addMediaByIdCallback(image, 2));
 	}
-	
+
 	@Test
 	public void addImageToAccountTest() throws SQLException {
 		Media img = Media.builder().accountId(1).media(imageBytes).build();
 		imgrepo.addMediaToAccount(img, 2);
-		
+
 		String sql = QueryBuilder.getInstance().tableName("gallery").whereEquals("accountid", "2").select();
 		List<Media> found = jdbc.query(sql, MapUtil::mapRowToMedia);
 		assertNotNull(found);
 		assertEquals(2, found.size());
 		Media foundImage = found.get(1);
 		assertNotNull(foundImage);
-		assertEquals(imageBytes.length, foundImage.getMedia().length);
-		for(int i = 0; i < imageBytes.length; i++) {
-			assertEquals(imageBytes[i], foundImage.getMedia()[i]);
-		}
+		assertEquals(imageBytes.length(), foundImage.getMedia().length());
+
+		assertEquals(imageBytes, foundImage.getMedia());
+
 		assertEquals(2, foundImage.getAccountId());
 		assertEquals(2, foundImage.getId());
-		
+
 	}
-	@Test 
+
+	@Test
 	public void findImagesByAccountId() {
 		List<Media> found = imgrepo.findMediaByAccount(2);
 		assertNotNull(found);
 		assertEquals(1, found.size());
 		Media foundImage = found.get(0);
 		assertNotNull(foundImage);
-		assertEquals(image.getMedia().length, foundImage.getMedia().length);
-		for(int i = 0; i < image.getMedia().length; i++) {
-			assertEquals(image.getMedia()[i], foundImage.getMedia()[i]);
-		}
+		assertEquals(image.getMedia().length(), foundImage.getMedia().length());
+		
+			assertEquals(image.getMedia(), foundImage.getMedia());
+		
 		assertEquals(2, foundImage.getAccountId());
 		assertEquals(1, foundImage.getId());
 	}
+
 	@Test
 	public void deleteImageFromAccount() throws DataAccessException, SQLException {
 		imgrepo.deleteMediaFromAccount(1, 2);

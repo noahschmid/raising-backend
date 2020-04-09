@@ -29,15 +29,15 @@ public class TestDataUtil {
 		List<Media> gallery = new ArrayList<Media>();
 		Random rnd = new Random();
 		for (int i = 0; i < 5; i++) {
-			gallery.add(new Media(getRandBytes(rnd)));
+			gallery.add(new Media(getRandString(rnd)));
 		}
 		return gallery;
 	}
 
 	
-	public static byte[] getRandBytes(Random rnd) {
+	public static String getRandString(Random rnd) {
 		byte[] bytes = new byte[1000];
 		rnd.nextBytes(bytes);
-		return bytes;
+		return new String(bytes);
 	}
 }

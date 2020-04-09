@@ -348,7 +348,7 @@ public class AccountService implements UserDetailsService {
 
 	public ResponseEntity<?> addGalleryImageToAccountById(Media img) {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getAuthorities();
+				.getPrincipal();
 		if (accDet.getId() != img.getAccountId())
 			return ResponseEntity.status(403)
 					.body(new ErrorResponse("Not authorized to add picture to foreign account"));
@@ -362,7 +362,7 @@ public class AccountService implements UserDetailsService {
 
 	public ResponseEntity<?> deleteGalleryImageFromAccountById(long imgId) {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getAuthorities();
+				.getPrincipal();
 		try {
 			galleryRepository.deleteMediaFromAccount(imgId, accDet.getId());
 			return ResponseEntity.ok().build();
@@ -373,7 +373,7 @@ public class AccountService implements UserDetailsService {
 
 	public ResponseEntity<?> findGalleryImagesFromAccountById() {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getAuthorities();
+				.getPrincipal();
 		try {
 			List<Media> images = galleryRepository.findMediaByAccount(accDet.getId());
 			return ResponseEntity.ok().body(images);
@@ -384,7 +384,7 @@ public class AccountService implements UserDetailsService {
 
 	public ResponseEntity<?> addProfilePictureToAccountById(Media img) {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getAuthorities();
+				.getPrincipal();
 		long currentPPicId = pPicRepository.getMediaIdOf(accDet.getId());
 		
 		if (accDet.getId() != img.getAccountId())
@@ -402,7 +402,7 @@ public class AccountService implements UserDetailsService {
 
 	public ResponseEntity<?> deleteProfilePictureFromAccountById(long imgId) {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getAuthorities();
+				.getPrincipal();
 		try {
 			pPicRepository.deleteMediaFromAccount(imgId, accDet.getId());
 			return ResponseEntity.ok().build();
@@ -413,7 +413,7 @@ public class AccountService implements UserDetailsService {
 
 	public ResponseEntity<?> findProfilePictureFromAccountById() {
 		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getAuthorities();
+				.getPrincipal();
 		try {
 			List<Media> images = pPicRepository.findMediaByAccount(accDet.getId());
 			return ResponseEntity.ok().body(images);

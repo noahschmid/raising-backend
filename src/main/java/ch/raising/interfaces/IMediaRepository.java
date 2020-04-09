@@ -11,7 +11,7 @@ public interface IMediaRepository<Model> {
 
 	void addMediaToAccount(Model model, long accountId) throws DataAccessException, SQLException;
 	
-	long addMediaBytes(byte[] media) throws DataAccessException, SQLException;
+	long addMediaString(String media) throws DataAccessException, SQLException;
 	
 	Model findMediaById(long mediaId) throws DataAccessException, SQLException;
 

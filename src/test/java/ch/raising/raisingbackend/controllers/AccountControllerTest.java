@@ -119,7 +119,7 @@ public class AccountControllerTest {
 				.email(email).pitch(pitch).description(description).ticketMinId(ticketMinId).ticketMaxId(ticketMaxId)
 				.countryId(countryId).website(website).build();
 
-		profilePicture = new Media(TestDataUtil.getRandBytes(new Random()));
+		profilePicture = new Media(TestDataUtil.getRandString(new Random()));
 		gallery = TestDataUtil.getMedia();
 		countries = TestDataUtil.getAssignmentTableModelList(6, 248, 10);
 		continents = TestDataUtil.getAssignmentTableModelList(1, 7, 3);

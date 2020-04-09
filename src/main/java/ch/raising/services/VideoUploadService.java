@@ -22,7 +22,7 @@ public class VideoUploadService{
 	}
 	
 	public long uploadVideoAndReturnId(Media video) throws DataAccessException, SQLException {
-		return videoRepo.addMediaBytes(video.getMedia());
+		return videoRepo.addMediaString(video.getMedia());
 	}
 	
 	public Media getVideo(long accountId) throws DataAccessException, SQLException {
