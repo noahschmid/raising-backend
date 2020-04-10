@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 public class Founder extends StartupMember{
-	private String education;
-	private String position;
-	private long countryId;
+	private String education = "";
+	private String position = "";
+	private long countryId = -1;
 	
 	@Builder 
 	public Founder(long startupid, long id, String firstName, String lastName, String education, String position, long countryId) {

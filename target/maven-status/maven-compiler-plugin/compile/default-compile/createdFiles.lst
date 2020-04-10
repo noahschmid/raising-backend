@@ -76,6 +76,7 @@ ch\raising\models\Startup$StartupBuilder.class
 ch\raising\controllers\StartupController.class
 ch\raising\data\InvestorRepository.class
 ch\raising\config\SecurityConfig.class
+ch\raising\raisingbackend\RaisingBackendApplication$1.class
 ch\raising\utils\MailUtil.class
 ch\raising\models\ResetCode.class
 ch\raising\services\VideoUploadService.class
@@ -85,7 +86,6 @@ ch\raising\data\AccountRepository$1.class
 ch\raising\data\StartupRepository$1.class
 ch\raising\models\Founder.class
 ch\raising\models\Investor$InvestorBuilder.class
-ch\raising\config\CorsConfig.class
 ch\raising\utils\PreparedStatementUtil$5.class
 ch\raising\utils\PreparedStatementUtil.class
 ch\raising\data\ResetCodeRepository$1.class

@@ -36,9 +36,10 @@ public class StartupController {
 	private AdditionalInformationService additionalInformationService;
 	
 	@Autowired
-	public StartupController(StartupService startupService, AssignmentTableService assignmentTableService) {
+	public StartupController(StartupService startupService, AssignmentTableService assignmentTableService, AdditionalInformationService additionalInformationService) {
 		this.startupService = startupService;
 		this.assignmentTableService = assignmentTableService;
+		this.additionalInformationService = additionalInformationService;
 	}
 	
 	/**
@@ -75,7 +76,7 @@ public class StartupController {
 	 * @param id to be deleted
 	 * @return response with statuscode
 	 */
-	@DeleteMapping("/boardmemeber/{id}")
+	@DeleteMapping("/boardmember/{id}")
 	public ResponseEntity<?> deleteBoardmember(@PathVariable int id){
 		return additionalInformationService.deleteBoardmemberByStartupId(id);
 	}
@@ -84,7 +85,7 @@ public class StartupController {
 	 * @param id to be deleted
 	 * @return response with statuscode
 	 */
-	@PatchMapping("/boardmemeber/{id}")
+	@PatchMapping("/boardmember/{id}")
 	public ResponseEntity<?> updateBoardmember(@PathVariable int id, @RequestBody Boardmember bmem){
 		return additionalInformationService.updateBoardmemberByStartupId(bmem, id);
 	}

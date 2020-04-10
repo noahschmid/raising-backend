@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class Boardmember extends StartupMember {
-	private String education;
-	private String profession;
-	private String position;
-	private int memberSince;
-	private long countryId;
+	private String education = "";
+	private String profession = "";
+	private String position = "";
+	private int memberSince = -1;
+	private long countryId = -1;
 
 	@Builder
 	public Boardmember(long id, long startupid, String firstName, String lastName, int memberSince, String position,

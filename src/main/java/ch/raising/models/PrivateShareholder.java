@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PrivateShareholder extends StartupMember{
 
-	private String city;
-	private int equityShare;
-	private long investorTypeId;
-	private long countryId;
+	private String city = "";
+	private int equityShare = -1;
+	private long investorTypeId = -1;
+	private long countryId = -1;
 	
 	@Builder
 	public PrivateShareholder(long id, String firstName, String lastName, String city, int equityShare, long startupid, long investorTypeId, long countryId) {
