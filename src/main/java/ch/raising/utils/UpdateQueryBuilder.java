@@ -96,15 +96,17 @@ public class UpdateQueryBuilder {
         }
 
         if(field instanceof String) {
-        	if(field != "" || field != null) {
+        	if(field != "" && field != null) {
         		 fields.add(field);
                  setFieldName(fieldName);
         	}
         }
         
         if(field instanceof Long) {
-            fields.add(field);
-            setFieldName(fieldName);
+        	if((long) field != unitializedIntValue) {
+        		fields.add(field);
+                setFieldName(fieldName);
+        	}
         }
     }
 
@@ -119,7 +121,7 @@ public class UpdateQueryBuilder {
      * @return
      */
     public String buildQuery() {
-        if(updates == null) 
+        if(updates == null || updates == "") 
             return null;
 
         return "UPDATE " + tableName + " SET " + updates + " WHERE " + idField + " = ?";

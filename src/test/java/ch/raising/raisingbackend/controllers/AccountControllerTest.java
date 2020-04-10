@@ -22,6 +22,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,6 +44,8 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -80,14 +85,14 @@ public class AccountControllerTest {
 	protected String companyName = "Umbrella Corp";
 	private String password = "testword";
 	private String roles = "ROLE_SUPER_USER";
-	private String email = "test@test.ch";
+	private final String email = "test@test.ch";
 	private String pitch = "testpitch";
 	private String description = "testcription";
 	private int ticketMinId = 3;
 	private int ticketMaxId = 4;
 	private long countryId = 123;
 	private String website = "testsite.ch";
-	private String emailHash;
+	private final String emailHash;
 	private String passwordHash;
 
 	private Media profilePicture;
@@ -99,6 +104,7 @@ public class AccountControllerTest {
 
 	private final String TABLENAME = "account";
 	private Account account;
+	JwtUtil jwt;
 
 	@Autowired
 	public AccountControllerTest(WebApplicationContext wac, JdbcTemplate jdbc, ObjectMapper objectMapper,
@@ -109,6 +115,7 @@ public class AccountControllerTest {
 		this.encoder = encoder;
 		this.emailHash = encoder.encode(email);
 		this.passwordHash = encoder.encode(password);
+		this.jwt = new JwtUtil();
 	}
 
 	@BeforeAll
@@ -131,9 +138,6 @@ public class AccountControllerTest {
 		account.setContinents(continents);
 		account.setSupport(support);
 		account.setIndustries(industries);
-
-		emailHash = encoder.encode(email);
-		passwordHash = encoder.encode(password);
 
 		insertData();
 	}
@@ -161,6 +165,7 @@ public class AccountControllerTest {
 			try (ResultSet rs = ps.getGeneratedKeys()) {
 				if (rs.next()) {
 					accountId = rs.getLong(1);
+					account.setAccountId(accountId);
 				}
 			}
 		}
@@ -198,113 +203,168 @@ public class AccountControllerTest {
 	public void testLogin() throws Exception {
 		UserDetails udet = mock(UserDetails.class);
 		when(udet.getUsername()).thenReturn(emailHash);
-		JwtUtil jwt = new JwtUtil();
 		LoginRequest login = new LoginRequest(account.getEmail(), account.getPassword());
 		MvcResult req = mockMvc.perform(post("/account/login").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(login))).andExpect(status().is(200)).andReturn();
-		TypeReference<HashMap<String,String>> typeRef = new TypeReference<HashMap<String, String>>(){};
-		HashMap<String,String> result = objectMapper.readValue(req.getResponse().getContentAsString(),typeRef );
-		assertTrue(result.containsKey("token"));
-		assertTrue(result.containsKey("startup"));
-		assertTrue(result.containsKey("investor"));
-		assertTrue(result.containsKey("id"));
-		assertEquals(""+accountId, result.get("id"));
-		assertEquals("false", result.get("investor"));
-		assertEquals("false", result.get("startup"));
-		assertEquals(true, jwt.validateToken(result.get("token"), udet));
+		LoginResponse result = objectMapper.readValue(req.getResponse().getContentAsString(), LoginResponse.class);
+		assertEquals(""+accountId, ""+result.getId());
+		assertEquals(false, result.isInvestor());
+		assertEquals(false, result.isStartup());
+		assertNull(result.getAccount());
+		assertEquals(true, jwt.validateToken(result.getToken(), udet));
 	}
 
-	@Test
+	//@Test
 	public void testForgot() {
 
 	}
 
-	@Test
+	//@Test
 	public void testReset() {
 
 	}
 
 	@Test
-	public void getAccounts() {
+	@WithMockUser(roles = "ADMIN")
+	public void getAccounts() throws Exception {
+		MvcResult res = mockMvc.perform(get("/account")).andExpect(status().is(200)).andReturn();
+		Account[] foundAccounts = objectMapper.readValue(res.getResponse().getContentAsString(), Account[].class);
+		assertNotNull(foundAccounts);
+		assertEquals(1, foundAccounts.length);
+		Account found = foundAccounts[0];
+		assertEquals(account.getAccountId(), found.getAccountId());
+		assertEquals(account.getCompanyName(), found.getCompanyName());
+		assertEquals(passwordHash, found.getPassword());
+		assertEquals("ROLE_USER", found.getRoles());
+		assertEquals(emailHash, found.getEmail());
+		assertEquals(account.getDescription(), found.getDescription());
+		assertEquals(account.getPitch(), found.getPitch());
+		assertEquals(account.getTicketMaxId(), found.getTicketMaxId());
+		assertEquals(account.getTicketMinId(), found.getTicketMinId());
+		assertEquals(account.getCountryId(), found.getCountryId());
+		assertEquals(account.getWebsite(), found.getWebsite());
+	}
+
+	// @Test
+	public void testIsEmailFree() throws JsonProcessingException, Exception {
+		FreeEmailRequest freeEmail = new FreeEmailRequest();
+		freeEmail.setEmail("emailIst@sicherNochFrei.ch");
+		mockMvc.perform(get("/account/valid").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(freeEmail))).andExpect(status().is(200));
 
 	}
 
 	@Test
-	public void testIsEmailFree() {
-
+	public void testIsEmailTaken() throws JsonProcessingException, Exception {
+		FreeEmailRequest email = new FreeEmailRequest();
+		email.setEmail(account.getEmail());
+		mockMvc.perform(get("/account/valid").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(email))).andExpect(status().is(400));
 	}
 
 	@Test
 	public void testRegisterAccount() throws JsonProcessingException, Exception {
-
+		Account second = new Account(account);
+		second.setEmail("newTest@mail.ch");
+		MvcResult res = mockMvc.perform(post("/account/register").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(second))).andExpect(status().is(200)).andReturn();
+		LoginResponse login = objectMapper.readValue(res.getResponse().getContentAsString(), LoginResponse.class);
+		
+		assertNotNull(login);
+		assertNotNull(login.getAccount());
+		Account found = login.getAccount();
+		
+		assertEquals(second.getAccountId(), found.getAccountId());
+		assertEquals(second.getCompanyName(), found.getCompanyName());
+		assertEquals(second.getPassword(), found.getPassword());
+		assertEquals("ROLE_SUPER_USER", found.getRoles());
+		assertEquals(second.getEmail(), found.getEmail());
+		assertEquals(second.getDescription(), found.getDescription());
+		assertEquals(second.getPitch(), found.getPitch());
+		assertEquals(second.getTicketMaxId(), found.getTicketMaxId());
+		assertEquals(second.getTicketMinId(), found.getTicketMinId());
+		assertEquals(second.getCountryId(), found.getCountryId());
+		assertEquals(second.getWebsite(), found.getWebsite());
+		assertEquals(second.getCountries(), found.getCountries());
+		assertEquals(second.getSupport(), found.getSupport());
+		assertEquals(second.getIndustries(), found.getIndustries());
+		assertEquals(second.getContinents(), found.getContinents());
+		
+		cleanup();
+		insertData();
 	}
 
 	@Test
-	public void testGetAccountById() {
-
+	@WithUserDetails(email)
+	public void testGetAccountById() throws Exception {
+		MvcResult res = mockMvc.perform(get("/account/" + accountId)).andExpect(status().is(200)).andReturn();
+		Account found = objectMapper.readValue(res.getResponse().getContentAsString(), Account.class); //does not work, dont know why yet
+		
+		assertNotNull(found);
+		
 	}
+//
+//	@Test
+//	public void testDeleteAccount() {
+//
+//	}
+//
+//	@Test
+//	public void updateAccount() {
+//
+//	}
+//
+//	@Test
+//	public void testAddCountryToAccount() {
+//
+//	}
+//
+//	@Test
+//	public void testAddContinentToAccount() {
+//
+//	}
+//
+//	@Test
+//	public void testAddSupportToAccount() {
+//
+//	}
+//
+//	@Test
+//	public void testAddIndustryToAccount() {
+//
+//	}
+//
+//	@Test
+//	public void testAddGalleryOfAccount() {
+//
+//	}
+//
+//	@Test
+//	public void testDeleteImageFromAccount() {
+//
+//	}
+//
+//	@Test
+//	public void testGetGalleryOfAccount() {
+//
+//	}
+//
+//	@Test
+//	public void testAddProfilePicture() {
+//
+//	}
+//
+//	@Test
+//	public void testDeleteProfilePicture() {
+//
+//	}
+//
+//	@Test
+//	public void testGetProfilePictureOfAccount() {
+//
+//	}
 
-	@Test
-	public void testDeleteAccount() {
-
-	}
-
-	@Test
-	public void updateAccount() {
-
-	}
-
-	@Test
-	public void testAddCountryToAccount() {
-
-	}
-
-	@Test
-	public void testAddContinentToAccount() {
-
-	}
-
-	@Test
-	public void testAddSupportToAccount() {
-
-	}
-
-	@Test
-	public void testAddIndustryToAccount() {
-
-	}
-
-	@Test
-	public void testAddGalleryOfAccount() {
-
-	}
-
-	@Test
-	public void testDeleteImageFromAccount() {
-
-	}
-
-	@Test
-	public void testGetGalleryOfAccount() {
-
-	}
-
-	@Test
-	public void testAddProfilePicture() {
-
-	}
-
-	@Test
-	public void testDeleteProfilePicture() {
-
-	}
-
-	@Test
-	public void testGetProfilePictureOfAccount() {
-
-	}
-
-	//@Test
+	// @Test
 	void testAccountLifecycle() throws Exception {
 		Account account = new Account();
 		// empty registration request should return 400
@@ -318,7 +378,7 @@ public class AccountControllerTest {
 				.content(objectMapper.writeValueAsString(account))).andExpect(status().isOk());
 	}
 
-	//@Test
+	// @Test
 	void testAccountValidEmail() throws Exception {
 		FreeEmailRequest freeEmailRequest = new FreeEmailRequest();
 		freeEmailRequest.setEmail("test@test.ch");

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +29,12 @@ public class AccountRepository implements IRepository<Account> {
 	private JdbcTemplate jdbc;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+	private final String ADD_ACCOUNT;
+
 	@Autowired
 	public AccountRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
+		this.ADD_ACCOUNT = "INSERT INTO account(companyname, password, emailhash, pitch, description, ticketminid, ticketmaxid, countryid, website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 	}
 
 	/**
@@ -86,21 +90,33 @@ public class AccountRepository implements IRepository<Account> {
 	 * 
 	 * @param account the account to add
 	 * @return
+	 * @throws SQLException 
 	 */
-	public long add(Account acc) throws DatabaseOperationException {
-		try {
-			String query = "INSERT INTO account(companyname, password, emailhash, pitch, description, ticketminid, ticketmaxid, countryid, website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			String emailHash = encoder.encode(acc.getEmail());
-			String passwordHash = encoder.encode(acc.getPassword());
-			jdbc.execute(query, getAddAccountCallback(acc, emailHash, passwordHash));
-			return findByEmail(acc.getEmail()).getAccountId();
-		} catch (EmailNotFoundException e) {
-			e.printStackTrace();
-			throw new DatabaseOperationException("could not find added account");
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new DatabaseOperationException("could not add account: " + e.getMessage());
-		}
+	public long add(Account account) throws DatabaseOperationException, SQLException {
+			PreparedStatement ps = jdbc.getDataSource().getConnection().prepareStatement(ADD_ACCOUNT,
+					Statement.RETURN_GENERATED_KEYS);
+			
+			String emailHash = encoder.encode(account.getEmail());
+			String passwordHash = encoder.encode(account.getPassword());
+			
+			int c = 1;
+			ps.setString(c++, account.getCompanyName());
+			ps.setString(c++, passwordHash);
+			ps.setString(c++, emailHash);
+			ps.setString(c++, account.getPitch());
+			ps.setString(c++, account.getDescription());
+			ps.setInt(c++, account.getTicketMinId());
+			ps.setInt(c++, account.getTicketMaxId());
+			ps.setLong(c++, account.getCountryId());
+			ps.setString(c++, account.getWebsite());
+			if (ps.executeUpdate() > 0) {
+				try (ResultSet rs = ps.getGeneratedKeys()) {
+					if (rs.next()) {
+						return rs.getLong(1);
+					}
+				}
+			}
+			throw new DatabaseOperationException("primary key could not be retreived");
 	}
 
 	/**
@@ -142,9 +158,9 @@ public class AccountRepository implements IRepository<Account> {
 	}
 
 	/**
-	 * Check whether given email already exists in the database
+	 * Check whether given unhashed email already exists in the database
 	 * 
-	 * @param username the email to search for
+	 * @param username the email to search for (unhashed)
 	 * @return true if email already exists, false if email doesn't exist
 	 */
 	public boolean emailExists(String email) {
@@ -179,8 +195,8 @@ public class AccountRepository implements IRepository<Account> {
 	/**
 	 * Update user account
 	 * 
-	 * @param id the id of the account to update
-	 * @param req          request containing fields to update
+	 * @param id  the id of the account to update
+	 * @param req request containing fields to update
 	 */
 	public void update(long id, Account req) throws Exception {
 		String emailHash = null;
@@ -237,9 +253,11 @@ public class AccountRepository implements IRepository<Account> {
 				ps.setInt(c++, acc.getTicketMinId());
 				ps.setInt(c++, acc.getTicketMaxId());
 				ps.setLong(c++, acc.getCountryId());
-				ps.setString(c++,  acc.getWebsite());
+				ps.setString(c++, acc.getWebsite());
 				return ps.execute();
 			}
 		};
 	}
+
+
 }

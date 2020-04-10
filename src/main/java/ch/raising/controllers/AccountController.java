@@ -129,10 +129,7 @@ public class AccountController {
 	@GetMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> getAccountById(@PathVariable long id, HttpServletRequest request) {
-        if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
-            return ResponseEntity.status(403).body(new ErrorResponse("Access denied"));
-
-        return ResponseEntity.ok().body(accountService.findById(id));
+        return ResponseEntity.ok().body(accountService.getProfile(id));
     }
     
     /**

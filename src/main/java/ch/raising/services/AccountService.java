@@ -24,6 +24,7 @@ import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.ErrorResponse;
 import ch.raising.models.ForgotPasswordRequest;
+import ch.raising.models.FreeEmailRequest;
 import ch.raising.models.Media;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
@@ -96,7 +97,7 @@ public class AccountService implements UserDetailsService {
 	 * @return
 	 */
 	public ResponseEntity<?> isEmailFree(String email) {
-		if (accountRepository.emailExists(email)) {
+		if (  accountRepository.emailExists(email)) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		} else {
 			return ResponseEntity.ok().build();
@@ -122,7 +123,9 @@ public class AccountService implements UserDetailsService {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
 		try {
-			return login(new LoginRequest(account.getEmail(), account.getPassword()));
+			LoginResponse loginResp = (LoginResponse) login(new LoginRequest(account.getEmail(), account.getPassword())).getBody();
+			loginResp.setAccount(account);
+			return ResponseEntity.ok().body(loginResp);
 		}catch(Exception e) {
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
 		}
@@ -192,7 +195,7 @@ public class AccountService implements UserDetailsService {
 	public ResponseEntity<?> getProfile(long id) {
 		try {
 			Account acc = getAccount(id);
-			return ResponseEntity.ok(acc);
+			return ResponseEntity.ok().body(acc);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
@@ -387,9 +390,7 @@ public class AccountService implements UserDetailsService {
 				.getPrincipal();
 		long currentPPicId = pPicRepository.getMediaIdOf(accDet.getId());
 		
-		if (accDet.getId() != img.getAccountId())
-			return ResponseEntity.status(403)
-					.body(new ErrorResponse("Not authorized to add profile picture to foreign account"));
+		
 		try {
 			if (currentPPicId != -1)
 				pPicRepository.deleteMediaFromAccount(currentPPicId, accDet.getId());
