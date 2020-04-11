@@ -1,17 +1,20 @@
 package ch.raising.services;
 
+import java.sql.SQLException;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ch.raising.data.AssignmentTableRepository;
+import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.ErrorResponse;
+import ch.raising.models.responses.CompletePublicInformation;
 import ch.raising.utils.MapUtil;
 
 @Service
@@ -24,53 +27,41 @@ public class AssignmentTableService {
 		this.jdbc = jdbc;
 	}
 
-	public ResponseEntity<?> getAll(String name) {
-		try {
-			List<AssignmentTableModel> info = AssignmentTableRepository.getInstance(jdbc).withTableName(name).findAll();
-			return ResponseEntity.ok().body(info);
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		} catch (Error e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public List<IAssignmentTableModel> getAll(String name) throws DataAccessException, SQLException {
+		return AssignmentTableRepository.getInstance(jdbc).withTableName(name).findAll();
 	}
 
-	public ResponseEntity<?> getAllWithDescription(String name) {
-		try {
-			List<AssignmentTableModel> info = AssignmentTableRepository.getInstance(jdbc).withTableName(name)
-					.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription).findAll();
-			return ResponseEntity.ok().body(info);
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		} catch (Error e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public CompletePublicInformation getAllTables() throws DataAccessException, SQLException {
+		CompletePublicInformation pr = new CompletePublicInformation();
+
+		pr.setTicketSizes(getAll("ticketsize"));
+		pr.setContinents(getAll("continent"));
+		pr.setCountries(getAllCountries());
+		pr.setIndustries(getAll("industry"));
+		pr.setInvestmentPhases(getAll("investmentphase"));
+		pr.setLabels(getAllWithDescription("label"));
+		pr.setInvestorTypes(getAllWithDescription("investortype"));
+		pr.setSupport(getAll("support"));
+		pr.setCorporateBodies(getAll("corporateBody"));
+		pr.setFinanceTypes(getAll("financeType"));
+		pr.setRevenues(getAllRevenueSteps());
+
+		return pr;
 	}
 
-	public ResponseEntity<?> getAllCountries() {
-		try {
-			List<AssignmentTableModel> info = AssignmentTableRepository.getInstance(jdbc).withTableName("country")
-					.withRowMapper(MapUtil::mapRowToCountry).findAll();
-
-			return ResponseEntity.ok().body(info);
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		} catch (Error e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public List<IAssignmentTableModel> getAllWithDescription(String name) throws DataAccessException, SQLException {
+		return AssignmentTableRepository.getInstance(jdbc).withTableName(name)
+				.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription).findAll();
 	}
 
-	public ResponseEntity<?> getAllRevenueSteps() {
-		try {
-			List<AssignmentTableModel> info = AssignmentTableRepository.getInstance(jdbc).withTableName("revenue")
-					.withRowMapper(MapUtil::mapRowToRevenue).findAll();
+	public List<IAssignmentTableModel> getAllCountries() throws DataAccessException, SQLException {
+		return AssignmentTableRepository.getInstance(jdbc).withTableName("country")
+				.withRowMapper(MapUtil::mapRowToCountry).findAll();
+	}
 
-			return ResponseEntity.ok().body(info);
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		} catch (Error e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public List<IAssignmentTableModel> getAllRevenueSteps() throws DataAccessException, SQLException {
+		return AssignmentTableRepository.getInstance(jdbc).withTableName("revenue")
+				.withRowMapper(MapUtil::mapRowToRevenue).findAll();
 	}
 
 	/**
@@ -78,16 +69,14 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	private ResponseEntity<?> addById(AssignmentTableRepository assignmentRepo, List<AssignmentTableModel> models) {
-		try {
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			for (AssignmentTableModel m : models) {
-				assignmentRepo.addEntryToAccountById(m.getId(), accDet.getId());
-			}
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+	private void addById(AssignmentTableRepository assignmentRepo, List<Long> models)
+			throws DataAccessException, SQLException {
+		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		for (Long m : models) {
+			assignmentRepo.addEntryToAccountById(m, accDet.getId());
 		}
 	}
 
@@ -95,10 +84,12 @@ public class AssignmentTableService {
 	 * Add entry in assignmenttable with both ids to account
 	 * 
 	 * @param countryId
-	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public ResponseEntity<?> addToAccountById(String tableName, List<AssignmentTableModel> models) {
-		return addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName), models);
+	public void addToAccountById(String tableName, List<Long> model)
+			throws DataAccessException, SQLException {
+		addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName), model);
 	}
 
 	/**
@@ -106,10 +97,12 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public ResponseEntity<?> addToInvestorById(String tableName, List<AssignmentTableModel> models) {
-		return addById(
-				AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName("investorid"),
+	public void addToInvestorById(String tableName, List<Long> models)
+			throws DataAccessException, SQLException {
+		addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName("investorid"),
 				models);
 	}
 
@@ -118,10 +111,12 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public ResponseEntity<?> addToStartupById(String tableName, List<AssignmentTableModel> models) {
-		return addById(
-				AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName("startupid"),
+	public void addToStartupById(String tableName, List<Long> models)
+			throws DataAccessException, SQLException {
+		addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName("startupid"),
 				models);
 	}
 
@@ -130,18 +125,15 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	private ResponseEntity<?> deleteById(AssignmentTableRepository assignmentRepo, List<AssignmentTableModel> models) {
-		try {
+	private void deleteById(AssignmentTableRepository assignmentRepo, List<Long> models) throws DataAccessException, SQLException {
+		
 			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			for (AssignmentTableModel model : models) {
-				assignmentRepo.deleteEntryFromAccountById(model.getId(), accDet.getId());
+			for (Long model : models) {
+				assignmentRepo.deleteEntryFromAccountById(model, accDet.getId());
 			}
-
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
 	}
 
 	/**
@@ -150,9 +142,11 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public ResponseEntity<?> deleteFromAccountById(String name, List<AssignmentTableModel> models) {
-		return deleteById(AssignmentTableRepository.getInstance(jdbc).withTableName(name), models);
+	public void deleteFromAccountById(String name, List<Long> countries) throws DataAccessException, SQLException {
+		deleteById(AssignmentTableRepository.getInstance(jdbc).withTableName(name), countries);
 	}
 
 	/**
@@ -161,9 +155,11 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public ResponseEntity<?> deleteFromInvestorById(String name, List<AssignmentTableModel> models) {
-		return deleteById(
+	public void deleteFromInvestorById(String name, List<Long> models) throws DataAccessException, SQLException {
+		deleteById(
 				AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("investorid"),
 				models);
 	}
@@ -174,10 +170,11 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public ResponseEntity<?> deleteFromStartupById(String name, List<AssignmentTableModel> models) {
-		return deleteById(
+	public void deleteFromStartupById(String name, List<Long> models) throws DataAccessException, SQLException {
+		deleteById(
 				AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("startupid"), models);
 	}
-
 }

@@ -25,8 +25,8 @@ import ch.raising.utils.functionalInterface.RowMapper;
 public class MediaRepository implements IMediaRepository<Media> {
 	
 	JdbcTemplate jdbc;
-	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Media, Long> PS_ADD;
-	private final PSOneParameter<PreparedStatementCallback<Boolean>, String> PS_ADD_BYTES;
+	private final PSTwoParameters<PreparedStatementCallback<Boolean>, byte[], Long> PS_ADD;
+	private final PSOneParameter<PreparedStatementCallback<Boolean>, byte[]> PS_ADD_BYTES;
 	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Long, Long> PS_DELETE;
 	private final RowMapper<ResultSet, Integer, Media> rowMapper;
 	
@@ -37,6 +37,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 	private final String GET_MEDIA_ID_OF;
 	private final String FIND_BY_ID;
 	private final String ADD_ACCOUNTID_TO_MEDIA;
+	private final String FIND_ID_BY_ACCOUNT_ID;
 	
 	public MediaRepository(JdbcTemplate jdbc, String tableName) {
 		this.jdbc = jdbc;
@@ -50,23 +51,24 @@ public class MediaRepository implements IMediaRepository<Media> {
 		this.DELETE_ENTRY_FROM_ACCOUNT = "DELETE FROM " + tableName + " WHERE id = ? AND accountId = ?";
 		this.GET_MEDIA_ID_OF = "SELECT id FROM " + tableName + " WHERE accountId = ?";
 		this.FIND_BY_ID = "SELECT * FROM " + tableName + " WHERE id = ?";
+		this.FIND_ID_BY_ACCOUNT_ID = "SELECT id FROM " + tableName + " WHERE id = ?";
 		this.ADD_ACCOUNTID_TO_MEDIA = "UPDATE " + tableName + " SET accountid = ? WHERE id = ?";
 	}
 	
 	@Override
-	public void addMediaToAccount(Media img, long accountId) throws DataAccessException, SQLException {
+	public void addMediaToAccount(byte[] img, long accountId) throws DataAccessException, SQLException {
 		jdbc.execute(INSERT_WITH_ACCOUNTID, PS_ADD.getCallback(img, accountId));
 	}
 	
 	@Override
-	public long addMediaString(String media) throws DataAccessException, SQLException {
+	public long addMedia(byte[] media) throws DataAccessException, SQLException {
 		KeyHolder kh = new GeneratedKeyHolder();
 		jdbc.update(INSERT_WITHOUT_ACCOUNTID, PS_ADD_BYTES.getCallback(media), kh);
 		return kh.getKey().longValue();
 	}
 	
 	@Override
-	public List<Media> findMediaByAccount(long id) {
+	public List<Media> findMediaByAccountId(long id) {
 		return jdbc.query(FIND_BY_ACCOUNTID, new Object[] { id }, rowMapper::mapRowToModel);
 	}
 	
@@ -89,6 +91,11 @@ public class MediaRepository implements IMediaRepository<Media> {
 	@Override
 	public void addAccountIdToMedia(long accountId, long videoId) throws DataAccessException{
 		jdbc.update(ADD_ACCOUNTID_TO_MEDIA, new Object[] {accountId, videoId});
+	}
+
+	@Override
+	public List<Long> findMediaIdByAccountId(long accountId) throws DataAccessException, SQLException {
+		return jdbc.query(FIND_ID_BY_ACCOUNT_ID, new Object[] { accountId}, MapUtil::mapRowToId);
 	}
 
 	

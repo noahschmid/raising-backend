@@ -1,11 +1,13 @@
 package ch.raising.utils;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import java.util.Date;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import ch.raising.data.ResetCodeRepository;
@@ -15,11 +17,12 @@ import ch.raising.models.ResetCode;
 
 @Service
 public class ResetCodeUtil {
-    @Autowired
+    
     private static ResetCodeRepository resetCodeRepository;
 
+    @Autowired
     public ResetCodeUtil(ResetCodeRepository resetCodeRepository) {
-        this.resetCodeRepository = resetCodeRepository;
+        resetCodeRepository = resetCodeRepository;
     }
 
     private final static int CODE_LENGTH = 8;
@@ -31,17 +34,18 @@ public class ResetCodeUtil {
      * If code is expired, delete it. If 
      * @param request instance of password reset request
      * @return -1 if request isnt valid, else accountId of account the request belongs to 
+     * @throws PasswordResetException 
      * @throws Exception
      */
-    public long validate(PasswordResetRequest request) throws Exception {
+    public long validate(PasswordResetRequest request) throws SQLException, DataAccessException, PasswordResetException {
         ResetCode code = resetCodeRepository.findByCode(request.getCode());
         if(code == null)
-            return -1;
+        	throw new PasswordResetException("Resetcode is Invalid");
 
         resetCodeRepository.deleteByCode(code.getCode());
 
         if(isExpired(code)) 
-            return -1;
+        	throw new PasswordResetException("Code is Expired");
 
         return code.getAccountId();
     }

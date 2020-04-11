@@ -2,9 +2,9 @@ package ch.raising.utils;
 
 import java.sql.ResultSet;
 
-
-
 import java.sql.SQLException;
+
+import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.Account;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.AssignmentTableModelWithDescription;
@@ -18,26 +18,28 @@ import ch.raising.models.PrivateShareholder;
 public class MapUtil {
 
 	public static long mapRowToId(ResultSet rs, int row) throws SQLException {
-		return rs == null ? -1: rs.getLong("id");
+		return rs == null ? -1 : rs.getLong("id");
 	}
 
 	public static long mapRowToAccountId(ResultSet rs, int row) throws SQLException {
-		return rs == null? -1:rs.getLong("accountid");
+		return rs == null ? -1 : rs.getLong("accountid");
 	}
 
 	public static Account mapRowToAccount(ResultSet rs, int row) throws SQLException {
-		return Account.accountBuilder().email(rs.getString("emailhash")).description(rs.getString("description")).pitch(rs.getString("pitch"))
-				.companyName(rs.getString("companyName")).accountId(rs.getLong("id")).ticketMaxId(rs.getInt("ticketmaxid"))
-				.ticketMinId(rs.getInt("ticketminid")).website(rs.getString("website")).build();
+		return Account.accountBuilder().firstName(rs.getString("firstname")).lastName(rs.getString("lastname"))
+				.email(rs.getString("emailhash")).description(rs.getString("description")).pitch(rs.getString("pitch"))
+				.companyName(rs.getString("companyName")).roles(rs.getString("roles")).accountId(rs.getLong("id"))
+				.ticketMaxId(rs.getInt("ticketmaxid")).ticketMinId(rs.getInt("ticketminid"))
+				.countryId(rs.getLong("countryid")).website(rs.getString("website"))
+				.profilePictureId(rs.getLong("profilepictureid")).build();
 	}
 
 	public static AssignmentTableModel mapRowToAssignmentTable(ResultSet rs, int row) throws SQLException {
 		return new AssignmentTableModel(rs.getString("name"), rs.getInt("id"));
 	}
-	
-	public static AssignmentTableModel mapRowToAssignmentTableAssignment(ResultSet rs, int row) throws SQLException {
-		String assgineeId = rs.getMetaData().getColumnName(2);
-		return new AssignmentTableModel(rs.getString("name"), rs.getInt(assgineeId));
+
+	public static long mapRowToAssignmentTableId(ResultSet rs, int row) throws SQLException {
+		return rs.getLong(1);
 	}
 
 	public static AssignmentTableModelWithDescription mapRowToAssignmentTableWithDescription(ResultSet rs, int row)
@@ -75,12 +77,14 @@ public class MapUtil {
 	}
 
 	public static Media mapRowToMedia(ResultSet rs, int row) throws SQLException {
-		return rs == null ? Media.builder().build():Media.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid"))
-				.media(new String(rs.getBytes("media"))).build();
+		return rs == null ? Media.builder().build()
+				: Media.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid")).media(rs.getBytes("media"))
+						.build();
 	}
-	
+
 	public static Investor mapRowToInvestor(ResultSet rs, int row) throws SQLException {
-		return Investor.investorBuilder().accountId(rs.getLong("accountid")).investorTypeId(rs.getLong("investortypeid")).build();
+		return Investor.investorBuilder().accountId(rs.getLong("accountid"))
+				.investorTypeId(rs.getLong("investortypeid")).build();
 	}
 
 }

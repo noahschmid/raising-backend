@@ -27,7 +27,7 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 	}
 
 	@Override
-	public PrivateShareholder find(long id) {
+	public PrivateShareholder find(long id) throws SQLException, DataAccessException{
 		return jdbc.queryForObject("SELECT * FROM privateshareholder WHERE id = ?", new Object[] { id },
 				this::mapRowToModel);
 	}
@@ -41,20 +41,20 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 	}
 
 	@Override
-	public long getStartupIdByMemberId(long id) {
+	public long getStartupIdByMemberId(long id)throws SQLException, DataAccessException {
 		return jdbc.queryForObject("SELECT * FROM privateshareholder WHERE id = ?",
 				new Object[] { id }, this::mapRowToId);
 	}
 
 	@Override
-	public void addMemberByStartupId(PrivateShareholder sumem, long startupId) {
+	public void addMemberByStartupId(PrivateShareholder sumem, long startupId) throws SQLException, DataAccessException{
 		jdbc.execute(
 				"INSERT INTO privateshareholder(startupid, firstname, lastname, city, equityshare, investortypeid, countryid) VALUES (?,?,?,?,?,?,?)",
 				addByStartupId(sumem, startupId));
 	}
 
 	@Override
-	public void deleteMemberByStartupId(long id) {
+	public void deleteMemberById(long id) throws SQLException, DataAccessException {
 		jdbc.execute("DELETE FROM privateshareholder WHERE id = ?", deleteById(id));
 	}
 
@@ -77,15 +77,14 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 	}
 
 	@Override
-	public List<PrivateShareholder> findByStartupId(long startupId) {
+	public List<PrivateShareholder> findByStartupId(long startupId) throws SQLException, DataAccessException {
 		return jdbc.query("SELECT * FROM privateshareholder WHERE startupid = ?", new Object[] { startupId },
 				this::mapRowToModel);
 	}
 
 	@Override
-	public void update(long id, PrivateShareholder req) throws Exception {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("privateshareholder", id, this);
-		update.setJdbc(jdbc);
+	public void update(long id, PrivateShareholder req) throws SQLException, DataAccessException {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("privateshareholder", id, jdbc); 
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getCity(), "city");

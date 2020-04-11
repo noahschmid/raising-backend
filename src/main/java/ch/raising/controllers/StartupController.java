@@ -1,10 +1,12 @@
 package ch.raising.controllers;
 
+import java.sql.SQLException;
 import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -23,9 +25,12 @@ import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Founder;
 import ch.raising.models.PrivateShareholder;
 import ch.raising.models.Startup;
+import ch.raising.models.responses.ErrorResponse;
 import ch.raising.services.AdditionalInformationService;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.StartupService;
+import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.NotAuthorizedException;
 
 @Controller
 @RequestMapping("/startup")
@@ -46,175 +51,237 @@ public class StartupController {
      * Return profile of investor by given accountId
      * @param id the id of the account the startup belongs to
      * @return ResponseEntity instance with status code and startup in body
+	 * @throws SQLException 
+	 * @throws DataAccessException 
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStartupProfile(@PathVariable int id) {
-        return startupService.getProfile(id);
+    public ResponseEntity<?> getStartupProfile(@PathVariable int id) throws DataAccessException, SQLException {
+        return ResponseEntity.ok(startupService.getProfile(id));
 	}
     
     /**
      * Update profile of startup by given accountId
      * @param request the id of the account the investor belongs to
      * @return ResponseEntity with status code and error message (if exists)
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request) {
-        return startupService.updateProfile(id, request);
+    public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request) throws DataAccessException, SQLException {
+    	startupService.updateProfile(id, request);
+        return ResponseEntity.ok().build();
     }
 	
 	/**
 	 * Add new startup
 	 * @param startup
 	 * @return
+	 * @throws Exception 
+	 * @throws SQLException 
+	 * @throws DatabaseOperationException 
 	 */
 	@PostMapping("/register")
-	public ResponseEntity<?> addStartup(@RequestBody Startup startup) {
-		return startupService.registerProfile(startup);
+	public ResponseEntity<?> addStartup(@RequestBody Startup startup) throws DatabaseOperationException, SQLException, Exception {
+		return ResponseEntity.ok(startupService.registerProfile(startup));
 	}
 	/**
 	 * Deletes a boardmember specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws NotAuthorizedException 
+	 * @throws DataAccessException 
 	 */
 	@DeleteMapping("/boardmember/{id}")
-	public ResponseEntity<?> deleteBoardmember(@PathVariable int id){
-		return additionalInformationService.deleteBoardmemberByStartupId(id);
+	public ResponseEntity<?> deleteBoardmember(@PathVariable int id) throws DataAccessException, NotAuthorizedException, SQLException{
+		additionalInformationService.deleteBoardmemberByStartupId(id);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Deletes a boardmember specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws NotAuthorizedException 
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PatchMapping("/boardmember/{id}")
-	public ResponseEntity<?> updateBoardmember(@PathVariable int id, @RequestBody Boardmember bmem){
-		return additionalInformationService.updateBoardmemberByStartupId(bmem, id);
+	public ResponseEntity<?> updateBoardmember(@PathVariable int id, @RequestBody Boardmember bmem) throws DataAccessException, SQLException, NotAuthorizedException{
+		additionalInformationService.updateBoardmemberByStartupId(bmem, id);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Add a boardmember to a startup
 	 * @param stakeholder to be added
 	 * @return a response with a code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/boardmember")
-	public ResponseEntity<?> addBoardmemeber(Boardmember bmem){
-		return additionalInformationService.addBoardmemberByStartupId(bmem);
+	public ResponseEntity<?> addBoardmemeber(@RequestBody Boardmember bmem) throws DataAccessException, SQLException{
+		additionalInformationService.addBoardmemberByStartupId(bmem);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Deletes a founder specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws NotAuthorizedException 
+	 * @throws DataAccessException 
 	 */
 	@DeleteMapping("/founder/{id}")
-	public ResponseEntity<?> deleteFounder(@PathVariable int id){
-		return additionalInformationService.deleteFounderByStartupId(id);
+	public ResponseEntity<?> deleteFounder(@PathVariable int id) throws DataAccessException, NotAuthorizedException, SQLException{
+		additionalInformationService.deleteFounderByStartupId(id);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Deletes a founder specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws NotAuthorizedException 
+	 * @throws DataAccessException 
 	 */
 	@PatchMapping("/founder/{id}")
-	public ResponseEntity<?> updateFounder(@PathVariable int id, @RequestBody Founder founder ){
-		return additionalInformationService.updateFounderByStartupId(founder, id);
+	public ResponseEntity<?> updateFounder(@PathVariable int id, @RequestBody Founder founder ) throws DataAccessException, NotAuthorizedException, SQLException{
+		additionalInformationService.updateFounderByStartupId(founder, id);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Add a founder to a startup
 	 * @param stakeholder to be added
 	 * @return a response with a code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/founder")
-	public ResponseEntity<?> addFounder(Founder founder){
-		return additionalInformationService.addFounderByStartupId(founder);
+	public ResponseEntity<?> addFounder(@RequestBody Founder founder) throws DataAccessException, SQLException{
+		additionalInformationService.addFounderByStartupId(founder);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Deletes a privateshareholder specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws NotAuthorizedException 
+	 * @throws DataAccessException 
 	 */
 	@DeleteMapping("/privateshareholder/{id}")
-	public ResponseEntity<?> deletePrivateShareholder(@PathVariable int id){
-		return additionalInformationService.deletePShareholderByStartupId(id);
+	public ResponseEntity<?> deletePrivateShareholder(@PathVariable int id) throws DataAccessException, NotAuthorizedException, SQLException{
+		additionalInformationService.deletePShareholderByStartupId(id);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Deletes a privateshareholder specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws Exception 
 	 */
 	@PatchMapping("/privateshareholder/{id}")
-	public ResponseEntity<?> updatePrivateShareholder(@PathVariable int id, @RequestBody PrivateShareholder psh ){
-		return additionalInformationService.updatePShareholderByStartupId(psh, id);
+	public ResponseEntity<?> updatePrivateShareholder(@PathVariable int id, @RequestBody PrivateShareholder psh ) throws Exception{
+		additionalInformationService.updatePShareholderByStartupId(psh, id);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Add a privateshareholder to a startup
 	 * @param stakeholder to be added
 	 * @return a response with a code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/privateshareholder")
-	public ResponseEntity<?> addPrivateShareholder(PrivateShareholder psh){
-		return additionalInformationService.addPShareholderByStartupId(psh);
+	public ResponseEntity<?> addPrivateShareholder(@RequestBody PrivateShareholder psh) throws DataAccessException, SQLException{
+		additionalInformationService.addPShareholderByStartupId(psh);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Deletes a corporateshareholder specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws NotAuthorizedException 
+	 * @throws DataAccessException 
 	 */
 	@DeleteMapping("/corporateshareholder/{id}")
-	public ResponseEntity<?> deleteCorporateShareholder(@PathVariable int id){
-		return additionalInformationService.deleteCShareholderByStartupId(id);
+	public ResponseEntity<?> deleteCorporateShareholder(@PathVariable int id) throws DataAccessException, NotAuthorizedException, SQLException{
+		additionalInformationService.deleteCShareholderByStartupId(id);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Deletes a corporateshareholder specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws NotAuthorizedException 
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PatchMapping("/corporateshareholder/{id}")
-	public ResponseEntity<?> updateCorporateShareholder(@PathVariable int id, @RequestBody CorporateShareholder csh ){
-		return additionalInformationService.updateCShareholderByStartupId(csh, id);
+	public ResponseEntity<?> updateCorporateShareholder(@PathVariable int id, @RequestBody CorporateShareholder csh ) throws DataAccessException, SQLException, NotAuthorizedException{
+		additionalInformationService.updateCShareholderByStartupId(csh, id);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Add a corporateshareholder to a startup
 	 * @param stakeholder to be added
 	 * @return a response with a code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/corporateshreholder")
-	public ResponseEntity<?> addCorporateShareholder(CorporateShareholder csh){
-		return additionalInformationService.addCShareholderByStartupId(csh);
+	public ResponseEntity<?> addCorporateShareholder(@RequestBody CorporateShareholder csh) throws DataAccessException, SQLException{
+		additionalInformationService.addCShareholderByStartupId(csh);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Deletes a label specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/label/delete")
-	public ResponseEntity<?> deleteLabel(@RequestBody List<AssignmentTableModel> labels){
-		return assignmentTableService.deleteFromStartupById("label",labels);
+	public ResponseEntity<?> deleteLabel(@RequestBody List<Long> labels) throws DataAccessException, SQLException{
+		assignmentTableService.deleteFromStartupById("label",labels);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Add a label to a startup
 	 * @param stakeholder to be added
 	 * @return a response with a code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/label")
-	public ResponseEntity<?> addLabel(@RequestBody List<AssignmentTableModel> labels){
-		return assignmentTableService.addToStartupById("label", labels);
+	public ResponseEntity<?> addLabel(@RequestBody List<Long> labels) throws DataAccessException, SQLException{
+		assignmentTableService.addToStartupById("label", labels);
+		return ResponseEntity.ok().build();
 	}
 	
 	/**
 	 * Deletes a founder specified by id.
 	 * @param id to be deleted
 	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/investortype/delete")
-	public ResponseEntity<?> deleteInvestmentPhase(@RequestBody List<AssignmentTableModel> invTypes){
-		return assignmentTableService.deleteFromStartupById("investortype", invTypes);
+	public ResponseEntity<?> deleteInvestmentPhase(@RequestBody List<Long> invTypes) throws DataAccessException, SQLException{
+		assignmentTableService.deleteFromStartupById("investortype", invTypes);
+		return ResponseEntity.ok().build();
 	}
 	/**
 	 * Add a founder to a startup
 	 * @param stakeholder to be added
 	 * @return a response with a code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/investortype")
-	public ResponseEntity<?> addInvestmentphase(@RequestBody List<AssignmentTableModel> invTypes){
-		return assignmentTableService.addToStartupById("investortype", invTypes);
+	public ResponseEntity<?> addInvestmentphase(@RequestBody List<Long> invTypes) throws DataAccessException, SQLException{
+		assignmentTableService.addToStartupById("investortype", invTypes);
+		return ResponseEntity.ok().build();
 	}
 	
 	

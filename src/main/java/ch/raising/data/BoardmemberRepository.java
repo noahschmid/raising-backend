@@ -28,30 +28,30 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	}
 
 	@Override
-	public void addMemberByStartupId(Boardmember bmem, long startupid) {
+	public void addMemberByStartupId(Boardmember bmem, long startupid) throws SQLException, DataAccessException{
 		jdbc.execute(
 				"INSERT INTO boardmember(startupid, firstname, lastname, education, profession, position, membersince, countryid) VALUES (?,?,?,?,?,?,?,?)",
 				addByStartupId(bmem, startupid));
 	}
 
 	@Override
-	public long getStartupIdByMemberId(long bmemId) {
+	public long getStartupIdByMemberId(long bmemId) throws SQLException, DataAccessException{
 		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { bmemId }, this::mapRowToId);
 	}
 
 	@Override
-	public Boardmember find(long id) {
+	public Boardmember find(long id)throws DataAccessException, SQLException{
 		return jdbc.queryForObject("SELECT * FROM boardmember WHERE id = ?", new Object[] { id }, this::mapRowToModel);
 	}
 
 	@Override
-	public void deleteMemberByStartupId(long id) {
-		jdbc.execute("DELETE FROM boardmember WHERE startupid = ?", deleteById(id));
+	public void deleteMemberById(long id)throws SQLException, DataAccessException {
+		jdbc.execute("DELETE FROM boardmember WHERE id = ?", deleteById(id));
 	}
 
 	@Override
 	public Boardmember mapRowToModel(ResultSet rs, int row) throws SQLException {
-		return Boardmember.builder().id(rs.getLong("id")).startupid(rs.getLong("startupid"))
+		return Boardmember.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid"))
 				.lastName(rs.getString("lastname")).firstName(rs.getString("firstname"))
 				.position(rs.getString("position")).education(rs.getString("education"))
 				.profession(rs.getString("profession")).memberSince(rs.getInt("membersince"))
@@ -84,9 +84,8 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 	}
 
 	@Override
-	public void update(long id, Boardmember req) throws Exception {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("boardmember", id, this);
-		update.setJdbc(jdbc);
+	public void update(long id, Boardmember req) throws DataAccessException, SQLException {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("boardmember", id, jdbc);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getEducation(), "education");

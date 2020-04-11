@@ -1,8 +1,9 @@
 package ch.raising.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.sql.SQLException;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,20 +16,19 @@ import ch.raising.interfaces.IAdditionalInformationRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.Boardmember;
 import ch.raising.models.CorporateShareholder;
-import ch.raising.models.ErrorResponse;
 import ch.raising.models.Founder;
 import ch.raising.models.PrivateShareholder;
+import ch.raising.utils.NotAuthorizedException;
 
 @Service
 public class AdditionalInformationService {
-	
+
 	FounderRepository founderRepository;
 	BoardmemberRepository bmemRepository;
 	PrivateShareholderRepository pShareholderRepository;
 
 	CorporateShareholderRepository cShareholderRepository;
-	
-	
+
 	@Autowired
 	public AdditionalInformationService(JdbcTemplate jdbc) {
 		this.founderRepository = new FounderRepository(jdbc);
@@ -42,36 +42,33 @@ public class AdditionalInformationService {
 	 * 
 	 * @param tableEntryId of the boardmember to be deleted
 	 * @return response with code and optional body
+	 * @throws NotAuthorizedException
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 
-	public ResponseEntity<?> deleteBoardmemberByStartupId(long id) {
-		try {
-			if (!belongsToStartup(id, bmemRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this boardmember does not belong to that startup"));
-			}
-			bmemRepository.deleteMemberByStartupId(id);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+	public void deleteBoardmemberByStartupId(long id) throws NotAuthorizedException, DataAccessException, SQLException {
+		if (!belongsToStartup(id, bmemRepository)) {
+			throw new NotAuthorizedException("this boardmember does not belong to that startup");
 		}
+		bmemRepository.deleteMemberById(id);
 	}
+
 	/**
 	 * updates a given boardmember
+	 * 
 	 * @param id
 	 * @return
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 * @throws NotAuthorizedException
 	 */
-	public ResponseEntity<?> updateBoardmemberByStartupId(Boardmember bmem, long id) {
-		try {
-			if (!belongsToStartup(id, bmemRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this founder does not belong to that startup"));
-			}
-			bmemRepository.update(id, bmem);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+	public void updateBoardmemberByStartupId(Boardmember bmem, long id)
+			throws DataAccessException, SQLException, NotAuthorizedException {
+		if (!belongsToStartup(id, bmemRepository)) {
+			throw new NotAuthorizedException("this boardmember does not belong to that startup");
 		}
+		bmemRepository.update(id, bmem);
 	}
 
 	/**
@@ -79,15 +76,12 @@ public class AdditionalInformationService {
 	 * 
 	 * @param bMem a new Boardmember
 	 * @return response with code and optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 
-	public ResponseEntity<?> addBoardmemberByStartupId(Boardmember bMem) {
-		try {
-			bmemRepository.addMemberByStartupId(bMem, bMem.getStartupId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public void addBoardmemberByStartupId(Boardmember bMem) throws DataAccessException, SQLException {
+		bmemRepository.addMemberByStartupId(bMem, bMem.getStartupId());
 	}
 
 	/**
@@ -95,161 +89,137 @@ public class AdditionalInformationService {
 	 * 
 	 * @param tableEntryId of the founder to be deleted
 	 * @return response with code and optional body
+	 * @throws NotAuthorizedException
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 
-	public ResponseEntity<?> deleteFounderByStartupId(long id) {
-		try {
-			if (!belongsToStartup(id, founderRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this founder does not belong to that startup"));
-			}
-			founderRepository.deleteMemberByStartupId(id);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+	public void deleteFounderByStartupId(long id) throws NotAuthorizedException, DataAccessException, SQLException {
+		if (!belongsToStartup(id, founderRepository)) {
+			throw new NotAuthorizedException("this founder does not belong to that startup");
 		}
+		founderRepository.deleteMemberById(id);
 	}
 
 	/**
 	 * updates a given founder
+	 * 
 	 * @param id
 	 * @return
+	 * @throws NotAuthorizedException
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public ResponseEntity<?> updateFounderByStartupId(Founder founder, int id) {
-		try {
-			if (!belongsToStartup(id, founderRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this founder does not belong to that startup"));
-			}
-			founderRepository.update(id, founder);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+	public void updateFounderByStartupId(Founder founder, int id)
+			throws NotAuthorizedException, DataAccessException, SQLException {
+		if (!belongsToStartup(id, founderRepository)) {
+			throw new NotAuthorizedException("this founder does not belong to that startup");
 		}
+		founderRepository.update(id, founder);
 	}
+
 	/**
 	 * Adds a new founder
 	 * 
 	 * @param bMem a new founder
 	 * @return response with code and optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 
-	public ResponseEntity<?> addFounderByStartupId(Founder founder) {
-		try {
-			founderRepository.addMemberByStartupId(founder, founder.getStartupId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public void addFounderByStartupId(Founder founder) throws DataAccessException, SQLException {
+		founderRepository.addMemberByStartupId(founder, founder.getStartupId());
 	}
 
 	/**
 	 * delete the privateShareholder belonging to the startup
+	 * 
 	 * @param id memberid
 	 * @return
+	 * @throws NotAuthorizedException
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public ResponseEntity<?> deletePShareholderByStartupId(int id) {
-		try {
-			if (!belongsToStartup(id, pShareholderRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this shareholder does not belong to that startup"));
-			}
-			pShareholderRepository.deleteMemberByStartupId(id);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+	public void deletePShareholderByStartupId(int id) throws NotAuthorizedException, DataAccessException, SQLException {
+		if (!belongsToStartup(id, pShareholderRepository)) {
+			throw new NotAuthorizedException("this shareholder does not belong to that startup");
 		}
+		pShareholderRepository.deleteMemberById(id);
 	}
-
 
 	/**
 	 * Update privateshareholder by id
+	 * 
 	 * @param psh {@link ch.raising.models.PrivateShareholder}
 	 * @return
+	 * @throws Exception
 	 */
 
-	public ResponseEntity<?> updatePShareholderByStartupId(PrivateShareholder psh, int id) {
-		try {
-			if (!belongsToStartup(id, pShareholderRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this shareholder does not belong to that startup"));
-			}
-			pShareholderRepository.update(id, psh);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+	public void updatePShareholderByStartupId(PrivateShareholder psh, int id) throws Exception {
+		if (!belongsToStartup(id, pShareholderRepository)) {
+			throw new NotAuthorizedException("this shareholder does not belong to that startup");
 		}
+		pShareholderRepository.update(id, psh);
 	}
 
 	/**
 	 * Add privateshareholder to startup by id
+	 * 
 	 * @param psh {@link ch.raising.models.PrivateShareholder}
 	 * @return
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 
-	public ResponseEntity<?> addPShareholderByStartupId(PrivateShareholder psh) {
-		try {
-			pShareholderRepository.addMemberByStartupId(psh, psh.getStartupId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public void addPShareholderByStartupId(PrivateShareholder psh) throws DataAccessException, SQLException {
+		pShareholderRepository.addMemberByStartupId(psh, psh.getStartupId());
 	}
-	
+
 	/**
 	 * delete the corporateShareholder belonging to the startup
+	 * 
 	 * @param id memberid
 	 * @return
+	 * @throws NotAuthorizedException 
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public ResponseEntity<?> deleteCShareholderByStartupId(int id) {
-		try {
+	public void deleteCShareholderByStartupId(int id) throws NotAuthorizedException, DataAccessException, SQLException {
 			if (!belongsToStartup(id, cShareholderRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this shareholder does not belong to that startup"));
+				throw new NotAuthorizedException("throws SQLException, DataAccessException");
 			}
-			cShareholderRepository.deleteMemberByStartupId(id);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+			cShareholderRepository.deleteMemberById(id);
 	}
-
 
 	/**
 	 * Update privateshareholder by id
+	 * 
 	 * @param psh {@link ch.raising.models.CorporateShareholder}
 	 * @return
+	 * @throws SQLException 
+	 * @throws DataAccessException 
+	 * @throws NotAuthorizedException 
 	 */
 
-	public ResponseEntity<?> updateCShareholderByStartupId(CorporateShareholder csh, int id) {
-		try {
-			if (!belongsToStartup(id,cShareholderRepository)) {
-				return ResponseEntity.status(403)
-						.body(new ErrorResponse("this shareholder does not belong to that startup"));
+	public void updateCShareholderByStartupId(CorporateShareholder csh, int id) throws DataAccessException, SQLException, NotAuthorizedException {
+			if (!belongsToStartup(id, cShareholderRepository)) {
+				throw new NotAuthorizedException("this shareholder does not belong to that startup");
 			}
 			cShareholderRepository.update(id, csh);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
 	}
-
 
 	/**
 	 * add corporateshareholder
+	 * 
 	 * @param csh {@link ch.raising.modles.CorporateShareholder}
 	 * @return
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public ResponseEntity<?> addCShareholderByStartupId(CorporateShareholder csh) {
-		try {
+	public void addCShareholderByStartupId(CorporateShareholder csh) throws DataAccessException, SQLException {
 			cShareholderRepository.addMemberByStartupId(csh, csh.getStartupId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
 	}
 
-	
 	/**
 	 * Checks if a requesting startup belongs to the StartupMember
 	 * 
@@ -258,8 +228,10 @@ public class AdditionalInformationService {
 	 *                         startup belongs to the sidetable entry with given
 	 *                         tableEntryId
 	 * @return
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	private boolean belongsToStartup(long sideTableEntryId, IAdditionalInformationRepository<?> addinfRepo) {
+	private boolean belongsToStartup(long sideTableEntryId, IAdditionalInformationRepository<?> addinfRepo) throws DataAccessException, SQLException {
 		AccountDetails accdetails = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
 		return accdetails.getId() == addinfRepo.getStartupIdByMemberId(sideTableEntryId);

@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import ch.raising.models.ErrorResponse;
 import ch.raising.models.Media;
 import ch.raising.models.MediaUploadResponse;
+import ch.raising.models.responses.ErrorResponse;
 import ch.raising.services.VideoUploadService;
 
 @RequestMapping("/upload")

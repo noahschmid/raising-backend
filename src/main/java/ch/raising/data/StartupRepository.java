@@ -60,26 +60,22 @@ public class StartupRepository implements IRepository<Startup> {
 	 * @throws Exception
 	 */
 	@Override
-	public void update(long id, Startup req) throws Exception {
-		try {
-			UpdateQueryBuilder update = new UpdateQueryBuilder("startup", id, this, "accountid");
-			update.setJdbc(jdbc);
-			update.addField(req.getInvestmentPhaseId(), "investmentphaseid");
-			update.addField(req.getBreakEvenYear(), "breakevenyear");
-			update.addField(req.getNumberOfFte(), "numberoffte");
-			update.addField(req.getPreMoneyValuation(), "premoneyvaluation");
-			update.addField(req.getClosingTime(), "closingtime");
-			update.addField(req.getRevenueMaxId(), "revenuemaxid");
-			update.addField(req.getRevenueMinId(), "revenueMinId");
-			update.addField(req.getScope(), "scope");
-			update.addField(req.getUId(), "uid");
-			update.addField(req.getFoundingYear(), "foundingyear");
-			update.addField(req.getFinanceTypeId(), "financetypeid");
-			update.addField(req.getRaised(), "raised");
-			update.execute();
-		} catch (Exception e) {
-			throw new Exception(e.getMessage());
-		}
+	public void update(long id, Startup req) throws SQLException, DataAccessException {
+
+		UpdateQueryBuilder update = new UpdateQueryBuilder("startup", id, jdbc, "accountid");
+		update.addField(req.getInvestmentPhaseId(), "investmentphaseid");
+		update.addField(req.getBreakEvenYear(), "breakevenyear");
+		update.addField(req.getNumberOfFte(), "numberoffte");
+		update.addField(req.getPreMoneyValuation(), "premoneyvaluation");
+		update.addField(req.getClosingTime(), "closingtime");
+		update.addField(req.getRevenueMaxId(), "revenuemaxid");
+		update.addField(req.getRevenueMinId(), "revenueMinId");
+		update.addField(req.getScope(), "scope");
+		update.addField(req.getUId(), "uid");
+		update.addField(req.getFoundingYear(), "foundingyear");
+		update.addField(req.getFinanceTypeId(), "financetypeid");
+		update.addField(req.getRaised(), "raised");
+		update.execute();
 	}
 
 	/**
@@ -94,48 +90,46 @@ public class StartupRepository implements IRepository<Startup> {
 		return Startup.startupBuilder().accountId(rs.getLong("accountId"))
 				.investmentPhaseId(rs.getLong("investmentphaseid")).boosts(rs.getInt("boosts"))
 				.numberOfFte(rs.getInt("numberOfFte")).breakEvenYear(rs.getInt("breakevenYear"))
-				.investmentPhaseId(rs.getLong("investmentPhaseId"))
-				.revenueMaxId(rs.getInt("revenuemaxid")).revenueMinId(rs.getInt("revenueminid"))
-				.scope(rs.getInt("scope")).uId(rs.getString("uid")).foundingYear(rs.getInt("foundingYear"))
-				.financeTypeId(rs.getLong("financetypeid")).closingTime(rs.getDate("closingTime"))
-				.preMoneyEvaluation(rs.getInt("premoneyvaluation")).raised(rs.getInt("raised")).build();
+				.investmentPhaseId(rs.getLong("investmentPhaseId")).revenueMaxId(rs.getInt("revenuemaxid"))
+				.revenueMinId(rs.getInt("revenueminid")).scope(rs.getInt("scope")).uId(rs.getString("uid"))
+				.foundingYear(rs.getInt("foundingYear")).financeTypeId(rs.getLong("financetypeid"))
+				.closingTime(rs.getDate("closingTime")).preMoneyEvaluation(rs.getInt("premoneyvaluation"))
+				.raised(rs.getInt("raised")).videoId(rs.getLong("videoid")).build();
 	}
 
 	/**
-	 * Add a new investor to the database
+	 * Add a new startup to the database
 	 * 
 	 * @param startup the startup to add
+	 * @throws DataAccessException
+	 * @throws SQLException
 	 */
-	public void add(Startup su) throws Exception {
+	public void add(Startup su) throws SQLException, DataAccessException {
 
-		try {
-			String query = "INSERT INTO startup(accountid, boosts, numberoffte,"
-					+ " breakevenyear, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
-					+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised) VALUES (?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
-				@Override
-				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-					int c = 1;
-					ps.setLong(c++, su.getAccountId());
-					ps.setInt(c++, 0);
-					ps.setInt(c++, su.getNumberOfFte());
-					ps.setInt(c++, su.getBreakEvenYear());
-					ps.setInt(c++, su.getPreMoneyValuation());
-					ps.setDate(c++, su.getClosingTime());
-					ps.setInt(c++, (int) su.getFinanceTypeId());
-					ps.setInt(c++, (int) su.getInvestmentPhaseId());
-					ps.setInt(c++, su.getRevenueMaxId());
-					ps.setInt(c++, su.getRevenueMinId());
-					ps.setInt(c++, su.getScope());
-					ps.setString(c++, su.getUId());
-					ps.setInt(c++, su.getFoundingYear());
-					ps.setInt(c++, su.getRaised());
-					return ps.execute();
-				}
-			});
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
-		}
+		String query = "INSERT INTO startup(accountid, boosts, numberoffte,"
+				+ " breakevenyear, premoneyvaluation, closingtime, financetypeid, investmentphaseid, "
+				+ "revenuemaxid, revenueminid, scope, uid, foundingyear, raised, videoid) VALUES (?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				int c = 1;
+				ps.setLong(c++, su.getAccountId());
+				ps.setInt(c++, 0);
+				ps.setInt(c++, su.getNumberOfFte());
+				ps.setInt(c++, su.getBreakEvenYear());
+				ps.setInt(c++, su.getPreMoneyValuation());
+				ps.setDate(c++, su.getClosingTime());
+				ps.setInt(c++, (int) su.getFinanceTypeId());
+				ps.setInt(c++, (int) su.getInvestmentPhaseId());
+				ps.setInt(c++, su.getRevenueMaxId());
+				ps.setInt(c++, su.getRevenueMinId());
+				ps.setInt(c++, su.getScope());
+				ps.setString(c++, su.getUId());
+				ps.setInt(c++, su.getFoundingYear());
+				ps.setInt(c++, su.getRaised());
+				ps.setLong(c++, su.getVideoId());
+				return ps.execute();
+			}
+		});
 	}
 }

@@ -27,7 +27,7 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 	}
 
 	@Override
-	public CorporateShareholder find(long id) {
+	public CorporateShareholder find(long id) throws SQLException, DataAccessException{
 		return jdbc.queryForObject("SELECT * FROM corporateshareholder WHERE id = ?", new Object[] { id },
 				this::mapRowToModel);
 	}
@@ -40,20 +40,20 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 	}
 
 	@Override
-	public long getStartupIdByMemberId(long id) {
+	public long getStartupIdByMemberId(long id) throws SQLException, DataAccessException{
 		return jdbc.queryForObject("SELECT * FROM corporateshareholder WHERE id = ?", new Object[] { id },
 				this::mapRowToId);
 	}
 
 	@Override
-	public void addMemberByStartupId(CorporateShareholder sumem, long startupId) {
+	public void addMemberByStartupId(CorporateShareholder sumem, long startupId)throws SQLException, DataAccessException {
 		jdbc.execute(
 				"INSERT INTO corporateshareholder(startupid, name, website, equityshare, corporatebodyid, countryid) VALUES (?,?,?,?,?,?)",
 				addByStartupId(sumem, startupId));
 	}
 
 	@Override
-	public void deleteMemberByStartupId(long id) {
+	public void deleteMemberById(long id) throws SQLException, DataAccessException{
 		jdbc.execute("DELETE FROM corporateshareholder WHERE startupid = ?", deleteById(id));
 	}
 
@@ -82,9 +82,8 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 	}
 
 	@Override
-	public void update(long id, CorporateShareholder req) throws Exception {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("corporateshareholder", id, this);
-		update.setJdbc(jdbc);
+	public void update(long id, CorporateShareholder req) throws SQLException, DataAccessException {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("corporateshareholder", id, jdbc);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getCorpName(), "name");

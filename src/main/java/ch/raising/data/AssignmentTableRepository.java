@@ -23,61 +23,67 @@ public class AssignmentTableRepository {
 	private String tableName = "";
 	private String tableAssignment;
 	protected RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper;
-	protected RowMapper<ResultSet, Integer, AssignmentTableModel> assignmentRowMapper;
+	protected RowMapper<ResultSet, Integer, Long> assignmentRowMapper;
 	private String accountIdName = "accountId";
-	
+
 	private AssignmentTableRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 		rowMapper = MapUtil::mapRowToAssignmentTable;
-		assignmentRowMapper = MapUtil::mapRowToAssignmentTableAssignment;
+		assignmentRowMapper = MapUtil::mapRowToAssignmentTableId;
 	}
-	
+
 	public static AssignmentTableRepository getInstance(JdbcTemplate jdbc) {
 		return new AssignmentTableRepository(jdbc);
 	}
-	
+
 	public AssignmentTableRepository withTableName(String tableName) {
 		this.tableName = tableName;
 		this.tableAssignment = tableName + "assignment";
 		return this;
 	}
-	
+
 	public AssignmentTableRepository withRowMapper(RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper) {
 		this.rowMapper = rowMapper;
 		return this;
 	}
-	
+
 	public AssignmentTableRepository withAccountIdName(String accountIdName) {
 		this.accountIdName = accountIdName;
 		return this;
 	}
 
-	public AssignmentTableModel find(long id) {
+	public AssignmentTableModel find(long id) throws SQLException, DataAccessException {
 		return jdbc.queryForObject("SELECT * FROM " + tableName + " WHERE id = ?", new Object[] { id },
 				rowMapper::mapRowToModel);
 	}
 
-	public List<AssignmentTableModel> findAll() {
+	public List<IAssignmentTableModel> findAll() throws SQLException, DataAccessException {
 		return jdbc.query("SELECT * FROM " + tableName, rowMapper::mapRowToModel);
 	}
 
-	public List<AssignmentTableModel> findByAccountId(long accountId) {
-		return jdbc.query(
-				"SELECT name, " + tableName + "id, " + accountIdName + " FROM " + tableAssignment + " INNER JOIN " + tableName + " ON " + tableAssignment
-						+ "."+tableName+"Id = " + tableName + ".id WHERE "+accountIdName+" = ?",
+	public List<AssignmentTableModel> findByAccountId(long accountId) throws SQLException, DataAccessException {
+		return jdbc.query("SELECT * FROM " + tableAssignment
+				+ " INNER JOIN " + tableName + " ON " + tableAssignment + "." + tableName + "Id = " + tableName
+				+ ".id WHERE " + accountIdName + " = ?", new Object[] { accountId },
+				rowMapper::mapRowToModel);
+	}
+
+	public List<Long> findIdByAccountId(long accountId) {
+		return jdbc.query("SELECT " + tableName + "id FROM " + tableAssignment + " WHERE " + accountIdName + "=?",
 				new Object[] { accountId }, assignmentRowMapper::mapRowToModel);
 	}
 
-	public void addEntryToAccountById(long id, long accountId) {
-		String query = "INSERT INTO " + tableAssignment + "("+accountIdName+", "+ tableName +"Id) VALUES (?, ?);";
+	public void addEntryToAccountById(long id, long accountId) throws SQLException, DataAccessException {
+		String query = "INSERT INTO " + tableAssignment + "(" + accountIdName + ", " + tableName + "Id) VALUES (?, ?);";
 		jdbc.execute(query, getAddEntryToAccountById(id, accountId));
 	}
 
-	public void deleteEntryFromAccountById( long id, long accountId) {
-		String query = "DELETE FROM "+ tableAssignment +" WHERE "+accountIdName+" = ? AND "+ tableName +"id = ?";
+	public void deleteEntryFromAccountById(long id, long accountId) throws SQLException, DataAccessException {
+		String query = "DELETE FROM " + tableAssignment + " WHERE " + accountIdName + " = ? AND " + tableName
+				+ "id = ?";
 		jdbc.execute(query, getDeleteEntryFromAccountById(id, accountId));
 	}
-	
+
 	private PreparedStatementCallback<Boolean> getAddEntryToAccountById(long id, long accountId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
@@ -88,7 +94,7 @@ public class AssignmentTableRepository {
 			}
 		};
 	}
-	
+
 	private PreparedStatementCallback<Boolean> getDeleteEntryFromAccountById(long id, long accountId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override

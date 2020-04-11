@@ -14,6 +14,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -36,13 +37,16 @@ public class AccountRepositoryTest {
 	private AccountRepository accountRepo;
 	private JdbcTemplate jdbc;
 	private BCryptPasswordEncoder encoder;
-
+	
+	private Account expected;
 	private Account account;
 	private String tableName;
 	private String emailHash;
 	private String passwordHash;
 
-	protected long accountId = -1l;
+	protected long accountId = 1;
+	private String firstName = "Marty";
+	private String lastName = "Burt";
 	protected String companyName = "Umbrella Corp";
 	private String password = "testword";
 	private String roles = "ROLE_SUPER_USER";
@@ -53,6 +57,7 @@ public class AccountRepositoryTest {
 	private int ticketMinId = 3;
 	private int ticketMaxId = 4;
 	private long countryId = 123;
+	private long profilePictureId = 14;
 
 	@Autowired
 	public AccountRepositoryTest(JdbcTemplate jdbc) {
@@ -66,10 +71,11 @@ public class AccountRepositoryTest {
 		tableName = "account";
 
 		String createTable = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.IDENTITY)
-				.pair("pitch", Type.VARCHAR).pair("description", Type.VARCHAR).pair("companyName", Type.VARCHAR)
-				.pair("password", Type.VARCHAR).pair("roles", Type.VARCHAR).pair("emailhash", Type.VARCHAR)
-				.pair("ticketminid", Type.INT).pair("ticketmaxid", Type.INT).pair("countryId", Type.BIGINT).pair("website", Type.VARCHAR)
-				.createTable();
+				.pair("lastname", Type.VARCHAR).pair("firstname", Type.VARCHAR).pair("pitch", Type.VARCHAR)
+				.pair("description", Type.VARCHAR).pair("companyName", Type.VARCHAR).pair("password", Type.VARCHAR)
+				.pair("roles", Type.VARCHAR).pair("emailhash", Type.VARCHAR).pair("ticketminid", Type.INT)
+				.pair("ticketmaxid", Type.INT).pair("countryId", Type.BIGINT).pair("website", Type.VARCHAR)
+				.pair("profilepictureid", Type.VARCHAR).createTable();
 		jdbc.execute(createTable);
 
 		makeAccounts();
@@ -84,60 +90,37 @@ public class AccountRepositoryTest {
 	public void makeAccounts() {
 		emailHash = encoder.encode(email);
 		passwordHash = encoder.encode(password);
-		account = Account.accountBuilder().accountId(accountId).companyName(companyName).password(password).roles(roles)
+		account = Account.accountBuilder().accountId(accountId).firstName(firstName).lastName(lastName).profilePictureId(profilePictureId).companyName(companyName).password(password).roles(roles)
 				.email(email).pitch(pitch).description(description).ticketMinId(ticketMinId).ticketMaxId(ticketMaxId)
 				.countryId(countryId).website(website).build();
 
 		String sql = QueryBuilder.getInstance().tableName(tableName).attribute(
-				"pitch, description, companyName, password, roles, emailhash, ticketminid, ticketmaxid, countryid, website")
-				.value(pitch)
-				.value(description)
-				.value(companyName)
-				.value(passwordHash)
-				.value(roles)
-				.value(emailHash)
-				.value(ticketMinId)
-				.value(ticketMaxId)
-				.value(countryId)
-				.value(website)
-				.insert();
+				"firstname, lastname, profilepictureid, pitch, description, companyName, password, roles, emailhash, ticketminid, ticketmaxid, countryid, website")
+				.value(firstName).value(lastName).value(profilePictureId).value(pitch).value(description)
+				.value(companyName).value(passwordHash).value(roles).value(emailHash).value(ticketMinId)
+				.value(ticketMaxId).value(countryId).value(website).insert();
 
 		jdbc.execute(sql);
+		
+		expected = new Account(account);
+		expected.setEmail(emailHash);
+		expected.setPassword(passwordHash);
 
 	}
 
 	@Test
-	public void testGetAccount() {
+	public void testGetAccount() throws DataAccessException, SQLException {
 		Account found = accountRepo.find(1);
 		assertNotNull(found);
-		assertEquals(1, found.getAccountId());
-		assertEquals(companyName, found.getCompanyName());
-		assertEquals(passwordHash, found.getPassword());
-		assertEquals(roles, found.getRoles());
-		assertEquals(emailHash, found.getEmail());
-		assertEquals(pitch, found.getPitch());
-		assertEquals(description, found.getDescription());
-		assertEquals(ticketMinId, found.getTicketMinId());
-		assertEquals(ticketMaxId, found.getTicketMaxId());
-		assertEquals(countryId, found.getCountryId());
-		assertEquals(website, found.getWebsite());
+		assertEquals(expected, found);
+	
 	}
 
 	@Test
 	public void findByEmailHash() throws EmailNotFoundException {
 		Account found = accountRepo.findByEmailHash(emailHash);
 		assertNotNull(found);
-		assertEquals(1, found.getAccountId());
-		assertEquals(companyName, found.getCompanyName());
-		assertEquals(passwordHash, found.getPassword());
-		assertEquals(roles, found.getRoles());
-		assertEquals(emailHash, found.getEmail());
-		assertEquals(pitch, found.getPitch());
-		assertEquals(description, found.getDescription());
-		assertEquals(ticketMinId, found.getTicketMinId());
-		assertEquals(ticketMaxId, found.getTicketMaxId());
-		assertEquals(countryId, found.getCountryId());
-		assertEquals(website, found.getWebsite());
+		assertEquals(expected, found);
 	}
 
 	@Test
@@ -181,14 +164,9 @@ public class AccountRepositoryTest {
 	}
 
 	@Test
-	public void testDeleteAccount() {
+	public void testDeleteAccount() throws DataAccessException, SQLException {
 		accountRepo.delete(2);
 		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbc, tableName));
-	}
-
-	@Test
-	public void testEmailExists() {
-		assertTrue(accountRepo.emailExists(email));
 	}
 
 	@Test
@@ -211,17 +189,24 @@ public class AccountRepositoryTest {
 		assertEquals("newsite", found.getWebsite());
 
 	}
+
 	@Test
 	public void testCannotUpdatePassword() throws Exception {
 		String newPassword = "123secure";
 		String newPasswordHash = encoder.encode(newPassword);
 		Account accup = new Account();
 		accup.setPassword(newPassword);
-		accountRepo.update(1, accup);
+		try{
+			accountRepo.update(1, accup);
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 		String sql = QueryBuilder.getInstance().tableName(tableName).whereEquals("id", "1").select();
 		Account found = jdbc.queryForObject(sql, MapUtil::mapRowToAccount);
 		assertNotEquals(newPasswordHash, found.getPassword());
 	}
+
 	@Test
 	public void testEmailNotDeletedIfNotProvided() throws Exception {
 		String companyName = "Niesenbahnen";

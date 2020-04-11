@@ -2,6 +2,8 @@ package ch.raising.raisingbackend.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -78,8 +81,8 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 
 	@Test
 	@Override
-	public void testAddMemberByStartupId() {
-		Boardmember bmem = Boardmember.builder().startupid(7).firstName("Vincent").lastName("D' Agosta")
+	public void testAddMemberByStartupId() throws DataAccessException, SQLException {
+		Boardmember bmem = Boardmember.builder().startupId(7).firstName("Vincent").lastName("D' Agosta")
 				.education("Detective").profession("Detective").memberSince(9).coutryId(113).build();
 		bmemRepo.addMemberByStartupId(bmem, 7);
 		String sql = QueryBuilder.getInstance().tableName("boardmember").whereEquals("startupid", "" + 7).select();
@@ -90,7 +93,7 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 	
 	@Test
 	@Override
-	public void testFind() {
+	public void testFind() throws DataAccessException, SQLException {
 		Boardmember found = bmemRepo.find(1);
 		assertNotNull(found);
 		assertEquals(1, found.getId());
@@ -106,14 +109,14 @@ public class BoardMemberRepositoryTest implements IAdditionalInformationTest{
 	
 	@Test
 	@Override
-	public void testGetStartupIdByMemberId() {
+	public void testGetStartupIdByMemberId() throws DataAccessException, SQLException {
 		assertEquals(2, bmemRepo.getStartupIdByMemberId(1));
 	}
 
 	@Override
 	@Test
-	public void testDeleteMemberByStartupId() {
-		bmemRepo.deleteMemberByStartupId(2);
+	public void testDeleteMemberById() throws DataAccessException, SQLException {
+		bmemRepo.deleteMemberById(1);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, "boardmember"));
 	}
 

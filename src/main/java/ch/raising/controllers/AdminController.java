@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ch.raising.models.ErrorResponse;
+import ch.raising.models.responses.ErrorResponse;
 
 @RequestMapping("/admin")
 @Controller

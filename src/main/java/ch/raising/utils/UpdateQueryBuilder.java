@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties.Jdbc;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import ch.raising.data.InvestorRepository;
 import ch.raising.interfaces.IRepository;
-import ch.raising.models.ErrorResponse;
+import ch.raising.models.responses.ErrorResponse;
 
 /**
  * Class which helps creating and performing update queries
@@ -23,150 +24,141 @@ import ch.raising.models.ErrorResponse;
  * @version 1.0
  */
 public class UpdateQueryBuilder {
-    private String updates;
-    private List fields;
-    private int unitializedIntValue = -1; 
-    private float unitializedFloatValue = -1f;
-    private long id;
-    private String tableName;
-    private IRepository<?> repository;
-    private JdbcTemplate jdbc;
-    private String idField = "id";
+	private String updates;
+	private List fields;
+	private int unitializedIntValue = -1;
+	private float unitializedFloatValue = -1f;
+	private long id;
+	private String tableName;
+	private JdbcTemplate jdbc;
+	private String idField = "id";
 
-    public UpdateQueryBuilder(String tableName, long id, IRepository<?> repository) {
-        this.tableName = tableName;
-        this.id = id;
-        this.repository = repository;
-        fields = new ArrayList<>();
-    }
+	public UpdateQueryBuilder(String tableName, long id, JdbcTemplate jdbc) {
+		this.tableName = tableName;
+		this.id = id;
+		this.jdbc = jdbc;
+		fields = new ArrayList<>();
+	}
 
-    public UpdateQueryBuilder(String tableName, long id, IRepository<?> repository, String idField) {
-        this.tableName = tableName;
-        this.id = id;
-        this.repository = repository;
-        fields = new ArrayList<>();
-        this.idField = idField;
-    }
+	public UpdateQueryBuilder(String tableName, long id, JdbcTemplate jdbc, String idField) {
+		this.tableName = tableName;
+		this.id = id;
+		this.jdbc = jdbc;
+		fields = new ArrayList<>();
+		this.idField = idField;
+	}
 
+	/**
+	 * Set default int value which represents null
+	 * 
+	 * @param val the value which represents null for integers
+	 */
+	public void setUnitializedIntValue(int val) {
+		this.unitializedIntValue = val;
+	}
 
-    public void setJdbc(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	/**
+	 * Set default float value which represents null
+	 * 
+	 * @param val the value which represents null for floats
+	 */
+	public void setUnitializedFloatValue(float val) {
+		this.unitializedFloatValue = val;
+	}
 
-    /**
-     * Set default int value which represents null
-     * @param val the value which represents null for integers
-     */
-    public void setUnitializedIntValue(int val) {
-        this.unitializedIntValue = val;
-    }
+	/**
+	 * Adds new field to update query. Field gets only updated, if field is not
+	 * equal null
+	 * 
+	 * @param field     the field which needs to be updated
+	 * @param fieldName the name of the field inside the database
+	 */
+	public void addField(Object field, String fieldName) {
+		if (field == null || fieldName == null)
+			return;
 
-    /**
-     * Set default float value which represents null
-     * @param val the value which represents null for floats
-     */
-    public void setUnitializedFloatValue(float val) {
-        this.unitializedFloatValue = val;
-    }
+		if (updates == null)
+			updates = "";
 
-    /**
-     * Adds new field to update query. Field gets only updated, if field is not equal null
-     * @param field the field which needs to be updated
-     * @param fieldName the name of the field inside the database
-     */
-    public void addField(Object field, String fieldName) {
-        if(field == null || fieldName == null)
-            return;
-        
-        if(updates == null)
-            updates = "";
+		if (field instanceof Integer) {
+			if ((int) field != unitializedIntValue) {
+				fields.add(field);
+				setFieldName(fieldName);
+			}
+		}
 
-        if(field instanceof Integer) {
-            if((int)field != unitializedIntValue) {
-                fields.add(field);
-                setFieldName(fieldName);
-            }
-        }
+		if (field instanceof Float) {
+			if ((float) field != unitializedFloatValue) {
+				fields.add(field);
+				setFieldName(fieldName);
+			}
+		}
 
-        if(field instanceof Float) {
-            if((float)field != unitializedFloatValue) {
-                fields.add(field);
-                setFieldName(fieldName);
-            }
-        }
+		if (field instanceof String) {
+			if (field != "" && field != null) {
+				fields.add(field);
+				setFieldName(fieldName);
+			}
+		}
 
-        if(field instanceof String) {
-        	if(field != "" && field != null) {
-        		 fields.add(field);
-                 setFieldName(fieldName);
-        	}
-        }
-        
-        if(field instanceof Long) {
-        	if((long) field != unitializedIntValue) {
-        		fields.add(field);
-                setFieldName(fieldName);
-        	}
-        }
-    }
+		if (field instanceof Long) {
+			if ((long) field != unitializedIntValue) {
+				fields.add(field);
+				setFieldName(fieldName);
+			}
+		}
+	}
 
 	private void setFieldName(String fieldName) {
-		if(updates != "")
-		    updates += ", ";
+		if (updates != "")
+			updates += ", ";
 		updates += fieldName + " = ?";
 	}
 
-    /**
-     * Creates update query string
-     * @return
-     */
-    public String buildQuery() {
-        if(updates == null || updates == "") 
-            return null;
+	/**
+	 * Creates update query string
+	 * 
+	 * @return
+	 */
+	public String buildQuery() {
+		if (updates == null || updates == "")
+			return "";
 
-        return "UPDATE " + tableName + " SET " + updates + " WHERE " + idField + " = ?";
-    }
+		return "UPDATE " + tableName + " SET " + updates + " WHERE " + idField + " = ?";
+	}
 
-    /**
-     * Executes the finished query
-     * @throws Exception
-     */
-    public void execute() throws Exception {
-        if(buildQuery() == null)
-            return;
+	/**
+	 * Executes the finished query
+	 * 
+	 * @throws DatabaseOperationException
+	 * 
+	 * @throws Exception
+	 */
+	public void execute() throws SQLException, DataAccessException {
+		String sql = buildQuery();
+		if(sql == "" || sql == null) 
+			return;
+		
+		jdbc.execute(buildQuery(), new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 
-        if(jdbc == null)
-            throw new Error("Error while performing update query: jdbc not set.");
+				for (int i = 1; i <= fields.size(); ++i) {
+					Object o = fields.get(i - 1);
+					if (o instanceof String)
+						ps.setString(i, (String) o);
+					if (o instanceof Integer)
+						ps.setInt(i, (int) o);
+					if (o instanceof Float)
+						ps.setFloat(i, (float) o);
+					if (o instanceof Long)
+						ps.setLong(i, (long) o);
+				}
 
-        String sql = buildQuery();
+				ps.setLong(fields.size() + 1, id);
 
-        try {
-			jdbc.execute(sql, new PreparedStatementCallback<Boolean>(){  
-				@Override  
-				public Boolean doInPreparedStatement(PreparedStatement ps)  
-						throws SQLException, DataAccessException {  
-					
-					for(int i = 1; i <= fields.size(); ++i) {
-                        Object o = fields.get(i-1);
-                        if(o instanceof String)
-                            ps.setString(i, (String)o);
-                        if(o instanceof Integer)
-                            ps.setInt(i, (int)o);
-                        if(o instanceof Float)
-                            ps.setFloat(i, (float)o);
-                        if(o instanceof Long)
-                        	ps.setLong(i, (long) o);
-                    }
-                    
-                    ps.setLong(fields.size()+1, id);
-
-					return ps.execute();  
-				}  
-            }); 
-		} catch (Exception e) {
-            if(e.getMessage() != null)
-                throw new Error("Error while performing update query. Message: " + e.getMessage());
-            throw new Error("Error while performing update query", e);
-        }
-    }
+				return ps.execute();
+			}
+		});
+	}
 }

@@ -42,20 +42,16 @@ public class RelationshipRepository implements IRepository<Relationship> {
      * Update relationship
      * @param id the id of the relationship to update
      * @param update instance of the update request
-     * @throws Exception 
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
-    public void update(long id, Relationship update) throws Exception {
-        try{
-            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("relationship", id, this);
-            updateQuery.setJdbc(jdbc);
+    public void update(long id, Relationship update) throws DataAccessException, SQLException {
+            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("relationship", id, jdbc);
             updateQuery.addField(update.getInvestorId(), "investorId");
             updateQuery.addField(update.getStartupId(), "startupId");
             updateQuery.addField(update.getMatchingScore(), "matchingScore");
             updateQuery.addField(update.getState(), "state");
             updateQuery.execute();
-        } catch(Exception e) {
-            throw new Error(e);
-        }
     }
 
     /**

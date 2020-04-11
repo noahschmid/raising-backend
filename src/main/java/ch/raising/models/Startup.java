@@ -38,8 +38,8 @@ public class Startup extends Account {
 	 * =========================================================================
 	 * Stored in the respective tables
 	 */
-	private List<AssignmentTableModel> investorTypes;
-	private List<AssignmentTableModel> labels;
+	private List<Long> investorTypes;
+	private List<Long> labels;
 	private List<Boardmember> boardmembers;
 	private List<Founder> founders;
 	private List<PrivateShareholder> privateShareholders;
@@ -58,7 +58,7 @@ public class Startup extends Account {
 	 * @param founders
 	 * @param preMoneyValuation
 	 */
-	public Startup(Account account, Startup su, List<AssignmentTableModel> invTypes, List<AssignmentTableModel> labels,
+	public Startup(Account account, Startup su, List<Long> invTypes, List<Long> labels,
 			List<Founder> founders, List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders,
 			List<Boardmember> boardMembers) {
 		super(account);

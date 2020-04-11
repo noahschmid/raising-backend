@@ -1,5 +1,6 @@
 package ch.raising.services;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -8,12 +9,14 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,19 +25,21 @@ import org.springframework.stereotype.Service;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.ErrorResponse;
+import ch.raising.models.Country;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.FreeEmailRequest;
 import ch.raising.models.Media;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
+import ch.raising.models.responses.ErrorResponse;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
-import ch.raising.utils.InValidProfileException;
+import ch.raising.utils.InvalidProfileException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
+import ch.raising.utils.PasswordResetException;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
@@ -45,7 +50,7 @@ import ch.raising.interfaces.IMediaRepository;
 @Primary
 @Service
 public class AccountService implements UserDetailsService {
-	
+
 	protected AccountRepository accountRepository;
 	private MailUtil mailUtil;
 	private ResetCodeUtil resetCodeUtil;
@@ -55,7 +60,7 @@ public class AccountService implements UserDetailsService {
 	private IMediaRepository<Media> galleryRepository;
 	private IMediaRepository<Media> pPicRepository;
 	@Autowired
-    private AuthenticationManager authenticationManager ;
+	private AuthenticationManager authenticationManager;
 	protected AssignmentTableRepository countryRepo;
 	protected AssignmentTableRepository continentRepo;
 	protected AssignmentTableRepository supportRepo;
@@ -87,6 +92,10 @@ public class AccountService implements UserDetailsService {
 			return accDet;
 		} catch (EmailNotFoundException e) {
 			throw new UsernameNotFoundException(e.getMessage());
+		} catch (DataAccessException e) {
+			throw new UsernameNotFoundException(e.getMessage());
+		} catch (SQLException e) {
+			throw new UsernameNotFoundException(e.getMessage());
 		}
 	}
 
@@ -95,12 +104,14 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param email the email to check
 	 * @return
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public ResponseEntity<?> isEmailFree(String email) {
-		if (  accountRepository.emailExists(email)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		} else {
-			return ResponseEntity.ok().build();
+	public boolean isEmailFree(String email) throws DataAccessException, SQLException {
+		try {
+			return accountRepository.findByEmail(email) == null;
+		}catch(EmailNotFoundException e) {
+			return true;
 		}
 	}
 
@@ -109,33 +120,29 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param account to be registered
 	 * @return ResponseEntity with status code and message
+	 * @throws Exception
 	 */
-	public ResponseEntity<?> registerProfile(Account account) {
+	public LoginResponse registerProfile(Account account) throws DatabaseOperationException, SQLException, Exception {
 		try {
 			registerAccount(account);
 		} catch (DatabaseOperationException e) {
 			rollback(account);
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		} catch (InValidProfileException e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage(), e.getAccount()));
+			throw e;
 		} catch (Exception e) {
 			rollback(account);
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
+			throw e;
 		}
-		try {
-			LoginResponse loginResp = (LoginResponse) login(new LoginRequest(account.getEmail(), account.getPassword())).getBody();
-			loginResp.setAccount(account);
-			return ResponseEntity.ok().body(loginResp);
-		}catch(Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+		LoginResponse loginResp = (LoginResponse) login(new LoginRequest(account.getEmail(), account.getPassword()));
+		loginResp.setAccount(account);
+		return loginResp;
 	}
 
 	private void rollback(Account account) {
 		try {
 			Account found = accountRepository.findByEmail(account.getEmail());
 			accountRepository.delete(found.getAccountId());
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 	}
 
 	/**
@@ -143,32 +150,51 @@ public class AccountService implements UserDetailsService {
 	 * called by subclass.
 	 * 
 	 * @param req sent from the frontend
+	 * @throws DatabaseOperationException
 	 * @throws Exception
 	 */
-	protected long registerAccount(Account req) throws Exception {
+	protected long registerAccount(Account req)
+			throws SQLException, DataAccessException, InvalidProfileException, DatabaseOperationException {
 		if (req.isInComplete()) {
-			throw new InValidProfileException("Profile is invalid");
-		} else if (accountRepository.emailExists(req.getEmail())) {
-			throw new InValidProfileException("Email already exists");
+			throw new InvalidProfileException("Profile is invalid");
 		}
-		long accountId = accountRepository.add(req);
+		try {
+			accountRepository.findByEmail(req.getEmail());
+			throw new InvalidProfileException("Email already exists");
+		}catch (EmailNotFoundException e) {
+			
+			long accountId = accountRepository.add(req);
 
-		if (req.getGallery() != null)
-			for (Media pic : req.getGallery()) {
-				galleryRepository.addMediaToAccount(pic, accountId);
+			if (req.getGallery() != null) {
+				for (Long pic : req.getGallery()) {
+					galleryRepository.addAccountIdToMedia(pic, accountId);
+				}
 			}
-		if (req.getProfilePicture() != null)
-			pPicRepository.addMediaToAccount(req.getProfilePicture(), accountId);
-		if (req.getCountries() != null)
-			req.getCountries().forEach(country -> countryRepo.addEntryToAccountById(country.getId(), accountId));
-		if (req.getContinents() != null)
-			req.getContinents().forEach(continent -> continentRepo.addEntryToAccountById(continent.getId(), accountId));
-		if (req.getSupport() != null)
-			req.getSupport().forEach(sup -> supportRepo.addEntryToAccountById(sup.getId(), accountId));
-		if (req.getIndustries() != null)
-			req.getIndustries().forEach(ind -> industryRepo.addEntryToAccountById(ind.getId(), accountId));
-
-		return accountId;
+			if (req.getProfilePictureId() != -1)
+				pPicRepository.addAccountIdToMedia(req.getProfilePictureId(), accountId);
+			if (req.getCountries() != null) {
+				for (Long c : req.getCountries()) {
+					countryRepo.addEntryToAccountById(c, accountId);
+				}
+			}
+			if (req.getContinents() != null) {
+				for (Long c : req.getContinents()) {
+					continentRepo.addEntryToAccountById(c, accountId);
+				}
+			}
+			if (req.getSupport() != null) {
+				for (Long s : req.getSupport()) {
+					supportRepo.addEntryToAccountById(s, accountId);
+				}
+			}
+			if (req.getIndustries() != null) {
+				for (Long i : req.getIndustries()) {
+					industryRepo.addEntryToAccountById(i, accountId);
+				}
+			}
+			return accountId;	
+			
+		}
 	}
 
 	/**
@@ -177,13 +203,8 @@ public class AccountService implements UserDetailsService {
 	 * @param id the id of the account to delete
 	 * @return ResponseEntity with status code and message
 	 */
-	public ResponseEntity<?> deleteProfile(long id) {
-		try {
-			accountRepository.delete(id);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public void deleteProfile(long id) throws SQLException, DataAccessException {
+		accountRepository.delete(id);
 	}
 
 	/**
@@ -191,15 +212,11 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param id
 	 * @return
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public ResponseEntity<?> getProfile(long id) {
-		try {
-			Account acc = getAccount(id);
-			return ResponseEntity.ok().body(acc);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public Account getProfile(long id) throws DataAccessException, SQLException {
+		return getAccount(id);
 	}
 
 	/**
@@ -207,22 +224,21 @@ public class AccountService implements UserDetailsService {
 	 * to allow the retrieving of a specific accounttype.
 	 * 
 	 * @param id
-	 * @return the account with the specified id. the account is fully
-	 *         initialized with all lists and objects non null.
+	 * @return the account with the specified id. the account is fully initialized
+	 *         with all lists and objects non null.
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	protected Account getAccount(long id) {
-		List<AssignmentTableModel> countries = countryRepo.findByAccountId(id);
-		List<AssignmentTableModel> continents = continentRepo.findByAccountId(id);
-		List<AssignmentTableModel> support = supportRepo.findByAccountId(id);
-		List<AssignmentTableModel> industries = industryRepo.findByAccountId(id);
-		List<Media> pPic = pPicRepository.findMediaByAccount(id);
-		List<Media> gallery = galleryRepository.findMediaByAccount(id);
+	protected Account getAccount(long id) throws DataAccessException, SQLException {
+		List<Long> countries = countryRepo.findIdByAccountId(id);
+		List<Long> continents = continentRepo.findIdByAccountId(id);
+		List<Long> support = supportRepo.findIdByAccountId(id);
+		List<Long> industries = industryRepo.findIdByAccountId(id);
+		List<Long> gallery = galleryRepository.findMediaIdByAccountId(id);
 		Account acc = accountRepository.find(id);
 		acc.setPassword("");
 		acc.setRoles("");
-		
-		if(pPic != null && pPic.size() > 0)
-			acc.setProfilePicture(pPic.get(0));
+
 		acc.setGallery(gallery);
 
 		acc.setCountries(countries);
@@ -249,46 +265,35 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param id the id of the desired account
 	 * @return Account instance of the desired account
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public Account findById(long id) {
+	public Account findById(long id) throws DataAccessException, SQLException {
 		return accountRepository.find(id);
 	}
 
 	/**
 	 * Check if given id belongs to own account
 	 * 
-	 * @param id the id of the account to check against
-	 * @param isAdmin      indicates whether the user is admin
+	 * @param id      the id of the account to check against
+	 * @param isAdmin indicates whether the user is admin
 	 * @return true if account belongs to request, false otherwise
 	 */
 	public boolean isOwnAccount(long id) {
-		Account account = findById(id);
-		String username = SecurityContextHolder.getContext().getAuthentication().getName().toLowerCase();
-		if (account == null || username == null)
-			return false;
-
-		if (!account.getEmail().equals(username))
-			return false;
-		return true;
+		AccountDetails udet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return udet.getId() == id && (udet != null && udet.getId() != 0);
 	}
 
 	/**
-	 * Update user account, is called by the
+	 * should be used by
 	 * {@link ch.raising.controllers.StartupController},{@link ch.raising.controllersAccountController},{@link ch.raising.controllersInvestorController}
-	 * 
-	 * @param id      the id of the account to be updated
-	 * @param req     the http request instance
-	 * @param isAdmin indicates whether or not the user requesting the update is
-	 *                admin
-	 * @return Response entity with status code and message
+	 * @param id
+	 * @param acc
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public ResponseEntity<?> updateProfile(int id, Account acc) {
-		try {
-			updateAccount(id, acc);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+	public void updateProfile(int id, Account acc) throws DataAccessException, SQLException    {
+		updateAccount(id, acc);
 	}
 
 	/**
@@ -298,9 +303,10 @@ public class AccountService implements UserDetailsService {
 	 * @param id
 	 * @param acc
 	 * @return
-	 * @throws Exception
+	 * @throws SQLException 
+	 * @throws DataAccessException
 	 */
-	protected void updateAccount(int id, Account acc) throws Exception {
+	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException  {
 		accountRepository.update(id, acc);
 	}
 
@@ -309,135 +315,53 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param request the password reset request with the email in clear text
 	 * @return response entity with status code
+	 * @throws EmailNotFoundException
+	 * @throws MessagingException
 	 */
-	public ResponseEntity<?> forgotPassword(ForgotPasswordRequest request) {
-		try {
-			Account account = accountRepository.findByEmail(request.getEmail());
-			String code = resetCodeUtil.createResetCode(account);
-			mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
-
-		} catch (MessagingException e) {
-			return ResponseEntity.status(500).body(e.getStackTrace());
-		} catch (EmailNotFoundException e) {
-			return ResponseEntity.status(500).body(e.getMessage());
-		}
-
-		return ResponseEntity.ok().build();
+	public void forgotPassword(ForgotPasswordRequest request) throws EmailNotFoundException, MessagingException {
+		Account account = accountRepository.findByEmail(request.getEmail());
+		String code = resetCodeUtil.createResetCode(account);
+		mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
 	}
 
 	/**
 	 * Reset password if valid request
 	 * 
-	 * @param id the id of the account to reset password
-	 * @param request      the request with reset code and new password
+	 * @param id      the id of the account to reset password
+	 * @param request the request with reset code and new password
 	 * @return response entity with status code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
+	 * @throws PasswordResetException 
+	 * @throws Exception
 	 */
-	public ResponseEntity<?> resetPassword(PasswordResetRequest request) {
-		try {
-			long id = resetCodeUtil.validate(request);
-			if (id != -1) {
-				UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, accountRepository);
-				updateQuery.setJdbc(jdbc);
-				updateQuery.addField(encoder.encode(request.getPassword()), "password");
-				updateQuery.execute();
-				AccountDetails userDetails = new AccountDetails(accountRepository.find(id));
-				return ResponseEntity.ok().body(new LoginResponse(jwtUtil.generateToken(userDetails), id));
-			}
-			return ResponseEntity.status(500).body(new ErrorResponse("Invalid Reset Code"));
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse("Error updating password", e));
-		}
-	}
+	public LoginResponse resetPassword(PasswordResetRequest request) throws DataAccessException, SQLException, PasswordResetException {
+		long id = resetCodeUtil.validate(request);
 
-	public ResponseEntity<?> addGalleryImageToAccountById(Media img) {
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		if (accDet.getId() != img.getAccountId())
-			return ResponseEntity.status(403)
-					.body(new ErrorResponse("Not authorized to add picture to foreign account"));
-		try {
-			galleryRepository.addMediaToAccount(img, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	public ResponseEntity<?> deleteGalleryImageFromAccountById(long imgId) {
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		try {
-			galleryRepository.deleteMediaFromAccount(imgId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	public ResponseEntity<?> findGalleryImagesFromAccountById() {
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		try {
-			List<Media> images = galleryRepository.findMediaByAccount(accDet.getId());
-			return ResponseEntity.ok().body(images);
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	public ResponseEntity<?> addProfilePictureToAccountById(Media img) {
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		long currentPPicId = pPicRepository.getMediaIdOf(accDet.getId());
-		
-		
-		try {
-			if (currentPPicId != -1)
-				pPicRepository.deleteMediaFromAccount(currentPPicId, accDet.getId());
-			pPicRepository.addMediaToAccount(img, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	public ResponseEntity<?> deleteProfilePictureFromAccountById(long imgId) {
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		try {
-			pPicRepository.deleteMediaFromAccount(imgId, accDet.getId());
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
-	}
-
-	public ResponseEntity<?> findProfilePictureFromAccountById() {
-		AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		try {
-			List<Media> images = pPicRepository.findMediaByAccount(accDet.getId());
-			return ResponseEntity.ok().body(images);
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage()));
-		}
+		UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, jdbc);
+		updateQuery.addField(encoder.encode(request.getPassword()), "password");
+		updateQuery.execute();
+		AccountDetails userDetails = new AccountDetails(accountRepository.find(id));
+		return new LoginResponse(jwtUtil.generateToken(userDetails), id);
 	}
 
 	/**
-	 * Method to login a specific user. used by {@link ch.raising.controllers.AccountController} 
-	 * @param request The Login Request containing the email and password {@link ch.raising.models.LoginRequest }
+	 * Method to login a specific user. used by
+	 * {@link ch.raising.controllers.AccountController}
+	 * 
+	 * @param request The Login Request containing the email and password
+	 *                {@link ch.raising.models.LoginRequest }
 	 * @return A login response Model {@link ch.raising.models.LoginResponse}
 	 */
-	public ResponseEntity<?> login(LoginRequest request) {
-		UsernamePasswordAuthenticationToken unamePwToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-		try {
-            authenticationManager.authenticate(unamePwToken);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Wrong username or password"));
-        }
-        final AccountDetails userDetails = loadUserByUsername(request.getEmail());
-        final String token = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new LoginResponse(token, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor()));
+	public LoginResponse login(LoginRequest request) throws AuthenticationException, UsernameNotFoundException {
+		UsernamePasswordAuthenticationToken unamePwToken = new UsernamePasswordAuthenticationToken(request.getEmail(),
+				request.getPassword());
+		
+		authenticationManager.authenticate(unamePwToken);
+		
+		final AccountDetails userDetails = loadUserByUsername(request.getEmail());
+		final String token = jwtUtil.generateToken(userDetails);
+		return new LoginResponse(token, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}
 
 }

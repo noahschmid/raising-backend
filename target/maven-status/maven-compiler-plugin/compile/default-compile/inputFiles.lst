@@ -1,5 +1,5 @@
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\ErrorResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\FreeEmailRequest.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\CompletePublicInformation.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\RowMapper.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\StartupController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableRepository.java
@@ -12,6 +12,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\Sta
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\PreparedStatementUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModelWithDescription.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\MatchingProfile.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\ErrorResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\CorporateShareholder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IMediaRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AccountController.java
@@ -49,13 +50,13 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PrivateShareholder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MailUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableModel.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAuthorizedException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSOneParameter.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\AppConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\FileUploadController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Country.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InValidProfileException.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidProfileException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\PrivateShareholderRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\LoginResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MapUtil.java
@@ -66,7 +67,9 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Suppo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Account.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\BoardmemberRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AccountDetails.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\PasswordResetException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AssignmentTableRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ExcepionHandler.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\SecurityConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PasswordResetRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MatchingUtil.java

@@ -1,5 +1,6 @@
 package ch.raising.models;
 
+import ch.raising.interfaces.IAssignmentTableModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssignmentTableModel{
+public class AssignmentTableModel implements IAssignmentTableModel{
 	private String name;
 	private long id;
 	

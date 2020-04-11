@@ -28,7 +28,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	}
 
 	@Override
-	public long getStartupIdByMemberId(long founderId) {
+	public long getStartupIdByMemberId(long founderId)throws SQLException, DataAccessException {
 		return jdbc.queryForObject("SELECT * FROM founder WHERE id = ?", new Object[] { founderId }, this::mapRowToId);
 	}
 
@@ -38,21 +38,20 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 	}
 
 	@Override
-	public void addMemberByStartupId(Founder founder, long accountId) {
+	public void addMemberByStartupId(Founder founder, long accountId) throws SQLException, DataAccessException {
 		jdbc.execute(
 				"INSERT INTO founder(startupid, firstname, lastname, education, position, countryid) VALUES (?, ?,?,?,?,?)",
 				addByStartupId(founder, accountId));
 	}
 
 	@Override
-	public void deleteMemberByStartupId(long id) {
+	public void deleteMemberById(long id) throws SQLException, DataAccessException{
 		jdbc.execute("DELETE FROM founder WHERE id = ?", deleteById(id));
 	}
 
 	@Override
-	public void update(long id, Founder req) throws Exception {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("founder", id, this);
-		update.setJdbc(jdbc);
+	public void update(long id, Founder req) throws DataAccessException, SQLException {
+		UpdateQueryBuilder update = new UpdateQueryBuilder("founder", id, jdbc);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getEducation(), "education");

@@ -22,12 +22,12 @@ public class PreparedStatementUtil {
 	 * @param mediaBytes
 	 * @return the resulting {@link org.springframework.jdbc.core.PreparedStatementCallback<Boolean>}
 	 */
-	public static PreparedStatementCallback<Boolean> addBytesCallback(String mediaBytes){
+	public static PreparedStatementCallback<Boolean> addBytesCallback(byte[] mediaBytes){
 		return new PreparedStatementCallback<Boolean>() {
 			 @Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
-				ps.setBytes(c++, mediaBytes.getBytes());
+				ps.setBytes(c++, mediaBytes);
 				return ps.execute();
 			}
 		};
@@ -39,13 +39,13 @@ public class PreparedStatementUtil {
 	 * @param id
 	 * @return  the resulting {@link org.springframework.jdbc.core.PreparedStatementCallback<Boolean>}
 	 */
-	public static PreparedStatementCallback<Boolean> addMediaByIdCallback(Media media, long id){
+	public static PreparedStatementCallback<Boolean> addMediaByIdCallback(byte[] media, long id){
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException {
 				int c = 1;
 				ps.setLong(c++, id);
-				ps.setBytes(c++, media.getMedia().getBytes());
+				ps.setBytes(c++, media);
 				return ps.execute();
 			}
 		};

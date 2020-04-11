@@ -15,10 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Investor extends Account{
 	
-	private String firstName = "";
-	private String lastName = "";
 	private long investorTypeId = -1;
-	private List<AssignmentTableModel> investmentPhases;
+	private List<Long> investmentPhases;
 
 	/**
 	 * makes the investor represented for the fronted, with all lists initialised
@@ -29,11 +27,9 @@ public class Investor extends Account{
 	 * @param inv       represent by the database table investor
 	 * @param investmentPhases
 	 */
-	public Investor(Account account, Investor inv, List<AssignmentTableModel> invPhases) {
+	public Investor(Account account, Investor inv, List<Long> invPhases) {
 
 		super(account);
-		this.firstName = inv.getFirstName();
-		this.lastName = inv.getLastName();
 		this.investorTypeId = inv.getInvestorTypeId();
 		this.investmentPhases = invPhases;
 
@@ -50,9 +46,7 @@ public class Investor extends Account{
 	 */
 
 	@Builder(builderMethodName = "investorBuilder")
-	public Investor(long accountId, String firstName, String lastName ,long investorTypeId) {
-		this.firstName = firstName;
-		this.lastName = lastName;
+	public Investor(long accountId ,long investorTypeId) {
 		this.accountId = accountId;
 		this.investorTypeId = investorTypeId;
 	}

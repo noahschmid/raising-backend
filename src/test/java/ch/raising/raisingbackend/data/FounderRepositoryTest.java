@@ -3,6 +3,7 @@ package ch.raising.raisingbackend.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -74,14 +76,14 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 
 	@Test
 	@Override
-	public void testGetStartupIdByMemberId() {
+	public void testGetStartupIdByMemberId() throws DataAccessException, SQLException {
 		long suId = fr.getStartupIdByMemberId(1);
 		assertEquals(2, suId);
 	}
 
 	@Test
 	@Override
-	public void testAddMemberByStartupId() {
+	public void testAddMemberByStartupId() throws DataAccessException, SQLException {
 		Founder founder = Founder.builder().startupid(5).firstName("Vincent").lastName("D' Agosta").education("Plumber")
 				.position("Detective").build();
 		fr.addMemberByStartupId(founder, 5);
@@ -99,8 +101,8 @@ public class FounderRepositoryTest implements IAdditionalInformationTest {
 
 	@Test
 	@Override
-	public void testDeleteMemberByStartupId() {
-		fr.deleteMemberByStartupId(1);
+	public void testDeleteMemberById() throws DataAccessException, SQLException {
+		fr.deleteMemberById(1);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, "founder"));
 	}
 

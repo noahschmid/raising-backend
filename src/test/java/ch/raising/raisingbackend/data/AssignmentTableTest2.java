@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -17,12 +18,14 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import ch.raising.data.AssignmentTableRepository;
+import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
@@ -101,20 +104,20 @@ public class AssignmentTableTest2 {
 	}
 
 	@Test
-	public void testFind() {
+	public void testFind() throws DataAccessException, SQLException {
 		AssignmentTableModel model = repo.find(tableEntryId);
 		assertEquals(name, model.getName());
 	}
 
 	@Test
-	public void testFindAll() {
-		List<AssignmentTableModel> models = repo.findAll();
+	public void testFindAll() throws DataAccessException, SQLException {
+		List<IAssignmentTableModel> models = repo.findAll();
 		assertNotNull(models);
 		assertEquals(1, models.size());
 	}
 
 	@Test
-	public void testFindByAccountId() {
+	public void testFindByAccountId() throws DataAccessException, SQLException {
 		List<AssignmentTableModel> models = repo.findByAccountId(99);
 		assertNotNull(models);
 		assertNotEquals(0, models.size());
@@ -122,14 +125,14 @@ public class AssignmentTableTest2 {
 	}
 
 	@Test
-	public void testAddEntryToAccountById() {
+	public void testAddEntryToAccountById() throws DataAccessException, SQLException {
 		repo.addEntryToAccountById(tableEntryId, accountIdValue);
 		int count = JdbcTestUtils.countRowsInTable(jdbc, assignmentTableName);
 		assertEquals(2, count);
 	}
 
 	@Test
-	public void deleteEntryFromAccountById() {
+	public void deleteEntryFromAccountById() throws DataAccessException, SQLException {
 		repo.deleteEntryFromAccountById(tableEntryId, accountIdValue);
 		int count = JdbcTestUtils.countRowsInTable(jdbc, assignmentTableName);
 		assertEquals(0, count);

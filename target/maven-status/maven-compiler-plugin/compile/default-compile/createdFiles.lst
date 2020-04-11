@@ -17,6 +17,7 @@ ch\raising\utils\EmailNotFoundException.class
 ch\raising\controllers\PublicInformationController.class
 ch\raising\data\BoardmemberRepository$1.class
 ch\raising\raisingbackend\RaisingBackendApplication.class
+ch\raising\utils\NotAuthorizedException.class
 ch\raising\utils\PreparedStatementUtil$3.class
 ch\raising\data\ResetCodeRepository.class
 ch\raising\models\MatchingProfile.class
@@ -34,6 +35,7 @@ ch\raising\models\CorporateShareholder.class
 ch\raising\services\StartupService.class
 ch\raising\data\AssignmentTableRepository.class
 ch\raising\services\ProfileService.class
+ch\raising\models\responses\CompletePublicInformation.class
 ch\raising\utils\functionalInterface\PSOneParameter.class
 ch\raising\utils\PreparedStatementUtil$2.class
 ch\raising\models\Account.class
@@ -56,11 +58,10 @@ ch\raising\models\FreeEmailRequest.class
 ch\raising\utils\PreparedStatementUtil$4.class
 ch\raising\models\Relationship.class
 ch\raising\data\PrivateShareholderRepository.class
-ch\raising\models\ErrorResponse.class
-ch\raising\utils\InValidProfileException.class
 ch\raising\interfaces\IAdditionalInformationRepository$1.class
 ch\raising\models\LoginRequest.class
 ch\raising\models\PrivateShareholder.class
+ch\raising\utils\InvalidProfileException.class
 ch\raising\data\AssignmentTableRepository$2.class
 ch\raising\models\Boardmember$BoardmemberBuilder.class
 ch\raising\data\MediaRepository.class
@@ -71,7 +72,6 @@ ch\raising\interfaces\IRepository.class
 ch\raising\utils\JwtUtil.class
 ch\raising\data\ResetCodeRepository$2.class
 ch\raising\utils\functionalInterface\RowMapper.class
-ch\raising\config\AppConfig.class
 ch\raising\models\Startup$StartupBuilder.class
 ch\raising\controllers\StartupController.class
 ch\raising\data\InvestorRepository.class
@@ -83,7 +83,9 @@ ch\raising\services\VideoUploadService.class
 ch\raising\models\ForgotPasswordRequest.class
 ch\raising\models\Media$MediaBuilder.class
 ch\raising\data\AccountRepository$1.class
+ch\raising\models\responses\ErrorResponse.class
 ch\raising\data\StartupRepository$1.class
+ch\raising\controllers\ExcepionHandler.class
 ch\raising\models\Founder.class
 ch\raising\models\Investor$InvestorBuilder.class
 ch\raising\utils\PreparedStatementUtil$5.class
@@ -96,10 +98,10 @@ ch\raising\controllers\ProfileController.class
 ch\raising\models\Startup.class
 ch\raising\models\Media.class
 ch\raising\models\Support.class
-ch\raising\data\AccountRepository$2.class
 ch\raising\models\StartupMember.class
 ch\raising\utils\functionalInterface\PSTwoParameters.class
 ch\raising\interfaces\IExtendedAssignmentTableModel.class
+ch\raising\utils\PasswordResetException.class
 ch\raising\utils\Type.class
 ch\raising\models\LoginResponse.class
 ch\raising\controllers\FileUploadController.class

@@ -34,7 +34,9 @@ public class AccountRepository implements IRepository<Account> {
 	@Autowired
 	public AccountRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
-		this.ADD_ACCOUNT = "INSERT INTO account(companyname, password, emailhash, pitch, description, ticketminid, ticketmaxid, countryid, website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+		this.ADD_ACCOUNT = "INSERT INTO account(firstname, lastname, companyname, password, emailhash, pitch, "
+				+ "description, ticketminid, ticketmaxid, countryid, website, profilepictureid) VALUES"
+				+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 	}
 
 	/**
@@ -90,33 +92,38 @@ public class AccountRepository implements IRepository<Account> {
 	 * 
 	 * @param account the account to add
 	 * @return
-	 * @throws SQLException 
+	 * @throws SQLException
+	 * @throws DatabaseOperationException
 	 */
-	public long add(Account account) throws DatabaseOperationException, SQLException {
-			PreparedStatement ps = jdbc.getDataSource().getConnection().prepareStatement(ADD_ACCOUNT,
-					Statement.RETURN_GENERATED_KEYS);
-			
-			String emailHash = encoder.encode(account.getEmail());
-			String passwordHash = encoder.encode(account.getPassword());
-			
-			int c = 1;
-			ps.setString(c++, account.getCompanyName());
-			ps.setString(c++, passwordHash);
-			ps.setString(c++, emailHash);
-			ps.setString(c++, account.getPitch());
-			ps.setString(c++, account.getDescription());
-			ps.setInt(c++, account.getTicketMinId());
-			ps.setInt(c++, account.getTicketMaxId());
-			ps.setLong(c++, account.getCountryId());
-			ps.setString(c++, account.getWebsite());
-			if (ps.executeUpdate() > 0) {
-				try (ResultSet rs = ps.getGeneratedKeys()) {
-					if (rs.next()) {
-						return rs.getLong(1);
-					}
-				}
+	public long add(Account account) throws SQLException, DatabaseOperationException {
+		PreparedStatement ps = jdbc.getDataSource().getConnection().prepareStatement(ADD_ACCOUNT,
+				Statement.RETURN_GENERATED_KEYS);
+
+		String emailHash = encoder.encode(account.getEmail());
+		String passwordHash = encoder.encode(account.getPassword());
+
+		int c = 1;
+		ps.setString(c++, account.getFirstName());
+		ps.setString(c++, account.getLastName());
+		ps.setString(c++, account.getCompanyName());
+		ps.setString(c++, passwordHash);
+		ps.setString(c++, emailHash);
+		ps.setString(c++, account.getPitch());
+		ps.setString(c++, account.getDescription());
+		ps.setInt(c++, account.getTicketMinId());
+		ps.setInt(c++, account.getTicketMaxId());
+		ps.setLong(c++, account.getCountryId());
+		ps.setString(c++, account.getWebsite());
+		ps.setLong(c++, account.getProfilePictureId());
+		if (ps.executeUpdate() > 0) {
+			ResultSet rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				long insertedId = rs.getLong(1);
+				ps.getConnection().close();
+				return insertedId;
 			}
-			throw new DatabaseOperationException("primary key could not be retreived");
+		}
+		throw new DatabaseOperationException("primary key could not be retreived");
 	}
 
 	/**
@@ -124,21 +131,15 @@ public class AccountRepository implements IRepository<Account> {
 	 * 
 	 * @param id the id of the account
 	 */
-	public void delete(long id) {
-		try {
-			String query = "DELETE FROM account WHERE id = ?;";
-			jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
-				@Override
-				public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-
-					ps.setLong(1, id);
-					return ps.execute();
-				}
-			});
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
-		}
+	public void delete(long id) throws SQLException, DataAccessException {
+		String query = "DELETE FROM account WHERE id = ?;";
+		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				ps.setLong(1, id);
+				return ps.execute();
+			}
+		});
 	}
 
 	/**
@@ -147,29 +148,10 @@ public class AccountRepository implements IRepository<Account> {
 	 * @param id id of the desired account
 	 * @return instance of the found account
 	 */
-	public Account find(long id) {
-		try {
-			Account account = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id },
-					this::mapRowToModel);
-			return account;
-		} catch (DataAccessException e) {
-			return null;
-		}
-	}
-
-	/**
-	 * Check whether given unhashed email already exists in the database
-	 * 
-	 * @param username the email to search for (unhashed)
-	 * @return true if email already exists, false if email doesn't exist
-	 */
-	public boolean emailExists(String email) {
-		List<Account> accounts = getAll();
-		for (Account account : accounts) {
-			if (encoder.matches(email, account.getEmail()))
-				return true;
-		}
-		return false;
+	public Account find(long id) throws SQLException, DataAccessException {
+		Account account = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { id },
+				this::mapRowToModel);
+		return account;
 	}
 
 	/**
@@ -181,11 +163,13 @@ public class AccountRepository implements IRepository<Account> {
 	 * @throws SQLException
 	 */
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Account.accountBuilder().accountId(rs.getLong("id")).companyName(rs.getString("companyName"))
+		return Account.accountBuilder().accountId(rs.getLong("id")).firstName(rs.getString("firstname"))
+				.lastName(rs.getString("lastname")).companyName(rs.getString("companyName"))
 				.pitch(rs.getString("pitch")).description(rs.getString("description")).email(rs.getString("emailHash"))
 				.roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
 				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password"))
-				.countryId(rs.getLong("countryId")).website(rs.getString("website")).build();
+				.countryId(rs.getLong("countryId")).website(rs.getString("website"))
+				.profilePictureId(rs.getLong("profilepictureid")).build();
 	}
 
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
@@ -197,29 +181,30 @@ public class AccountRepository implements IRepository<Account> {
 	 * 
 	 * @param id  the id of the account to update
 	 * @param req request containing fields to update
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 * @throws Exception
 	 */
-	public void update(long id, Account req) throws Exception {
+	public void update(long id, Account req) throws DataAccessException, SQLException {
 		String emailHash = null;
 		if (req.getEmail() != "") {
 			emailHash = encoder.encode(req.getEmail());
 		}
-		try {
-			UpdateQueryBuilder update = new UpdateQueryBuilder("account", id, this, "id");
-			update.setJdbc(jdbc);
-			update.addField(req.getCompanyName(), "companyName");
-			update.addField(emailHash, "emailhash");
-			update.addField(req.getPitch(), "pitch");
-			update.addField(req.getDescription(), "description");
-			update.addField(req.getTicketMaxId(), "ticketmaxid");
-			update.addField(req.getTicketMinId(), "ticketminid");
-			update.addField(req.getWebsite(), "website");
-			update.execute();
-		} catch (Exception e) {
-			throw new Exception(e.getMessage());
-		}
+		UpdateQueryBuilder update = new UpdateQueryBuilder("account", id, jdbc);
+		update.addField(req.getFirstName(), "firstname");
+		update.addField(req.getLastName(), "lastname");
+		update.addField(req.getCompanyName(), "companyName");
+		update.addField(emailHash, "emailhash");
+		update.addField(req.getPitch(), "pitch");
+		update.addField(req.getDescription(), "description");
+		update.addField(req.getTicketMaxId(), "ticketmaxid");
+		update.addField(req.getTicketMinId(), "ticketminid");
+		update.addField(req.getWebsite(), "website");
+		update.addField(req.getCountryId(), "countryId");
+		update.execute();
 	}
 
-	public boolean isStartup(long id) {
+	public boolean isStartup(long id) throws SQLException, DataAccessException {
 		try {
 			long foundId = jdbc.queryForObject("SELECT accountid FROM startup WHERE accountid = ?", new Object[] { id },
 					MapUtil::mapRowToAccountId);
@@ -229,7 +214,7 @@ public class AccountRepository implements IRepository<Account> {
 		}
 	}
 
-	public boolean isInvestor(long id) {
+	public boolean isInvestor(long id) throws SQLException, DataAccessException {
 		try {
 			long foundId = jdbc.queryForObject("SELECT accountid FROM investor WHERE accountid = ?",
 					new Object[] { id }, MapUtil::mapRowToAccountId);
@@ -238,26 +223,5 @@ public class AccountRepository implements IRepository<Account> {
 			return false;
 		}
 	}
-
-	public static PreparedStatementCallback<Boolean> getAddAccountCallback(Account acc, String emailHash,
-			String passwordHash) {
-		return new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				int c = 1;
-				ps.setString(c++, acc.getCompanyName());
-				ps.setString(c++, passwordHash);
-				ps.setString(c++, emailHash);
-				ps.setString(c++, acc.getPitch());
-				ps.setString(c++, acc.getDescription());
-				ps.setInt(c++, acc.getTicketMinId());
-				ps.setInt(c++, acc.getTicketMaxId());
-				ps.setLong(c++, acc.getCountryId());
-				ps.setString(c++, acc.getWebsite());
-				return ps.execute();
-			}
-		};
-	}
-
 
 }

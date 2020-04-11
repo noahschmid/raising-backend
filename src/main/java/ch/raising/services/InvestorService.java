@@ -1,11 +1,13 @@
 package ch.raising.services;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,15 +21,16 @@ import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 
 import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.ErrorResponse;
-
 import ch.raising.models.Investor;
-import ch.raising.utils.InValidProfileException;
+import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.EmailNotFoundException;
+import ch.raising.utils.InvalidProfileException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.ResetCodeUtil;
 
 import ch.raising.models.MatchingProfile;
+import ch.raising.models.responses.ErrorResponse;
 @Service
 public class InvestorService extends AccountService {
 
@@ -58,32 +61,36 @@ public class InvestorService extends AccountService {
 	}
 
 	@Override
-	protected long registerAccount(Account requestInvestor) throws Exception {
+	protected long registerAccount(Account requestInvestor) throws InvalidProfileException, DataAccessException, SQLException, DatabaseOperationException {
 
 		Investor invReq = (Investor) requestInvestor;
 		
 		if (invReq.isInComplete()) {
-			throw new InValidProfileException("Profile is incomplete", invReq);
-		} else if (accountRepository.emailExists(invReq.getEmail())) {
-			throw new InValidProfileException("Email already exists");
+			throw new InvalidProfileException("Profile is incomplete", invReq);
 		}
 
-		
-		long accountId = super.registerAccount(invReq);
-		invReq.setAccountId(accountId);
-
-		investorRepository.add(invReq);
-		invReq.getInvestmentPhases()
-				.forEach(phase -> investmentPhaseRepository.addEntryToAccountById(phase.getId(),accountId));
-
-		return accountId;
+		try {
+			accountRepository.findByEmail(invReq.getEmail());
+			throw new InvalidProfileException("Email already exists");
+		}catch(EmailNotFoundException e) {
+			long accountId = super.registerAccount(invReq);
+			invReq.setAccountId(accountId);
+			investorRepository.add(invReq);
+			
+			if(invReq.getInvestmentPhases() != null) {
+				for(Long i: invReq.getInvestmentPhases()) {
+					investmentPhaseRepository.addEntryToAccountById(i,accountId);
+				}
+			}
+			return accountId;
+		}
 	}
 
 	@Override
-	protected Investor getAccount(long id) {
+	protected Investor getAccount(long id) throws DataAccessException, SQLException {
 
 		Account acc = super.getAccount(id);
-		List<AssignmentTableModel> invPhase = investmentPhaseRepository.findByAccountId(id);
+		List<Long> invPhase = investmentPhaseRepository.findIdByAccountId(id);
 		Investor inv = investorRepository.find(id);
 
 		return new Investor(acc, inv, invPhase);
@@ -94,9 +101,12 @@ public class InvestorService extends AccountService {
 	 * 
 	 * @param request the data to update
 	 * @return response entity with status code and message
+	 * @throws SQLException 
+	 * @throws DataAccessException 
+	 * @throws Exception 
 	 */
 	@Override
-	protected void updateAccount(int id, Account acc) throws Exception {
+	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
 		super.updateAccount(id, acc);
 		Investor inv = (Investor) acc;
 		investorRepository.update(id, inv);
@@ -106,8 +116,10 @@ public class InvestorService extends AccountService {
     /**
      * Get matching profile of investor (the required information for matching)
      * @return Matching profile of investor
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
-    public MatchingProfile getMatchingProfile(Investor investor) {
+    public MatchingProfile getMatchingProfile(Investor investor) throws DataAccessException, SQLException {
         if(investor == null)
             return null;
         
@@ -140,8 +152,10 @@ public class InvestorService extends AccountService {
     /**
      * Get all matching profiles of all investors
      * @return List of matching profiles
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
-    public List<MatchingProfile> getAllMatchingProfiles() {
+    public List<MatchingProfile> getAllMatchingProfiles() throws DataAccessException, SQLException {
         List<Investor> investors = investorRepository.getAll();
         List<MatchingProfile> profiles = new ArrayList<>();
         if(investors.size() == 0)

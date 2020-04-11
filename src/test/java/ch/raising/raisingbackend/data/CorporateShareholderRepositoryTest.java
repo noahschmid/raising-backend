@@ -3,6 +3,7 @@ package ch.raising.raisingbackend.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -77,14 +79,14 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 
 	@Test
 	@Override
-	public void testGetStartupIdByMemberId() {
+	public void testGetStartupIdByMemberId() throws DataAccessException, SQLException {
 		long suId = csr.getStartupIdByMemberId(1);
 		assertEquals(2, suId);
 	}
 
 	@Test
 	@Override
-	public void testAddMemberByStartupId() {
+	public void testAddMemberByStartupId() throws DataAccessException, SQLException {
 		CorporateShareholder psh = CorporateShareholder.builder().startupId(7).corpName("D Agosta").website("soreal.ch")
 				.equityShare(99).corporateBodyId(1).countryId(768).build();
 		csr.addMemberByStartupId(psh, 7);
@@ -104,8 +106,8 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 
 	@Test
 	@Override
-	public void testDeleteMemberByStartupId() {
-		csr.deleteMemberByStartupId(2);
+	public void testDeleteMemberById() throws DataAccessException, SQLException {
+		csr.deleteMemberById(2);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, "corporateshareholder"));
 	}
 
@@ -128,7 +130,7 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 
 	@Test
 	@Override
-	public void testFind() {
+	public void testFind() throws DataAccessException, SQLException {
 		CorporateShareholder found = csr.find(1);
 		assertNotNull(found);
 		assertEquals(1, found.getId());

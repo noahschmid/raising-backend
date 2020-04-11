@@ -16,9 +16,9 @@ public class Boardmember extends StartupMember {
 	private long countryId = -1;
 
 	@Builder
-	public Boardmember(long id, long startupid, String firstName, String lastName, int memberSince, String position,
+	public Boardmember(long id, long startupId, String firstName, String lastName, int memberSince, String position,
 			String profession, String education, long coutryId) {
-		super(id, startupid, firstName, lastName);
+		super(id, startupId, firstName, lastName);
 		this.education = education;
 		this.profession = profession;
 		this.position = position;

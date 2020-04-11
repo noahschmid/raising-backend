@@ -52,7 +52,7 @@ public class StartupRepositoryTest {
 				.pair("breakevenyear", Type.INT).pair("premoneyvaluation", Type.INT)
 				.pair("closingtime", Type.DATE).pair("financetypeid", Type.INT).pair("investmentphaseid", Type.INT)
 				.pair("revenuemaxid", Type.INT).pair("revenueminid", Type.INT).pair("scope", Type.INT)
-				.pair("uid", Type.VARCHAR).pair("foundingyear", Type.INT).pair("raised", Type.INT).createTable();
+				.pair("uid", Type.VARCHAR).pair("foundingyear", Type.INT).pair("raised", Type.INT).pair("videoid", Type.INT).createTable();
 
 		jdbc.execute(sql);
 

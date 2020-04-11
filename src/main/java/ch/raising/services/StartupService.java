@@ -1,15 +1,19 @@
 package ch.raising.services;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ch.raising.models.*;
-import ch.raising.utils.InValidProfileException;
+import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.EmailNotFoundException;
+import ch.raising.utils.InvalidProfileException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
@@ -28,7 +32,6 @@ public class StartupService extends AccountService {
 	private final PrivateShareholderRepository pshRepository;
 	private final CorporateShareholderRepository cshRepository;
 	private final AssignmentTableRepository investorTypeRepository;
-	private final MediaRepository videoRepository;
 	
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
@@ -48,49 +51,73 @@ public class StartupService extends AccountService {
 		this.founderRepository = founderRepository;
 		this.pshRepository = pshRepository;
 		this.cshRepository = cshRepository;
-		this.videoRepository = new MediaRepository(jdbc, "video");
 	}
 
 	@Override
-	protected long registerAccount(Account account) throws Exception {
+	protected long registerAccount(Account account) throws InvalidProfileException, DataAccessException, SQLException, DatabaseOperationException {
 		Startup su = (Startup) account;
 
 		if (su.isInComplete()) {
-			throw new InValidProfileException("Profile is incomplete", su);
-		} else if (accountRepository.emailExists(su.getEmail())) {
-			throw new InValidProfileException("Email already exists");
+			throw new InvalidProfileException("Profile is incomplete", su);
+		} 
+		
+		
+		try {
+			accountRepository.findByEmail(su.getEmail());
+			throw new InvalidProfileException("Email already exists");
+		}catch(EmailNotFoundException e) {
+		
+			long accountId = super.registerAccount(account);
+			su.setAccountId(accountId);
+			startupRepository.add(su);
+			
+			if (su.getBoardmembers() != null) {
+				for(Boardmember m: su.getBoardmembers()) {
+					 bmemRepository.addMemberByStartupId(m, accountId);
+				}
+			}
+			if (su.getLabels() != null) {
+				for(Long l: su.getLabels()) {
+					labelRepository.addEntryToAccountById(l, accountId);
+				}
+			}
+			if (su.getInvestorTypes() != null) {
+				for(Long i: su.getInvestorTypes()) {
+					 investorTypeRepository.addEntryToAccountById(i, accountId);
+				}
+			}
+			if (su.getFounders() != null) {
+				for(Founder f: su.getFounders()) {
+					founderRepository.addMemberByStartupId(f, accountId);
+				}
+			}
+			if (su.getPrivateShareholders() != null) {
+				for(PrivateShareholder p: su.getPrivateShareholders()) {
+					pshRepository.addMemberByStartupId(p, accountId);
+				}
+			}
+			if (su.getCorporateShareholders() != null) {
+				for(CorporateShareholder c: su.getCorporateShareholders()) {
+					cshRepository.addMemberByStartupId(c, accountId);
+				}
+			}
+			return accountId;
 		}
 
-		long accountId = super.registerAccount(account);
-		su.setAccountId(accountId);
-		startupRepository.add(su);
 		
-		if(su.getVideoId() != -1)
-			videoRepository.addAccountIdToMedia(accountId, su.getVideoId());
-		if (su.getBoardmembers() != null)
-			su.getBoardmembers().forEach(bmem -> bmemRepository.addMemberByStartupId(bmem, accountId));
-		if (su.getLabels() != null)
-			su.getLabels().forEach(label -> labelRepository.addEntryToAccountById(label.getId(), accountId));
-		if (su.getInvestorTypes() != null)
-			su.getInvestorTypes().forEach(it -> investorTypeRepository.addEntryToAccountById(it.getId(), accountId));
-		if (su.getFounders() != null)
-			su.getFounders().forEach(founder -> founderRepository.addMemberByStartupId(founder, accountId));
-		if (su.getPrivateShareholders() != null)
-			su.getPrivateShareholders().forEach(ps -> pshRepository.addMemberByStartupId(ps, accountId));
-		if (su.getCorporateShareholders() != null)
-			su.getCorporateShareholders().forEach(cs -> cshRepository.addMemberByStartupId(cs, accountId));
-		return accountId;
 	}
 
 	/**
 	 * @param long the tableEntryId of the startup
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 * @returns Account a fully initialised Startup object
 	 */
 	@Override
-	protected Account getAccount(long startupId) {
+	protected Account getAccount(long startupId) throws DataAccessException, SQLException {
 
-		List<AssignmentTableModel> invTypes = investorTypeRepository.findByAccountId(startupId);
-		List<AssignmentTableModel> labels = labelRepository.findByAccountId(startupId);
+		List<Long> invTypes = investorTypeRepository.findIdByAccountId(startupId);
+		List<Long> labels = labelRepository.findIdByAccountId(startupId);
 		List<Founder> founders = founderRepository.findByStartupId(startupId);
 		List<PrivateShareholder> psh = pshRepository.findByStartupId(startupId);
 		List<CorporateShareholder> csh = cshRepository.findByStartupId(startupId);
@@ -107,9 +134,11 @@ public class StartupService extends AccountService {
 	 * 
 	 * @param request the data to update
 	 * @return response entity with status code and message
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@Override
-	protected void updateAccount(int id, Account acc) throws Exception {
+	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
 		super.updateAccount(id, acc);
 		Startup su = (Startup) acc;
 		startupRepository.update(id, su);
@@ -119,8 +148,10 @@ public class StartupService extends AccountService {
 	 * Get matching profile of startup (the required information for matching)
 	 * 
 	 * @return Matching profile of startup
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public MatchingProfile getMatchingProfile(Startup startup) {
+	public MatchingProfile getMatchingProfile(Startup startup) throws DataAccessException, SQLException {
 		if (startup == null)
 			return null;
 
@@ -151,8 +182,10 @@ public class StartupService extends AccountService {
 	 * Get all matching profiles of all investors
 	 * 
 	 * @return List of matching profiles
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public List<MatchingProfile> getAllMatchingProfiles() {
+	public List<MatchingProfile> getAllMatchingProfiles() throws DataAccessException, SQLException {
 		List<Startup> startups = startupRepository.getAll();
 		List<MatchingProfile> profiles = new ArrayList<>();
 		if (startups.size() == 0)

@@ -1,4 +1,4 @@
-package ch.raising.models;
+package ch.raising.models.responses;
 
 import lombok.Getter;
 

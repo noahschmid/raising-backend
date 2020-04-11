@@ -17,17 +17,15 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
  */
 public interface IAdditionalInformationRepository<Model> extends IRepository<Model>{
 	
-	public long getStartupIdByMemberId(long id);
+	public long getStartupIdByMemberId(long id)throws SQLException, DataAccessException;
 	
-	public void addMemberByStartupId(Model sumem, long startupId);
+	public void addMemberByStartupId(Model sumem, long startupId)throws SQLException, DataAccessException;
 	
-	public void deleteMemberByStartupId(long id);
+	public void deleteMemberById(long id) throws SQLException, DataAccessException;
 	
-	public List<Model> findByStartupId(long startupId);
+	public List<Model> findByStartupId(long startupId)throws SQLException, DataAccessException;
 	
 	public Model mapRowToModel(ResultSet rs, int row) throws SQLException;
-	
-	public Model find(long id);
 	
 	
 	

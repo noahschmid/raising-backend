@@ -102,7 +102,7 @@ public class ResetCodeRepository {
      * @param code the code to delete
      * @throws Exception
      */
-    public void deleteByCode(String code) throws Exception {
+    public void deleteByCode(String code) throws SQLException, DataAccessException {
 		try {
 			String query = "DELETE FROM resetCode WHERE code = ?;"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  

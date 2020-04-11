@@ -40,14 +40,14 @@ public class MediaRepositoryTest {
 
 	JdbcTemplate jdbc;
 
-	String imageBytes;
+	byte[] imageBytes;
 	Media image;
 	IMediaRepository imgrepo;
 
 	@Autowired
 	public MediaRepositoryTest(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
-		this.imageBytes = "DEADBEEF";
+		this.imageBytes = "DEADBEEF".getBytes();
 		imgrepo = new MediaRepository(jdbc, "gallery");
 		image = Media.builder().media(imageBytes).build();
 	}
@@ -72,13 +72,13 @@ public class MediaRepositoryTest {
 	private void addImage() {
 		String sql = QueryBuilder.getInstance().tableName("gallery").attribute("accountid, media").qMark().qMark()
 				.insert();
-		jdbc.execute(sql, PreparedStatementUtil.addMediaByIdCallback(image, 2));
+		jdbc.execute(sql, PreparedStatementUtil.addMediaByIdCallback(image.getMedia(), 2));
 	}
 
 	@Test
 	public void addImageToAccountTest() throws SQLException {
 		Media img = Media.builder().accountId(1).media(imageBytes).build();
-		imgrepo.addMediaToAccount(img, 2);
+		imgrepo.addMediaToAccount(img.getMedia(), 2);
 
 		String sql = QueryBuilder.getInstance().tableName("gallery").whereEquals("accountid", "2").select();
 		List<Media> found = jdbc.query(sql, MapUtil::mapRowToMedia);
@@ -86,25 +86,26 @@ public class MediaRepositoryTest {
 		assertEquals(2, found.size());
 		Media foundImage = found.get(1);
 		assertNotNull(foundImage);
-		assertEquals(imageBytes.length(), foundImage.getMedia().length());
-
-		assertEquals(imageBytes, foundImage.getMedia());
-
+		assertEquals(imageBytes.length, foundImage.getMedia().length);
+		for (int i = 0; i < imageBytes.length; i++) {
+			assertEquals(imageBytes[i], foundImage.getMedia()[i]);
+		}
 		assertEquals(2, foundImage.getAccountId());
 		assertEquals(2, foundImage.getId());
 
 	}
 
 	@Test
-	public void findImagesByAccountId() {
-		List<Media> found = imgrepo.findMediaByAccount(2);
+	public void findImagesByAccountId() throws DataAccessException, SQLException {
+		List<Media> found = imgrepo.findMediaByAccountId(2);
 		assertNotNull(found);
 		assertEquals(1, found.size());
 		Media foundImage = found.get(0);
 		assertNotNull(foundImage);
-		assertEquals(image.getMedia().length(), foundImage.getMedia().length());
-		
-			assertEquals(image.getMedia(), foundImage.getMedia());
+		assertEquals(image.getMedia().length, foundImage.getMedia().length);
+		for(int i = 0; i < image.getMedia().length; i++) {
+			assertEquals(image.getMedia()[i], foundImage.getMedia()[i]);
+		}
 		
 		assertEquals(2, foundImage.getAccountId());
 		assertEquals(1, foundImage.getId());

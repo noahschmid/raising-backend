@@ -1,14 +1,18 @@
 package ch.raising.raisingbackend.data;
 
+import java.sql.SQLException;
+
+import org.springframework.dao.DataAccessException;
+
 public interface IAdditionalInformationTest {
 
 	public void setup();
 	public void addMember();
 	public void cleanup();
-	public void testGetStartupIdByMemberId();
-	public void testAddMemberByStartupId();
-	public void testDeleteMemberByStartupId();
-	public void testFindByStartupId();
-	public void testFind();
+	public void testGetStartupIdByMemberId()throws DataAccessException, SQLException;
+	public void testAddMemberByStartupId()throws DataAccessException, SQLException;
+	public void testDeleteMemberById() throws DataAccessException, SQLException;
+	public void testFindByStartupId() throws DataAccessException, SQLException;
+	public void testFind()throws DataAccessException, SQLException;
 	public void testupdate() throws Exception;
 }

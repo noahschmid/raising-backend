@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -73,14 +75,14 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 
 	@Test
 	@Override
-	public void testGetStartupIdByMemberId() {
+	public void testGetStartupIdByMemberId() throws DataAccessException, SQLException {
 		long suId = psr.getStartupIdByMemberId(1);
 		assertEquals(2, suId);
 	}
 
 	@Test
 	@Override
-	public void testAddMemberByStartupId() {
+	public void testAddMemberByStartupId() throws DataAccessException, SQLException {
 		PrivateShareholder psh = PrivateShareholder.builder().startupid(7).firstName("Vincent").lastName("D' Agosta")
 				.city("New York").equityShare(99).investorTypeId(1).countryId(768).build();
 		psr.addMemberByStartupId(psh, 7);
@@ -101,14 +103,14 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 
 	@Test
 	@Override
-	public void testDeleteMemberByStartupId() {
-		psr.deleteMemberByStartupId(1);
+	public void testDeleteMemberById() throws DataAccessException, SQLException {
+		psr.deleteMemberById(1);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, "privateshareholder"));
 	}
 
 	@Test
 	@Override
-	public void testFindByStartupId() {
+	public void testFindByStartupId() throws DataAccessException, SQLException {
 		List<PrivateShareholder> foundList = psr.findByStartupId(2);
 		assertNotNull(foundList);
 		assertEquals(1, foundList.size());
@@ -126,7 +128,7 @@ public class PrivateShareholderRepositoryTest implements IAdditionalInformationT
 
 	@Test
 	@Override
-	public void testFind() {
+	public void testFind() throws DataAccessException, SQLException {
 		PrivateShareholder found = psr.find(1);
 		assertNotNull(found);
 		assertEquals(1, found.getId());

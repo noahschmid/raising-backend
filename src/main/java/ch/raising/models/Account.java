@@ -12,6 +12,8 @@ public class Account {
 /* =========================================================================
 	Stored in the accounttable*/
 	protected long accountId = -1l;
+	private String firstName = "";
+	private String lastName = "";
 	protected String companyName = "";
 	private String password = "";
 	private String roles = "";
@@ -22,17 +24,18 @@ public class Account {
 	private int ticketMaxId = -1;
 	private long countryId = -1;
 	private String website = "";
+	private long profilePictureId = -1;
 
 /* =========================================================================*/
 
 /* =========================================================================
 	Stored in seperate tables with respective respecitve names*/
-	private Media profilePicture;
-	private List<Media> gallery;
-	private List<AssignmentTableModel> countries;
-	private List<AssignmentTableModel> continents;
-	private List<AssignmentTableModel> support;
-	private List<AssignmentTableModel> industries;
+	
+	private List<Long> gallery;
+	private List<Long> countries;
+	private List<Long> continents;
+	private List<Long> support;
+	private List<Long> industries;
 /* =========================================================================*/
 
 
@@ -49,13 +52,18 @@ public class Account {
 	 * @param roles
 	 * @param email
 	 * @param ticketMinId
+	 * @param profilePictureId 
+	 * @param firstName 
+	 * @param lastName 
 	 * @param ticketmentId
 	 */
 
 	@Builder(builderMethodName = "accountBuilder")
 	public Account(long accountId, long countryId, String password, String roles, String email, int ticketMinId,
-			int ticketMaxId, String companyName, String description, String pitch, String website) {
+			int ticketMaxId, String companyName, String description, String pitch, String website, long profilePictureId, String firstName, String lastName) {
 
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.companyName = companyName;
 		this.accountId = accountId;
 		this.password = password;
@@ -67,6 +75,7 @@ public class Account {
 		this.ticketMaxId = ticketMaxId;
 		this.countryId = countryId;
 		this.website = website;
+		this.profilePictureId = profilePictureId;
 	}
 
 	/**
@@ -91,6 +100,8 @@ public class Account {
 	 * @param industries
 	 */
 	public Account(Account acc) {
+		this.firstName = acc.firstName;
+		this.lastName = acc.lastName;
 		this.companyName = acc.companyName;
 		this.accountId = acc.accountId;
 		this.password = acc.password;
@@ -110,7 +121,7 @@ public class Account {
 		this.continents = acc.continents;
 		this.support = acc.support;
 		this.industries = acc.industries;
-		this.profilePicture = acc.profilePicture;
+		this.profilePictureId = acc.profilePictureId;
 		this.gallery = acc.gallery;
 		this.countryId = acc.countryId;
 		this.website = acc.website;

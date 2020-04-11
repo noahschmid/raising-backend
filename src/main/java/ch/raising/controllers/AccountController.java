@@ -1,16 +1,21 @@
 package ch.raising.controllers;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,13 +30,17 @@ import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
-import ch.raising.models.ErrorResponse;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
+import ch.raising.models.responses.ErrorResponse;
 import ch.raising.services.AccountService;
 import ch.raising.services.AssignmentTableService;
+import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.EmailNotFoundException;
+import ch.raising.utils.InvalidProfileException;
 import ch.raising.utils.JwtUtil;
+import ch.raising.utils.PasswordResetException;
 import ch.raising.controllers.AccountController;
 import ch.raising.data.AccountRepository;
 import ch.raising.models.ForgotPasswordRequest;
@@ -62,30 +71,36 @@ public class AccountController {
 	 */
 	@PostMapping("/login")
 	@ResponseBody
-	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-		return accountService.login(request);
+	public ResponseEntity<?> login(@RequestBody LoginRequest request) throws AuthenticationException, UsernameNotFoundException {
+		return ResponseEntity.ok(accountService.login(request));
 	}
     
     /**
      * Forgot password endpoint. Returns reset code if request is valid 
      * @param request including email address of account
      * @return reset code
+     * @throws MessagingException 
+     * @throws EmailNotFoundException 
      */
     @PostMapping("/forgot")
     @ResponseBody
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        return accountService.forgotPassword(request);
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) throws EmailNotFoundException, MessagingException {
+        accountService.forgotPassword(request);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Reset password endpoint. Sets new password if request is valid
      * @param request has to include reset code and new password
      * @return status code
+     * @throws PasswordResetException 
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/reset")
     @ResponseBody
-    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest request) {
-        return accountService.resetPassword(request);
+    public ResponseEntity<LoginResponse> resetPassword(@RequestBody PasswordResetRequest request) throws DataAccessException, SQLException, PasswordResetException  {
+        return ResponseEntity.ok(accountService.resetPassword(request));
     }
 	
 	/**
@@ -103,21 +118,31 @@ public class AccountController {
      * Check whether email is already registered
      * @param request the request containing the email to test
      * @return response with status 400 if email is already registered, 200 else
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/valid")
     @ResponseBody
-    public ResponseEntity<?> isEmailFree(@RequestBody FreeEmailRequest request) {
-        return accountService.isEmailFree(request.getEmail());
+    public ResponseEntity<?> isEmailFree(@RequestBody FreeEmailRequest request) throws DataAccessException, SQLException {
+    	boolean isFree = accountService.isEmailFree(request.getEmail());
+    	if(isFree) {
+    		return ResponseEntity.ok().build();
+    	}else {
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    	}
     }
     /**
      * registers an account that is neither startup nor investor
      * @param account
      * @return
+     * @throws Exception 
+     * @throws SQLException 
+     * @throws DatabaseOperationException 
      */
     @PostMapping("/register")
     @ResponseBody
-    public ResponseEntity<?> registerAccount(@RequestBody Account account) {
-        return accountService.registerProfile(account);
+    public ResponseEntity<?> registerAccount(@RequestBody Account account) throws DatabaseOperationException, SQLException, Exception {
+        return ResponseEntity.ok(accountService.registerProfile(account));
     }
     
     /**
@@ -125,10 +150,14 @@ public class AccountController {
 	 * @param id the id of the desired account
      * @param request instance of the https request
 	 * @return details of specific account
+     * @throws SQLException 
+     * @throws DataAccessException 
 	 */
 	@GetMapping("/{id}")
 	@ResponseBody
-	public ResponseEntity<?> getAccountById(@PathVariable long id, HttpServletRequest request) {
+	public ResponseEntity<?> getAccountById(@PathVariable long id, HttpServletRequest request) throws DataAccessException, SQLException {
+		 if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
         return ResponseEntity.ok().body(accountService.getProfile(id));
     }
     
@@ -137,164 +166,140 @@ public class AccountController {
 	 * @param id
      * @param request instance of the http request 
 	 * @return response object with status text
+     * @throws SQLException 
+     * @throws DataAccessException 
+     * @throws Exception 
 	 */
 	@DeleteMapping("/{id}")
 	@ResponseBody
-	public ResponseEntity<?> deleteAccount(@PathVariable int id, HttpServletRequest request) {
+	public ResponseEntity<?> deleteAccount(@PathVariable int id, HttpServletRequest request) throws DataAccessException, SQLException {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
 
-        return accountService.deleteProfile(id);
+        accountService.deleteProfile(id);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Update account
      * @return Response entity with status code and message
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PatchMapping("/{id}")
     @ResponseBody
     public ResponseEntity<?> updateAccount(@PathVariable int id, 
                                             @RequestBody Account updateRequest,
-                                            HttpServletRequest request) {
+                                            HttpServletRequest request) throws DataAccessException, SQLException {
         if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
 
-        return accountService.updateProfile(id, updateRequest);
+        accountService.updateProfile(id, updateRequest);
+        return ResponseEntity.ok().build();
     }
     /**
      * add country to account
      * @param countryId
      * @return
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/country")
     @ResponseBody
-    public ResponseEntity<?> addCountryToAccount(@RequestBody List<AssignmentTableModel> countries){
-    	return assignmentTableService.addToAccountById("country", countries);
+    public ResponseEntity<?> addCountryToAccount(@RequestBody List<Long> countries) throws DataAccessException, SQLException{
+    	assignmentTableService.addToAccountById("country", countries);
+    	return ResponseEntity.ok().build();
     }
     /**
      * delete country from account
      * @param countryId
      * @return
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/country/delete")
     @ResponseBody
-    public ResponseEntity<?> deleteCountryFromAccount(@RequestBody List<AssignmentTableModel> countries){
-    	return assignmentTableService.deleteFromAccountById("country",countries);
+    public ResponseEntity<?> deleteCountryFromAccount(@RequestBody List<Long> countries) throws DataAccessException, SQLException{
+    	assignmentTableService.deleteFromAccountById("country",countries);
+    	return ResponseEntity.ok().build();
     }
     /**
      * add continent to account
      * @param continentId
      * @return
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/continent")
     @ResponseBody
-    public ResponseEntity<?> addContinentToAccount(@RequestBody List<AssignmentTableModel> continents){
-    	return assignmentTableService.addToAccountById("continent", continents);
+    public ResponseEntity<?> addContinentToAccount(@RequestBody List<Long> continents) throws DataAccessException, SQLException{
+    	assignmentTableService.addToAccountById("continent", continents);
+    	return ResponseEntity.ok().build();
     }
     /**
      * delete continent from account
      * @param continentId
      * @return
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/continent/delete")
     @ResponseBody
-    public ResponseEntity<?> deleteContinentFromAccount(@RequestBody List<AssignmentTableModel> continents){
-    	return assignmentTableService.deleteFromAccountById("continent", continents);
+    public ResponseEntity<?> deleteContinentFromAccount(@RequestBody List<Long> continents) throws DataAccessException, SQLException{
+    	assignmentTableService.deleteFromAccountById("continent", continents);
+    	return ResponseEntity.ok().build();
     }
     /**
      * add supporttype to account
      * @param supportId
      * @return
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/support")
     @ResponseBody
-    public ResponseEntity<?> addSupportToAccount(@RequestBody List<AssignmentTableModel> support){
-    	return assignmentTableService.addToAccountById("support", support);
+    public ResponseEntity<?> addSupportToAccount(@RequestBody List<Long> support) throws DataAccessException, SQLException{
+    	assignmentTableService.addToAccountById("support", support);
+    	return ResponseEntity.ok().build();
     }
     /**
      * delete supporttype from account
      * @param supportId
      * @return
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/support/delete")
     @ResponseBody
-    public ResponseEntity<?> deleteSupportFromAccount(@RequestBody List<AssignmentTableModel> support){
-    	return assignmentTableService.deleteFromAccountById("support", support);
+    public ResponseEntity<?> deleteSupportFromAccount(@RequestBody List<Long> support) throws DataAccessException, SQLException{
+    	assignmentTableService.deleteFromAccountById("support", support);
+    	return ResponseEntity.ok().build();
     }
     /**
      * add industry to account    
      * @param industryId
      * @return
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/industry")
     @ResponseBody
-    public ResponseEntity<?> addIndustryToAccount(@RequestBody List<AssignmentTableModel> industries){
-    	return assignmentTableService.addToAccountById("industry", industries);
+    public ResponseEntity<?> addIndustryToAccount(@RequestBody List<Long> industries) throws DataAccessException, SQLException{
+    	assignmentTableService.addToAccountById("industry", industries);
+    	return ResponseEntity.ok().build();
     }
     /**
      * delete industry form account
      * @param industryId
      * @return
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/industry/delete")
     @ResponseBody
-    public ResponseEntity<?> deleteIndustryFromAccount(@RequestBody List<AssignmentTableModel> industries){
-    	return assignmentTableService.deleteFromAccountById("industry", industries);
+    public ResponseEntity<?> deleteIndustryFromAccount(@RequestBody List<Long> industries) throws DataAccessException, SQLException{
+    	assignmentTableService.deleteFromAccountById("industry", industries);
+    	return ResponseEntity.ok().build();
     }
-    /**
-     * add image to gallery of account    
-     * @param img {@link ch.raising.models.Media}
-     * @return ResponseEntity with image
-     */
-    @PostMapping("/gallery")
-    @ResponseBody
-    public ResponseEntity<?> addImageToAccount(@RequestBody Media img){
-    	return accountService.addGalleryImageToAccountById(img);
-    }
-    /**
-     * delete image form gallery account
-     * @param imageId
-     * @return
-     */
-    @DeleteMapping("/gallery/{imageId}")
-    @ResponseBody
-    public ResponseEntity<?> deleteImageFromAccount(@PathVariable long imageId){
-    	return accountService.deleteGalleryImageFromAccountById(imageId);
-    }
-    
-    @GetMapping("/gallery")
-    @ResponseBody
-    public ResponseEntity<?> getGalleryOfAccount(){
-    	return accountService.findGalleryImagesFromAccountById();
-    }
-    /**
-     * add profile pic to account    
-     * @param img {@link ch.raising.models.Media}
-     * @return
-     */
-    @PostMapping("/profilepicture")
-    @ResponseBody
-    public ResponseEntity<?> addProfilePictureToAccount(@RequestBody Media img){
-    	return accountService.addProfilePictureToAccountById(img);
- 
-    }
-    /**
-     * delete image form gallery account
-     * @param imageId long
-     * @return 200 if ok 500 if error occured 
-     */
-    @DeleteMapping("/profilepicture/{imageId}")
-    @ResponseBody
-    public ResponseEntity<?> deleteProfilePictureFromAccount(@PathVariable long imageId){
-    	return accountService.deleteProfilePictureFromAccountById(imageId);
-    }
-    
-    @GetMapping("/profilepicture")
-    @ResponseBody
-    public ResponseEntity<?> getProfilePictureOfAccount(){
-    	return accountService.findProfilePictureFromAccountById();
-    }
-    
-    
 }
  
