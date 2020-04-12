@@ -38,7 +38,6 @@ public class InvestorService extends AccountService {
 
 	private AssignmentTableRepository investmentPhaseRepository;
 
-	@Autowired
 	private InvestorRepository investorRepository;
 
 	private AssignmentTableRepository supportRepository;
@@ -77,17 +76,14 @@ public class InvestorService extends AccountService {
 			invReq.setAccountId(accountId);
 			investorRepository.add(invReq);
 			
-			if(invReq.getInvestmentPhases() != null) {
-				for(Long i: invReq.getInvestmentPhases()) {
-					investmentPhaseRepository.addEntryToAccountById(i,accountId);
-				}
-			}
+			investmentPhaseRepository.addEntriesToAccount(accountId, invReq.getInvestmentPhases());
+			
 			return accountId;
 		}
 	}
 
 	@Override
-	protected Investor getAccount(long id) throws DataAccessException, SQLException {
+	public Investor getAccount(long id) throws DataAccessException, SQLException {
 
 		Account acc = super.getAccount(id);
 		List<Long> invPhase = investmentPhaseRepository.findIdByAccountId(id);
@@ -109,6 +105,7 @@ public class InvestorService extends AccountService {
 	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
 		super.updateAccount(id, acc);
 		Investor inv = (Investor) acc;
+		investmentPhaseRepository.updateAssignment(id, inv.getInvestmentPhases());
 		investorRepository.update(id, inv);
 	}
 

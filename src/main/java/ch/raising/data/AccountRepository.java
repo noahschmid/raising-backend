@@ -44,7 +44,7 @@ public class AccountRepository implements IRepository<Account> {
 	 * 
 	 * @return list of all accounts
 	 */
-	public List<Account> getAll() {
+	public List<Account> getAll() throws SQLException, DataAccessException {
 		String getAll = "SELECT * FROM account";
 		List<Account> users = jdbc.query(getAll, this::mapRowToModel);
 		return users;
@@ -57,29 +57,15 @@ public class AccountRepository implements IRepository<Account> {
 	 * @param email the email to search for
 	 * @return instance of the found user account
 	 * @throws EmailNotFoundException
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public Account findByEmail(String email) throws EmailNotFoundException {
+	public Account findByEmail(String email) throws EmailNotFoundException, DataAccessException, SQLException {
 		List<Account> accounts = getAll();
 		for (Account acc : accounts) {
 			if (encoder.matches(email, acc.getEmail()))
 				return acc;
 		}
-		for (Account acc : accounts) {
-			if (email.equals(acc.getEmail()))
-				return acc;
-		}
-		throw new EmailNotFoundException("Email " + email + "was not found.");
-	}
-
-	/**
-	 * Find user account by emailhash
-	 * 
-	 * @param email the emailhash to search for
-	 * @return instance of the found user account
-	 * @throws EmailNotFoundException
-	 */
-	public Account findByEmailHash(String email) throws EmailNotFoundException {
-		List<Account> accounts = getAll();
 		for (Account acc : accounts) {
 			if (email.equals(acc.getEmail()))
 				return acc;
@@ -201,6 +187,7 @@ public class AccountRepository implements IRepository<Account> {
 		update.addField(req.getTicketMinId(), "ticketminid");
 		update.addField(req.getWebsite(), "website");
 		update.addField(req.getCountryId(), "countryId");
+		update.addField(req.getProfilePictureId(), "profilepictureid");
 		update.execute();
 	}
 

@@ -51,7 +51,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 		this.DELETE_ENTRY_FROM_ACCOUNT = "DELETE FROM " + tableName + " WHERE id = ? AND accountId = ?";
 		this.GET_MEDIA_ID_OF = "SELECT id FROM " + tableName + " WHERE accountId = ?";
 		this.FIND_BY_ID = "SELECT * FROM " + tableName + " WHERE id = ?";
-		this.FIND_ID_BY_ACCOUNT_ID = "SELECT id FROM " + tableName + " WHERE id = ?";
+		this.FIND_ID_BY_ACCOUNT_ID = "SELECT id FROM " + tableName + " WHERE accountid = ?";
 		this.ADD_ACCOUNTID_TO_MEDIA = "UPDATE " + tableName + " SET accountid = ? WHERE id = ?";
 	}
 	
@@ -90,7 +90,9 @@ public class MediaRepository implements IMediaRepository<Media> {
 	
 	@Override
 	public void addAccountIdToMedia(long accountId, long videoId) throws DataAccessException{
-		jdbc.update(ADD_ACCOUNTID_TO_MEDIA, new Object[] {accountId, videoId});
+		if(videoId != -1 && videoId != 0) {
+			jdbc.update(ADD_ACCOUNTID_TO_MEDIA, new Object[] {accountId, videoId});
+		}
 	}
 
 	@Override

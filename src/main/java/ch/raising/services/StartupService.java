@@ -71,19 +71,14 @@ public class StartupService extends AccountService {
 			su.setAccountId(accountId);
 			startupRepository.add(su);
 			
+			labelRepository.addEntriesToAccount(accountId, su.getLabels());
+			investorTypeRepository.addEntriesToAccount(accountId, su.getInvestorTypes());
+			
+			
+			
 			if (su.getBoardmembers() != null) {
 				for(Boardmember m: su.getBoardmembers()) {
 					 bmemRepository.addMemberByStartupId(m, accountId);
-				}
-			}
-			if (su.getLabels() != null) {
-				for(Long l: su.getLabels()) {
-					labelRepository.addEntryToAccountById(l, accountId);
-				}
-			}
-			if (su.getInvestorTypes() != null) {
-				for(Long i: su.getInvestorTypes()) {
-					 investorTypeRepository.addEntryToAccountById(i, accountId);
 				}
 			}
 			if (su.getFounders() != null) {
@@ -114,7 +109,7 @@ public class StartupService extends AccountService {
 	 * @returns Account a fully initialised Startup object
 	 */
 	@Override
-	protected Account getAccount(long startupId) throws DataAccessException, SQLException {
+	public Account getAccount(long startupId) throws DataAccessException, SQLException {
 
 		List<Long> invTypes = investorTypeRepository.findIdByAccountId(startupId);
 		List<Long> labels = labelRepository.findIdByAccountId(startupId);
@@ -141,6 +136,8 @@ public class StartupService extends AccountService {
 	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
 		super.updateAccount(id, acc);
 		Startup su = (Startup) acc;
+		investorTypeRepository.updateAssignment(id, su.getInvestorTypes());
+		labelRepository.updateAssignment(id, su.getLabels());
 		startupRepository.update(id, su);
 	}
 

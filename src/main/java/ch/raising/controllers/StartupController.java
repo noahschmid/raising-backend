@@ -56,7 +56,7 @@ public class StartupController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getStartupProfile(@PathVariable int id) throws DataAccessException, SQLException {
-        return ResponseEntity.ok(startupService.getProfile(id));
+        return ResponseEntity.ok(startupService.getAccount(id));
 	}
     
     /**

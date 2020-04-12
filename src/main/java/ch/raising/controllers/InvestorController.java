@@ -48,7 +48,7 @@ public class InvestorController {
 	 */
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getInvestorProfile(@PathVariable int id) throws DataAccessException, SQLException {
-		return ResponseEntity.ok(investorService.getProfile(id));
+		return ResponseEntity.ok(investorService.getAccount(id));
 	}
 
 	/**

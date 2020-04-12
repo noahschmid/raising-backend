@@ -117,19 +117,11 @@ public class AccountRepositoryTest {
 	}
 
 	@Test
-	public void findByEmailHash() throws EmailNotFoundException {
-		Account found = accountRepo.findByEmailHash(emailHash);
-		assertNotNull(found);
-		assertEquals(expected, found);
-	}
-
-	@Test
 	public void testAddAccount() throws Exception {
-		account.setEmail(email);
-		account.setPassword(password);
+		Account insert = new Account(account);
+		insert.setEmail(email);
+		insert.setPassword(password);
 		accountRepo.add(account);
-		account.setEmail(emailHash);
-		account.setPassword(passwordHash);
 		assertEquals(2, JdbcTestUtils.countRowsInTable(jdbc, "account"));
 		Account found = accountRepo.find(2);
 		assertNotNull(found);
@@ -147,14 +139,14 @@ public class AccountRepositoryTest {
 	}
 
 	@Test
-	public void testGetAllAccounts() {
+	public void testGetAllAccounts() throws DataAccessException, SQLException {
 		List<Account> accounts = accountRepo.getAll();
 		assertNotNull(accounts);
 		assertEquals(1, accounts.size());
 	}
 
 	@Test
-	public void findByEmail() throws EmailNotFoundException {
+	public void findByEmail() throws EmailNotFoundException, DataAccessException, SQLException {
 		Account foundByMail = accountRepo.findByEmail(email);
 		assertNotNull(foundByMail);
 		account.setAccountId(1);

@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -27,9 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.models.Account;
-import ch.raising.models.AccountDetails;
-import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.Country;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
@@ -38,14 +34,11 @@ import ch.raising.services.AccountService;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
-import ch.raising.utils.InvalidProfileException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.PasswordResetException;
 import ch.raising.controllers.AccountController;
-import ch.raising.data.AccountRepository;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.FreeEmailRequest;
-import ch.raising.models.Media;
 
 @RequestMapping("/account")
 @Controller
@@ -81,10 +74,12 @@ public class AccountController {
      * @return reset code
      * @throws MessagingException 
      * @throws EmailNotFoundException 
+     * @throws SQLException 
+     * @throws DataAccessException 
      */
     @PostMapping("/forgot")
     @ResponseBody
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) throws EmailNotFoundException, MessagingException {
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) throws EmailNotFoundException, MessagingException, DataAccessException, SQLException {
         accountService.forgotPassword(request);
         return ResponseEntity.ok().build();
     }
@@ -106,11 +101,13 @@ public class AccountController {
 	/**
 	 * Get all accounts (only for admins)
 	 * @return list of all accounts
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
 	@ResponseBody
-	public List<Account> getAccounts() {
+	public List<Account> getAccounts() throws DataAccessException, SQLException {
 		return accountService.getAccounts();
     }
 
@@ -158,7 +155,7 @@ public class AccountController {
 	public ResponseEntity<?> getAccountById(@PathVariable long id, HttpServletRequest request) throws DataAccessException, SQLException {
 		 if(!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
 	            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
-        return ResponseEntity.ok().body(accountService.getProfile(id));
+        return ResponseEntity.ok().body(accountService.getAccount(id));
     }
     
     /**

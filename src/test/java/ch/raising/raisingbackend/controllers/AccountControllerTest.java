@@ -140,25 +140,17 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	public void getAccounts() throws Exception {
+		Account expected = new Account(account);
+		expected.setRoles("ROLE_USER");
+		expected.setPassword(passwordHash);
+		expected.setEmail(emailHash);
 		MvcResult res = mockMvc.perform(get("/account")).andExpect(status().is(200)).andReturn();
 		Account[] foundAccounts = objectMapper.readValue(res.getResponse().getContentAsString(), Account[].class);
 		assertNotNull(foundAccounts);
 		assertEquals(1, foundAccounts.length);
 		Account found = foundAccounts[0];
-		assertEquals(account.getAccountId(), found.getAccountId());
-		assertEquals(account.getCompanyName(), found.getCompanyName());
-		assertEquals(passwordHash, found.getPassword());
-		assertEquals("ROLE_USER", found.getRoles());
-		assertEquals(emailHash, found.getEmail());
-		assertEquals(account.getDescription(), found.getDescription());
-		assertEquals(account.getPitch(), found.getPitch());
-		assertEquals(account.getTicketMaxId(), found.getTicketMaxId());
-		assertEquals(account.getTicketMinId(), found.getTicketMinId());
-		assertEquals(account.getCountryId(), found.getCountryId());
-		assertEquals(account.getWebsite(), found.getWebsite());
-		assertEquals(account.getProfilePictureId(), found.getProfilePictureId());
+		assertEquals(expected, found);
 	}
-
 	@Test
 	public void testIsEmailFree() throws JsonProcessingException, Exception {
 		FreeEmailRequest freeEmail = new FreeEmailRequest();
@@ -178,32 +170,20 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 
 	@Test
 	public void testRegisterAccount() throws JsonProcessingException, Exception {
-		Account second = new Account(account);
-		second.setEmail("newTest@mail.ch");
+		Account expected = new Account(account);
+		expected.setEmail("newTest@mail.ch");
+		expected.setRoles("ROLE_SUPER_USER");
 		MvcResult res = mockMvc.perform(post("/account/register").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(second))).andExpect(status().is(200)).andReturn();
+				.content(objectMapper.writeValueAsString(expected))).andExpect(status().is(200)).andReturn();
 		LoginResponse login = objectMapper.readValue(res.getResponse().getContentAsString(), LoginResponse.class);
 
 		assertNotNull(login);
 		assertNotNull(login.getAccount());
 		Account found = login.getAccount();
+		expected.setAccountId(found.getAccountId());
 
-		assertEquals(second.getAccountId(), found.getAccountId());
-		assertEquals(second.getCompanyName(), found.getCompanyName());
-		assertEquals(second.getPassword(), found.getPassword());
-		assertEquals("ROLE_SUPER_USER", found.getRoles());
-		assertEquals(second.getEmail(), found.getEmail());
-		assertEquals(second.getDescription(), found.getDescription());
-		assertEquals(second.getPitch(), found.getPitch());
-		assertEquals(second.getTicketMaxId(), found.getTicketMaxId());
-		assertEquals(second.getTicketMinId(), found.getTicketMinId());
-		assertEquals(second.getCountryId(), found.getCountryId());
-		assertEquals(second.getWebsite(), found.getWebsite());
-		assertEquals(second.getCountries(), found.getCountries());
-		assertEquals(second.getSupport(), found.getSupport());
-		assertEquals(second.getIndustries(), found.getIndustries());
-		assertEquals(second.getContinents(), found.getContinents());
-
+		assertEquals(expected, found);
+		
 		cleanup();
 		insertData();
 	}
@@ -213,8 +193,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 	public void testGetAccountById() throws Exception {
 		MvcResult res = mockMvc.perform(get("/account/" + accountId)).andExpect(status().is(200)).andReturn();
 		Account found = objectMapper.readValue(res.getResponse().getContentAsString(), Account.class); // does not work,
-																										// dont know why
-																										// yet
+																										// dont know why yet
 		assertNotNull(found);
 
 	}
@@ -243,25 +222,21 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		update.setTicketMaxId(5);
 		update.setCountryId(12);
 		update.setWebsite("suppenkopf.ch");
+		Account expected = new Account(update);
+		expected.setAccountId(accountId);
+		expected.setPassword(null);
+		expected.setRoles("ROLE_USER");
+		
 		mockMvc.perform(patch("/account/" + accountId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(update))).andExpect(status().is(200));
 		Account updated = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { accountId },
 				MapUtil::mapRowToAccount);
-		assertEquals(accountId, updated.getAccountId());
+		
+		assertEquals(expected, updated);
 		assertNotEquals(updated.getAccountId(), update.getAccountId());
-		assertEquals(update.getCompanyName(), updated.getCompanyName());
 		assertNotEquals(update.getPassword(), updated.getPassword());
-		assertEquals(null, updated.getPassword());
-		assertEquals("ROLE_USER", updated.getRoles());
 		assertNotEquals(update.getRoles(), updated.getRoles());
-		assertEquals(true, encoder.matches(update.getEmail(), updated.getEmail()));
-		assertEquals(update.getPitch(), updated.getPitch());
-		assertEquals(update.getDescription(), updated.getDescription());
-		assertEquals(update.getTicketMaxId(), updated.getTicketMaxId());
-		assertEquals(update.getTicketMinId(), updated.getTicketMinId());
-		assertEquals(update.getCountryId(), updated.getCountryId());
-		assertEquals(update.getWebsite(), updated.getWebsite());
-		assertEquals(update.getProfilePictureId(), updated.getProfilePictureId());
+		assertEquals(true, encoder.matches(expected.getEmail(), updated.getEmail()));
 		cleanup();
 		insertData();
 	}

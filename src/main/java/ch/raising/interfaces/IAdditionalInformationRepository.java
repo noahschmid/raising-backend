@@ -27,9 +27,9 @@ public interface IAdditionalInformationRepository<Model> extends IRepository<Mod
 	
 	public Model mapRowToModel(ResultSet rs, int row) throws SQLException;
 	
+	public void addMemberListByStartupId(List<Model> models, long startupId)throws SQLException, DataAccessException;
 	
-	
-	public PreparedStatementCallback<Boolean> addByStartupId(Model model, long startupId);
+	public PreparedStatementCallback<Boolean> getCallback(List<Model> model, long startupId);
 	public default long mapRowToId(ResultSet rs, int row) throws SQLException {
 		return rs.getInt("startupId");
 	}

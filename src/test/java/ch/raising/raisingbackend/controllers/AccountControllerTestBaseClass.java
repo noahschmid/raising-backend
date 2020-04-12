@@ -1,5 +1,7 @@
 package ch.raising.raisingbackend.controllers;
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,10 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -22,10 +28,12 @@ import ch.raising.models.Account;
 import ch.raising.models.Media;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.PreparedStatementUtil;
+import io.jsonwebtoken.lang.Collections;
 import testutils.TestDataUtil;
 
 public class AccountControllerTestBaseClass {
 
+	
 	protected MockMvc mockMvc;
 	protected WebApplicationContext wac;
 	protected ObjectMapper objectMapper;
@@ -48,7 +56,6 @@ public class AccountControllerTestBaseClass {
 	protected String passwordHash;
 	private Media profilePicture;
 	private List<Media> gallery;
-	private List<Long> galleryIds;
 	protected List<Long> countries;
 	protected List<Long> continents;
 	protected List<Long> support;
@@ -79,13 +86,13 @@ public class AccountControllerTestBaseClass {
 
 		profilePicture = new Media(TestDataUtil.getRandBytes(new Random()));
 		gallery = TestDataUtil.getMedia();
-		countries = TestDataUtil.getAssignmentTableModelList(10, 248, 10);
-		continents = TestDataUtil.getAssignmentTableModelList(3, 7, 3);
-		support = TestDataUtil.getAssignmentTableModelList(2, 3, 2);
-		industries = TestDataUtil.getAssignmentTableModelList(10, 20, 4);
+		countries = Collections.arrayToList(new long[] { 11, 111, 232, 123, 132, 141, 212, 67 });
+		continents = Collections.arrayToList(new Long[] { 4l, 5l, 6l });
+		support = Collections.arrayToList(new Long[] { 2l, 3l });
+		industries = Collections.arrayToList(new Long[] { 11l, 12l, 17l, 19l, 20l });
 
 		account.setProfilePictureId(insertPicture(profilePicture, "profilepicture"));
-		account.setGallery(insertGallery(gallery, "gallery"));
+		account.setGallery(insertGallery("gallery"));
 
 		account.setCountries(countries);
 		account.setContinents(continents);
@@ -93,11 +100,12 @@ public class AccountControllerTestBaseClass {
 		account.setIndustries(industries);
 
 		insertData();
+		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbc, "account"));
 	}
 
-	private List<Long> insertGallery(List<Media> gal, String tableName) throws SQLException {
+	private List<Long> insertGallery(String tableName) throws SQLException {
 		List<Long> ids = new ArrayList<Long>();
-		for (Media m : gal) {
+		for (Media m : gallery) {
 			ids.add(insertPicture(m, tableName));
 		}
 		return ids;
@@ -150,6 +158,15 @@ public class AccountControllerTestBaseClass {
 		ps.close();
 		ps.getConnection().close();
 
+		jdbc.execute("UPDATE profilepicture SET accountid = ? WHERE id = ?",
+				PreparedStatementUtil.addEntryToAssignmentTableByAccountId(c, account.getProfilePictureId()));
+		
+		for(long g : account.getGallery()) {
+			jdbc.execute("UPDATE gallery SET accountid = ? WHERE id = ?",
+					PreparedStatementUtil.addEntryToAssignmentTableByAccountId(c, account.getProfilePictureId()));
+		}
+		
+		
 		for (Long co : countries) {
 			jdbc.execute("INSERT INTO countryassignment(accountid, countryid) VALUES (?,?);",
 					PreparedStatementUtil.addEntryToAssignmentTableByAccountId(co, accountId));

@@ -168,7 +168,7 @@ public class AssignmentTableService {
 	 * remove entry in assignmenttable specified by those ids and the name from
 	 * startup
 	 * 
-	 * @param countryId
+	 * @param id
 	 * @return Responsenetitiy with a statuscode and an optional body
 	 * @throws SQLException 
 	 * @throws DataAccessException 
@@ -177,4 +177,14 @@ public class AssignmentTableService {
 		deleteById(
 				AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("startupid"), models);
 	}
+	
+	public void updateAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException{
+		long accountId = ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+		AssignmentTableRepository ar = AssignmentTableRepository.getInstance(jdbc).withTableName(name);
+		ar.deleteEntriesByAccountId(accountId);
+		ar.addEntriesToAccount(accountId, models);
+	}
+	
+	
+	
 }

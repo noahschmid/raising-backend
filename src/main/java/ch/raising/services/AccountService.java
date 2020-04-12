@@ -104,13 +104,13 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param email the email to check
 	 * @return
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 	public boolean isEmailFree(String email) throws DataAccessException, SQLException {
 		try {
 			return accountRepository.findByEmail(email) == null;
-		}catch(EmailNotFoundException e) {
+		} catch (EmailNotFoundException e) {
 			return true;
 		}
 	}
@@ -123,8 +123,9 @@ public class AccountService implements UserDetailsService {
 	 * @throws Exception
 	 */
 	public LoginResponse registerProfile(Account account) throws DatabaseOperationException, SQLException, Exception {
+		long id;
 		try {
-			registerAccount(account);
+			id = registerAccount(account);
 		} catch (DatabaseOperationException e) {
 			rollback(account);
 			throw e;
@@ -132,6 +133,7 @@ public class AccountService implements UserDetailsService {
 			rollback(account);
 			throw e;
 		}
+		account.setAccountId(id);
 		LoginResponse loginResp = (LoginResponse) login(new LoginRequest(account.getEmail(), account.getPassword()));
 		loginResp.setAccount(account);
 		return loginResp;
@@ -161,40 +163,27 @@ public class AccountService implements UserDetailsService {
 		try {
 			accountRepository.findByEmail(req.getEmail());
 			throw new InvalidProfileException("Email already exists");
-		}catch (EmailNotFoundException e) {
-			
+		} catch (EmailNotFoundException e) {
+
 			long accountId = accountRepository.add(req);
 
 			if (req.getGallery() != null) {
-				for (Long pic : req.getGallery()) {
+				for (long pic : req.getGallery()) {
 					galleryRepository.addAccountIdToMedia(pic, accountId);
 				}
 			}
-			if (req.getProfilePictureId() != -1)
-				pPicRepository.addAccountIdToMedia(req.getProfilePictureId(), accountId);
-			if (req.getCountries() != null) {
-				for (Long c : req.getCountries()) {
-					countryRepo.addEntryToAccountById(c, accountId);
-				}
-			}
-			if (req.getContinents() != null) {
-				for (Long c : req.getContinents()) {
-					continentRepo.addEntryToAccountById(c, accountId);
-				}
-			}
-			if (req.getSupport() != null) {
-				for (Long s : req.getSupport()) {
-					supportRepo.addEntryToAccountById(s, accountId);
-				}
-			}
-			if (req.getIndustries() != null) {
-				for (Long i : req.getIndustries()) {
-					industryRepo.addEntryToAccountById(i, accountId);
-				}
-			}
-			return accountId;	
 			
-		}
+			pPicRepository.addAccountIdToMedia(req.getProfilePictureId(), accountId);
+
+			countryRepo.addEntriesToAccount(accountId, req.getCountries());
+			continentRepo.addEntriesToAccount(accountId, req.getContinents());
+			supportRepo.addEntriesToAccount(accountId, req.getSupport());
+			industryRepo.addEntriesToAccount(accountId, req.getIndustries());
+		
+		return accountId;
+
+	}
+
 	}
 
 	/**
@@ -208,18 +197,6 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * gets the requested Profile and handles all the Responses for the request
-	 * 
-	 * @param id
-	 * @return
-	 * @throws SQLException
-	 * @throws DataAccessException
-	 */
-	public Account getProfile(long id) throws DataAccessException, SQLException {
-		return getAccount(id);
-	}
-
-	/**
 	 * is overwritten by subtype {@link InvestorService} and {@link StartupService}
 	 * to allow the retrieving of a specific accounttype.
 	 * 
@@ -228,8 +205,8 @@ public class AccountService implements UserDetailsService {
 	 *         with all lists and objects non null.
 	 * @throws SQLException
 	 * @throws DataAccessException
-	 */
-	protected Account getAccount(long id) throws DataAccessException, SQLException {
+	 */	
+	public Account getAccount(long id) throws DataAccessException, SQLException {
 		List<Long> countries = countryRepo.findIdByAccountId(id);
 		List<Long> continents = continentRepo.findIdByAccountId(id);
 		List<Long> support = supportRepo.findIdByAccountId(id);
@@ -253,23 +230,20 @@ public class AccountService implements UserDetailsService {
 	 * Get all accounts
 	 * 
 	 * @return list of user accounts
-	 */
-	public List<Account> getAccounts() {
-		ArrayList<Account> accounts = new ArrayList<Account>();
-		accountRepository.getAll().forEach(acc -> accounts.add(acc));
-		return accounts;
-	}
-
-	/**
-	 * Find user account by id
-	 * 
-	 * @param id the id of the desired account
-	 * @return Account instance of the desired account
 	 * @throws SQLException 
 	 * @throws DataAccessException 
 	 */
-	public Account findById(long id) throws DataAccessException, SQLException {
-		return accountRepository.find(id);
+	public List<Account> getAccounts() throws DataAccessException, SQLException {
+		List<Account> accounts = accountRepository.getAll();
+		for(Account a: accounts) {
+			long accountId = a.getAccountId();
+			a.setCountries(countryRepo.findIdByAccountId(accountId));
+			a.setContinents(continentRepo.findIdByAccountId(accountId));
+			a.setSupport(supportRepo.findIdByAccountId(accountId));
+			a.setIndustries(industryRepo.findIdByAccountId(accountId));
+			a.setGallery(galleryRepository.findMediaIdByAccountId(accountId));
+		}
+		return accounts;
 	}
 
 	/**
@@ -287,12 +261,13 @@ public class AccountService implements UserDetailsService {
 	/**
 	 * should be used by
 	 * {@link ch.raising.controllers.StartupController},{@link ch.raising.controllersAccountController},{@link ch.raising.controllersInvestorController}
+	 * 
 	 * @param id
 	 * @param acc
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public void updateProfile(int id, Account acc) throws DataAccessException, SQLException    {
+	public void updateProfile(int id, Account acc) throws DataAccessException, SQLException {
 		updateAccount(id, acc);
 	}
 
@@ -300,13 +275,18 @@ public class AccountService implements UserDetailsService {
 	 * updates the account. should be overwritten and called by subtypes
 	 * {@link InvestorService} and {@link StartupService}
 	 * 
-	 * @param id
-	 * @param acc
+	 * @param id the id for the account
+	 * @param acc Account containing all uninitialized fields to be updated
 	 * @return
-	 * @throws SQLException 
+	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
-	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException  {
+	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
+		countryRepo.updateAssignment(id, acc.getCountries());
+		continentRepo.updateAssignment(id, acc.getContinents());
+		supportRepo.updateAssignment(id, acc.getSupport());
+		industryRepo.updateAssignment(id, acc.getIndustries());
+		
 		accountRepository.update(id, acc);
 	}
 
@@ -317,8 +297,10 @@ public class AccountService implements UserDetailsService {
 	 * @return response entity with status code
 	 * @throws EmailNotFoundException
 	 * @throws MessagingException
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public void forgotPassword(ForgotPasswordRequest request) throws EmailNotFoundException, MessagingException {
+	public void forgotPassword(ForgotPasswordRequest request) throws EmailNotFoundException, MessagingException, DataAccessException, SQLException {
 		Account account = accountRepository.findByEmail(request.getEmail());
 		String code = resetCodeUtil.createResetCode(account);
 		mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
@@ -330,12 +312,13 @@ public class AccountService implements UserDetailsService {
 	 * @param id      the id of the account to reset password
 	 * @param request the request with reset code and new password
 	 * @return response entity with status code
-	 * @throws SQLException 
-	 * @throws DataAccessException 
-	 * @throws PasswordResetException 
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 * @throws PasswordResetException
 	 * @throws Exception
 	 */
-	public LoginResponse resetPassword(PasswordResetRequest request) throws DataAccessException, SQLException, PasswordResetException {
+	public LoginResponse resetPassword(PasswordResetRequest request)
+			throws DataAccessException, SQLException, PasswordResetException {
 		long id = resetCodeUtil.validate(request);
 
 		UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, jdbc);
@@ -356,9 +339,9 @@ public class AccountService implements UserDetailsService {
 	public LoginResponse login(LoginRequest request) throws AuthenticationException, UsernameNotFoundException {
 		UsernamePasswordAuthenticationToken unamePwToken = new UsernamePasswordAuthenticationToken(request.getEmail(),
 				request.getPassword());
-		
+
 		authenticationManager.authenticate(unamePwToken);
-		
+
 		final AccountDetails userDetails = loadUserByUsername(request.getEmail());
 		final String token = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(token, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());

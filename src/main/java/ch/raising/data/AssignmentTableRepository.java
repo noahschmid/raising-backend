@@ -53,19 +53,19 @@ public class AssignmentTableRepository {
 	}
 
 	public AssignmentTableModel find(long id) throws SQLException, DataAccessException {
-		return jdbc.queryForObject("SELECT * FROM " + tableName + " WHERE id = ?", new Object[] { id },
-				rowMapper::mapRowToModel);
+		final String QUERY = "SELECT * FROM " + tableName + " WHERE id = ?";
+		return jdbc.queryForObject(QUERY, new Object[] { id }, rowMapper::mapRowToModel);
 	}
 
 	public List<IAssignmentTableModel> findAll() throws SQLException, DataAccessException {
-		return jdbc.query("SELECT * FROM " + tableName, rowMapper::mapRowToModel);
+		final String QUERY = "SELECT * FROM " + tableName;
+		return jdbc.query(QUERY, rowMapper::mapRowToModel);
 	}
 
 	public List<AssignmentTableModel> findByAccountId(long accountId) throws SQLException, DataAccessException {
-		return jdbc.query("SELECT * FROM " + tableAssignment
-				+ " INNER JOIN " + tableName + " ON " + tableAssignment + "." + tableName + "Id = " + tableName
-				+ ".id WHERE " + accountIdName + " = ?", new Object[] { accountId },
-				rowMapper::mapRowToModel);
+		final String QUERY = "SELECT * FROM " + tableAssignment + " INNER JOIN " + tableName + " ON " + tableAssignment
+				+ "." + tableName + "Id = " + tableName + ".id WHERE " + accountIdName + " = ?";
+		return jdbc.query(QUERY, new Object[] { accountId }, rowMapper::mapRowToModel);
 	}
 
 	public List<Long> findIdByAccountId(long accountId) {
@@ -74,17 +74,56 @@ public class AssignmentTableRepository {
 	}
 
 	public void addEntryToAccountById(long id, long accountId) throws SQLException, DataAccessException {
-		String query = "INSERT INTO " + tableAssignment + "(" + accountIdName + ", " + tableName + "Id) VALUES (?, ?);";
-		jdbc.execute(query, getAddEntryToAccountById(id, accountId));
+		final String QUERY = "INSERT INTO " + tableAssignment + "(" + accountIdName + ", " + tableName
+				+ "Id) VALUES (?, ?);";
+		jdbc.execute(QUERY, getIdAccountIdCallback(id, accountId));
 	}
 
 	public void deleteEntryFromAccountById(long id, long accountId) throws SQLException, DataAccessException {
-		String query = "DELETE FROM " + tableAssignment + " WHERE " + accountIdName + " = ? AND " + tableName
+		final String QUERY = "DELETE FROM " + tableAssignment + " WHERE " + accountIdName + " = ? AND " + tableName
 				+ "id = ?";
-		jdbc.execute(query, getDeleteEntryFromAccountById(id, accountId));
+		jdbc.execute(QUERY, getIdAccountIdCallback(id, accountId));
 	}
 
-	private PreparedStatementCallback<Boolean> getAddEntryToAccountById(long id, long accountId) {
+	public void deleteEntriesByAccountId(long accountId) {
+		final String QUERY = "DELETE FROM " + tableAssignment + " WHERE " + accountIdName + " = ?";
+		jdbc.execute(QUERY, getAccountIdCallback(accountId));
+	}
+
+	public void addEntriesToAccount(long accountId, List<Long> models) {
+		if (models == null)
+			return;
+
+		String sql = "INSERT INTO " + tableAssignment + "(" + accountIdName + ", " + tableName + "Id) VALUES ";
+		for (int m = 0; m < models.size(); m++) {
+			sql += "(?, ?),";
+		}
+		sql = sql.substring(0, sql.length() - 1); // Off-by-one-Error
+		jdbc.execute(sql, getAddIdsCallback(accountId, models));
+	}
+
+	public void updateAssignment(int accountId, List<Long> models) {
+		if(models != null && models.size() != 0) {
+			deleteEntriesByAccountId(accountId);
+			addEntriesToAccount(accountId, models);
+		}
+	}
+
+	private PreparedStatementCallback<Boolean> getAddIdsCallback(long accountId, List<Long> models) {
+		return new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				int c = 1;
+				for (long m : models) {
+					ps.setLong(c++, accountId);
+					ps.setLong(c++, m);
+				}
+				return ps.execute();
+			}
+		};
+	}
+
+	private PreparedStatementCallback<Boolean> getIdAccountIdCallback(long id, long accountId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -95,11 +134,10 @@ public class AssignmentTableRepository {
 		};
 	}
 
-	private PreparedStatementCallback<Boolean> getDeleteEntryFromAccountById(long id, long accountId) {
+	private PreparedStatementCallback<Boolean> getAccountIdCallback(long accountId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				ps.setLong(2, id);
 				ps.setLong(1, accountId);
 				return ps.execute();
 			}
