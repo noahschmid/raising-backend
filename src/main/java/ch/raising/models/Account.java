@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Account {
 
-/* =========================================================================
-	Stored in the accounttable*/
+	/*
+	 * =========================================================================
+	 * Stored in the accounttable
+	 */
 	protected long accountId = -1l;
 	private String firstName = "";
 	private String lastName = "";
@@ -26,23 +28,24 @@ public class Account {
 	private String website = "";
 	private long profilePictureId = -1;
 
-/* =========================================================================*/
+	/* ========================================================================= */
 
-/* =========================================================================
-	Stored in seperate tables with respective respecitve names*/
-	
+	/*
+	 * =========================================================================
+	 * Stored in seperate tables with respective respecitve names
+	 */
+
 	private List<Long> gallery;
 	private List<Long> countries;
 	private List<Long> continents;
 	private List<Long> support;
 	private List<Long> industries;
-/* =========================================================================*/
-
+	/* ========================================================================= */
 
 	/**
 	 * This constructor makes an Account represented by the account table in the
-	 * database. That means the country, continent, support, industries lists, profilepicture and gallery will
-	 * not be initialized. It should be used by the
+	 * database. That means the country, continent, support, industries lists,
+	 * profilepicture and gallery will not be initialized. It should be used by the
 	 * {@link ch.raising.data.AccountRepository} and
 	 * {@link ch.raising.services.AccountService#registerAccount()}.
 	 * 
@@ -52,15 +55,16 @@ public class Account {
 	 * @param roles
 	 * @param email
 	 * @param ticketMinId
-	 * @param profilePictureId 
-	 * @param firstName 
-	 * @param lastName 
+	 * @param profilePictureId
+	 * @param firstName
+	 * @param lastName
 	 * @param ticketmentId
 	 */
 
 	@Builder(builderMethodName = "accountBuilder")
 	public Account(long accountId, long countryId, String password, String roles, String email, int ticketMinId,
-			int ticketMaxId, String companyName, String description, String pitch, String website, long profilePictureId, String firstName, String lastName) {
+			int ticketMaxId, String companyName, String description, String pitch, String website,
+			long profilePictureId, String firstName, String lastName) {
 
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -80,7 +84,8 @@ public class Account {
 
 	/**
 	 * this constructor makes a complete Account object
-	 * @param continents 
+	 * 
+	 * @param continents
 	 * 
 	 * @param support
 	 * 
@@ -127,16 +132,16 @@ public class Account {
 		this.website = acc.website;
 	}
 
-	public boolean isInComplete() {
-		return roles != "ROLE_ADMIN" && ( password == "" || email == "" || ticketMinId == -1 || ticketMaxId == -1 || countryId == -1
-				|| support == null || industries == null
-				|| (countries.isEmpty() && continents.isEmpty()) || support.isEmpty() || industries.isEmpty());
+	public boolean isComplete() {
+		return (roles == "ROLE_ADMIN" && password != "" && email != "") || (password != "" && email != ""
+				&& ticketMinId != -1 && ticketMaxId != -1 && countryId != -1 && support != null && industries != null
+				&& !(countries.isEmpty() && continents.isEmpty()) && !support.isEmpty() && !industries.isEmpty());
 	}
-	
+
 	public boolean isStartup() {
 		return false;
 	}
-	
+
 	public boolean isInvestor() {
 		return false;
 	}

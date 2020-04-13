@@ -30,13 +30,14 @@ public class AccountRepository implements IRepository<Account> {
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 	private final String ADD_ACCOUNT;
-
+	private final String ADD_ADMIN;
 	@Autowired
 	public AccountRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 		this.ADD_ACCOUNT = "INSERT INTO account(firstname, lastname, companyname, password, emailhash, pitch, "
 				+ "description, ticketminid, ticketmaxid, countryid, website, profilepictureid) VALUES"
 				+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+		this.ADD_ADMIN = "INSERT INTO account(firstname, lastname, emailhash, password, roles) VALUES (?,?,?,?,?)";
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class AccountRepository implements IRepository<Account> {
 
 		String emailHash = encoder.encode(account.getEmail());
 		String passwordHash = encoder.encode(account.getPassword());
-
+		long ppicId = account.getProfilePictureId();
 		int c = 1;
 		ps.setString(c++, account.getFirstName());
 		ps.setString(c++, account.getLastName());
@@ -100,7 +101,10 @@ public class AccountRepository implements IRepository<Account> {
 		ps.setInt(c++, account.getTicketMaxId());
 		ps.setLong(c++, account.getCountryId());
 		ps.setString(c++, account.getWebsite());
-		ps.setLong(c++, account.getProfilePictureId());
+		if(ppicId != -1)
+			ps.setLong(c++, ppicId);
+		else
+			ps.setObject(c++, null);
 		if (ps.executeUpdate() > 0) {
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
@@ -187,7 +191,6 @@ public class AccountRepository implements IRepository<Account> {
 		update.addField(req.getTicketMinId(), "ticketminid");
 		update.addField(req.getWebsite(), "website");
 		update.addField(req.getCountryId(), "countryId");
-		update.addField(req.getProfilePictureId(), "profilepictureid");
 		update.execute();
 	}
 
@@ -209,6 +212,29 @@ public class AccountRepository implements IRepository<Account> {
 		} catch (EmptyResultDataAccessException e) {
 			return false;
 		}
+	}
+
+	public long registerAdmin(Account admin) throws SQLException, DatabaseOperationException {
+		PreparedStatement ps = jdbc.getDataSource().getConnection().prepareStatement(ADD_ADMIN,
+				Statement.RETURN_GENERATED_KEYS);
+
+		String emailHash = encoder.encode(admin.getEmail());
+		String passwordHash = encoder.encode(admin.getPassword());
+		int c = 1;
+		ps.setString(c++, admin.getFirstName());
+		ps.setString(c++, admin.getLastName());
+		ps.setString(c++, passwordHash);
+		ps.setString(c++, emailHash);
+		ps.setString(c++, admin.getRoles());
+		if (ps.executeUpdate() > 0) {
+			ResultSet rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				long insertedId = rs.getLong(1);
+				ps.getConnection().close();
+				return insertedId;
+			}
+		}
+		throw new DatabaseOperationException("primary key could not be retreived");
 	}
 
 }

@@ -64,7 +64,7 @@ public class InvestorService extends AccountService {
 
 		Investor invReq = (Investor) requestInvestor;
 		
-		if (invReq.isInComplete()) {
+		if (!invReq.isComplete()) {
 			throw new InvalidProfileException("Profile is incomplete", invReq);
 		}
 

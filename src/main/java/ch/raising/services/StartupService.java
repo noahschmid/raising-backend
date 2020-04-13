@@ -57,8 +57,11 @@ public class StartupService extends AccountService {
 	protected long registerAccount(Account account) throws InvalidProfileException, DataAccessException, SQLException, DatabaseOperationException {
 		Startup su = (Startup) account;
 
-		if (su.isInComplete()) {
-			throw new InvalidProfileException("Profile is incomplete", su);
+		if (!su.isComplete()) {
+			String name = "Startup";
+			if(!account.isComplete())
+				name = "Account";
+			throw new InvalidProfileException(name+" is incomplete", su);
 		} 
 		
 		

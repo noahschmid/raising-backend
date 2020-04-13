@@ -39,13 +39,14 @@ public class PreparedStatementUtil {
 	 * @param id
 	 * @return  the resulting {@link org.springframework.jdbc.core.PreparedStatementCallback<Boolean>}
 	 */
-	public static PreparedStatementCallback<Boolean> addMediaByIdCallback(byte[] media, long id){
+	public static PreparedStatementCallback<Boolean> addMediaByIdCallback(Media media, long id){
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException {
 				int c = 1;
 				ps.setLong(c++, id);
-				ps.setBytes(c++, media);
+				ps.setBytes(c++, media.getMedia());
+				ps.setString(c++, media.getContentType());
 				return ps.execute();
 			}
 		};

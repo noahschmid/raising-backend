@@ -59,7 +59,7 @@ public class MediaRepositoryTest {
 	}
 
 	private void createTable() {
-		String sql = QueryBuilder.getInstance().tableName("gallery").pair("id", Type.SERIAL)
+		String sql = QueryBuilder.getInstance().tableName("gallery").pair("id", Type.SERIAL).pair("type", Type.VARCHAR)
 				.pair("accountid", Type.BIGINT).pair("media", Type.BYTEA).createTable();
 		jdbc.execute(sql);
 	}
@@ -70,15 +70,15 @@ public class MediaRepositoryTest {
 	}
 
 	private void addImage() {
-		String sql = QueryBuilder.getInstance().tableName("gallery").attribute("accountid, media").qMark().qMark()
-				.insert();
-		jdbc.execute(sql, PreparedStatementUtil.addMediaByIdCallback(image.getMedia(), 2));
+		String sql = QueryBuilder.getInstance().tableName("gallery").attribute("accountid, media, type").qMark().qMark()
+				.qMark().insert();
+		jdbc.execute(sql, PreparedStatementUtil.addMediaByIdCallback(image, 2));
 	}
 
 	@Test
 	public void addImageToAccountTest() throws SQLException {
 		Media img = Media.builder().accountId(1).media(imageBytes).build();
-		imgrepo.addMediaToAccount(img.getMedia(), 2);
+		imgrepo.addMediaToAccount(img, 2);
 
 		String sql = QueryBuilder.getInstance().tableName("gallery").whereEquals("accountid", "2").select();
 		List<Media> found = jdbc.query(sql, MapUtil::mapRowToMedia);
@@ -103,10 +103,10 @@ public class MediaRepositoryTest {
 		Media foundImage = found.get(0);
 		assertNotNull(foundImage);
 		assertEquals(image.getMedia().length, foundImage.getMedia().length);
-		for(int i = 0; i < image.getMedia().length; i++) {
+		for (int i = 0; i < image.getMedia().length; i++) {
 			assertEquals(image.getMedia()[i], foundImage.getMedia()[i]);
 		}
-		
+
 		assertEquals(2, foundImage.getAccountId());
 		assertEquals(1, foundImage.getId());
 	}

@@ -10,16 +10,19 @@ import lombok.NoArgsConstructor;
 public class Media {
 	private long id;
 	private long accountId;
+	private String contentType;
 	private byte[] media;
 	
-	public Media(long id, long accountId, byte[] media) {
+	public Media(long id, long accountId, String contentType, byte[] media) {
 		this.id = id;
 		this.accountId= accountId;
 		this.media = media;
+		this.contentType = contentType;
 	}
 	
 	public Media() {}
-	public Media(byte[] media) {
+	public Media(byte[] media, String contentType ) {
 		this.media = media;
+		this.contentType = contentType;
 	}
 }

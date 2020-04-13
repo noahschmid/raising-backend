@@ -14,6 +14,7 @@ import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -84,7 +85,7 @@ public class AccountControllerTestBaseClass {
 				.description(description).ticketMinId(ticketMinId).ticketMaxId(ticketMaxId).countryId(countryId)
 				.website(website).build();
 
-		profilePicture = new Media(TestDataUtil.getRandBytes(new Random()));
+		profilePicture = new Media(TestDataUtil.getRandBytes(new Random()), "image/jpeg");
 		gallery = TestDataUtil.getMedia();
 		countries = Collections.arrayToList(new long[] { 11, 111, 232, 123, 132, 141, 212, 67 });
 		continents = Collections.arrayToList(new Long[] { 4l, 5l, 6l });
@@ -111,7 +112,7 @@ public class AccountControllerTestBaseClass {
 		return ids;
 	}
 
-	private long insertPicture(Media picture, String tableName) throws SQLException {
+	private long insertPicture(Media picture, String tableName) throws SQLException, DataAccessException {
 		long picId = -1;
 		String sql = "INSERT INTO " + tableName + "(media) VALUES(?)";
 		PreparedStatement ps = jdbc.getDataSource().getConnection().prepareStatement(sql,
@@ -147,7 +148,7 @@ public class AccountControllerTestBaseClass {
 		ps.setInt(c++, account.getTicketMaxId());
 		ps.setLong(c++, account.getCountryId());
 		ps.setString(c++, account.getWebsite());
-		ps.setLong(c++, account.getProfilePictureId());
+		ps.setObject(c++, null);
 		if (ps.executeUpdate() > 0) {
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {

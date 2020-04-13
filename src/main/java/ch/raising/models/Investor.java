@@ -52,9 +52,9 @@ public class Investor extends Account{
 	}
 	
 	@Override
-	public boolean isInComplete() {
-		return super.isInComplete() || investorTypeId == -1
-				||investmentPhases == null || investmentPhases.isEmpty();
+	public boolean isComplete() {
+		return super.isComplete() && investorTypeId != -1
+				&& investmentPhases != null && !investmentPhases.isEmpty();
 	}
 	
 	@Override

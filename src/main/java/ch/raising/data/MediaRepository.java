@@ -1,23 +1,20 @@
  package ch.raising.data;
 
+import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-
 import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.Media;
+import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.PreparedStatementUtil;
-import ch.raising.utils.QueryBuilder;
-import ch.raising.utils.functionalInterface.PSOneParameter;
 import ch.raising.utils.functionalInterface.PSTwoParameters;
 import ch.raising.utils.functionalInterface.RowMapper;
 
@@ -25,8 +22,7 @@ import ch.raising.utils.functionalInterface.RowMapper;
 public class MediaRepository implements IMediaRepository<Media> {
 	
 	JdbcTemplate jdbc;
-	private final PSTwoParameters<PreparedStatementCallback<Boolean>, byte[], Long> PS_ADD;
-	private final PSOneParameter<PreparedStatementCallback<Boolean>, byte[]> PS_ADD_BYTES;
+	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Media, Long> PS_ADD;
 	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Long, Long> PS_DELETE;
 	private final RowMapper<ResultSet, Integer, Media> rowMapper;
 	
@@ -42,11 +38,10 @@ public class MediaRepository implements IMediaRepository<Media> {
 	public MediaRepository(JdbcTemplate jdbc, String tableName) {
 		this.jdbc = jdbc;
 		this.PS_ADD = PreparedStatementUtil::addMediaByIdCallback;
-		this.PS_ADD_BYTES = PreparedStatementUtil::addBytesCallback;
 		this.PS_DELETE = PreparedStatementUtil::deleteMediaByIdAndAccountIdCallback;
 		this.rowMapper = MapUtil::mapRowToMedia;
-		this.INSERT_WITHOUT_ACCOUNTID = "INSERT INTO " + tableName + "(media) VALUES (?);" ;
-		this.INSERT_WITH_ACCOUNTID = "INSERT INTO " + tableName + "(accountid, media) VALUES (?, ?)";
+		this.INSERT_WITHOUT_ACCOUNTID = "INSERT INTO " + tableName + "(type, media) VALUES (?,?)" ;
+		this.INSERT_WITH_ACCOUNTID = "INSERT INTO " + tableName + "(accountid, media, type) VALUES (?, ?, ?)";
 		this.FIND_BY_ACCOUNTID = "SELECT * FROM " + tableName + " WHERE accountid = ?";
 		this.DELETE_ENTRY_FROM_ACCOUNT = "DELETE FROM " + tableName + " WHERE id = ? AND accountId = ?";
 		this.GET_MEDIA_ID_OF = "SELECT id FROM " + tableName + " WHERE accountId = ?";
@@ -56,15 +51,26 @@ public class MediaRepository implements IMediaRepository<Media> {
 	}
 	
 	@Override
-	public void addMediaToAccount(byte[] img, long accountId) throws DataAccessException, SQLException {
-		jdbc.execute(INSERT_WITH_ACCOUNTID, PS_ADD.getCallback(img, accountId));
+	public void addMediaToAccount(Media media, long accountId) throws DataAccessException, SQLException {
+		jdbc.execute(INSERT_WITH_ACCOUNTID, PS_ADD.getCallback(media, accountId));
 	}
 	
 	@Override
-	public long addMedia(byte[] media) throws DataAccessException, SQLException {
-		KeyHolder kh = new GeneratedKeyHolder();
-		jdbc.update(INSERT_WITHOUT_ACCOUNTID, PS_ADD_BYTES.getCallback(media), kh);
-		return kh.getKey().longValue();
+	public long addMedia(Media media) throws DataAccessException, SQLException, DatabaseOperationException {
+		
+		PreparedStatement ps = jdbc.getDataSource().getConnection().prepareStatement(INSERT_WITHOUT_ACCOUNTID, Statement.RETURN_GENERATED_KEYS);
+		int c = 1;
+		ps.setString(c++, media.getContentType());
+		ps.setBytes(c++, media.getMedia());
+		if(ps.executeUpdate() >0) {
+			ResultSet rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				long insertedId = rs.getLong(1);
+				ps.getConnection().close();
+				return insertedId;
+			}
+		}
+		throw new DatabaseOperationException("Generated Key could not be retreived");
 	}
 	
 	@Override
@@ -85,11 +91,11 @@ public class MediaRepository implements IMediaRepository<Media> {
 
 	@Override
 	public Media findMediaById(long mediaId) throws DataAccessException, SQLException {
-		return jdbc.queryForObject(FIND_BY_ID, rowMapper::mapRowToModel);
+		return jdbc.queryForObject(FIND_BY_ID,new Object[] {mediaId}, rowMapper::mapRowToModel);
 	}
 	
 	@Override
-	public void addAccountIdToMedia(long accountId, long videoId) throws DataAccessException{
+	public void addAccountIdToMedia(long videoId, long accountId) throws DataAccessException{
 		if(videoId != -1 && videoId != 0) {
 			jdbc.update(ADD_ACCOUNTID_TO_MEDIA, new Object[] {accountId, videoId});
 		}

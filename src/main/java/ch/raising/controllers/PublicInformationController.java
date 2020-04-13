@@ -1,14 +1,19 @@
 package ch.raising.controllers;
 
+
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ch.raising.models.LoginRequest;
 import ch.raising.services.AssignmentTableService;
 
 @Controller
@@ -16,11 +21,20 @@ import ch.raising.services.AssignmentTableService;
 public class PublicInformationController {
 	
 	
-	AssignmentTableService publicInformationService;
+	private final AssignmentTableService publicInformationService;
+	private final BCryptPasswordEncoder encoder;
 	
 	@Autowired
 	public PublicInformationController(AssignmentTableService pis) {
 		this.publicInformationService =pis;
+		this.encoder = new BCryptPasswordEncoder();
+	}
+	
+	@PostMapping("/getHash")
+	public ResponseEntity<?> getHash(@RequestBody LoginRequest hashes){
+		String emailHash = encoder.encode(hashes.getEmail());
+		String pwHash = encoder.encode(hashes.getPassword());
+		return ResponseEntity.ok(new LoginRequest(emailHash, pwHash));
 	}
 	
 	@GetMapping

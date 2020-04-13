@@ -5,7 +5,6 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\LoginRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAdditionalInformationRepository.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\VideoUploadService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\StartupRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AccountService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\StartupService.java
@@ -32,12 +31,14 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\MediaRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\EmailNotFoundException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\ResetCode.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\FileUploadResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\DatabaseOperationException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\QueryBuilder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\ResetCodeUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\FounderRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Startup.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\InvestorController.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MediaService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ProfileService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtRequestFilter.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UpdateQueryBuilder.java
@@ -52,9 +53,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MailUt
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAuthorizedException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSOneParameter.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\FileUploadController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Country.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidProfileException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\PrivateShareholderRepository.java
@@ -72,6 +71,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Assignm
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ExcepionHandler.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\SecurityConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PasswordResetRequest.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\FileController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MatchingUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSTwoParameters.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\RelationshipState.java

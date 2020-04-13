@@ -58,8 +58,8 @@ public class Startup extends Account {
 	 * @param founders
 	 * @param preMoneyValuation
 	 */
-	public Startup(Account account, Startup su, List<Long> invTypes, List<Long> labels,
-			List<Founder> founders, List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders,
+	public Startup(Account account, Startup su, List<Long> invTypes, List<Long> labels, List<Founder> founders,
+			List<PrivateShareholder> pShareholders, List<CorporateShareholder> cShareholders,
 			List<Boardmember> boardMembers) {
 		super(account);
 		this.investmentPhaseId = su.getInvestmentPhaseId();
@@ -82,8 +82,8 @@ public class Startup extends Account {
 		this.privateShareholders = pShareholders;
 		this.corporateShareholders = cShareholders;
 		this.boardmembers = boardMembers;
-		
-		}
+
+	}
 
 	/**
 	 * Builds the startup represented by the startuptable in the database. Should be
@@ -130,11 +130,11 @@ public class Startup extends Account {
 	}
 
 	@Override
-	public boolean isInComplete() {
-		return super.isInComplete() || companyName == "" || foundingYear == -1 || revenueMaxId == -1
-				|| revenueMinId == -1 || closingTime == null || scope == -1 || investmentPhaseId == -1 || breakEvenYear == -1 || financeTypeId == -1 || numberOfFte == -1
-				|| investorTypes == null || founders == null
-				|| investorTypes.isEmpty() || founders.isEmpty();
+	public boolean isComplete() {
+		return super.isComplete() && companyName != "" && foundingYear != -1 && revenueMaxId != -1 && revenueMinId != -1
+				&& closingTime != null && scope != -1 && investmentPhaseId != -1 && breakEvenYear != -1
+				&& financeTypeId != -1 && numberOfFte != -1 && investorTypes != null && founders != null
+				&& !investorTypes.isEmpty() && !founders.isEmpty();
 
 	}
 

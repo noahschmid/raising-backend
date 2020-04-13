@@ -2,7 +2,7 @@ package ch.raising.services;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -86,7 +87,8 @@ public class AccountService implements UserDetailsService {
 	@Override
 	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		try {
-			AccountDetails accDet = new AccountDetails(accountRepository.findByEmail(email));
+			Account account = accountRepository.findByEmail(email);
+			AccountDetails accDet = new AccountDetails(account);
 			accDet.setStartup(accountRepository.isStartup(accDet.getId()));
 			accDet.setInvestor(accountRepository.isInvestor(accDet.getId()));
 			return accDet;
@@ -114,6 +116,21 @@ public class AccountService implements UserDetailsService {
 			return true;
 		}
 	}
+	
+	public LoginResponse registerAdmin(Account admin) throws Exception {
+		long id;
+		try {
+			id = accountRepository.registerAdmin(admin);
+			admin.setAccountId(id);
+			LoginResponse loginResp = new LoginResponse();
+			loginResp.setAccount(admin);
+			return loginResp;
+		} catch (Exception e) {
+			e.printStackTrace();
+			rollback(admin);
+			throw e;
+		}
+	}
 
 	/**
 	 * Register new user account
@@ -126,9 +143,6 @@ public class AccountService implements UserDetailsService {
 		long id;
 		try {
 			id = registerAccount(account);
-		} catch (DatabaseOperationException e) {
-			rollback(account);
-			throw e;
 		} catch (Exception e) {
 			rollback(account);
 			throw e;
@@ -157,14 +171,14 @@ public class AccountService implements UserDetailsService {
 	 */
 	protected long registerAccount(Account req)
 			throws SQLException, DataAccessException, InvalidProfileException, DatabaseOperationException {
-		if (req.isInComplete()) {
-			throw new InvalidProfileException("Profile is invalid");
+		if (!req.isComplete()) {
+			throw new InvalidProfileException("Profile is inComplete");
 		}
 		try {
-			accountRepository.findByEmail(req.getEmail());
+			accountRepository.findByEmail(req.getEmail().toLowerCase());
 			throw new InvalidProfileException("Email already exists");
 		} catch (EmailNotFoundException e) {
-
+			req.setEmail(req.getEmail().toLowerCase());
 			long accountId = accountRepository.add(req);
 
 			if (req.getGallery() != null) {
@@ -172,20 +186,19 @@ public class AccountService implements UserDetailsService {
 					galleryRepository.addAccountIdToMedia(pic, accountId);
 				}
 			}
-			
+
 			pPicRepository.addAccountIdToMedia(req.getProfilePictureId(), accountId);
 
 			countryRepo.addEntriesToAccount(accountId, req.getCountries());
 			continentRepo.addEntriesToAccount(accountId, req.getContinents());
 			supportRepo.addEntriesToAccount(accountId, req.getSupport());
 			industryRepo.addEntriesToAccount(accountId, req.getIndustries());
-		
-		return accountId;
+
+			return accountId;
+
+		}
 
 	}
-
-	}
-
 	/**
 	 * Delete user account
 	 * 
@@ -205,7 +218,7 @@ public class AccountService implements UserDetailsService {
 	 *         with all lists and objects non null.
 	 * @throws SQLException
 	 * @throws DataAccessException
-	 */	
+	 */
 	public Account getAccount(long id) throws DataAccessException, SQLException {
 		List<Long> countries = countryRepo.findIdByAccountId(id);
 		List<Long> continents = continentRepo.findIdByAccountId(id);
@@ -230,12 +243,12 @@ public class AccountService implements UserDetailsService {
 	 * Get all accounts
 	 * 
 	 * @return list of user accounts
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 	public List<Account> getAccounts() throws DataAccessException, SQLException {
 		List<Account> accounts = accountRepository.getAll();
-		for(Account a: accounts) {
+		for (Account a : accounts) {
 			long accountId = a.getAccountId();
 			a.setCountries(countryRepo.findIdByAccountId(accountId));
 			a.setContinents(continentRepo.findIdByAccountId(accountId));
@@ -275,7 +288,7 @@ public class AccountService implements UserDetailsService {
 	 * updates the account. should be overwritten and called by subtypes
 	 * {@link InvestorService} and {@link StartupService}
 	 * 
-	 * @param id the id for the account
+	 * @param id  the id for the account
 	 * @param acc Account containing all uninitialized fields to be updated
 	 * @return
 	 * @throws SQLException
@@ -286,7 +299,7 @@ public class AccountService implements UserDetailsService {
 		continentRepo.updateAssignment(id, acc.getContinents());
 		supportRepo.updateAssignment(id, acc.getSupport());
 		industryRepo.updateAssignment(id, acc.getIndustries());
-		
+
 		accountRepository.update(id, acc);
 	}
 
@@ -297,10 +310,11 @@ public class AccountService implements UserDetailsService {
 	 * @return response entity with status code
 	 * @throws EmailNotFoundException
 	 * @throws MessagingException
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public void forgotPassword(ForgotPasswordRequest request) throws EmailNotFoundException, MessagingException, DataAccessException, SQLException {
+	public void forgotPassword(ForgotPasswordRequest request)
+			throws EmailNotFoundException, MessagingException, DataAccessException, SQLException {
 		Account account = accountRepository.findByEmail(request.getEmail());
 		String code = resetCodeUtil.createResetCode(account);
 		mailUtil.sendPasswordForgotEmail(request.getEmail(), code);

@@ -51,7 +51,7 @@ public class AccountModelTest {
 	public void testModelFromRepositoryWithBuilder() {
 		Account acc = getFullRepoAccount();
 
-		assertFalse(acc.isInComplete());
+		assertTrue(acc.isComplete());
 		assertEquals(firstName, acc.getFirstName());
 		assertEquals(lastName, acc.getLastName());
 		assertEquals(accountId, acc.getAccountId());
@@ -72,7 +72,7 @@ public class AccountModelTest {
 		Account acc = Account.accountBuilder().accountId(accountId).companyName(company).password(password).roles(roles)
 				.email(email).description(description).ticketMinId(ticketMinId).ticketMaxId(ticketMaxId).build();
 
-		assertTrue(acc.isInComplete());
+		assertFalse(acc.isComplete());
 		assertEquals(accountId, acc.getAccountId());
 		assertEquals(company, acc.getCompanyName());
 		assertEquals(password, acc.getPassword());
@@ -108,7 +108,7 @@ public class AccountModelTest {
 		assertNotNull(fullAcc.getIndustries());
 		assertNotNull(fullAcc.getSupport());
 
-		assertFalse(fullAcc.isInComplete());
+		assertTrue(fullAcc.isComplete());
 		assertEquals(accountId, fullAcc.getAccountId());
 		assertEquals(company, fullAcc.getCompanyName());
 		assertEquals(password, fullAcc.getPassword());
@@ -123,8 +123,12 @@ public class AccountModelTest {
 
 	@Test
 	public void testIfAdminNoInfoRequired() {
-		Account acc = Account.accountBuilder().roles("ROLE_ADMIN").build();
-		assertFalse(acc.isInComplete());
+		Account acc = new Account();
+		acc.setRoles("ROLE_ADMIN");
+		assertFalse(acc.isComplete());
+		acc.setEmail("asdf");
+		acc.setPassword("asdfasdf");
+		assertTrue(acc.isComplete());
 	}
 
 	private Account getFullRepoAccount() {

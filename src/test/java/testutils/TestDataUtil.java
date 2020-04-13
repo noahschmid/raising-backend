@@ -27,7 +27,7 @@ public class TestDataUtil {
 		List<Media> gallery = new ArrayList<Media>();
 		Random rnd = new Random();
 		for (int i = 0; i < 5; i++) {
-			gallery.add(new Media(getRandBytes(rnd)));
+			gallery.add(new Media(getRandBytes(rnd), "image/jpeg"));
 		}
 		return gallery;
 	}

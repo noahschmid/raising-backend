@@ -78,8 +78,7 @@ public class InvestorController {
 	@PostMapping("/register")
 	public ResponseEntity<?> addInvestor(@RequestBody Investor investor)
 			throws DatabaseOperationException, SQLException, Exception {
-		investorService.registerProfile(investor);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(investorService.registerProfile(investor));
 	}
 
 	/**

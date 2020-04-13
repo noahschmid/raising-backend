@@ -14,10 +14,12 @@ ch\raising\data\RelationshipRepository$1.class
 ch\raising\utils\MatchingUtil.class
 ch\raising\data\FounderRepository$1.class
 ch\raising\utils\EmailNotFoundException.class
+ch\raising\models\responses\FileUploadResponse.class
 ch\raising\controllers\PublicInformationController.class
 ch\raising\data\BoardmemberRepository$1.class
 ch\raising\raisingbackend\RaisingBackendApplication.class
 ch\raising\utils\NotAuthorizedException.class
+ch\raising\data\AssignmentTableRepository$3.class
 ch\raising\utils\PreparedStatementUtil$3.class
 ch\raising\data\ResetCodeRepository.class
 ch\raising\models\MatchingProfile.class
@@ -36,7 +38,6 @@ ch\raising\services\StartupService.class
 ch\raising\data\AssignmentTableRepository.class
 ch\raising\services\ProfileService.class
 ch\raising\models\responses\CompletePublicInformation.class
-ch\raising\utils\functionalInterface\PSOneParameter.class
 ch\raising\utils\PreparedStatementUtil$2.class
 ch\raising\models\Account.class
 ch\raising\models\PrivateShareholder$PrivateShareholderBuilder.class
@@ -66,6 +67,7 @@ ch\raising\data\AssignmentTableRepository$2.class
 ch\raising\models\Boardmember$BoardmemberBuilder.class
 ch\raising\data\MediaRepository.class
 ch\raising\models\Boardmember.class
+ch\raising\controllers\FileController.class
 ch\raising\models\AssignmentTableModelWithDescription.class
 ch\raising\models\Investor.class
 ch\raising\interfaces\IRepository.class
@@ -74,12 +76,12 @@ ch\raising\data\ResetCodeRepository$2.class
 ch\raising\utils\functionalInterface\RowMapper.class
 ch\raising\models\Startup$StartupBuilder.class
 ch\raising\controllers\StartupController.class
+ch\raising\services\MediaService.class
 ch\raising\data\InvestorRepository.class
 ch\raising\config\SecurityConfig.class
 ch\raising\raisingbackend\RaisingBackendApplication$1.class
 ch\raising\utils\MailUtil.class
 ch\raising\models\ResetCode.class
-ch\raising\services\VideoUploadService.class
 ch\raising\models\ForgotPasswordRequest.class
 ch\raising\models\Media$MediaBuilder.class
 ch\raising\data\AccountRepository$1.class
@@ -104,5 +106,4 @@ ch\raising\interfaces\IExtendedAssignmentTableModel.class
 ch\raising\utils\PasswordResetException.class
 ch\raising\utils\Type.class
 ch\raising\models\LoginResponse.class
-ch\raising\controllers\FileUploadController.class
 ch\raising\data\AssignmentTableRepository$1.class

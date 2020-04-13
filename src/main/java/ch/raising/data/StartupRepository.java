@@ -127,7 +127,10 @@ public class StartupRepository implements IRepository<Startup> {
 				ps.setString(c++, su.getUId());
 				ps.setInt(c++, su.getFoundingYear());
 				ps.setInt(c++, su.getRaised());
-				ps.setLong(c++, su.getVideoId());
+				if(su.getVideoId() != -1)
+					ps.setLong(c++, su.getVideoId());
+				else
+					ps.setObject(c++, null);
 				return ps.execute();
 			}
 		});

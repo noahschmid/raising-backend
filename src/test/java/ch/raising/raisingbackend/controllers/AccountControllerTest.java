@@ -149,7 +149,19 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertNotNull(foundAccounts);
 		assertEquals(1, foundAccounts.length);
 		Account found = foundAccounts[0];
-		assertEquals(expected, found);
+		assertEquals(account.getAccountId(), found.getAccountId());
+		assertEquals(account.getCompanyName(), found.getCompanyName());
+		assertEquals(passwordHash, found.getPassword());
+		assertEquals("ROLE_USER", found.getRoles());
+		assertEquals(emailHash, found.getEmail());
+		assertEquals(account.getDescription(), found.getDescription());
+		assertEquals(account.getPitch(), found.getPitch());
+		assertEquals(account.getTicketMaxId(), found.getTicketMaxId());
+		assertEquals(account.getTicketMinId(), found.getTicketMinId());
+		assertEquals(account.getCountryId(), found.getCountryId());
+		assertEquals(account.getWebsite(), found.getWebsite());
+//		assertEquals(account.getProfilePictureId(), found.getProfilePictureId());
+		
 	}
 	@Test
 	public void testIsEmailFree() throws JsonProcessingException, Exception {
@@ -171,7 +183,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 	@Test
 	public void testRegisterAccount() throws JsonProcessingException, Exception {
 		Account expected = new Account(account);
-		expected.setEmail("newTest@mail.ch");
+		expected.setEmail("newtest@mail.ch");
 		expected.setRoles("ROLE_SUPER_USER");
 		MvcResult res = mockMvc.perform(post("/account/register").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(expected))).andExpect(status().is(200)).andReturn();
@@ -222,21 +234,25 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		update.setTicketMaxId(5);
 		update.setCountryId(12);
 		update.setWebsite("suppenkopf.ch");
-		Account expected = new Account(update);
-		expected.setAccountId(accountId);
-		expected.setPassword(null);
-		expected.setRoles("ROLE_USER");
 		
 		mockMvc.perform(patch("/account/" + accountId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(update))).andExpect(status().is(200));
 		Account updated = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { accountId },
 				MapUtil::mapRowToAccount);
-		
-		assertEquals(expected, updated);
+		assertEquals(accountId, updated.getAccountId());
 		assertNotEquals(updated.getAccountId(), update.getAccountId());
+		assertEquals(update.getCompanyName(), updated.getCompanyName());
 		assertNotEquals(update.getPassword(), updated.getPassword());
+		assertEquals(null, updated.getPassword());
+		assertEquals("ROLE_USER", updated.getRoles());
 		assertNotEquals(update.getRoles(), updated.getRoles());
-		assertEquals(true, encoder.matches(expected.getEmail(), updated.getEmail()));
+		assertEquals(true, encoder.matches(update.getEmail(), updated.getEmail()));
+		assertEquals(update.getPitch(), updated.getPitch());
+		assertEquals(update.getDescription(), updated.getDescription());
+		assertEquals(update.getTicketMaxId(), updated.getTicketMaxId());
+		assertEquals(update.getTicketMinId(), updated.getTicketMinId());
+		assertEquals(update.getCountryId(), updated.getCountryId());
+		assertEquals(update.getWebsite(), updated.getWebsite());
 		cleanup();
 		insertData();
 	}

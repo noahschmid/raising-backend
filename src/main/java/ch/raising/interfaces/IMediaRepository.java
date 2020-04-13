@@ -7,18 +7,19 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.web.multipart.MultipartFile;
 
 import ch.raising.models.Media;
+import ch.raising.utils.DatabaseOperationException;
 
 public interface IMediaRepository<Model> {
 
-	void addMediaToAccount(byte[] img, long accountId) throws DataAccessException, SQLException;
+	void addMediaToAccount(Media media, long accountId) throws DataAccessException, SQLException;
 	
-	long addMedia(byte[] media) throws DataAccessException, SQLException;
+	long addMedia(Media media) throws DataAccessException, SQLException, DatabaseOperationException;
 	
-	Model findMediaById(long mediaId) throws DataAccessException, SQLException;
+	Media findMediaById(long mediaId) throws DataAccessException, SQLException;
 	
 	List<Long> findMediaIdByAccountId(long accountId) throws DataAccessException, SQLException;
 
-	List<Model> findMediaByAccountId(long accountId) throws SQLException, DataAccessException;
+	List<Media> findMediaByAccountId(long accountId) throws SQLException, DataAccessException;
 
 	void deleteMediaFromAccount(long imageId, long accountId) throws DataAccessException, SQLException;
 
