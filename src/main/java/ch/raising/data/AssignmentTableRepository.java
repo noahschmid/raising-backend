@@ -29,7 +29,7 @@ public class AssignmentTableRepository {
 	private AssignmentTableRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 		rowMapper = MapUtil::mapRowToAssignmentTable;
-		assignmentRowMapper = MapUtil::mapRowToAssignmentTableId;
+		assignmentRowMapper = MapUtil::mapRowToFirstEntry;
 	}
 
 	public static AssignmentTableRepository getInstance(JdbcTemplate jdbc) {

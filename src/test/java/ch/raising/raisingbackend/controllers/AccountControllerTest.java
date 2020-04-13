@@ -270,7 +270,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertEquals(200, res.getResponse().getStatus());
 		
 		String sql = "select countryid from countryassignment where accountid = " + accountId;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(Long l : newCountry) {
 			assertTrue(found.contains(l));
 		}
@@ -289,7 +289,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertEquals(200, res.getResponse().getStatus());
 		
 		String sql = "select continentid from continentassignment where accountid = " + accountId;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(Long l : newContinent) {
 			assertTrue(found.contains(l));
 		}
@@ -307,7 +307,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertEquals(200, res.getResponse().getStatus());
 		
 		String sql = "select supportid from supportassignment where accountid = " + accountId;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(Long l : newSupport) {
 			assertTrue(found.contains(l));
 		}
@@ -326,7 +326,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertEquals(200, res.getResponse().getStatus());
 		
 		String sql = "select industryid from industryassignment where accountid = " + accountId;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(Long l : newIndustry) {
 			assertTrue(found.contains(l));
 		}
@@ -345,7 +345,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertEquals(200, res.getResponse().getStatus());
 		
 		String sql = "select countryid from countryassignment where accountid = " + accountId;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(Long l : delCountry) {
 			assertFalse(found.contains(l));
 		}
@@ -364,7 +364,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertEquals(200, res.getResponse().getStatus());
 		
 		String sql = "select continentid from continentassignment where accountid = " + accountId;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(Long l : oldContinent) {
 			assertFalse(found.contains(l));
 		}
@@ -382,7 +382,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertEquals(200, res.getResponse().getStatus());
 		
 		String sql = "select supportid from supportassignment where accountid = " + accountId;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(Long l : delpport) {
 			assertFalse(found.contains(l));
 		}
@@ -401,7 +401,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		assertEquals(200, res.getResponse().getStatus());
 		
 		String sql = "select industryid from industryassignment where accountid = " + accountId;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(Long l : delIndustry) {
 			assertFalse(found.contains(l));
 		}

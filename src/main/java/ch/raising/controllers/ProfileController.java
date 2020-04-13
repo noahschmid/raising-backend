@@ -32,12 +32,12 @@ public class ProfileController {
 
 	@GetMapping("/startup/{id}")
 	public ResponseEntity<?> getStartup(@PathVariable long id) throws DataAccessException, SQLException{
-		return ResponseEntity.ok(suService.getProfile(id));
+		return ResponseEntity.ok(suService.getAccount(id));
 	}
 	
 	@GetMapping("/investor/{id}")
 	public ResponseEntity<?> getInvestor(@PathVariable long id)throws DataAccessException, SQLException{
-		return ResponseEntity.ok(invService.getProfile(id));
+		return ResponseEntity.ok(invService.getAccount(id));
 	}
 	
 }

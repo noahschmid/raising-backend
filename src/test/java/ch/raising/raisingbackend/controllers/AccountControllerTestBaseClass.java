@@ -160,29 +160,29 @@ public class AccountControllerTestBaseClass {
 		ps.getConnection().close();
 
 		jdbc.execute("UPDATE profilepicture SET accountid = ? WHERE id = ?",
-				PreparedStatementUtil.addEntryToAssignmentTableByAccountId(c, account.getProfilePictureId()));
+				PreparedStatementUtil.setAccountIdIdCallback(accountId,account.getProfilePictureId()));
 		
 		for(long g : account.getGallery()) {
 			jdbc.execute("UPDATE gallery SET accountid = ? WHERE id = ?",
-					PreparedStatementUtil.addEntryToAssignmentTableByAccountId(c, account.getProfilePictureId()));
+					PreparedStatementUtil.setAccountIdIdCallback(accountId, g));
 		}
 		
 		
 		for (Long co : countries) {
-			jdbc.execute("INSERT INTO countryassignment(accountid, countryid) VALUES (?,?);",
-					PreparedStatementUtil.addEntryToAssignmentTableByAccountId(co, accountId));
+			jdbc.execute("INSERT INTO countryassignment(countryid, accountid) VALUES (?,?);",
+					PreparedStatementUtil.setIdAccountIdCallback(co, accountId));
 		}
 		for (Long co : continents) {
-			jdbc.execute("INSERT INTO continentassignment(accountid, continentid) VALUES (?,?);",
-					PreparedStatementUtil.addEntryToAssignmentTableByAccountId(co, accountId));
+			jdbc.execute("INSERT INTO continentassignment(continentid, accountid) VALUES (?,?);",
+					PreparedStatementUtil.setIdAccountIdCallback(co, accountId));
 		}
 		for (Long s : support) {
-			jdbc.execute("INSERT INTO supportassignment(accountid, supportid) VALUES (?,?);",
-					PreparedStatementUtil.addEntryToAssignmentTableByAccountId(s, accountId));
+			jdbc.execute("INSERT INTO supportassignment(supportid, accountid) VALUES (?,?);",
+					PreparedStatementUtil.setIdAccountIdCallback(s, accountId));
 		}
 		for (Long i : industries) {
-			jdbc.execute("INSERT INTO industryassignment(accountid, industryid) VALUES (?,?);",
-					PreparedStatementUtil.addEntryToAssignmentTableByAccountId(i, accountId));
+			jdbc.execute("INSERT INTO industryassignment(industryid, accountid) VALUES (?,?);",
+					PreparedStatementUtil.setIdAccountIdCallback(i, accountId));
 		}
 	}
 

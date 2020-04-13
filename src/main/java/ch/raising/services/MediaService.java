@@ -1,6 +1,5 @@
 package ch.raising.services;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,25 +16,49 @@ import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.Media;
 import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.MediaNotAddedException;
 
 @Service
 public class MediaService{
 
 	
-	IMediaRepository<Media> mediaRepo;
+	private final IMediaRepository<Media> mediaRepo;
+	private final int MAX_ALLOWED_ITEMS;
 	
-	public MediaService() {}
+	public MediaService() {
+		this.mediaRepo = null;
+		this.MAX_ALLOWED_ITEMS = 0;
+	}
 	
-	public MediaService(JdbcTemplate jdbc, String name) {
+	public MediaService(JdbcTemplate jdbc, String name, int maxAllowedNumbers) {
 		this.mediaRepo = new MediaRepository(jdbc, name);
+		this.MAX_ALLOWED_ITEMS = maxAllowedNumbers;
+	}
+	/**
+	 * adds a image to the table if the maximum count is not exeeded
+	 * @param video
+	 * @return
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws DatabaseOperationException
+	 * @throws MediaNotAddedException 
+	 */
+	public long uploadMediaAndReturnId(Media video) throws DataAccessException, SQLException, DatabaseOperationException, MediaNotAddedException {
+		long accountId = getAccountId();
+		if(mediaRepo.countMediaOfAccount(accountId) <= MAX_ALLOWED_ITEMS) {
+			video.setAccountId(accountId);
+			return mediaRepo.addMedia(video);
+		}
+		throw new MediaNotAddedException("mediaId not specified");
 	}
 	
-	public long uploadMediaAndReturnId(Media video) throws DataAccessException, SQLException, DatabaseOperationException {
-		return mediaRepo.addMedia(video);
-	}
-	
-	public void uploadMediaToAccount(Media media) throws DataAccessException, SQLException, DatabaseOperationException {
-		mediaRepo.addMediaToAccount(media, getAccountId());
+	public void updateMediaOfAccount(MultipartFile file, long id) throws DataAccessException, SQLException, MediaNotAddedException, IOException {
+		Media media = new Media(id, getAccountId(), file.getContentType(), file.getBytes());
+		if(media.getId() > 0) {
+			media.setAccountId(getAccountId());
+			mediaRepo.updateMedia(media);
+		}
+		throw new MediaNotAddedException("mediaId not specified");
 	}
 	
 	public Media getMedia(long id) throws DataAccessException, SQLException {
@@ -43,15 +66,29 @@ public class MediaService{
 	}
 	
 	public void deleteMedia(long videoId) throws DataAccessException, SQLException{
-		mediaRepo.deleteMediaFromAccount(getAccountId(), videoId);
+		mediaRepo.deleteMediaFromAccount(videoId, getAccountId());
 	}
 	
 	private long getAccountId() {
-		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getAuthorities()).getId();
+		try {
+			return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal()).getId();
+		}catch(Exception e) {
+			return -1;
+		}
 	}
 
-	public List<Long> uploadMultipleAndReturnIds(MultipartFile[] gallery) throws DataAccessException, SQLException, IOException, DatabaseOperationException{
+	/**
+	 * should only be used in registration prcess, adds up to nine pics to the table
+	 * @param gallery
+	 * @return
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws DatabaseOperationException
+	 * @throws MediaNotAddedException 
+	 */
+	public List<Long> uploadMultipleAndReturnIds(MultipartFile[] gallery) throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaNotAddedException{
 		List<Long> ids = new ArrayList<Long>();
 		for(MultipartFile f: gallery) {
 			Media insert = new Media(f.getBytes(), f.getContentType());

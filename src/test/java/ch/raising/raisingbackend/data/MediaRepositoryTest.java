@@ -27,6 +27,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import ch.raising.data.MediaRepository;
 import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.Media;
+import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.PreparedStatementUtil;
 import ch.raising.utils.QueryBuilder;
@@ -76,9 +77,9 @@ public class MediaRepositoryTest {
 	}
 
 	@Test
-	public void addImageToAccountTest() throws SQLException {
-		Media img = Media.builder().accountId(1).media(imageBytes).build();
-		imgrepo.addMediaToAccount(img, 2);
+	public void addImageToAccountTest() throws SQLException, DataAccessException, DatabaseOperationException {
+		Media img = Media.builder().accountId(2).media(imageBytes).build();
+		imgrepo.addMedia(img);
 
 		String sql = QueryBuilder.getInstance().tableName("gallery").whereEquals("accountid", "2").select();
 		List<Media> found = jdbc.query(sql, MapUtil::mapRowToMedia);

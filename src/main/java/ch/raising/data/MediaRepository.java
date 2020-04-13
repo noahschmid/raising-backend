@@ -26,42 +26,43 @@ public class MediaRepository implements IMediaRepository<Media> {
 	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Long, Long> PS_DELETE;
 	private final RowMapper<ResultSet, Integer, Media> rowMapper;
 	
-	private final String INSERT_WITHOUT_ACCOUNTID;
-	private final String INSERT_WITH_ACCOUNTID;
+	private final String INSERT_Media;
 	private final String FIND_BY_ACCOUNTID;
 	private final String DELETE_ENTRY_FROM_ACCOUNT;
 	private final String GET_MEDIA_ID_OF;
 	private final String FIND_BY_ID;
 	private final String ADD_ACCOUNTID_TO_MEDIA;
 	private final String FIND_ID_BY_ACCOUNT_ID;
+	private final String COUNT_MEDIA_OF_ACCOUNT;
+	private final String UPDATE_MEDIA;
 	
 	public MediaRepository(JdbcTemplate jdbc, String tableName) {
 		this.jdbc = jdbc;
 		this.PS_ADD = PreparedStatementUtil::addMediaByIdCallback;
-		this.PS_DELETE = PreparedStatementUtil::deleteMediaByIdAndAccountIdCallback;
+		this.PS_DELETE = PreparedStatementUtil::setIdAccountIdCallback;
 		this.rowMapper = MapUtil::mapRowToMedia;
-		this.INSERT_WITHOUT_ACCOUNTID = "INSERT INTO " + tableName + "(type, media) VALUES (?,?)" ;
-		this.INSERT_WITH_ACCOUNTID = "INSERT INTO " + tableName + "(accountid, media, type) VALUES (?, ?, ?)";
+		this.INSERT_Media = "INSERT INTO " + tableName + "(type, media, accountid) VALUES (?,?, ?)" ;
 		this.FIND_BY_ACCOUNTID = "SELECT * FROM " + tableName + " WHERE accountid = ?";
-		this.DELETE_ENTRY_FROM_ACCOUNT = "DELETE FROM " + tableName + " WHERE id = ? AND accountId = ?";
+		this.DELETE_ENTRY_FROM_ACCOUNT = "DELETE FROM " + tableName + " WHERE id = ? AND accountid = ?";
 		this.GET_MEDIA_ID_OF = "SELECT id FROM " + tableName + " WHERE accountId = ?";
 		this.FIND_BY_ID = "SELECT * FROM " + tableName + " WHERE id = ?";
 		this.FIND_ID_BY_ACCOUNT_ID = "SELECT id FROM " + tableName + " WHERE accountid = ?";
 		this.ADD_ACCOUNTID_TO_MEDIA = "UPDATE " + tableName + " SET accountid = ? WHERE id = ?";
-	}
-	
-	@Override
-	public void addMediaToAccount(Media media, long accountId) throws DataAccessException, SQLException {
-		jdbc.execute(INSERT_WITH_ACCOUNTID, PS_ADD.getCallback(media, accountId));
+		this.COUNT_MEDIA_OF_ACCOUNT = "SELECT COUNT(id) FROM "+ tableName+" WHERE accountid = ?";
+		this.UPDATE_MEDIA = "UPDATE " + tableName + "SET media = ?, type = ? where id = ? AND accountid = ?";
 	}
 	
 	@Override
 	public long addMedia(Media media) throws DataAccessException, SQLException, DatabaseOperationException {
 		
-		PreparedStatement ps = jdbc.getDataSource().getConnection().prepareStatement(INSERT_WITHOUT_ACCOUNTID, Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement ps = jdbc.getDataSource().getConnection().prepareStatement(INSERT_Media, Statement.RETURN_GENERATED_KEYS);
 		int c = 1;
 		ps.setString(c++, media.getContentType());
 		ps.setBytes(c++, media.getMedia());
+		if(media.getAccountId() > 0)
+			ps.setLong(c++, media.getAccountId());
+		else
+			ps.setObject(c++, null);
 		if(ps.executeUpdate() >0) {
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
@@ -79,8 +80,8 @@ public class MediaRepository implements IMediaRepository<Media> {
 	}
 	
 	@Override
-	public void deleteMediaFromAccount(long imageId, long accountId) throws DataAccessException, SQLException {
-		jdbc.execute(DELETE_ENTRY_FROM_ACCOUNT, PS_DELETE.getCallback(imageId, accountId));
+	public void deleteMediaFromAccount(long mediaId, long accountId) throws DataAccessException, SQLException {
+		jdbc.execute(DELETE_ENTRY_FROM_ACCOUNT, PS_DELETE.getCallback(mediaId, accountId));
 	}
 	
 	@Override
@@ -104,6 +105,27 @@ public class MediaRepository implements IMediaRepository<Media> {
 	@Override
 	public List<Long> findMediaIdByAccountId(long accountId) throws DataAccessException, SQLException {
 		return jdbc.query(FIND_ID_BY_ACCOUNT_ID, new Object[] { accountId}, MapUtil::mapRowToId);
+	}
+
+	@Override
+	public long countMediaOfAccount(long accountId) throws SQLException, DataAccessException{
+		return jdbc.queryForObject(COUNT_MEDIA_OF_ACCOUNT, new Object[] {accountId}, MapUtil::mapRowToFirstEntry);
+	}
+
+	@Override
+	public void updateMedia(Media media) throws SQLException, DataAccessException{
+		jdbc.update(UPDATE_MEDIA, new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				int c = 1;
+				ps.setBytes(c++, media.getMedia());
+				ps.setString(c++, media.getContentType());
+				ps.setLong(c++, media.getId());
+				ps.setLong(c++, media.getAccountId());
+				return ps.execute();
+			}
+				
+		});
 	}
 
 	

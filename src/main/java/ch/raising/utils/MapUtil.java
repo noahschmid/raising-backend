@@ -38,7 +38,7 @@ public class MapUtil {
 		return new AssignmentTableModel(rs.getString("name"), rs.getInt("id"));
 	}
 
-	public static long mapRowToAssignmentTableId(ResultSet rs, int row) throws SQLException {
+	public static long mapRowToFirstEntry(ResultSet rs, int row) throws SQLException {
 		return rs.getLong(1);
 	}
 

@@ -155,7 +155,7 @@ public class AssignmentTableTest {
 		List<Long> newEntries = Lists.newArrayList(10l,11l,12l,13l);
 		repo.addEntriesToAccount(accountIdValue, newEntries);
 		String sql = "SELECT " + tableName + "id FROM "+ assignmentTableName +" WHERE accountid = " + accountIdValue;
-		List<Long> found = jdbc.query(sql, MapUtil::mapRowToAssignmentTableId);
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
 		for(long l : newEntries) {
 			assertTrue(found.contains(l));
 		}

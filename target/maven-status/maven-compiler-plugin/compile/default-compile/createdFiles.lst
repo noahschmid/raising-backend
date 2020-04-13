@@ -1,12 +1,14 @@
 ch\raising\data\BoardmemberRepository.class
 ch\raising\models\Country.class
 ch\raising\controllers\AdminController.class
+ch\raising\utils\MediaNotAddedException.class
 ch\raising\utils\UpdateQueryBuilder$1.class
 ch\raising\controllers\AccountController.class
 ch\raising\services\AdditionalInformationService.class
 ch\raising\data\PrivateShareholderRepository$1.class
 ch\raising\services\AssignmentTableService.class
 ch\raising\interfaces\IAdditionalInformationRepository.class
+ch\raising\data\MediaRepository$1.class
 ch\raising\data\ResetCodeRepository$3.class
 ch\raising\data\RelationshipRepository.class
 ch\raising\controllers\InvestorController.class
@@ -47,7 +49,6 @@ ch\raising\utils\JwtRequestFilter.class
 ch\raising\data\FounderRepository.class
 ch\raising\models\AccountDetails.class
 ch\raising\utils\DatabaseOperationException.class
-ch\raising\models\MediaUploadResponse.class
 ch\raising\utils\QueryBuilder.class
 ch\raising\data\StartupRepository.class
 ch\raising\data\AccountRepository.class
@@ -67,13 +68,13 @@ ch\raising\data\AssignmentTableRepository$2.class
 ch\raising\models\Boardmember$BoardmemberBuilder.class
 ch\raising\data\MediaRepository.class
 ch\raising\models\Boardmember.class
-ch\raising\controllers\FileController.class
 ch\raising\models\AssignmentTableModelWithDescription.class
 ch\raising\models\Investor.class
 ch\raising\interfaces\IRepository.class
 ch\raising\utils\JwtUtil.class
 ch\raising\data\ResetCodeRepository$2.class
 ch\raising\utils\functionalInterface\RowMapper.class
+ch\raising\controllers\MediaController.class
 ch\raising\models\Startup$StartupBuilder.class
 ch\raising\controllers\StartupController.class
 ch\raising\services\MediaService.class

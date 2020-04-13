@@ -10,8 +10,6 @@ import ch.raising.models.Media;
 import ch.raising.utils.DatabaseOperationException;
 
 public interface IMediaRepository<Model> {
-
-	void addMediaToAccount(Media media, long accountId) throws DataAccessException, SQLException;
 	
 	long addMedia(Media media) throws DataAccessException, SQLException, DatabaseOperationException;
 	
@@ -26,5 +24,9 @@ public interface IMediaRepository<Model> {
 	long getMediaIdOf(long accountId);
 
 	void addAccountIdToMedia(long videoId, long accountId) throws DataAccessException;
+
+	long countMediaOfAccount(long accountId) throws SQLException, DataAccessException;
+
+	void updateMedia(Media media) throws SQLException, DataAccessException;
 
 }

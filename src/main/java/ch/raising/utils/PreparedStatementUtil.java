@@ -52,24 +52,17 @@ public class PreparedStatementUtil {
 		};
 	}
 	
-	/**
-	 *  Callback for: DELETE FROM tablename where id = ? and accountid = ?;
-	 * @param imageId
-	 * @param accountId
-	 * @return the resulting {@link org.springframework.jdbc.core.PreparedStatementCallback<Boolean>}
-	 */
-	public static PreparedStatementCallback<Boolean> deleteMediaByIdAndAccountIdCallback(long imageId, long accountId){
+	public static  PreparedStatementCallback<Boolean> setIdAccountIdCallback(long id, long accountId) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException {
-				int c =1;
-				ps.setLong(c++, imageId);
-				ps.setLong(c++, accountId);
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				ps.setLong(1, id);
+				ps.setLong(2, accountId);
 				return ps.execute();
 			}
 		};
 	}
-	public static  PreparedStatementCallback<Boolean> addEntryToAssignmentTableByAccountId(long id, long accountId) {
+	public static  PreparedStatementCallback<Boolean> setAccountIdIdCallback(long accountId, long id) {
 		return new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {

@@ -16,6 +16,7 @@ import ch.raising.models.responses.ErrorResponse;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.InvalidProfileException;
+import ch.raising.utils.MediaNotAddedException;
 import ch.raising.utils.NotAuthorizedException;
 
 @ControllerAdvice
@@ -27,7 +28,7 @@ public class ExcepionHandler {
 	}
 	@ExceptionHandler(DataAccessException.class)
 	public ResponseEntity<ErrorResponse> handle(DataAccessException e){
-		return ResponseEntity.status(500).body(new ErrorResponse("There is a Proble with the associated SQL statement", e.getMessage()));
+		return ResponseEntity.status(500).body(new ErrorResponse("There is a Problem with the associated SQL statement, or nothing was found", e.getMessage()));
 	}
 	@ExceptionHandler(SQLException.class)
 	public ResponseEntity<ErrorResponse> handle(SQLException e){
@@ -66,6 +67,10 @@ public class ExcepionHandler {
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<?> handle(IOException e){
 		return ResponseEntity.status(500).body(new ErrorResponse("File malformed", e.getMessage()));
+	}
+	@ExceptionHandler(MediaNotAddedException.class)
+	public ResponseEntity<?> handle(MediaNotAddedException e){
+		return ResponseEntity.status(500).body(new ErrorResponse("Media could not be added", e.getMessage()));
 	}
 	
 }
