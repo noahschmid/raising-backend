@@ -104,7 +104,7 @@ public class AccountRepository implements IRepository<Account> {
 		if(ppicId != -1)
 			ps.setLong(c++, ppicId);
 		else
-			ps.setObject(c++, null);
+			ps.setNull(c++, java.sql.Types.BIGINT);
 		if (ps.executeUpdate() > 0) {
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {

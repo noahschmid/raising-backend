@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ch.raising.models.Media;
 import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.MediaNotAddedException;
 
 public interface IMediaRepository<Model> {
 	
@@ -27,6 +28,6 @@ public interface IMediaRepository<Model> {
 
 	long countMediaOfAccount(long accountId) throws SQLException, DataAccessException;
 
-	void updateMedia(Media media) throws SQLException, DataAccessException;
+	void updateMedia(Media media) throws SQLException, DataAccessException, MediaNotAddedException;
 
 }

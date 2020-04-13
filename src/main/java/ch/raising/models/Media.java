@@ -12,7 +12,13 @@ public class Media {
 	private long accountId;
 	private String contentType;
 	private byte[] media;
-	
+	/**
+	 * 
+	 * @param id long
+	 * @param accountId long
+	 * @param contentType String
+	 * @param media byte[]
+	 */
 	public Media(long id, long accountId, String contentType, byte[] media) {
 		this.id = id;
 		this.accountId= accountId;

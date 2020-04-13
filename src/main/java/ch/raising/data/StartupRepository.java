@@ -130,7 +130,7 @@ public class StartupRepository implements IRepository<Startup> {
 				if(su.getVideoId() != -1)
 					ps.setLong(c++, su.getVideoId());
 				else
-					ps.setObject(c++, null);
+					ps.setNull(c++, java.sql.Types.BIGINT);
 				return ps.execute();
 			}
 		});

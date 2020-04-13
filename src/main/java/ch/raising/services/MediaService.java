@@ -43,22 +43,24 @@ public class MediaService{
 	 * @throws DatabaseOperationException
 	 * @throws MediaNotAddedException 
 	 */
-	public long uploadMediaAndReturnId(Media video) throws DataAccessException, SQLException, DatabaseOperationException, MediaNotAddedException {
+	public long uploadMediaAndReturnId(Media media) throws DataAccessException, SQLException, DatabaseOperationException, MediaNotAddedException {
 		long accountId = getAccountId();
 		if(mediaRepo.countMediaOfAccount(accountId) <= MAX_ALLOWED_ITEMS) {
-			video.setAccountId(accountId);
-			return mediaRepo.addMedia(video);
+			media.setAccountId(accountId);
+			return mediaRepo.addMedia(media);
 		}
-		throw new MediaNotAddedException("mediaId not specified");
+		throw new MediaNotAddedException("All media items for this account were added. Try updating instead.");
 	}
 	
 	public void updateMediaOfAccount(MultipartFile file, long id) throws DataAccessException, SQLException, MediaNotAddedException, IOException {
 		Media media = new Media(id, getAccountId(), file.getContentType(), file.getBytes());
-		if(media.getId() > 0) {
+		if(id > 0) {
+			media.setId(id);
 			media.setAccountId(getAccountId());
 			mediaRepo.updateMedia(media);
+		}else {
+			throw new MediaNotAddedException("mediaId not specified");
 		}
-		throw new MediaNotAddedException("mediaId not specified");
 	}
 	
 	public Media getMedia(long id) throws DataAccessException, SQLException {

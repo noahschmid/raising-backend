@@ -14,6 +14,7 @@ import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.Media;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MapUtil;
+import ch.raising.utils.MediaNotAddedException;
 import ch.raising.utils.PreparedStatementUtil;
 import ch.raising.utils.functionalInterface.PSTwoParameters;
 import ch.raising.utils.functionalInterface.RowMapper;
@@ -49,7 +50,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 		this.FIND_ID_BY_ACCOUNT_ID = "SELECT id FROM " + tableName + " WHERE accountid = ?";
 		this.ADD_ACCOUNTID_TO_MEDIA = "UPDATE " + tableName + " SET accountid = ? WHERE id = ?";
 		this.COUNT_MEDIA_OF_ACCOUNT = "SELECT COUNT(id) FROM "+ tableName+" WHERE accountid = ?";
-		this.UPDATE_MEDIA = "UPDATE " + tableName + "SET media = ?, type = ? where id = ? AND accountid = ?";
+		this.UPDATE_MEDIA = "UPDATE " + tableName + " SET media = ?, type = ? where id = ? AND accountid = ?";
 	}
 	
 	@Override
@@ -62,7 +63,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 		if(media.getAccountId() > 0)
 			ps.setLong(c++, media.getAccountId());
 		else
-			ps.setObject(c++, null);
+			ps.setNull(c++, java.sql.Types.BIGINT);
 		if(ps.executeUpdate() >0) {
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
@@ -113,8 +114,10 @@ public class MediaRepository implements IMediaRepository<Media> {
 	}
 
 	@Override
-	public void updateMedia(Media media) throws SQLException, DataAccessException{
-		jdbc.update(UPDATE_MEDIA, new PreparedStatementCallback<Boolean>() {
+	public void updateMedia(Media media) throws SQLException, DataAccessException, MediaNotAddedException{
+		if(media.getAccountId() < 0 || media.getId() < 0)
+			throw new MediaNotAddedException("No id or accountid found");
+		jdbc.execute(UPDATE_MEDIA, new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;

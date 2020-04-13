@@ -101,7 +101,6 @@ public class AccountControllerTestBaseClass {
 		account.setIndustries(industries);
 
 		insertData();
-		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbc, "account"));
 	}
 
 	private List<Long> insertGallery(String tableName) throws SQLException {
@@ -131,6 +130,8 @@ public class AccountControllerTestBaseClass {
 	}
 
 	public void insertData() throws SQLException {
+		account.setProfilePictureId(insertPicture(profilePicture, "profilePicture"));
+		account.setGallery(insertGallery("gallery"));
 		String sql = "INSERT INTO " + TABLENAME
 				+ " (firstname, lastname, companyname, password, emailhash, pitch, description, ticketminid, ticketmaxid, countryid, website, profilepictureid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
@@ -148,7 +149,10 @@ public class AccountControllerTestBaseClass {
 		ps.setInt(c++, account.getTicketMaxId());
 		ps.setLong(c++, account.getCountryId());
 		ps.setString(c++, account.getWebsite());
-		ps.setObject(c++, null);
+		if(account.getProfilePictureId() > 0)
+			ps.setLong(c++, account.getProfilePictureId());
+		else
+			ps.setNull(c++, java.sql.Types.BIGINT);
 		if (ps.executeUpdate() > 0) {
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {

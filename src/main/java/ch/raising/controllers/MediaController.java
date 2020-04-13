@@ -106,7 +106,8 @@ public class MediaController {
 	 * @throws IOException
 	 */
 	@PatchMapping("/profilepicture/{id}")
-	public ResponseEntity<?> updateProfilePicture(@RequestParam("profilePicture") MultipartFile file, @PathVariable long id) throws DataAccessException, SQLException, MediaNotAddedException, IOException{
+	public ResponseEntity<?> updateProfilePicture(@RequestParam("profilePicture") MultipartFile file, @PathVariable("id") long id) throws DataAccessException, SQLException, MediaNotAddedException, IOException{
+		System.out.println("============================= " + id );
 		if(file.getContentType().equals("image/png") || file.getContentType().equals("image/jpeg")) {
 			ppicService.updateMediaOfAccount(file, id);
 			return ResponseEntity.ok().build();
