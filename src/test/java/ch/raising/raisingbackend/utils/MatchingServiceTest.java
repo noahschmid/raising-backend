@@ -1,6 +1,7 @@
 package ch.raising.raisingbackend.utils;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -11,11 +12,18 @@ import java.util.List;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.MatchingProfile;
-import ch.raising.utils.MatchingUtil;
+import ch.raising.services.MatchingService;
 
 @SpringBootTest
-@ContextConfiguration(classes = { MatchingUtil.class })
-class MatchingUtilTest {
+@ContextConfiguration(classes = { MatchingService.class })
+class MatchingServiceTest {
+    MatchingService matchingService;
+
+    @Autowired
+    MatchingServiceTest(MatchingService matchingService) {
+        this.matchingService = matchingService;
+    }
+
     @Test
     void testEquals() {
     	AssignmentTableModel ind1 = new AssignmentTableModel("test", 1);
@@ -52,7 +60,7 @@ class MatchingUtilTest {
         subject.setInvestmentMin(300);
         object.setInvestmentMax(1000);
         object.setInvestmentMin(100);
-        int score = MatchingUtil.getMatchingScore(subject, object);
+        int score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Subject range inside object range");
 
         // object investment range inside subject range
@@ -60,24 +68,24 @@ class MatchingUtilTest {
         object.setInvestmentMin(300);
         subject.setInvestmentMax(1000);
         subject.setInvestmentMin(100);
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Object range inside subject range");
 
         // ranges intersecting
         subject.setInvestmentMax(1000);
         subject.setInvestmentMin(400);
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Ranges intersecting");
 
         subject.setInvestmentMax(400);
         subject.setInvestmentMin(100);
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Ranges intersecting 2");
 
         // not intersecting
         subject.setInvestmentMax(200);
         subject.setInvestmentMin(100);
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "Ranges not intersecting");
     }
 
@@ -87,19 +95,19 @@ class MatchingUtilTest {
         MatchingProfile object = new MatchingProfile();
 
         // subject investment range inside object range
-        int score = MatchingUtil.getMatchingScore(subject, object);
+        int score = matchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No countries match 0");
         subject.addCountry(new Country("Switzerland", 1, 1));
         object.addCountry(new Country("Germany", 2, 2));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No countries match 1");
 
         object.addCountry(new Country("Switzerland", 1,1 ));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Countries match");
 
         subject.addCountry(new Country("Germany", 2,1 ));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple countries match");
     }
 
@@ -108,19 +116,19 @@ class MatchingUtilTest {
         MatchingProfile subject = new MatchingProfile();
         MatchingProfile object = new MatchingProfile();
 
-        int score = MatchingUtil.getMatchingScore(subject, object);
+        int score = matchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No investment phases match");
         subject.addInvestmentPhase(new AssignmentTableModel("Round A", 1));
         object.addInvestmentPhase(new AssignmentTableModel("Round B", 2));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No investment phases match");
 
         object.addInvestmentPhase(new AssignmentTableModel("Round A", 1));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Investment phases match");
 
         subject.addCountry(new Country("Round B", 2, 1));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple investment phases match");
     }
 
@@ -130,19 +138,19 @@ class MatchingUtilTest {
         MatchingProfile object = new MatchingProfile();
 
         // subject investment range inside object range
-        int score = MatchingUtil.getMatchingScore(subject, object);
+        int score = matchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No industries match");
         subject.addIndustry(new AssignmentTableModel("Tech", 1));
         object.addIndustry(new AssignmentTableModel("Health", 2));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No industries match");
 
         object.addIndustry(new AssignmentTableModel("Tech", 1));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Industries match");
 
         subject.addIndustry(new AssignmentTableModel("Health", 2));
-        score = MatchingUtil.getMatchingScore(subject, object);
+        score = matchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple industries match");
     }
 }

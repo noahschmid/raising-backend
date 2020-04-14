@@ -31,11 +31,19 @@ public class UpdateQueryBuilder {
 	private long id;
 	private String tableName;
 	private JdbcTemplate jdbc;
-	private String idField = "id";
+    private String idField = "id";
+    private String where = null;
 
 	public UpdateQueryBuilder(String tableName, long id, JdbcTemplate jdbc) {
 		this.tableName = tableName;
 		this.id = id;
+		this.jdbc = jdbc;
+		fields = new ArrayList<>();
+    }
+    
+    public UpdateQueryBuilder(String tableName, String where, JdbcTemplate jdbc) {
+		this.tableName = tableName;
+		this.where = where;
 		this.jdbc = jdbc;
 		fields = new ArrayList<>();
 	}
@@ -124,6 +132,9 @@ public class UpdateQueryBuilder {
 		if (updates == null || updates == "")
 			return "";
 
+        if(where != null)
+            return "UPDATE " + tableName + " SET " + updates + " WHERE " + where;
+            
 		return "UPDATE " + tableName + " SET " + updates + " WHERE " + idField + " = ?";
 	}
 

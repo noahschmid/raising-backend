@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import ch.raising.services.AccountService;
+import io.jsonwebtoken.Claims;
 
 @Component  
 public class JwtRequestFilter extends OncePerRequestFilter {
