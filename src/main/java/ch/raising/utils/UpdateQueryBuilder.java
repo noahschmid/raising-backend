@@ -169,7 +169,8 @@ public class UpdateQueryBuilder {
 						ps.setLong(i, (long) o);
 				}
 
-				ps.setLong(fields.size() + 1, id);
+				if(where == null)
+					ps.setLong(fields.size() + 1, id);
 
 				return ps.execute();
 			}

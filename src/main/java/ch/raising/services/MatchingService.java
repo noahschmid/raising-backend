@@ -1,5 +1,6 @@
 package ch.raising.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,11 +8,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import ch.raising.data.AccountRepository;
 import ch.raising.data.InvestorRepository;
 import ch.raising.data.RelationshipRepository;
 import ch.raising.data.StartupRepository;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Investor;
+import ch.raising.models.MatchResponse;
 import ch.raising.models.MatchingProfile;
 import ch.raising.models.Relationship;
 import ch.raising.models.RelationshipState;
@@ -36,7 +39,8 @@ public class MatchingService {
     @Autowired
     public MatchingService(RelationshipRepository relationshipRepository,
         StartupService startupService, StartupRepository startupRepository,
-        InvestorService investorService, InvestorRepository investorRepository) {
+        InvestorService investorService, InvestorRepository investorRepository,
+        AccountRepository accountRepository) {
         this.startupService = startupService;
         this.relationshipRepository = relationshipRepository;
         this.investorService = investorService;
@@ -55,12 +59,12 @@ public class MatchingService {
         List<MatchingProfile> objects;
         MatchingProfile subject;
         if(isStartup) {
-            objects = startupService.getAllMatchingProfiles();
+            objects = investorService.getAllMatchingProfiles();
             Startup startup = startupRepository.find(id);
             subject = startupService.getMatchingProfile(startup);
         }
         else {
-            objects = investorService.getAllMatchingProfiles();
+            objects = startupService.getAllMatchingProfiles();
             Investor investor = investorRepository.find(id);
             subject = investorService.getMatchingProfile(investor);
         }
@@ -200,9 +204,35 @@ public class MatchingService {
     /**
      * Get matches of an account
      */
-    public List<Relationship> getMatches(long accountId) {
+    public List<MatchResponse> getMatches(long accountId, boolean isStartup) {
         List<Relationship> matches = relationshipRepository.getByAccountIdAndState(accountId, 
                                                                     RelationshipState.MATCH);
-        return matches;
+        List<MatchResponse> matchResponses = new ArrayList<>();
+        matches.forEach(match -> {
+            MatchResponse response = new MatchResponse();
+            response.setMatchingScore(match.getMatchingScore());
+            response.setRelationshipId(match.getId());
+            if(isStartup) {
+                response.setAccountId(match.getInvestorId());
+                Investor investor = investorRepository.find(match.getInvestorId());
+                response.setInvestorTypeId(investor.getInvestorTypeId());
+                response.setStartup(false);
+                response.setFirstName(investor.getFirstName());
+                response.setFirstName(investor.getLastName());
+                response.setDescription(investor.getDescription());
+                response.setProfilePictureId(investor.getProfilePictureId());
+            } else {
+                response.setAccountId(match.getStartupId());
+                Startup startup = startupRepository.find(match.getStartupId());
+                response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
+                response.setStartup(true);
+                response.setCompanyName(startup.getCompanyName());
+                response.setDescription(startup.getDescription());
+                response.setProfilePictureId(startup.getProfilePictureId());
+            }
+
+            matchResponses.add(response);
+        });
+        return matchResponses;
     }
 }
