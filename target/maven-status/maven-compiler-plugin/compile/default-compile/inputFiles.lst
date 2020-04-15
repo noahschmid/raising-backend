@@ -14,6 +14,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Match
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\ErrorResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\CorporateShareholder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IMediaRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\MatchResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AccountController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AccountRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\StartupMember.java

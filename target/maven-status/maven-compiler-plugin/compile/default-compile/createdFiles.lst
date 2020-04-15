@@ -14,6 +14,7 @@ ch\raising\data\RelationshipRepository.class
 ch\raising\controllers\InvestorController.class
 ch\raising\data\RelationshipRepository$1.class
 ch\raising\data\FounderRepository$1.class
+ch\raising\models\MatchResponse.class
 ch\raising\utils\EmailNotFoundException.class
 ch\raising\models\responses\FileUploadResponse.class
 ch\raising\services\MatchingService.class
@@ -83,7 +84,6 @@ ch\raising\controllers\StartupController.class
 ch\raising\services\MediaService.class
 ch\raising\data\InvestorRepository.class
 ch\raising\config\SecurityConfig.class
-ch\raising\raisingbackend\RaisingBackendApplication$1.class
 ch\raising\utils\MailUtil.class
 ch\raising\models\ResetCode.class
 ch\raising\models\ForgotPasswordRequest.class

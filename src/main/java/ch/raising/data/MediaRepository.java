@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
@@ -79,8 +80,13 @@ public class MediaRepository implements IMediaRepository<Media> {
 	}
 	
 	@Override
-	public List<Media> findMediaByAccountId(long id) {
-		return jdbc.query(FIND_BY_ACCOUNTID, new Object[] { id }, rowMapper::mapRowToModel);
+	public List<Media> findMediaByAccountId(long id) throws DatabaseOperationException{
+		try {
+			return jdbc.query(FIND_BY_ACCOUNTID, new Object[] { id }, rowMapper::mapRowToModel);
+		}catch(EmptyResultDataAccessException e) {
+			throw new DatabaseOperationException("No element with id(" + id +") found");
+		}
+		
 	}
 	
 	@Override

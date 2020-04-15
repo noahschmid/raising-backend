@@ -97,7 +97,7 @@ public class MediaRepositoryTest {
 	}
 
 	@Test
-	public void findImagesByAccountId() throws DataAccessException, SQLException {
+	public void findImagesByAccountId() throws DataAccessException, SQLException, DatabaseOperationException {
 		List<Media> found = imgrepo.findMediaByAccountId(2);
 		assertNotNull(found);
 		assertEquals(1, found.size());

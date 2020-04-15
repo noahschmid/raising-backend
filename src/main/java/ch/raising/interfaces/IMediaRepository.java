@@ -18,7 +18,7 @@ public interface IMediaRepository<Model> {
 	
 	List<Long> findMediaIdByAccountId(long accountId) throws DataAccessException, SQLException;
 
-	List<Media> findMediaByAccountId(long accountId) throws SQLException, DataAccessException;
+	List<Media> findMediaByAccountId(long accountId) throws SQLException, DataAccessException, DatabaseOperationException;
 
 	void deleteMediaFromAccount(long imageId, long accountId) throws DataAccessException, SQLException;
 
