@@ -16,7 +16,7 @@ public class MatchingProfile {
     private List<AssignmentTableModel> investorTypes;
     private List<AssignmentTableModel> industries;
     private List<AssignmentTableModel> investmentPhases;
-    private List<AssignmentTableModel> countries;
+    private List<Country> countries;
     private List<AssignmentTableModel> continents;
     private List<AssignmentTableModel> support;
 
@@ -24,24 +24,32 @@ public class MatchingProfile {
         investorTypes = new ArrayList<AssignmentTableModel>();
         industries = new ArrayList<AssignmentTableModel>();
         investmentPhases = new ArrayList<AssignmentTableModel>();
-        countries = new ArrayList<AssignmentTableModel>();
+        countries = new ArrayList<Country>();
         continents = new ArrayList<AssignmentTableModel>();
         support = new ArrayList<AssignmentTableModel>();
     }
     
-    public void addInvestorType(AssignmentTableModel invType) {
-    	investorTypes.add(invType);
+    public void addInvestorType(AssignmentTableModel investorType) {
+    	investorTypes.add(investorType);
     }
     
-    public void addInvestmentPhase(AssignmentTableModel invType) {
-    	investmentPhases.add(invType);
+    public void addInvestmentPhase(AssignmentTableModel investmentPhase) {
+    	investmentPhases.add(investmentPhase);
     }
     
-    public void addCountry(AssignmentTableModel country) {
+    public void addCountry(Country country) {
     	countries.add(country);
+    }
+
+    public void addContinent(AssignmentTableModel continent) {
+    	continents.add(continent);
     }
     
     public void addIndustry(AssignmentTableModel industry) {
     	industries.add(industry);
+    }
+
+    public void addSupport(AssignmentTableModel support) {
+    	this.support.add(support);
     }
 }
