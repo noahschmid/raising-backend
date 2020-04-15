@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.security.auth.message.AuthException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +45,10 @@ public class JwtUtil {
 		return extractClaim(token, Claims::getExpiration);
 	}
 
+	public boolean extractIsStartup(String token) {
+		return (boolean)extractAllClaims(token).get("isStartup");
+	}
+
 	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
 		final Claims claims = extractAllClaims(token);
 		return claimsResolver.apply(claims);
@@ -55,6 +62,8 @@ public class JwtUtil {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("id", userDetails.getId());
 		claims.put("username", userDetails.getUsername());
+		claims.put("isStartup", userDetails.getStartup());
+		claims.put("isInvestor", userDetails.getInvestor());
 		return createToken(claims, userDetails.getUsername());
 	}
 
@@ -71,5 +80,21 @@ public class JwtUtil {
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = extractUsername(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+	}
+
+
+	/**
+	 * Get token out of request
+	 * @param request
+	 * @return
+	 */
+	public String getToken(HttpServletRequest request) throws AuthException {
+		final String authHeader = request.getHeader("Authorization");
+        
+        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+			return authHeader.substring(7);
+		}
+		
+		throw new AuthException();
 	}
 }

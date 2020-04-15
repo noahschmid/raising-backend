@@ -1,7 +1,6 @@
-package ch.raising.utils;
+package ch.raising.services;
 
 import java.util.List;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,40 +9,52 @@ import org.springframework.stereotype.Component;
 import ch.raising.data.InvestorRepository;
 import ch.raising.data.RelationshipRepository;
 import ch.raising.data.StartupRepository;
-import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Investor;
 import ch.raising.models.MatchingProfile;
 import ch.raising.models.Relationship;
+import ch.raising.models.RelationshipState;
 import ch.raising.models.Startup;
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
 
 @Component
-public class MatchingUtil {
+public class MatchingService {
 
     @Autowired
-    private static InvestorRepository investorRepository;
+    private InvestorRepository investorRepository;
 
     @Autowired
-    private static InvestorService investorService;
+    private InvestorService investorService;
 
     @Autowired
-    private static StartupRepository startupRepository;
+    private StartupRepository startupRepository;
 
     @Autowired
-    private static StartupService startupService;
+    private StartupService startupService;
 
     @Autowired
-    private static RelationshipRepository relationshipRepository;
+    private RelationshipRepository relationshipRepository;
 
-    /**
+    @Autowired
+    public MatchingService(RelationshipRepository relationshipRepository,
+        StartupService startupService, StartupRepository startupRepository,
+        InvestorService investorService, InvestorRepository investorRepository) {
+        this.startupService = startupService;
+        this.relationshipRepository = relationshipRepository;
+        this.investorService = investorService;
+        this.investorRepository = investorRepository;
+        this.startupRepository = startupRepository;
+    }
+
+     /**
      * Loop through all profiles and save matches inside relationship table
      * @param id the account id of the profile to be matched with
      * @param isStartup indicates whether the given profile is a startup
      * @throws Exception throws Exception if there was a problem writing to relationship table
      */
-    public static void match(long id, boolean isStartup) throws Exception {
+    public void match(long id, boolean isStartup) throws Exception {
+        System.out.println("Is account startup? -> " + isStartup);
         List<MatchingProfile> objects;
         MatchingProfile subject;
         if(isStartup) {
@@ -74,11 +85,21 @@ public class MatchingUtil {
                 }
 
                 relationship.setMatchingScore(score);
-                relationship.setState("MATCH");
+                relationship.setState(RelationshipState.MATCH);
+
+                System.out.println("Match found: " + relationship.getInvestorId() + 
+                " <--> " + relationship.getStartupId() + " state: " + relationship.getState());
+
                 try {
-                    relationshipRepository.add(relationship);
+                    if(relationshipRepository.exists(relationship))
+                        relationshipRepository.update(relationship);
+                    else {
+                        relationship.setState(null); //making sure state doesn't get overwritten
+                        relationshipRepository.add(relationship);
+                        System.out.println("relationship already exists");
+                    }
                 } catch (DataIntegrityViolationException  e) {
-                    System.out.println("relationship already exists");
+                    System.out.println("Error while adding/updating relationship: " + e.getMessage());
                 }
             }
         }
@@ -90,7 +111,7 @@ public class MatchingUtil {
      * @param object the second matching profile to be matched with
      * @return matching score
      */
-    public static int getMatchingScore(MatchingProfile subject, MatchingProfile object) {
+    public int getMatchingScore(MatchingProfile subject, MatchingProfile object) {
         int score = 0;
 
         if(subject.getInvestmentMin() != -1 && subject.getInvestmentMax() != -1 && 
@@ -137,5 +158,54 @@ public class MatchingUtil {
         }
 
         return score;
+    }
+
+    /**
+     * Accept match
+     * @param id id of the match to decline
+     */
+    public void accept(long id, boolean isStartup) throws Exception {
+        Relationship relationship = relationshipRepository.find(id);
+        switch(relationship.getState()) {
+            case MATCH:
+                if(isStartup)
+                    relationshipRepository.updateState(id, RelationshipState.STARTUP_ACCEPTED);
+                else
+                    relationshipRepository.updateState(id, RelationshipState.INVESTOR_ACCEPTED);
+            break;
+            
+            case INVESTOR_ACCEPTED:
+                if(isStartup)
+                    relationshipRepository.updateState(id, RelationshipState.HANDSHAKE);
+            break;
+
+            case STARTUP_ACCEPTED:
+                if(!isStartup)
+                    relationshipRepository.updateState(id, RelationshipState.HANDSHAKE);
+            break;
+
+            default:
+            break;
+        }
+    }
+
+    /**
+     * Decline match
+     * @param id id of the match to decline
+     */
+    public void decline(long id, boolean isStartup) throws Exception {
+        if(isStartup)
+            relationshipRepository.updateState(id, RelationshipState.STARTUP_DECLINED);
+        else
+            relationshipRepository.updateState(id, RelationshipState.INVESTOR_DECLINED);
+    }
+
+    /**
+     * Get matches of an account
+     */
+    public List<Relationship> getMatches(long accountId) {
+        List<Relationship> matches = relationshipRepository.getByAccountIdAndState(accountId, 
+                                                                    RelationshipState.MATCH);
+        return matches;
     }
 }

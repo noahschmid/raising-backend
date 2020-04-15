@@ -31,15 +31,23 @@ public class UpdateQueryBuilder {
 	private float unitializedFloatValue = -1f;
 	private long id;
 	private String tableName;
-	private String idField = "id";
-	
+
 	private JdbcTemplate jdbc;
+    private String idField = "id";
+    private String where = null;
 
 	public UpdateQueryBuilder(JdbcTemplate jdbc, String tableName, long id) {
 		this.tableName = tableName;
 		this.id = id;
 		fields = new ArrayList<>();
 		this.jdbc = jdbc;
+    }
+    
+    public UpdateQueryBuilder(String tableName, String where, JdbcTemplate jdbc) {
+		this.tableName = tableName;
+		this.where = where;
+		this.jdbc = jdbc;
+		fields = new ArrayList<>();
 	}
 
 	public UpdateQueryBuilder(JdbcTemplate jdbc, String tableName, long id, String idField) {
@@ -126,6 +134,9 @@ public class UpdateQueryBuilder {
 		if (updates == null || updates == "")
 			return "";
 
+        if(where != null)
+            return "UPDATE " + tableName + " SET " + updates + " WHERE " + where;
+            
 		return "UPDATE " + tableName + " SET " + updates + " WHERE " + idField + " = ?";
 	}
 

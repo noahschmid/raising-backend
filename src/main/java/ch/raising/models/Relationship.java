@@ -7,6 +7,6 @@ public class Relationship {
     private Long id;
     private Long investorId;
     private Long startupId;
-    private String state;
+    private RelationshipState state;
     private int matchingScore;
 }

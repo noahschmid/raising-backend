@@ -351,13 +351,8 @@ public class AccountService implements UserDetailsService {
 	 * @return A login response Model {@link ch.raising.models.LoginResponse}
 	 */
 	public LoginResponse login(LoginRequest request) throws AuthenticationException, UsernameNotFoundException {
-		UsernamePasswordAuthenticationToken unamePwToken = new UsernamePasswordAuthenticationToken(request.getEmail(),
-				request.getPassword());
 		
-		//authenticationManager.authenticate(unamePwToken);
-
-		
-		final AccountDetails userDetails = loadUserByUsername(request.getEmail());
+	 AccountDetails userDetails = loadUserByUsername(request.getEmail());
 		final String token = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(token, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}
