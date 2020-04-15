@@ -2,8 +2,6 @@ package ch.raising.data;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-
-
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -30,8 +28,8 @@ import ch.raising.utils.UpdateQueryBuilder;
 public class InvestorRepository implements IRepository<Investor> {
 	private JdbcTemplate jdbc;
 
-	
 	private final String FIND_BY_ID;
+
 	@Autowired
 	public InvestorRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
@@ -39,35 +37,33 @@ public class InvestorRepository implements IRepository<Investor> {
 	}
 
 	/**
-	 * Find investor by tableEntryId
+	 * Find investor by id
 	 * 
-	 * @param tableEntryId tableEntryId of the desired investor
+	 * @param id id of the desired investor
 	 * @return instance of the found investor
-	 * @throws DatabaseOperationException 
+	 * @throws DatabaseOperationException
 	 */
-	public Investor find(long id)throws DataAccessException, SQLException, DatabaseOperationException {
-		try {
-            return jdbc.queryForObject(FIND_BY_ID, new Object[] { id }, this::mapRowToModel);
-		}catch(EmptyResultDataAccessException e) {
-			throw new DatabaseOperationException("this id: "+id+" does not specify an investor");
-		}
-    }
+	public Investor find(long id) {
+
+		return jdbc.queryForObject(FIND_BY_ID, new Object[] { id }, this::mapRowToModel);
+
+	}
+
 	/**
 	 * Get all investors
 	 * 
 	 * @return list of all investors
 	 */
-	public List<Investor> getAll() throws DataAccessException, SQLException{
+	public List<Investor> getAll() throws DataAccessException, SQLException {
 		String getAll = "SELECT * FROM investor";
 		List<Investor> users = jdbc.query(getAll, this::mapRowToModel);
 		return users;
 	}
-	
 
 	/**
 	 * Update investor
 	 * 
-	 * @param tableEntryId     the tableEntryId of the investor to update
+	 * @param id     the id of the investor to update
 	 * @param update instance of the update request
 	 * @throws Exception
 	 */
@@ -88,8 +84,8 @@ public class InvestorRepository implements IRepository<Investor> {
 	 */
 	@Override
 	public Investor mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Investor.investorBuilder().accountId(rs.getLong("accountId"))
-				.investorTypeId(rs.getInt("investorTypeId")).build();
+		return Investor.investorBuilder().accountId(rs.getLong("accountId")).investorTypeId(rs.getInt("investorTypeId"))
+				.build();
 	}
 
 	/**

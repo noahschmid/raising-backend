@@ -36,12 +36,9 @@ public class StartupRepository implements IRepository<Startup> {
 	 * @return instance of the found startup
 	 * @throws DatabaseOperationException 
 	 */
-	public Startup find(long accountId) throws SQLException, DataAccessException, DatabaseOperationException{
-			try {
-				return jdbc.queryForObject(FIND_BY_ID, new Object[] { accountId }, this::mapRowToModel);
-			}catch(EmptyResultDataAccessException e) {
-				throw new DatabaseOperationException("this id: " + accountId + " does not specify a startup");
-			}
+	public Startup find(long accountId){
+			
+		return jdbc.queryForObject(FIND_BY_ID, new Object[] { accountId }, this::mapRowToModel);
 			
 	}
 

@@ -1,9 +1,11 @@
 package ch.raising.services;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import ch.raising.models.RelationshipState;
 import ch.raising.models.Startup;
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
+import ch.raising.utils.DatabaseOperationException;
 
 @Service
 public class MatchingService {

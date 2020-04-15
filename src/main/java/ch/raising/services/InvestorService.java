@@ -130,10 +130,10 @@ public class InvestorService extends AccountService {
         
 		MatchingProfile profile = new MatchingProfile();
 
-		List<AssignmentTableModel> continents = continentRepository.findIdByAccountId(investor.getAccountId());
-        List<AssignmentTableModel> industries = industryRepository.findIdByAccountId(investor.getAccountId());
-        List<AssignmentTableModel> investmentPhases = investmentPhaseRepository.findIdByAccountId(investor.getAccountId());
-		List<AssignmentTableModel> supports = supportRepository.findIdByAccountId(investor.getAccountId());
+		List<Long> continents = continentRepository.findIdByAccountId(investor.getAccountId());
+        List<Long> industries = industryRepository.findIdByAccountId(investor.getAccountId());
+        List<Long> investmentPhases = investmentPhaseRepository.findIdByAccountId(investor.getAccountId());
+		List<Long> supports = supportRepository.findIdByAccountId(investor.getAccountId());
 		profile.addInvestorType(investor.getInvestorTypeId());
 		
 		countryRepository.findByAccountId(investor.getAccountId()).forEach(country -> {
