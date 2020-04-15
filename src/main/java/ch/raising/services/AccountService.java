@@ -66,8 +66,6 @@ public class AccountService implements UserDetailsService {
 	protected AssignmentTableRepository industryRepo;
 	
 	private final JdbcTemplate jdbc;
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
 	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
@@ -89,15 +87,10 @@ public class AccountService implements UserDetailsService {
 	@Override
 	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		try {
-			long begin = System.currentTimeMillis();
 			Account account = accountRepository.findByEmail(email);
-			LOGGER.info("Stopwatch for finding email: {}ms", System.currentTimeMillis() - begin);
-			begin = System.currentTimeMillis();
 			AccountDetails accDet = new AccountDetails(account);
 			accDet.setStartup(accountRepository.isStartup(accDet.getId()));
 			accDet.setInvestor(accountRepository.isInvestor(accDet.getId()));
-			LOGGER.info("Stopwatch for checking if investor: {}ms",System.currentTimeMillis()- begin);
-			
 			return accDet;
 		} catch (EmailNotFoundException e) {
 			throw new UsernameNotFoundException(e.getMessage());
