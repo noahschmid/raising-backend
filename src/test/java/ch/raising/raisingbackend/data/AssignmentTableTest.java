@@ -58,7 +58,7 @@ public class AssignmentTableTest {
 		name = "testcontinent";
 		tableIdName = tableName + "Id";
 		assignmentTableName = tableName + "assignment";
-		repo = AssignmentTableRepository.getInstance(jdbc).withTableName(tableName);
+		repo = new AssignmentTableRepository(jdbc,tableName);
 	}
 
 	@BeforeEach

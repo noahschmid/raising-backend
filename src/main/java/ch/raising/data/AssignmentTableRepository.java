@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
@@ -19,27 +21,29 @@ import ch.raising.utils.functionalInterface.RowMapper;
 
 public class AssignmentTableRepository {
 
-	private JdbcTemplate jdbc;
-	private String tableName = "";
-	private String tableAssignment;
-	protected RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper;
-	protected RowMapper<ResultSet, Integer, Long> assignmentRowMapper;
-	private String accountIdName = "accountId";
+	private final JdbcTemplate jdbc;
+	private final String TABLENAME;
+	private final String TABLE_ASSIGNMENT;
+	private final String ACCOUNT_ID_NAME;
+	private RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper;
+	private RowMapper<ResultSet, Integer, Long> assignmentRowMapper;
 
-	private AssignmentTableRepository(JdbcTemplate jdbc) {
+	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName) {
+		this.TABLENAME = tableName;
+		this.TABLE_ASSIGNMENT = tableName + "assignment";
+		this.ACCOUNT_ID_NAME = "accountId";
 		this.jdbc = jdbc;
-		rowMapper = MapUtil::mapRowToAssignmentTable;
+		rowMapper = this::mapRowToAssignmentTable;
 		assignmentRowMapper = MapUtil::mapRowToFirstEntry;
 	}
-
-	public static AssignmentTableRepository getInstance(JdbcTemplate jdbc) {
-		return new AssignmentTableRepository(jdbc);
-	}
-
-	public AssignmentTableRepository withTableName(String tableName) {
-		this.tableName = tableName;
-		this.tableAssignment = tableName + "assignment";
-		return this;
+	
+	public AssignmentTableRepository(JdbcTemplate jdbc, String tableName, String accountIdName) {
+		this.TABLENAME = tableName;
+		this.TABLE_ASSIGNMENT = tableName + "assignment";
+		this.ACCOUNT_ID_NAME = accountIdName;
+		this.jdbc = jdbc;
+		rowMapper = this::mapRowToAssignmentTable;
+		assignmentRowMapper = MapUtil::mapRowToFirstEntry;
 	}
 
 	public AssignmentTableRepository withRowMapper(RowMapper<ResultSet, Integer, AssignmentTableModel> rowMapper) {
@@ -47,46 +51,41 @@ public class AssignmentTableRepository {
 		return this;
 	}
 
-	public AssignmentTableRepository withAccountIdName(String accountIdName) {
-		this.accountIdName = accountIdName;
-		return this;
-	}
-
 	public AssignmentTableModel find(long id) throws SQLException, DataAccessException {
-		final String QUERY = "SELECT * FROM " + tableName + " WHERE id = ?";
+		final String QUERY = "SELECT * FROM " + TABLENAME + " WHERE id = ?";
 		return jdbc.queryForObject(QUERY, new Object[] { id }, rowMapper::mapRowToModel);
 	}
 
 	public List<IAssignmentTableModel> findAll() throws SQLException, DataAccessException {
-		final String QUERY = "SELECT * FROM " + tableName;
+		final String QUERY = "SELECT * FROM " + TABLENAME;
 		return jdbc.query(QUERY, rowMapper::mapRowToModel);
 	}
 
 	public List<AssignmentTableModel> findByAccountId(long accountId) throws SQLException, DataAccessException {
-		final String QUERY = "SELECT * FROM " + tableAssignment + " INNER JOIN " + tableName + " ON " + tableAssignment
-				+ "." + tableName + "Id = " + tableName + ".id WHERE " + accountIdName + " = ?";
+		final String QUERY = "SELECT * FROM " + TABLE_ASSIGNMENT + " INNER JOIN " + TABLENAME + " ON " + TABLE_ASSIGNMENT
+				+ "." + TABLENAME + "Id = " + TABLENAME + ".id WHERE " + ACCOUNT_ID_NAME + " = ?";
 		return jdbc.query(QUERY, new Object[] { accountId }, rowMapper::mapRowToModel);
 	}
 
 	public List<Long> findIdByAccountId(long accountId) {
-		return jdbc.query("SELECT " + tableName + "id FROM " + tableAssignment + " WHERE " + accountIdName + "=?",
+		return jdbc.query("SELECT " + TABLENAME + "id FROM " + TABLE_ASSIGNMENT + " WHERE " + ACCOUNT_ID_NAME + "=?",
 				new Object[] { accountId }, assignmentRowMapper::mapRowToModel);
 	}
 
 	public void addEntryToAccountById(long id, long accountId) throws SQLException, DataAccessException {
-		final String QUERY = "INSERT INTO " + tableAssignment + "(" + accountIdName + ", " + tableName
+		final String QUERY = "INSERT INTO " + TABLE_ASSIGNMENT + "(" + ACCOUNT_ID_NAME + ", " + TABLENAME
 				+ "Id) VALUES (?, ?);";
 		jdbc.execute(QUERY, getIdAccountIdCallback(id, accountId));
 	}
 
 	public void deleteEntryFromAccountById(long id, long accountId) throws SQLException, DataAccessException {
-		final String QUERY = "DELETE FROM " + tableAssignment + " WHERE " + accountIdName + " = ? AND " + tableName
+		final String QUERY = "DELETE FROM " + TABLE_ASSIGNMENT + " WHERE " + ACCOUNT_ID_NAME + " = ? AND " + TABLENAME
 				+ "id = ?";
 		jdbc.execute(QUERY, getIdAccountIdCallback(id, accountId));
 	}
 
 	public void deleteEntriesByAccountId(long accountId) {
-		final String QUERY = "DELETE FROM " + tableAssignment + " WHERE " + accountIdName + " = ?";
+		final String QUERY = "DELETE FROM " + TABLE_ASSIGNMENT + " WHERE " + ACCOUNT_ID_NAME + " = ?";
 		jdbc.execute(QUERY, getAccountIdCallback(accountId));
 	}
 
@@ -94,7 +93,7 @@ public class AssignmentTableRepository {
 		if (models == null)
 			return;
 
-		String sql = "INSERT INTO " + tableAssignment + "(" + accountIdName + ", " + tableName + "Id) VALUES ";
+		String sql = "INSERT INTO " + TABLE_ASSIGNMENT + "(" + ACCOUNT_ID_NAME + ", " + TABLENAME + "Id) VALUES ";
 		for (int m = 0; m < models.size(); m++) {
 			sql += "(?, ?),";
 		}
@@ -142,6 +141,10 @@ public class AssignmentTableRepository {
 				return ps.execute();
 			}
 		};
+	}
+	
+	private AssignmentTableModel mapRowToAssignmentTable(ResultSet rs, int row) throws SQLException {
+		return new AssignmentTableModel(rs.getString("name"), rs.getInt("id"));
 	}
 
 }

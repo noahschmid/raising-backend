@@ -7,9 +7,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.stereotype.Repository;
+
 import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.Media;
 import ch.raising.utils.DatabaseOperationException;
@@ -19,10 +22,10 @@ import ch.raising.utils.PreparedStatementUtil;
 import ch.raising.utils.functionalInterface.PSTwoParameters;
 import ch.raising.utils.functionalInterface.RowMapper;
 
-
 public class MediaRepository implements IMediaRepository<Media> {
 	
-	JdbcTemplate jdbc;
+	
+	private final JdbcTemplate jdbc;
 	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Media, Long> PS_ADD;
 	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Long, Long> PS_DELETE;
 	private final RowMapper<ResultSet, Integer, Media> rowMapper;
@@ -38,7 +41,6 @@ public class MediaRepository implements IMediaRepository<Media> {
 	private final String UPDATE_MEDIA;
 	
 	public MediaRepository(JdbcTemplate jdbc, String tableName) {
-		this.jdbc = jdbc;
 		this.PS_ADD = PreparedStatementUtil::addMediaByIdCallback;
 		this.PS_DELETE = PreparedStatementUtil::setIdAccountIdCallback;
 		this.rowMapper = MapUtil::mapRowToMedia;
@@ -51,6 +53,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 		this.ADD_ACCOUNTID_TO_MEDIA = "UPDATE " + tableName + " SET accountid = ? WHERE id = ?";
 		this.COUNT_MEDIA_OF_ACCOUNT = "SELECT COUNT(id) FROM "+ tableName+" WHERE accountid = ?";
 		this.UPDATE_MEDIA = "UPDATE " + tableName + " SET media = ?, type = ? where id = ? AND accountid = ?";
+		this.jdbc = jdbc;
 	}
 	
 	@Override

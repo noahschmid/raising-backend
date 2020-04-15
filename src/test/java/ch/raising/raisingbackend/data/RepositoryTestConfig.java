@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import ch.raising.data.BoardmemberRepository;
 
@@ -32,6 +33,11 @@ public class RepositoryTestConfig {
 	@Bean
 	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
 	    return new JdbcTemplate(dataSource);
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder(DataSource dataSource) {
+	    return new BCryptPasswordEncoder();
 	}
 
 }

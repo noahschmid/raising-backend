@@ -46,7 +46,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      * @throws DataAccessException 
      */
     public void update(long id, Relationship update) throws DataAccessException, SQLException {
-            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("relationship", id, jdbc);
+            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", id);
             updateQuery.addField(update.getInvestorId(), "investorId");
             updateQuery.addField(update.getStartupId(), "startupId");
             updateQuery.addField(update.getMatchingScore(), "matchingScore");

@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -28,7 +29,7 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { RepositoryTestConfig.class })
+@ContextConfiguration(classes = { RepositoryTestConfig.class, AccountRepository.class })
 @ActiveProfiles("RepositoryTest")
 @SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS)
@@ -36,7 +37,7 @@ public class AccountRepositoryTest {
 
 	private AccountRepository accountRepo;
 	private JdbcTemplate jdbc;
-	private BCryptPasswordEncoder encoder;
+	private PasswordEncoder encoder;
 	
 	private Account expected;
 	private Account account;
@@ -60,10 +61,10 @@ public class AccountRepositoryTest {
 	private long profilePictureId = 14;
 
 	@Autowired
-	public AccountRepositoryTest(JdbcTemplate jdbc) {
+	public AccountRepositoryTest(JdbcTemplate jdbc, AccountRepository accountRepo, PasswordEncoder encoder) {
 		this.jdbc = jdbc;
-		this.accountRepo = new AccountRepository(jdbc);
-		this.encoder = new BCryptPasswordEncoder();
+		this.accountRepo = accountRepo;
+		this.encoder = encoder;
 	}
 
 	@BeforeEach
@@ -151,7 +152,6 @@ public class AccountRepositoryTest {
 		assertNotNull(foundByMail);
 		account.setAccountId(1);
 		account.setPassword(passwordHash);
-		account.setEmail(emailHash);
 		assertEquals(account, foundByMail);
 	}
 

@@ -1,12 +1,13 @@
 package ch.raising.models;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Data
+
+@Getter
 @EqualsAndHashCode(callSuper=false)
 public class AssignmentTableModelWithDescription extends AssignmentTableModel{
-	private String description;
+	private final String description;
 	
 	public AssignmentTableModelWithDescription(String name, long id,String description) {
 		super(name, id);

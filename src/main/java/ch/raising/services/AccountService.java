@@ -1,23 +1,20 @@
 package ch.raising.services;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,15 +22,11 @@ import org.springframework.stereotype.Service;
 
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
-import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.Country;
 import ch.raising.models.ForgotPasswordRequest;
-import ch.raising.models.FreeEmailRequest;
 import ch.raising.models.Media;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
-import ch.raising.models.responses.ErrorResponse;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.InvalidProfileException;
@@ -45,7 +38,9 @@ import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
 import ch.raising.data.AssignmentTableRepository;
+import ch.raising.data.AssignmentTableRepositoryFactory;
 import ch.raising.data.MediaRepository;
+import ch.raising.data.MediaRepositoryFactory;
 import ch.raising.interfaces.IMediaRepository;
 
 @Primary
@@ -55,42 +50,54 @@ public class AccountService implements UserDetailsService {
 	protected AccountRepository accountRepository;
 	private MailUtil mailUtil;
 	private ResetCodeUtil resetCodeUtil;
-	private JdbcTemplate jdbc;
 	private JwtUtil jwtUtil;
-	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	private PasswordEncoder encoder;
 	private IMediaRepository<Media> galleryRepository;
 	private IMediaRepository<Media> pPicRepository;
+	
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
+	
+	
 	protected AssignmentTableRepository countryRepo;
 	protected AssignmentTableRepository continentRepo;
 	protected AssignmentTableRepository supportRepo;
 	protected AssignmentTableRepository industryRepo;
+	
+	private final JdbcTemplate jdbc;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
 	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
-			JdbcTemplate jdbc, JwtUtil jwtUtil) {
+			JwtUtil jwtUtil, PasswordEncoder encoder, AssignmentTableRepositoryFactory assignmentFactory, MediaRepositoryFactory mrFactory, JdbcTemplate jdbc) throws SQLException {
 		this.accountRepository = accountRepository;
 		this.mailUtil = mailUtil;
 		this.resetCodeUtil = resetCodeUtil;
-		this.jdbc = jdbc;
+		this.encoder = encoder;
 		this.jwtUtil = jwtUtil;
-		this.countryRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("country")
-				.withRowMapper(MapUtil::mapRowToCountry);
-		this.continentRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("continent");
-		this.supportRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("support");
-		this.industryRepo = AssignmentTableRepository.getInstance(jdbc).withTableName("industry");
-		this.galleryRepository = new MediaRepository(jdbc, "gallery");
-		this.pPicRepository = new MediaRepository(jdbc, "profilepicture");
+		this.countryRepo = assignmentFactory.getRepository("country");
+		this.continentRepo = assignmentFactory.getRepository("continent");
+		this.supportRepo = assignmentFactory.getRepository("support");
+		this.industryRepo = assignmentFactory.getRepository("industry");
+		this.galleryRepository = mrFactory.getMediaRepository("gallery");
+		this.pPicRepository = mrFactory.getMediaRepository("profilepicture");
+		this.jdbc = jdbc;
 	}
 
 	@Override
 	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		try {
+			long begin = System.currentTimeMillis();
 			Account account = accountRepository.findByEmail(email);
+			LOGGER.info("Stopwatch for finding email: {}ms", System.currentTimeMillis() - begin);
+			begin = System.currentTimeMillis();
 			AccountDetails accDet = new AccountDetails(account);
 			accDet.setStartup(accountRepository.isStartup(accDet.getId()));
 			accDet.setInvestor(accountRepository.isInvestor(accDet.getId()));
+			LOGGER.info("Stopwatch for checking if investor: {}ms",System.currentTimeMillis()- begin);
+			
 			return accDet;
 		} catch (EmailNotFoundException e) {
 			throw new UsernameNotFoundException(e.getMessage());
@@ -335,7 +342,7 @@ public class AccountService implements UserDetailsService {
 			throws DataAccessException, SQLException, PasswordResetException {
 		long id = resetCodeUtil.validate(request);
 
-		UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("account", id, jdbc);
+		UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "account", id);
 		updateQuery.addField(encoder.encode(request.getPassword()), "password");
 		updateQuery.execute();
 		AccountDetails userDetails = new AccountDetails(accountRepository.find(id));
@@ -353,9 +360,10 @@ public class AccountService implements UserDetailsService {
 	public LoginResponse login(LoginRequest request) throws AuthenticationException, UsernameNotFoundException {
 		UsernamePasswordAuthenticationToken unamePwToken = new UsernamePasswordAuthenticationToken(request.getEmail(),
 				request.getPassword());
+		
+		//authenticationManager.authenticate(unamePwToken);
 
-		authenticationManager.authenticate(unamePwToken);
-
+		
 		final AccountDetails userDetails = loadUserByUsername(request.getEmail());
 		final String token = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(token, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());

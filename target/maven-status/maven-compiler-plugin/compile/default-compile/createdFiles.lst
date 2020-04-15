@@ -72,6 +72,7 @@ ch\raising\models\AssignmentTableModelWithDescription.class
 ch\raising\models\Investor.class
 ch\raising\interfaces\IRepository.class
 ch\raising\utils\JwtUtil.class
+ch\raising\models\responses\CompletePublicInformation$CompletePublicInformationBuilder.class
 ch\raising\data\ResetCodeRepository$2.class
 ch\raising\utils\functionalInterface\RowMapper.class
 ch\raising\controllers\MediaController.class

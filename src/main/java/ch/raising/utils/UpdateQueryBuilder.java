@@ -11,6 +11,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import ch.raising.data.InvestorRepository;
@@ -30,22 +31,23 @@ public class UpdateQueryBuilder {
 	private float unitializedFloatValue = -1f;
 	private long id;
 	private String tableName;
-	private JdbcTemplate jdbc;
 	private String idField = "id";
+	
+	private JdbcTemplate jdbc;
 
-	public UpdateQueryBuilder(String tableName, long id, JdbcTemplate jdbc) {
+	public UpdateQueryBuilder(JdbcTemplate jdbc, String tableName, long id) {
 		this.tableName = tableName;
 		this.id = id;
-		this.jdbc = jdbc;
 		fields = new ArrayList<>();
+		this.jdbc = jdbc;
 	}
 
-	public UpdateQueryBuilder(String tableName, long id, JdbcTemplate jdbc, String idField) {
+	public UpdateQueryBuilder(JdbcTemplate jdbc, String tableName, long id, String idField) {
 		this.tableName = tableName;
 		this.id = id;
-		this.jdbc = jdbc;
 		fields = new ArrayList<>();
 		this.idField = idField;
+		this.jdbc = jdbc;
 	}
 
 	/**
@@ -135,6 +137,7 @@ public class UpdateQueryBuilder {
 	 * @throws Exception
 	 */
 	public void execute() throws SQLException, DataAccessException {
+		assert jdbc != null;
 		String sql = buildQuery();
 		if(sql == "" || sql == null) 
 			return;

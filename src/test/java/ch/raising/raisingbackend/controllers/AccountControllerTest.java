@@ -1,34 +1,26 @@
 package ch.raising.raisingbackend.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -38,7 +30,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -47,24 +38,17 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-import ch.raising.data.AccountRepository;
 import ch.raising.models.Account;
-import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.FreeEmailRequest;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
-import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MapUtil;
-import ch.raising.utils.QueryBuilder;
-import ch.raising.utils.Type;
-
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @SpringBootTest
@@ -93,7 +77,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 	@Test
 	public void testLogin() throws Exception {
 		UserDetails udet = mock(UserDetails.class);
-		when(udet.getUsername()).thenReturn(emailHash);
+		when(udet.getUsername()).thenReturn(email);
 		LoginRequest login = new LoginRequest(account.getEmail(), account.getPassword());
 		MvcResult req = mockMvc.perform(post("/account/login").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(login))).andExpect(status().is(200)).andReturn();
@@ -235,9 +219,11 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		update.setCountryId(12);
 		update.setWebsite("suppenkopf.ch");
 		
-		mockMvc.perform(patch("/account/" + accountId).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(update))).andExpect(status().is(200));
-		Account updated = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { accountId },
+	
+		MvcResult res= mockMvc.perform(patch("/account/" + accountId).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(update))).andReturn();
+		assertEquals(res.getResponse().getContentAsString(),200, res.getResponse().getStatus());
+	Account updated = jdbc.queryForObject("SELECT * FROM account WHERE id = ?", new Object[] { accountId },
 				MapUtil::mapRowToAccount);
 		assertEquals(accountId, updated.getAccountId());
 		assertNotEquals(updated.getAccountId(), update.getAccountId());

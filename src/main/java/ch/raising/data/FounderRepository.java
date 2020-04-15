@@ -77,7 +77,7 @@ public class FounderRepository implements IAdditionalInformationRepository<Found
 
 	@Override
 	public void update(long id, Founder req) throws DataAccessException, SQLException {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("founder", id, jdbc);
+		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "founder", id);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getEducation(), "education");

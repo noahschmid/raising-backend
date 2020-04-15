@@ -59,8 +59,7 @@ public class AssignmentTableTest2 {
 		assignmentTableName = tableName + "assignment";
 		accountId = "startupid";
 		this.jdbc = jdbc;
-		repo = AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName(accountId)
-				.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
+		repo = new AssignmentTableRepository(jdbc, tableName, accountId).withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
 	}
 
 	@BeforeEach

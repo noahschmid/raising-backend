@@ -3,11 +3,13 @@ package ch.raising.models.responses;
 import java.util.List;
 
 import ch.raising.interfaces.IAssignmentTableModel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Builder
+@AllArgsConstructor
 public class CompletePublicInformation {
 	List<IAssignmentTableModel> ticketSizes;
 	List<IAssignmentTableModel> continents;

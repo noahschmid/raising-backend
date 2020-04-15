@@ -68,7 +68,7 @@ public class InvestorRepository implements IRepository<Investor> {
 	 * @throws Exception
 	 */
 	public void update(long id, Investor inv) throws SQLException, DataAccessException {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("investor", id, jdbc, "accountid");
+		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "investor", id, "accountid");
 		System.out.println(inv.getInvestorTypeId());
 		update.addField(inv.getInvestorTypeId(), "investortypeid");
 		update.execute();

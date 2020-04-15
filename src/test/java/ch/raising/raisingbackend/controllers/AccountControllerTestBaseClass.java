@@ -54,7 +54,7 @@ public class AccountControllerTestBaseClass {
 	private long countryId = 123;
 	private String website = "testsite.ch";
 	protected final String emailHash;
-	protected String passwordHash;
+	protected final String passwordHash;
 	private Media profilePicture;
 	private List<Media> gallery;
 	protected List<Long> countries;
@@ -64,7 +64,7 @@ public class AccountControllerTestBaseClass {
 	protected final String TABLENAME;
 	protected Account account;
 	protected JwtUtil jwt;
-
+	
 	public AccountControllerTestBaseClass(WebApplicationContext wac, JdbcTemplate jdbc, ObjectMapper objectMapper,
 			BCryptPasswordEncoder encoder) {
 		this.wac = wac;
