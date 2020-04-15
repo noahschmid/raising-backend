@@ -72,7 +72,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      */
     public void update(long id, Relationship update) throws DataAccessException, SQLException {
         try {    
-            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("relationship", id, jdbc);
+            UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", id);
             updateQuery.addField(update.getInvestorId(), "investorId");
             updateQuery.addField(update.getStartupId(), "startupId");
             updateQuery.addField(update.getMatchingScore(), "matchingScore");
@@ -104,7 +104,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      * @param state the new state
      */
     public void updateState(long id, RelationshipState state) throws Exception {
-        UpdateQueryBuilder updateQuery = new UpdateQueryBuilder("relationship", id, jdbc);
+        UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", id);
         updateQuery.addField(state.toString(), "state");
         updateQuery.execute();
     }

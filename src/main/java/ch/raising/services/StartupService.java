@@ -55,11 +55,11 @@ public class StartupService extends AccountService {
 		this.founderRepository = founderRepository;
 		this.pshRepository = pshRepository;
 		this.cshRepository = cshRepository;
-		this.countryRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("country")
+		this.countryRepository = atrFactory.getRepositoryForStartup("country")
 				.withRowMapper(MapUtil::mapRowToCountry);
-		this.continentRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("continent");
-		this.supportRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("support");
-		this.industryRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("industry");
+		this.continentRepository = atrFactory.getRepositoryForStartup("continent");
+		this.supportRepository = atrFactory.getRepositoryForStartup("support");
+		this.industryRepository = atrFactory.getRepositoryForStartup("industry");
 	}
 
 	@Override
@@ -163,12 +163,12 @@ public class StartupService extends AccountService {
 
 		MatchingProfile profile = new MatchingProfile();
 		List<AssignmentTableModel> types = investorTypeRepository.findByAccountId(startup.getAccountId());
-		List<AssignmentTableModel> continents = continentRepo.findByAccountId(startup.getAccountId());
-		countryRepo.findByAccountId(startup.getAccountId()).forEach(country -> {
+		List<AssignmentTableModel> continents = continentRepository.findByAccountId(startup.getAccountId());
+		countryRepository.findByAccountId(startup.getAccountId()).forEach(country -> {
 			profile.addCountry((Country)country);
 		});;
-		List<AssignmentTableModel> industries = industryRepo.findByAccountId(startup.getAccountId());
-		List<AssignmentTableModel> supports = supportRepo.findByAccountId(startup.getAccountId());
+		List<AssignmentTableModel> industries = industryRepository.findByAccountId(startup.getAccountId());
+		List<AssignmentTableModel> supports = supportRepository.findByAccountId(startup.getAccountId());
 
 		profile.setAccountId(startup.getAccountId());
 		profile.setName(startup.getCompanyName());

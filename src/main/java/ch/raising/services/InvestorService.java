@@ -61,12 +61,12 @@ public class InvestorService extends AccountService {
 
 		this.investmentPhaseRepository = atrFactory.getRepositoryForInvestor("investmentphase");
 		this.investorRepository = investorRepository;
-		this.countryRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("country")
+		this.countryRepository = atrFactory.getRepositoryForInvestor("country")
 				.withRowMapper(MapUtil::mapRowToCountry);
-		this.continentRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("continent");
-		this.supportRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("support");
-		this.industryRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("industry");
-		this.investorTypeRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investortype");
+		this.continentRepository = atrFactory.getRepositoryForInvestor("continent");
+		this.supportRepository = atrFactory.getRepositoryForInvestor("support");
+		this.industryRepository = atrFactory.getRepositoryForInvestor("industry");
+		this.investorTypeRepository = atrFactory.getRepositoryForInvestor("investortype");
 	}
 
 	@Override
@@ -120,43 +120,6 @@ public class InvestorService extends AccountService {
 		investorRepository.update(id, inv);
 	}
 
-	/**
-	 * Get matching profile of investor (the required information for matching)
-	 * 
-	 * @return Matching profile of investor
-	 * @throws SQLException
-	 * @throws DataAccessException
-	 */
-	public MatchingProfile getMatchingProfile(Investor investor) throws DataAccessException, SQLException {
-		if (investor == null)
-			return null;
-
-		MatchingProfile profile = new MatchingProfile();
-		AssignmentTableModel investorType = investorTypeRepository.find(investor.getInvestorTypeId());
-		List<AssignmentTableModel> continents = continentRepository.findByAccountId(investor.getAccountId());
-		List<AssignmentTableModel> countries = countryRepository.findByAccountId(investor.getAccountId());
-		List<AssignmentTableModel> industries = industryRepository.findByAccountId(investor.getAccountId());
-		List<AssignmentTableModel> investmentPhases = investmentPhaseRepository
-				.findByAccountId(investor.getAccountId());
-		List<AssignmentTableModel> supports = supportRepository.findByAccountId(investor.getAccountId());
-
-		profile.setAccountId(investor.getAccountId());
-		profile.setName(investor.getCompanyName());
-		profile.setDescription(investor.getDescription());
-		profile.setInvestmentMax(investor.getTicketMaxId());
-		profile.setInvestmentMin(investor.getTicketMinId());
-		profile.setStartup(false);
-
-		profile.addInvestorType(investorType);
-
-		profile.setContinents(continents);
-		profile.setCountries(countries);
-		profile.setIndustries(industries);
-		profile.setInvestmentPhases(investmentPhases);
-		profile.setSupport(supports);
-
-		return profile;
-	}
     /**
      * Get matching profile of investor (the required information for matching)
      * @return Matching profile of investor
