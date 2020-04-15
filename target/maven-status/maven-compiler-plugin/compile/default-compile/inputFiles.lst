@@ -41,6 +41,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MediaService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ProfileService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtRequestFilter.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\MatchingController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UpdateQueryBuilder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AdditionalInformationService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AdminController.java
@@ -56,6 +57,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAut
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Country.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MatchingService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidProfileException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\PrivateShareholderRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\LoginResponse.java
@@ -72,7 +74,8 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Assignm
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ExcepionHandler.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\SecurityConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PasswordResetRequest.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MatchingUtil.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\MediaRepositoryFactory.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSTwoParameters.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\RelationshipState.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\InvestorService.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AssignmentTableRepositoryFactory.java

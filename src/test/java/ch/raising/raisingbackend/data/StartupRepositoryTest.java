@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,10 +24,11 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import ch.raising.data.StartupRepository;
 import ch.raising.models.Startup;
+import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = {RepositoryTestConfig.class })
+@ContextConfiguration(classes = {TestConfig.class })
 @SpringBootTest
 @ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
@@ -84,14 +87,14 @@ public class StartupRepositoryTest {
 	}
 
 	@Test
-	public void testFind() {
+	public void testFind() throws DataAccessException, SQLException, DatabaseOperationException {
 		Startup found = suRepo.find(1);
 		assertNotNull(found);
 		assertEquals(su, found);
 	}
 
 	@Test
-	public void testGetAll() {
+	public void testGetAll() throws DataAccessException, SQLException {
 		List<Startup> suList = suRepo.getAll();
 		assertNotNull(suList);
 		assertEquals(1, suList.size());

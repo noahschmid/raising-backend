@@ -56,8 +56,8 @@ public class StartupControllerTest extends AccountControllerTestBaseClass{
 
 	@Autowired
 	public StartupControllerTest(WebApplicationContext wac, JdbcTemplate jdbc, ObjectMapper objectMapper,
-			BCryptPasswordEncoder encoder) {
-		super(wac, jdbc, objectMapper, encoder);
+			BCryptPasswordEncoder encoder, JwtUtil jwt) {
+		super(wac, jdbc, objectMapper, encoder, jwt);
 	}
 	
 	

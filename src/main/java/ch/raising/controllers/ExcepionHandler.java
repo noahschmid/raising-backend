@@ -4,10 +4,13 @@ import java.io.IOException;
 
 import java.sql.SQLException;
 
+import javax.management.BadAttributeValueExpException;
+
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -41,7 +44,7 @@ public class ExcepionHandler {
 	@ExceptionHandler(DatabaseOperationException.class)
 	public ResponseEntity<ErrorResponse> handle(DatabaseOperationException e){
 		e.printStackTrace();
-		return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage(), e));
+		return ResponseEntity.status(400).body(new ErrorResponse("There was a problem with the request on the database", e.getMessage()));
 	}
 	@ExceptionHandler(InvalidProfileException.class)
 	public ResponseEntity<ErrorResponse> handle(InvalidProfileException e){
@@ -84,6 +87,10 @@ public class ExcepionHandler {
 	public ResponseEntity<?> handle(MediaNotAddedException e){
 		e.printStackTrace();
 		return ResponseEntity.status(500).body(new ErrorResponse("Media could not be added", e.getMessage()));
+	}
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<?> handle(BadCredentialsException e){
+		return ResponseEntity.status(500).body(new ErrorResponse("Login failed", e.getMessage()));
 	}
 	
 }

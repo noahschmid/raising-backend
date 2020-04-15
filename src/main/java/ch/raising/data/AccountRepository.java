@@ -70,10 +70,8 @@ public class AccountRepository implements IRepository<Account> {
 	 */
 	public Account findByEmail(String email) throws EmailNotFoundException, DataAccessException, SQLException {
 		List<Account> accounts = getAll();
-		long begin = System.currentTimeMillis();
 		for (Account acc : accounts) {
 			if (encoder.matches(email, acc.getEmail())) {
-				LOGGER.info("Stopwatch for checking unhashed email: {}ms", System.currentTimeMillis()- begin);
 				acc.setEmail(email);
 				return acc;
 			}

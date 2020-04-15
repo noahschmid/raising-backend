@@ -16,6 +16,7 @@ import java.sql.SQLException;
 
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
+import ch.raising.utils.DatabaseOperationException;
 
 @Controller
 @RequestMapping("/profile")
@@ -31,12 +32,12 @@ public class ProfileController {
 	}
 
 	@GetMapping("/startup/{id}")
-	public ResponseEntity<?> getStartup(@PathVariable long id) throws DataAccessException, SQLException{
+	public ResponseEntity<?> getStartup(@PathVariable long id) throws DataAccessException, SQLException, DatabaseOperationException{
 		return ResponseEntity.ok(suService.getAccount(id));
 	}
 	
 	@GetMapping("/investor/{id}")
-	public ResponseEntity<?> getInvestor(@PathVariable long id)throws DataAccessException, SQLException{
+	public ResponseEntity<?> getInvestor(@PathVariable long id)throws DataAccessException, SQLException, DatabaseOperationException{
 		return ResponseEntity.ok(invService.getAccount(id));
 	}
 	

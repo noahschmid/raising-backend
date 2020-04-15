@@ -1,7 +1,6 @@
 package ch.raising.utils;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,17 +17,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import ch.raising.data.AccountRepository;
 import ch.raising.services.AccountService;
-import io.jsonwebtoken.Claims;
 
 @Component  
 public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
-    private AccountService AccountService;
+    private AccountService accountService;
 
     @Autowired
     private JwtUtil jwtUtil;
+    
+    private static Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
  
 
     
@@ -41,6 +41,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, 
                                     HttpServletResponse response, 
                                     FilterChain chain) throws ServletException, IOException{
+    	long begin = System.currentTimeMillis();
         final String authHeader = request.getHeader("Authorization");
         String username = null;
         String token = null;
@@ -49,21 +50,28 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             username = jwtUtil.extractUsername(token);
             id = jwtUtil.extractId(token);
+            LOGGER.info("extracted id: "+id);
         }
 
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.AccountService.loadUserByUsername(username);
-            if(jwtUtil.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, 
-                                                            userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
+        if(id != -1 && SecurityContextHolder.getContext().getAuthentication() == null) {
+        	UserDetails userDetails;
+			try{
+				userDetails = this.accountService.loadUserById(id);
+				if(jwtUtil.validateToken(token, userDetails)) {
+	                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+	                    new UsernamePasswordAuthenticationToken(userDetails, null, 
+	                                                            userDetails.getAuthorities());
+	                usernamePasswordAuthenticationToken
+	                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+	                
+	                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+	                LOGGER.info("Filter Stopwatch: {}ms", System.currentTimeMillis() - begin);
+	            }
+			} catch (DataAccessException e) {
+				throw new ServletException(e.getMessage());
+			}
+            
         }
-
         chain.doFilter(request, response);
     }
 }

@@ -8,7 +8,11 @@ import java.util.function.Function;
 import javax.security.auth.message.AuthException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ch.raising.models.AccountDetails;
@@ -27,9 +31,11 @@ public class JwtUtil {
 	private final String SECRET_KEY = "vzoY2faTegwQl4aaJ8L1J2FXAxDM8eafbBltW4Hpc6WTfcJKs1MMVq2mTB8NNNm9r51mBQXSkSWdiTVacwRWzo5st0fN2b63"
 			+ "urGTiKqHjOy8ZXiz6fuBH8qsUb0dtPsTcHHXVCZ9jvwamZkQ2L22OftBpaIprermmIsGJNzLqcBUYuTp5cYpX4tijPnoWvhu7lXUfcBqMV8O4rRbjn99oEZS"
 			+ "n5U6mw2tfyfyL5o1mR7fegDqXvThA5B0PkxshJ5R";
-
-	public JwtUtil() {
-		super();
+    private final PasswordEncoder encoder;
+    
+    @Autowired
+	public JwtUtil(PasswordEncoder encoder) {
+		this.encoder = encoder;
 	}
 
 	public String extractUsername(String token) {
@@ -79,7 +85,7 @@ public class JwtUtil {
 
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = extractUsername(token);
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		return (encoder.matches(username, userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
 

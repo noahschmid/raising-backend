@@ -3,7 +3,7 @@ package ch.raising.raisingbackend.data;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -12,12 +12,10 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import ch.raising.data.BoardmemberRepository;
-
 
 @Configuration
 @Profile("RepositoryTest")
-public class RepositoryTestConfig {
+public class TestConfig {
 	
 	
 	@Bean("javax.sql.DataSource")
@@ -36,7 +34,7 @@ public class RepositoryTestConfig {
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder(DataSource dataSource) {
+	public PasswordEncoder passwordEncoder() {
 	    return new BCryptPasswordEncoder();
 	}
 

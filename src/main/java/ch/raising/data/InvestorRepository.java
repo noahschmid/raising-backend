@@ -16,21 +16,26 @@ import java.util.List;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
 import ch.raising.models.Investor;
+import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class InvestorRepository implements IRepository<Investor> {
 	private JdbcTemplate jdbc;
 
+	
+	private final String FIND_BY_ID;
 	@Autowired
 	public InvestorRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
+		this.FIND_BY_ID = "SELECT * FROM investor WHERE accountId = ?";
 	}
 
 	/**
@@ -38,22 +43,21 @@ public class InvestorRepository implements IRepository<Investor> {
 	 * 
 	 * @param tableEntryId tableEntryId of the desired investor
 	 * @return instance of the found investor
+	 * @throws DatabaseOperationException 
 	 */
-	public Investor find(long id) {
-        try {
-            String sql = "SELECT * FROM investor WHERE accountId = ?";
-            return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToModel);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+	public Investor find(long id)throws DataAccessException, SQLException, DatabaseOperationException {
+		try {
+            return jdbc.queryForObject(FIND_BY_ID, new Object[] { id }, this::mapRowToModel);
+		}catch(EmptyResultDataAccessException e) {
+			throw new DatabaseOperationException("this id: "+id+" does not specify an investor");
+		}
     }
 	/**
 	 * Get all investors
 	 * 
 	 * @return list of all investors
 	 */
-	public List<Investor> getAll() {
+	public List<Investor> getAll() throws DataAccessException, SQLException{
 		String getAll = "SELECT * FROM investor";
 		List<Investor> users = jdbc.query(getAll, this::mapRowToModel);
 		return users;

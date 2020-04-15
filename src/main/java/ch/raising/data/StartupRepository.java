@@ -11,18 +11,22 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Startup;
+import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class StartupRepository implements IRepository<Startup> {
 	private JdbcTemplate jdbc;
-
+	private final String FIND_BY_ID;
+	
 	@Autowired
 	public StartupRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
+		this.FIND_BY_ID = "SELECT * FROM startup WHERE accountId = ?";
 	}
 
 	/**
@@ -30,15 +34,15 @@ public class StartupRepository implements IRepository<Startup> {
 	 * 
 	 * @param accountId tableEntryId of the desired startup account
 	 * @return instance of the found startup
+	 * @throws DatabaseOperationException 
 	 */
-	public Startup find(long accountId) {
-		try {
-			String sql = "SELECT * FROM startup WHERE accountId = ?";
-			return jdbc.queryForObject(sql, new Object[] { accountId }, this::mapRowToModel);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return null;
-		}
+	public Startup find(long accountId) throws SQLException, DataAccessException, DatabaseOperationException{
+			try {
+				return jdbc.queryForObject(FIND_BY_ID, new Object[] { accountId }, this::mapRowToModel);
+			}catch(EmptyResultDataAccessException e) {
+				throw new DatabaseOperationException("this id: " + accountId + " does not specify a startup");
+			}
+			
 	}
 
 	/**
@@ -46,7 +50,7 @@ public class StartupRepository implements IRepository<Startup> {
 	 * 
 	 * @return list of all startups
 	 */
-	public List<Startup> getAll() {
+	public List<Startup> getAll() throws DataAccessException, SQLException{
 		String getAll = "SELECT * FROM startup";
 		List<Startup> users = jdbc.query(getAll, this::mapRowToModel);
 		return users;

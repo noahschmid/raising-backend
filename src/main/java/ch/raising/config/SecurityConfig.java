@@ -46,8 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
         .antMatchers("/profile/*/*")
         .permitAll()
-        .antMatchers("/public/*")
-        .permitAll()
+//        .antMatchers("/public/*")
+//        .permitAll()
         .antMatchers("/investor/register")
         .permitAll()
         .antMatchers("/startup/register")
@@ -73,6 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
         http
         	.requiresChannel()
         	.anyRequest()

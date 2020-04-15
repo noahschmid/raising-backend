@@ -13,10 +13,10 @@ ch\raising\data\ResetCodeRepository$3.class
 ch\raising\data\RelationshipRepository.class
 ch\raising\controllers\InvestorController.class
 ch\raising\data\RelationshipRepository$1.class
-ch\raising\utils\MatchingUtil.class
 ch\raising\data\FounderRepository$1.class
 ch\raising\utils\EmailNotFoundException.class
 ch\raising\models\responses\FileUploadResponse.class
+ch\raising\services\MatchingService.class
 ch\raising\controllers\PublicInformationController.class
 ch\raising\data\BoardmemberRepository$1.class
 ch\raising\raisingbackend\RaisingBackendApplication.class
@@ -37,9 +37,11 @@ ch\raising\models\Founder$FounderBuilder.class
 ch\raising\models\CorporateShareholder$1.class
 ch\raising\models\CorporateShareholder.class
 ch\raising\services\StartupService.class
+ch\raising\data\AssignmentTableRepositoryFactory.class
 ch\raising\data\AssignmentTableRepository.class
 ch\raising\services\ProfileService.class
 ch\raising\models\responses\CompletePublicInformation.class
+ch\raising\services\MatchingService$1.class
 ch\raising\utils\PreparedStatementUtil$2.class
 ch\raising\models\Account.class
 ch\raising\models\PrivateShareholder$PrivateShareholderBuilder.class
@@ -89,6 +91,7 @@ ch\raising\models\Media$MediaBuilder.class
 ch\raising\data\AccountRepository$1.class
 ch\raising\models\responses\ErrorResponse.class
 ch\raising\data\StartupRepository$1.class
+ch\raising\controllers\MatchingController.class
 ch\raising\controllers\ExcepionHandler.class
 ch\raising\models\Founder.class
 ch\raising\models\Investor$InvestorBuilder.class
@@ -102,6 +105,7 @@ ch\raising\controllers\ProfileController.class
 ch\raising\models\Startup.class
 ch\raising\models\Media.class
 ch\raising\models\Support.class
+ch\raising\data\MediaRepositoryFactory.class
 ch\raising\models\StartupMember.class
 ch\raising\utils\functionalInterface\PSTwoParameters.class
 ch\raising\interfaces\IExtendedAssignmentTableModel.class

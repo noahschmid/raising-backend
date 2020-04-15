@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import ch.raising.data.InvestorRepository;
 import ch.raising.data.RelationshipRepository;
@@ -18,22 +19,18 @@ import ch.raising.models.Startup;
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
 
-@Component
+@Service
 public class MatchingService {
 
-    @Autowired
+    
     private InvestorRepository investorRepository;
-
-    @Autowired
+    
     private InvestorService investorService;
 
-    @Autowired
     private StartupRepository startupRepository;
-
-    @Autowired
+    
     private StartupService startupService;
-
-    @Autowired
+    
     private RelationshipRepository relationshipRepository;
 
     @Autowired
@@ -111,7 +108,7 @@ public class MatchingService {
      * @param object the second matching profile to be matched with
      * @return matching score
      */
-    public int getMatchingScore(MatchingProfile subject, MatchingProfile object) {
+    public static int getMatchingScore(MatchingProfile subject, MatchingProfile object) {
         int score = 0;
 
         if(subject.getInvestmentMin() != -1 && subject.getInvestmentMax() != -1 && 

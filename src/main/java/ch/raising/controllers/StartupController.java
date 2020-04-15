@@ -53,9 +53,10 @@ public class StartupController {
      * @return ResponseEntity instance with status code and startup in body
 	 * @throws SQLException 
 	 * @throws DataAccessException 
+	 * @throws DatabaseOperationException 
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStartupProfile(@PathVariable int id) throws DataAccessException, SQLException {
+    public ResponseEntity<?> getStartupProfile(@PathVariable int id) throws DataAccessException, SQLException, DatabaseOperationException {
         return ResponseEntity.ok(startupService.getAccount(id));
 	}
     

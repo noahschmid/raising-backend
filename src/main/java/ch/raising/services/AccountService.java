@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,6 +31,7 @@ import ch.raising.models.PasswordResetRequest;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.InvalidProfileException;
+import ch.raising.utils.JwtRequestFilter;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
@@ -58,7 +60,7 @@ public class AccountService implements UserDetailsService {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
-	
+	 private static Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
 	
 	protected AssignmentTableRepository countryRepo;
 	protected AssignmentTableRepository continentRepo;
@@ -99,6 +101,17 @@ public class AccountService implements UserDetailsService {
 		} catch (SQLException e) {
 			throw new UsernameNotFoundException(e.getMessage());
 		}
+	}
+	
+	public AccountDetails loadUserById(long id) throws UsernameNotFoundException {
+		try {
+			Account acc = accountRepository.find(id);
+			return new AccountDetails(acc);
+		}catch (DataAccessException | SQLException e) {
+			throw new UsernameNotFoundException(e.getMessage());
+		}
+		
+		
 	}
 
 	/**
@@ -219,7 +232,8 @@ public class AccountService implements UserDetailsService {
 	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
-	public Account getAccount(long id) throws DataAccessException, SQLException {
+	public Account getAccount(long id) throws DataAccessException, SQLException, DatabaseOperationException {
+		long begin = System.currentTimeMillis();
 		List<Long> countries = countryRepo.findIdByAccountId(id);
 		List<Long> continents = continentRepo.findIdByAccountId(id);
 		List<Long> support = supportRepo.findIdByAccountId(id);
@@ -235,7 +249,7 @@ public class AccountService implements UserDetailsService {
 		acc.setContinents(continents);
 		acc.setSupport(support);
 		acc.setIndustries(industries);
-
+		LOGGER.info("Stopwatch for getting Account: {}ms", System.currentTimeMillis()- begin);
 		return acc;
 	}
 
@@ -351,10 +365,13 @@ public class AccountService implements UserDetailsService {
 	 * @return A login response Model {@link ch.raising.models.LoginResponse}
 	 */
 	public LoginResponse login(LoginRequest request) throws AuthenticationException, UsernameNotFoundException {
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 		
-	 AccountDetails userDetails = loadUserByUsername(request.getEmail());
-		final String token = jwtUtil.generateToken(userDetails);
-		return new LoginResponse(token, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
+		Authentication auth = authenticationManager.authenticate(token);
+		
+		AccountDetails userDetails = (AccountDetails) auth.getPrincipal();
+		final String returnToken = jwtUtil.generateToken(userDetails);
+		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}
 
 }

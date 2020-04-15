@@ -104,10 +104,11 @@ public class StartupService extends AccountService {
 	 * @param long the tableEntryId of the startup
 	 * @throws SQLException
 	 * @throws DataAccessException
+	 * @throws DatabaseOperationException 
 	 * @returns Account a fully initialised Startup object
 	 */
 	@Override
-	public Account getAccount(long startupId) throws DataAccessException, SQLException {
+	public Account getAccount(long startupId) throws DataAccessException, SQLException, DatabaseOperationException {
 
 		List<Long> invTypes = investorTypeRepository.findIdByAccountId(startupId);
 		List<Long> labels = labelRepository.findIdByAccountId(startupId);

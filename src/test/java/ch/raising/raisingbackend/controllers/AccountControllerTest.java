@@ -48,6 +48,7 @@ import ch.raising.models.FreeEmailRequest;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
+import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MapUtil;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
@@ -58,8 +59,8 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 
 	@Autowired
 	public AccountControllerTest(WebApplicationContext wac, JdbcTemplate jdbc, ObjectMapper objectMapper,
-			BCryptPasswordEncoder encoder) {
-		super(wac,jdbc,objectMapper,encoder);
+			BCryptPasswordEncoder encoder, JwtUtil jwt) {
+		super(wac,jdbc,objectMapper,encoder, jwt);
 	}
 	
 	@Override
@@ -77,7 +78,7 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 	@Test
 	public void testLogin() throws Exception {
 		UserDetails udet = mock(UserDetails.class);
-		when(udet.getUsername()).thenReturn(email);
+		when(udet.getUsername()).thenReturn(emailHash);
 		LoginRequest login = new LoginRequest(account.getEmail(), account.getPassword());
 		MvcResult req = mockMvc.perform(post("/account/login").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(login))).andExpect(status().is(200)).andReturn();

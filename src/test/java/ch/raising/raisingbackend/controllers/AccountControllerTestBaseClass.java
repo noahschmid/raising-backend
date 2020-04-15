@@ -66,14 +66,14 @@ public class AccountControllerTestBaseClass {
 	protected JwtUtil jwt;
 	
 	public AccountControllerTestBaseClass(WebApplicationContext wac, JdbcTemplate jdbc, ObjectMapper objectMapper,
-			BCryptPasswordEncoder encoder) {
+			BCryptPasswordEncoder encoder, JwtUtil jwt) {
 		this.wac = wac;
 		this.jdbc = jdbc;
 		this.objectMapper = objectMapper;
 		this.encoder = encoder;
 		this.emailHash = encoder.encode(email);
 		this.passwordHash = encoder.encode(password);
-		this.jwt = new JwtUtil();
+		this.jwt = jwt;
 		this.TABLENAME = "account";
 	}
 

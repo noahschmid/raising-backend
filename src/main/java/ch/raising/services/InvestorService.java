@@ -86,12 +86,10 @@ public class InvestorService extends AccountService {
 	}
 
 	@Override
-	public Investor getAccount(long id) throws DataAccessException, SQLException {
-
+	public Investor getAccount(long id) throws DataAccessException, SQLException, DatabaseOperationException {
 		Account acc = super.getAccount(id);
 		List<Long> invPhase = investmentPhaseRepository.findIdByAccountId(id);
 		Investor inv = investorRepository.find(id);
-
 		return new Investor(acc, inv, invPhase);
 	}
 

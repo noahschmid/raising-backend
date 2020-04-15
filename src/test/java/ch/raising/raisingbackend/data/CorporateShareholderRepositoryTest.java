@@ -28,7 +28,7 @@ import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
 
-@ContextConfiguration(classes = { RepositoryTestConfig.class })
+@ContextConfiguration(classes = { TestConfig.class })
 @SpringBootTest
 @ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
