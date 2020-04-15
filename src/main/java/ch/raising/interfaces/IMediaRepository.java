@@ -14,7 +14,7 @@ public interface IMediaRepository<Model> {
 	
 	long addMedia(Media media) throws DataAccessException, SQLException, DatabaseOperationException;
 	
-	Media findMediaById(long mediaId) throws DataAccessException, SQLException;
+	Media findMediaById(long mediaId) throws DatabaseOperationException, DataAccessException, SQLException;
 	
 	List<Long> findMediaIdByAccountId(long accountId) throws DataAccessException, SQLException;
 

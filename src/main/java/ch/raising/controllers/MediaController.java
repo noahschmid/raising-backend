@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,7 +61,7 @@ public class MediaController {
 	}
 	
 	@GetMapping("/video/{accountId}")
-	public ResponseEntity<?> getVideoOfAccount(@PathVariable long accountId) throws DataAccessException, SQLException{
+	public ResponseEntity<?> getVideoOfAccount(@PathVariable long accountId) throws DataAccessException, SQLException, DatabaseOperationException{
 		return ResponseEntity.ok().body(videoService.getMedia(accountId));
 	}
 	
@@ -72,7 +73,7 @@ public class MediaController {
 	 * @throws DataAccessException 
 	 */
 	@GetMapping("/profilepicture/{id}")
-	public ResponseEntity<?> getProfilePicture(@PathVariable long id) throws DataAccessException, SQLException{
+	public ResponseEntity<?> getProfilePicture(@PathVariable long id) throws DatabaseOperationException, DataAccessException, SQLException{
 		Media ppic = ppicService.getMedia(id);
 		MediaType returns = MediaType.parseMediaType(ppic.getContentType());
 		return ResponseEntity.ok().contentType(returns).body(ppic.getMedia());
@@ -107,7 +108,6 @@ public class MediaController {
 	 */
 	@PatchMapping("/profilepicture/{id}")
 	public ResponseEntity<?> updateProfilePicture(@RequestParam("profilePicture") MultipartFile file, @PathVariable("id") long id) throws DataAccessException, SQLException, MediaNotAddedException, IOException{
-		System.out.println("============================= " + id );
 		if(file.getContentType().equals("image/png") || file.getContentType().equals("image/jpeg")) {
 			ppicService.updateMediaOfAccount(file, id);
 			return ResponseEntity.ok().build();
@@ -132,9 +132,10 @@ public class MediaController {
 	 * @return a byte[] and the contenttype in the header
 	 * @throws DataAccessException
 	 * @throws SQLException
+	 * @throws DatabaseOperationException 
 	 */
 	@GetMapping("/gallery/{id}")
-	public ResponseEntity<?> getGallery(@PathVariable long id) throws DataAccessException, SQLException{
+	public ResponseEntity<?> getGallery(@PathVariable long id) throws DataAccessException, SQLException, DatabaseOperationException{
 		Media ppic = galleryService.getMedia(id);
 		MediaType returns = MediaType.parseMediaType(ppic.getContentType());
 		return ResponseEntity.ok().contentType(returns).body(ppic.getMedia());

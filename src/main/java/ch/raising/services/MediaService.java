@@ -63,7 +63,7 @@ public class MediaService{
 		}
 	}
 	
-	public Media getMedia(long id) throws DataAccessException, SQLException {
+	public Media getMedia(long id) throws DataAccessException, SQLException, DatabaseOperationException {
 		return mediaRepo.findMediaById(id);
 	}
 	

@@ -84,7 +84,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 		try {
 			return jdbc.query(FIND_BY_ACCOUNTID, new Object[] { id }, rowMapper::mapRowToModel);
 		}catch(EmptyResultDataAccessException e) {
-			throw new DatabaseOperationException("No element with id(" + id +") found");
+			throw new DatabaseOperationException("No element with accountid(" + id +") found");
 		}
 		
 	}
@@ -101,8 +101,12 @@ public class MediaRepository implements IMediaRepository<Media> {
 	}
 
 	@Override
-	public Media findMediaById(long mediaId) throws DataAccessException, SQLException {
-		return jdbc.queryForObject(FIND_BY_ID,new Object[] {mediaId}, rowMapper::mapRowToModel);
+	public Media findMediaById(long mediaId) throws DataAccessException, SQLException, DatabaseOperationException {
+		try {
+			return jdbc.queryForObject(FIND_BY_ID,new Object[] {mediaId}, rowMapper::mapRowToModel);
+		}catch(EmptyResultDataAccessException e) {
+			throw new DatabaseOperationException("No element with mediaId(" + mediaId +") found");
+		}
 	}
 	
 	@Override
