@@ -13,6 +13,7 @@ import ch.raising.data.InvestorRepository;
 import ch.raising.data.RelationshipRepository;
 import ch.raising.data.StartupRepository;
 import ch.raising.models.AssignmentTableModel;
+import ch.raising.models.Country;
 import ch.raising.models.Investor;
 import ch.raising.models.MatchResponse;
 import ch.raising.models.MatchingProfile;
@@ -39,6 +40,8 @@ public class MatchingService {
 
     @Autowired
     private RelationshipRepository relationshipRepository;
+
+    private final static int MAX_SCORE = 6;
 
     @Autowired
     public MatchingService(RelationshipRepository relationshipRepository,
@@ -118,6 +121,7 @@ public class MatchingService {
      */
     public static int getMatchingScore(MatchingProfile subject, MatchingProfile object) {
         int score = 0;
+        boolean found = false;
 
         if(subject.getInvestmentMin() != -1 && subject.getInvestmentMax() != -1 && 
             object.getInvestmentMax() != -1 && object.getInvestmentMin() != -1) {
@@ -127,35 +131,36 @@ public class MatchingService {
                 object.getInvestmentMin() <= subject.getInvestmentMax())
                 ++score;
         }
-        for(AssignmentTableModel cntry : object.getCountries()) {
+
+        for(Country cntry : object.getCountries()) {
             if(subject.getCountries().contains(cntry)) {
                 ++score;
                 break;
             }
         }
 
-        for(AssignmentTableModel phase : object.getInvestmentPhases()) {
+        for(Long phase : object.getInvestmentPhases()) {
             if(subject.getInvestmentPhases().contains(phase)) {
                 ++score;
                 break;
             }
         }
 
-        for(AssignmentTableModel type : object.getInvestorTypes()) {
+        for(Long type : object.getInvestorTypes()) {
             if(subject.getInvestorTypes().contains(type)) {
                 ++score;
                 break;
             }
         }
 
-        for(AssignmentTableModel industry : object.getIndustries()) {
+        for(Long industry : object.getIndustries()) {
             if(subject.getIndustries().contains(industry)) {
                 ++score;
                 break;
             }
         }
 
-        for(AssignmentTableModel support : object.getSupport()) {
+        for(Long support : object.getSupport()) {
             if(subject.getSupport().contains(support)) {
                 ++score;
                 break;
@@ -214,15 +219,15 @@ public class MatchingService {
         List<MatchResponse> matchResponses = new ArrayList<>();
         matches.forEach(match -> {
             MatchResponse response = new MatchResponse();
-            response.setMatchingScore(match.getMatchingScore());
-            response.setRelationshipId(match.getId());
+            response.setMatchingPercent(getMatchingPercent(match.getMatchingScore()));
+            response.setId(match.getId());
             if(isStartup) {
                 response.setAccountId(match.getInvestorId());
                 Investor investor = investorRepository.find(match.getInvestorId());
                 response.setInvestorTypeId(investor.getInvestorTypeId());
                 response.setStartup(false);
                 response.setFirstName(investor.getFirstName());
-                response.setFirstName(investor.getLastName());
+                response.setLastName(investor.getLastName());
                 response.setDescription(investor.getDescription());
                 response.setProfilePictureId(investor.getProfilePictureId());
             } else {
@@ -238,5 +243,13 @@ public class MatchingService {
             matchResponses.add(response);
         });
         return matchResponses;
+    }
+
+    public static int getMatchingPercent(int score) {
+        float percent = score;
+        percent /= MAX_SCORE;
+        percent *= 10;
+        System.out.println("percent: " + percent);
+        return (int)((Math.round(percent * 2) / 2.0) * 10);
     }
 }
