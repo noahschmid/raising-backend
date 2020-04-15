@@ -4,13 +4,18 @@ import java.sql.SQLException;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.expression.spel.ast.Assign;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ch.raising.data.AssignmentTableRepository;
+import ch.raising.data.AssignmentTableRepositoryFactory;
 import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
@@ -20,48 +25,41 @@ import ch.raising.utils.MapUtil;
 @Service
 public class AssignmentTableService {
 
-	private JdbcTemplate jdbc;
+	AssignmentTableRepositoryFactory atrFactory;
 
 	@Autowired
-	public AssignmentTableService(JdbcTemplate jdbc) {
-		this.jdbc = jdbc;
+	public AssignmentTableService(AssignmentTableRepositoryFactory atrFactory) {
+		this.atrFactory = atrFactory;
 	}
 
 	public List<IAssignmentTableModel> getAll(String name) throws DataAccessException, SQLException {
-		return AssignmentTableRepository.getInstance(jdbc).withTableName(name).findAll();
+		return atrFactory.getRepository(name).findAll();
 	}
 
+	@Cacheable("completePublicInformation")
 	public CompletePublicInformation getAllTables() throws DataAccessException, SQLException {
-		CompletePublicInformation pr = new CompletePublicInformation();
-
-		pr.setTicketSizes(getAll("ticketsize"));
-		pr.setContinents(getAll("continent"));
-		pr.setCountries(getAllCountries());
-		pr.setIndustries(getAll("industry"));
-		pr.setInvestmentPhases(getAll("investmentphase"));
-		pr.setLabels(getAllWithDescription("label"));
-		pr.setInvestorTypes(getAllWithDescription("investortype"));
-		pr.setSupport(getAll("support"));
-		pr.setCorporateBodies(getAll("corporateBody"));
-		pr.setFinanceTypes(getAll("financeType"));
-		pr.setRevenues(getAllRevenueSteps());
-
+		CompletePublicInformation pr = CompletePublicInformation.builder().ticketSizes(getAll("ticketsize"))
+				.continents(getAll("continent")).countries(getAllCountries()).industries(getAll("industry"))
+				.investmentPhases(getAll("investmentphase")).labels(getAllWithDescription("label"))
+				.investorTypes(getAllWithDescription("investortype")).support(getAll("support"))
+				.corporateBodies(getAll("corporateBody")).financeTypes(getAll("financeType"))
+				.revenues(getAllRevenueSteps()).build();
 		return pr;
 	}
 
+	@Cacheable("allAssignmentTablesWithDescription")
 	public List<IAssignmentTableModel> getAllWithDescription(String name) throws DataAccessException, SQLException {
-		return AssignmentTableRepository.getInstance(jdbc).withTableName(name)
-				.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription).findAll();
+		return atrFactory.getRepositoryForStartup(name).findAll();
 	}
 
+	@Cacheable("allCountries")
 	public List<IAssignmentTableModel> getAllCountries() throws DataAccessException, SQLException {
-		return AssignmentTableRepository.getInstance(jdbc).withTableName("country")
-				.withRowMapper(MapUtil::mapRowToCountry).findAll();
+		return atrFactory.getRepository("country").findAll();
 	}
 
+	@Cacheable("allRevenueSteps")
 	public List<IAssignmentTableModel> getAllRevenueSteps() throws DataAccessException, SQLException {
-		return AssignmentTableRepository.getInstance(jdbc).withTableName("revenue")
-				.withRowMapper(MapUtil::mapRowToRevenue).findAll();
+		return atrFactory.getRepository("revenue").findAll();
 	}
 
 	/**
@@ -87,9 +85,8 @@ public class AssignmentTableService {
 	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
-	public void addToAccountById(String tableName, List<Long> model)
-			throws DataAccessException, SQLException {
-		addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName), model);
+	public void addToAccountById(String tableName, List<Long> model) throws DataAccessException, SQLException {
+		addById(atrFactory.getRepository(tableName), model);
 	}
 
 	/**
@@ -100,10 +97,8 @@ public class AssignmentTableService {
 	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
-	public void addToInvestorById(String tableName, List<Long> models)
-			throws DataAccessException, SQLException {
-		addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName("investorid"),
-				models);
+	public void addToInvestorById(String tableName, List<Long> models) throws DataAccessException, SQLException {
+		addById(atrFactory.getRepository(tableName), models);
 	}
 
 	/**
@@ -114,10 +109,8 @@ public class AssignmentTableService {
 	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
-	public void addToStartupById(String tableName, List<Long> models)
-			throws DataAccessException, SQLException {
-		addById(AssignmentTableRepository.getInstance(jdbc).withTableName(tableName).withAccountIdName("startupid"),
-				models);
+	public void addToStartupById(String tableName, List<Long> models) throws DataAccessException, SQLException {
+		addById(atrFactory.getRepositoryForStartup(tableName), models);
 	}
 
 	/**
@@ -125,15 +118,16 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	private void deleteById(AssignmentTableRepository assignmentRepo, List<Long> models) throws DataAccessException, SQLException {
-		
-			AccountDetails accDet = (AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			for (Long model : models) {
-				assignmentRepo.deleteEntryFromAccountById(model, accDet.getId());
-			}
+	private void deleteById(AssignmentTableRepository assignmentRepo, List<Long> models)
+			throws DataAccessException, SQLException {
+
+		long accDet = getAccountId();
+		for (Long model : models) {
+			assignmentRepo.deleteEntryFromAccountById(model, accDet);
+		}
 	}
 
 	/**
@@ -142,11 +136,11 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 	public void deleteFromAccountById(String name, List<Long> countries) throws DataAccessException, SQLException {
-		deleteById(AssignmentTableRepository.getInstance(jdbc).withTableName(name), countries);
+		deleteById(atrFactory.getRepository(name), countries);
 	}
 
 	/**
@@ -155,13 +149,11 @@ public class AssignmentTableService {
 	 * 
 	 * @param countryId
 	 * @return Responsenetitiy with a statuscode and an optional body
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 	public void deleteFromInvestorById(String name, List<Long> models) throws DataAccessException, SQLException {
-		deleteById(
-				AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("investorid"),
-				models);
+		deleteById(atrFactory.getRepositoryForInvestor(name), models);
 	}
 
 	/**
@@ -170,21 +162,35 @@ public class AssignmentTableService {
 	 * 
 	 * @param id
 	 * @return Responsenetitiy with a statuscode and an optional body
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 	public void deleteFromStartupById(String name, List<Long> models) throws DataAccessException, SQLException {
-		deleteById(
-				AssignmentTableRepository.getInstance(jdbc).withTableName(name).withAccountIdName("startupid"), models);
+		deleteById(atrFactory.getRepositoryForStartup(name), models);
 	}
-	
-	public void updateAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException{
-		long accountId = ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-		AssignmentTableRepository ar = AssignmentTableRepository.getInstance(jdbc).withTableName(name);
+
+	public void updateAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
+		long accountId = getAccountId();
+		AssignmentTableRepository ar = atrFactory.getRepository(name);
 		ar.deleteEntriesByAccountId(accountId);
 		ar.addEntriesToAccount(accountId, models);
 	}
-	
-	
-	
+	public void updateStartupAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
+		long accountId = getAccountId();
+		AssignmentTableRepository ar = atrFactory.getRepositoryForStartup(name);
+		ar.deleteEntriesByAccountId(accountId);
+		ar.addEntriesToAccount(accountId, models);
+	}
+	public void updateInvestorAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
+		long accountId = getAccountId();
+		AssignmentTableRepository ar = atrFactory.getRepositoryForInvestor(name);
+		ar.deleteEntriesByAccountId(accountId);
+		ar.addEntriesToAccount(accountId, models);
+	}
+
+	private long getAccountId() {
+		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+				.getId();
+	}
+
 }

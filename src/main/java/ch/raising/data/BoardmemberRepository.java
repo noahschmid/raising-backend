@@ -114,7 +114,7 @@ public class BoardmemberRepository implements IAdditionalInformationRepository<B
 
 	@Override
 	public void update(long id, Boardmember req) throws DataAccessException, SQLException {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("boardmember", id, jdbc);
+		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "boardmember", id);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getEducation(), "education");

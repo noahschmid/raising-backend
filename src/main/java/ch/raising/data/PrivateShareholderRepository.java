@@ -105,7 +105,7 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 
 	@Override
 	public void update(long id, PrivateShareholder req) throws SQLException, DataAccessException {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("privateshareholder", id, jdbc);
+		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "privateshareholder", id);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getCity(), "city");

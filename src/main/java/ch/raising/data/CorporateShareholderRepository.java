@@ -100,7 +100,7 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 
 	@Override
 	public void update(long id, CorporateShareholder req) throws SQLException, DataAccessException {
-		UpdateQueryBuilder update = new UpdateQueryBuilder("corporateshareholder", id, jdbc);
+		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "corporateshareholder", id);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getCorpName(), "name");

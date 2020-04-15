@@ -5,19 +5,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
+import ch.raising.services.AccountService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.MapUtil;
@@ -27,13 +29,18 @@ import ch.raising.utils.UpdateQueryBuilder;
 public class AccountRepository implements IRepository<Account> {
 
 	private JdbcTemplate jdbc;
-	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	private PasswordEncoder encoder;
 
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AccountRepository.class);
+	
 	private final String ADD_ACCOUNT;
 	private final String ADD_ADMIN;
+
 	@Autowired
-	public AccountRepository(JdbcTemplate jdbc) {
+	public AccountRepository(JdbcTemplate jdbc, PasswordEncoder encoder) {
 		this.jdbc = jdbc;
+		this.encoder = encoder;
 		this.ADD_ACCOUNT = "INSERT INTO account(firstname, lastname, companyname, password, emailhash, pitch, "
 				+ "description, ticketminid, ticketmaxid, countryid, website, profilepictureid) VALUES"
 				+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
@@ -63,13 +70,13 @@ public class AccountRepository implements IRepository<Account> {
 	 */
 	public Account findByEmail(String email) throws EmailNotFoundException, DataAccessException, SQLException {
 		List<Account> accounts = getAll();
+		long begin = System.currentTimeMillis();
 		for (Account acc : accounts) {
-			if (encoder.matches(email, acc.getEmail()))
+			if (encoder.matches(email, acc.getEmail())) {
+				LOGGER.info("Stopwatch for checking unhashed email: {}ms", System.currentTimeMillis()- begin);
+				acc.setEmail(email);
 				return acc;
-		}
-		for (Account acc : accounts) {
-			if (email.equals(acc.getEmail()))
-				return acc;
+			}
 		}
 		throw new EmailNotFoundException("Email " + email + "was not found.");
 	}
@@ -180,7 +187,7 @@ public class AccountRepository implements IRepository<Account> {
 		if (req.getEmail() != "") {
 			emailHash = encoder.encode(req.getEmail());
 		}
-		UpdateQueryBuilder update = new UpdateQueryBuilder("account", id, jdbc);
+		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "account", id);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getCompanyName(), "companyName");

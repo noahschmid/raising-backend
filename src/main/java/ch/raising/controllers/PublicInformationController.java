@@ -2,9 +2,10 @@ package ch.raising.controllers;
 
 
 import java.sql.SQLException;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ch.raising.models.LoginRequest;
 import ch.raising.services.AssignmentTableService;
 
@@ -20,11 +22,10 @@ import ch.raising.services.AssignmentTableService;
 @RequestMapping("/public")
 public class PublicInformationController {
 	
-	
 	private final AssignmentTableService publicInformationService;
 	private final BCryptPasswordEncoder encoder;
 	
-	@Autowired
+	 
 	public PublicInformationController(AssignmentTableService pis) {
 		this.publicInformationService =pis;
 		this.encoder = new BCryptPasswordEncoder();
@@ -36,10 +37,20 @@ public class PublicInformationController {
 		String pwHash = encoder.encode(hashes.getPassword());
 		return ResponseEntity.ok(new LoginRequest(emailHash, pwHash));
 	}
+
+	@GetMapping("/all")
+	public ResponseEntity<?> getAllForTest() throws DataAccessException, SQLException, JsonProcessingException {
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(publicInformationService.getAllTables());
+	}
+	@GetMapping("/all/private")
+	public ResponseEntity<?> getAllForTestPrivate() throws DataAccessException, SQLException, JsonProcessingException {
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(publicInformationService.getAllTables());
+	}
+	
 	
 	@GetMapping
-	public ResponseEntity<?> getAll() throws DataAccessException, SQLException {
-		return ResponseEntity.ok(publicInformationService.getAllTables());
+	public ResponseEntity<?> getAll() throws DataAccessException, SQLException, JsonProcessingException {
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(publicInformationService.getAllTables());
 	}
 	
 	@GetMapping("/ticketsize")
@@ -64,7 +75,7 @@ public class PublicInformationController {
 	
 	@GetMapping("/investmentphase")
 	public ResponseEntity<?> getInvestmentPhase() throws DataAccessException, SQLException{
-		return ResponseEntity.ok( publicInformationService.getAllWithDescription("investortype"));
+		return ResponseEntity.ok( publicInformationService.getAll("investmentphase"));
 	}
 
 	@GetMapping("/investortype")
@@ -94,7 +105,7 @@ public class PublicInformationController {
 	
 	@GetMapping("/revenue")
 	public ResponseEntity<?> getRevenueSteps() throws DataAccessException, SQLException{
-		return ResponseEntity.ok(publicInformationService.getAll("financetype"));
+		return ResponseEntity.ok(publicInformationService.getAll("revenue"));
 	}
 	
  }

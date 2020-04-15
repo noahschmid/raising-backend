@@ -34,10 +34,6 @@ public class MapUtil {
 				.profilePictureId(rs.getLong("profilepictureid")).build();
 	}
 
-	public static AssignmentTableModel mapRowToAssignmentTable(ResultSet rs, int row) throws SQLException {
-		return new AssignmentTableModel(rs.getString("name"), rs.getInt("id"));
-	}
-
 	public static long mapRowToFirstEntry(ResultSet rs, int row) throws SQLException {
 		return rs.getLong(1);
 	}

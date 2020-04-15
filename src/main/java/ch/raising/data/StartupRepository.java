@@ -62,7 +62,7 @@ public class StartupRepository implements IRepository<Startup> {
 	@Override
 	public void update(long id, Startup req) throws SQLException, DataAccessException {
 
-		UpdateQueryBuilder update = new UpdateQueryBuilder("startup", id, jdbc, "accountid");
+		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "startup", id, "accountid");
 		update.addField(req.getInvestmentPhaseId(), "investmentphaseid");
 		update.addField(req.getBreakEvenYear(), "breakevenyear");
 		update.addField(req.getNumberOfFte(), "numberoffte");
