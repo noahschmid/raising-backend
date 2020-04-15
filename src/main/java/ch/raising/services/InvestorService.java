@@ -61,12 +61,12 @@ public class InvestorService extends AccountService {
 
 		this.investmentPhaseRepository = atrFactory.getRepositoryForInvestor("investmentphase");
 		this.investorRepository = investorRepository;
-		this.countryRepository = atrFactory.getRepositoryForInvestor("country")
+		this.countryRepository = atrFactory.getRepository("country")
 				.withRowMapper(MapUtil::mapRowToCountry);
-		this.continentRepository = atrFactory.getRepositoryForInvestor("continent");
-		this.supportRepository = atrFactory.getRepositoryForInvestor("support");
-		this.industryRepository = atrFactory.getRepositoryForInvestor("industry");
-		this.investorTypeRepository = atrFactory.getRepositoryForInvestor("investortype");
+		this.continentRepository = atrFactory.getRepository("continent");
+		this.supportRepository = atrFactory.getRepository("support");
+		this.industryRepository = atrFactory.getRepository("industry");
+		this.investorTypeRepository = atrFactory.getRepositoryForStartup("investortype");
 	}
 
 	@Override
@@ -130,11 +130,11 @@ public class InvestorService extends AccountService {
         
 		MatchingProfile profile = new MatchingProfile();
 
-		List<AssignmentTableModel> continents = continentRepository.findByAccountId(investor.getAccountId());
-        List<AssignmentTableModel> industries = industryRepository.findByAccountId(investor.getAccountId());
-        List<AssignmentTableModel> investmentPhases = investmentPhaseRepository.findByAccountId(investor.getAccountId());
-		List<AssignmentTableModel> supports = supportRepository.findByAccountId(investor.getAccountId());
-		profile.addInvestorType(investorTypeRepository.find(investor.getInvestorTypeId()));
+		List<AssignmentTableModel> continents = continentRepository.findIdByAccountId(investor.getAccountId());
+        List<AssignmentTableModel> industries = industryRepository.findIdByAccountId(investor.getAccountId());
+        List<AssignmentTableModel> investmentPhases = investmentPhaseRepository.findIdByAccountId(investor.getAccountId());
+		List<AssignmentTableModel> supports = supportRepository.findIdByAccountId(investor.getAccountId());
+		profile.addInvestorType(investor.getInvestorTypeId());
 		
 		countryRepository.findByAccountId(investor.getAccountId()).forEach(country -> {
 			profile.addCountry((Country)country);

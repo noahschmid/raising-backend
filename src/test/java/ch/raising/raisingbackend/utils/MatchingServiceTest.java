@@ -1,6 +1,13 @@
 package ch.raising.raisingbackend.utils;
 
 import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 
@@ -8,6 +15,7 @@ import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.MatchingProfile;
 import ch.raising.services.MatchingService;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 class MatchingServiceTest {
     @Test
@@ -104,12 +112,12 @@ class MatchingServiceTest {
 
         int score = MatchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No investment phases match");
-        subject.addInvestmentPhase(new AssignmentTableModel("Round A", 1));
-        object.addInvestmentPhase(new AssignmentTableModel("Round B", 2));
+        subject.addInvestmentPhase(1l);
+        object.addInvestmentPhase(2l);
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No investment phases match");
 
-        object.addInvestmentPhase(new AssignmentTableModel("Round A", 1));
+        object.addInvestmentPhase(1l);
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Investment phases match");
 
@@ -126,16 +134,16 @@ class MatchingServiceTest {
         // subject investment range inside object range
         int score = MatchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No industries match");
-        subject.addIndustry(new AssignmentTableModel("Tech", 1));
-        object.addIndustry(new AssignmentTableModel("Health", 2));
+        subject.addIndustry(1l);
+        object.addIndustry(2l);
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No industries match");
 
-        object.addIndustry(new AssignmentTableModel("Tech", 1));
+        object.addIndustry(1l);
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Industries match");
 
-        subject.addIndustry(new AssignmentTableModel("Health", 2));
+        subject.addIndustry(2l);
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple industries match");
     }

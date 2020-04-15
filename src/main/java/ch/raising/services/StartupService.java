@@ -55,11 +55,11 @@ public class StartupService extends AccountService {
 		this.founderRepository = founderRepository;
 		this.pshRepository = pshRepository;
 		this.cshRepository = cshRepository;
-		this.countryRepository = atrFactory.getRepositoryForStartup("country")
+		this.countryRepository = atrFactory.getRepository("country")
 				.withRowMapper(MapUtil::mapRowToCountry);
-		this.continentRepository = atrFactory.getRepositoryForStartup("continent");
-		this.supportRepository = atrFactory.getRepositoryForStartup("support");
-		this.industryRepository = atrFactory.getRepositoryForStartup("industry");
+		this.continentRepository = atrFactory.getRepository("continent");
+		this.supportRepository = atrFactory.getRepository("support");
+		this.industryRepository = atrFactory.getRepository("industry");
 	}
 
 	@Override
@@ -163,13 +163,13 @@ public class StartupService extends AccountService {
 			return null;
 
 		MatchingProfile profile = new MatchingProfile();
-		List<AssignmentTableModel> types = investorTypeRepository.findByAccountId(startup.getAccountId());
-		List<AssignmentTableModel> continents = continentRepository.findByAccountId(startup.getAccountId());
+		List<Long> types = investorTypeRepository.findIdByAccountId(startup.getAccountId());
+		List<Long> continents = continentRepository.findIdByAccountId(startup.getAccountId());
 		countryRepository.findByAccountId(startup.getAccountId()).forEach(country -> {
 			profile.addCountry((Country)country);
 		});;
-		List<AssignmentTableModel> industries = industryRepository.findByAccountId(startup.getAccountId());
-		List<AssignmentTableModel> supports = supportRepository.findByAccountId(startup.getAccountId());
+		List<Long> industries = industryRepository.findIdByAccountId(startup.getAccountId());
+		List<Long> supports = supportRepository.findIdByAccountId(startup.getAccountId());
 
 		profile.setAccountId(startup.getAccountId());
 		profile.setName(startup.getCompanyName());
@@ -182,6 +182,7 @@ public class StartupService extends AccountService {
 		profile.setInvestorTypes(types);
 		profile.setIndustries(industries);
 		profile.setSupport(supports);
+		profile.addInvestmentPhase(startup.getInvestmentPhaseId());
 
 		return profile;
 	}
