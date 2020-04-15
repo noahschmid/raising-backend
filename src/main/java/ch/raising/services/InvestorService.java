@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +20,14 @@ import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 
 import ch.raising.models.AssignmentTableModel;
+import ch.raising.models.Country;
 import ch.raising.models.Investor;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.InvalidProfileException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
+import ch.raising.utils.MapUtil;
 import ch.raising.utils.ResetCodeUtil;
 
 import ch.raising.models.MatchingProfile;
@@ -57,6 +58,12 @@ public class InvestorService extends AccountService {
 
 		this.investmentPhaseRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investmentphase").withAccountIdName("investorid");
 		this.investorRepository = investorRepository;
+		this.countryRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("country")
+				.withRowMapper(MapUtil::mapRowToCountry);
+		this.continentRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("continent");
+		this.supportRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("support");
+		this.industryRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("industry");
+		this.investorTypeRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investortype");
 	}
 
 	@Override
@@ -120,13 +127,17 @@ public class InvestorService extends AccountService {
         if(investor == null)
             return null;
         
-        MatchingProfile profile = new MatchingProfile();
-        AssignmentTableModel investorType = investorTypeRepository.find(investor.getInvestorTypeId());
-        List<AssignmentTableModel> continents = continentRepository.findByAccountId(investor.getAccountId());
-        List<AssignmentTableModel> countries = countryRepository.findByAccountId(investor.getAccountId());
+		MatchingProfile profile = new MatchingProfile();
+
+		List<AssignmentTableModel> continents = continentRepository.findByAccountId(investor.getAccountId());
         List<AssignmentTableModel> industries = industryRepository.findByAccountId(investor.getAccountId());
         List<AssignmentTableModel> investmentPhases = investmentPhaseRepository.findByAccountId(investor.getAccountId());
-        List<AssignmentTableModel> supports = supportRepository.findByAccountId(investor.getAccountId());
+		List<AssignmentTableModel> supports = supportRepository.findByAccountId(investor.getAccountId());
+		profile.addInvestorType(investorTypeRepository.find(investor.getInvestorTypeId()));
+		
+		countryRepository.findByAccountId(investor.getAccountId()).forEach(country -> {
+			profile.addCountry((Country)country);
+	   });
 
         profile.setAccountId(investor.getAccountId());
         profile.setName(investor.getCompanyName());
@@ -134,13 +145,10 @@ public class InvestorService extends AccountService {
         profile.setInvestmentMax(investor.getTicketMaxId());
         profile.setInvestmentMin(investor.getTicketMinId());
         profile.setStartup(false);
-
-        profile.addInvestorType(investorType);
         
         profile.setContinents(continents);
-        profile.setCountries(countries);
         profile.setIndustries(industries);
-        profile.setInvestmentPhases(investmentPhases);
+		profile.setInvestmentPhases(investmentPhases);
         profile.setSupport(supports);
 
         return profile;

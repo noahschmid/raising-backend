@@ -44,7 +44,8 @@ public class MatchingController {
     @GetMapping
     public ResponseEntity<?> getMatches(HttpServletRequest request) throws Exception {
         String token = jwtUtil.getToken(request);
-        return ResponseEntity.ok().body(matchingService.getMatches(jwtUtil.extractId(token)));
+        return ResponseEntity.ok().body(matchingService.getMatches(jwtUtil.extractId(token),
+        jwtUtil.extractIsStartup(token)));
     }
 
     /**

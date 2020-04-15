@@ -32,6 +32,10 @@ public class StartupService extends AccountService {
 	private final PrivateShareholderRepository pshRepository;
 	private final CorporateShareholderRepository cshRepository;
 	private final AssignmentTableRepository investorTypeRepository;
+	private final AssignmentTableRepository countryRepository;
+	private final AssignmentTableRepository continentRepository;
+	private final AssignmentTableRepository industryRepository;
+	private final AssignmentTableRepository supportRepository;
 	
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
@@ -43,7 +47,7 @@ public class StartupService extends AccountService {
 		super(accountRepository, mailUtil, resetCodeUtil, jdbc, jwtUtil);
 
 		this.investorTypeRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("investorType")
-				.withAccountIdName("startupid").withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
+				.withAccountIdName("startupid");
 		this.labelRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("label")
 				.withAccountIdName("startupid").withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
 		this.startupRepository = startupRepository;
@@ -51,6 +55,11 @@ public class StartupService extends AccountService {
 		this.founderRepository = founderRepository;
 		this.pshRepository = pshRepository;
 		this.cshRepository = cshRepository;
+		this.countryRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("country")
+				.withRowMapper(MapUtil::mapRowToCountry);
+		this.continentRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("continent");
+		this.supportRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("support");
+		this.industryRepository = AssignmentTableRepository.getInstance(jdbc).withTableName("industry");
 	}
 
 	@Override
@@ -158,7 +167,9 @@ public class StartupService extends AccountService {
 		MatchingProfile profile = new MatchingProfile();
 		List<AssignmentTableModel> types = investorTypeRepository.findByAccountId(startup.getAccountId());
 		List<AssignmentTableModel> continents = continentRepo.findByAccountId(startup.getAccountId());
-		List<AssignmentTableModel> countries = countryRepo.findByAccountId(startup.getAccountId());
+		countryRepo.findByAccountId(startup.getAccountId()).forEach(country -> {
+			profile.addCountry((Country)country);
+		});;
 		List<AssignmentTableModel> industries = industryRepo.findByAccountId(startup.getAccountId());
 		List<AssignmentTableModel> supports = supportRepo.findByAccountId(startup.getAccountId());
 
@@ -171,7 +182,6 @@ public class StartupService extends AccountService {
 
 		profile.setContinents(continents);
 		profile.setInvestorTypes(types);
-		profile.setCountries(countries);
 		profile.setIndustries(industries);
 		profile.setSupport(supports);
 
