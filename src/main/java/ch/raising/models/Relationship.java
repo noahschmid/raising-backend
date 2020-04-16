@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class Relationship {
-    private Long id;
-    private Long investorId;
-    private Long startupId;
-    private RelationshipState state;
-    private int matchingScore;
+    private Long id = -1l;
+    private Long investorId = -1l;
+    private Long startupId = -1l;
+    private RelationshipState state = null;
+    private int matchingScore = -1;
 }

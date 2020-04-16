@@ -1,3 +1,11 @@
+CREATE TABLE IF NOT EXISTS interaction(id bigserial PRIMARY KEY, 
+startupid bigint REFERENCES startup(accountid), 
+investorid bigint REFERENCES investor(accountid), 
+interaction varchar(20), 
+startupState varchar(8), 
+investorState varchar(8));
+
+
 ALTER TABLE account ADD COLUMN IF NOT EXISTS countryid bigint REFERENCES country(id) ON DELETE RESTRICT;
 ALTER TABLE account ADD COLUMN IF NOT EXISTS website varchar;
 ALTER TABLE account ADD COLUMN IF NOT EXISTS lastname varchar;

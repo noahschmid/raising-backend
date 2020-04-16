@@ -9,6 +9,7 @@ ch\raising\data\PrivateShareholderRepository$1.class
 ch\raising\services\AssignmentTableService.class
 ch\raising\interfaces\IAdditionalInformationRepository.class
 ch\raising\data\MediaRepository$1.class
+ch\raising\controllers\InteractionController.class
 ch\raising\data\ResetCodeRepository$3.class
 ch\raising\data\RelationshipRepository.class
 ch\raising\controllers\InvestorController.class
@@ -42,12 +43,14 @@ ch\raising\data\AssignmentTableRepositoryFactory.class
 ch\raising\data\AssignmentTableRepository.class
 ch\raising\services\ProfileService.class
 ch\raising\models\responses\CompletePublicInformation.class
+ch\raising\data\InteractionRepository.class
 ch\raising\services\MatchingService$1.class
 ch\raising\utils\PreparedStatementUtil$2.class
 ch\raising\models\Account.class
 ch\raising\models\PrivateShareholder$PrivateShareholderBuilder.class
 ch\raising\data\InvestorRepository$1.class
 ch\raising\utils\ResetCodeUtil.class
+ch\raising\models\InteractionState.class
 ch\raising\utils\JwtRequestFilter.class
 ch\raising\data\FounderRepository.class
 ch\raising\models\AccountDetails.class
@@ -65,6 +68,7 @@ ch\raising\models\Relationship.class
 ch\raising\data\PrivateShareholderRepository.class
 ch\raising\interfaces\IAdditionalInformationRepository$1.class
 ch\raising\models\LoginRequest.class
+ch\raising\services\InteractionService.class
 ch\raising\models\PrivateShareholder.class
 ch\raising\utils\InvalidProfileException.class
 ch\raising\data\AssignmentTableRepository$2.class
@@ -88,6 +92,7 @@ ch\raising\utils\MailUtil.class
 ch\raising\models\ResetCode.class
 ch\raising\models\ForgotPasswordRequest.class
 ch\raising\models\Media$MediaBuilder.class
+ch\raising\models\Interaction.class
 ch\raising\data\AccountRepository$1.class
 ch\raising\models\responses\ErrorResponse.class
 ch\raising\data\StartupRepository$1.class
@@ -111,5 +116,7 @@ ch\raising\utils\functionalInterface\PSTwoParameters.class
 ch\raising\interfaces\IExtendedAssignmentTableModel.class
 ch\raising\utils\PasswordResetException.class
 ch\raising\utils\Type.class
+ch\raising\models\Interaction$InteractionBuilder.class
 ch\raising\models\LoginResponse.class
+ch\raising\models\State.class
 ch\raising\data\AssignmentTableRepository$1.class

@@ -2,11 +2,6 @@ package ch.raising.raisingbackend.utils;
 
 import org.junit.jupiter.api.Test;
 
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
@@ -15,7 +10,6 @@ import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.MatchingProfile;
 import ch.raising.services.MatchingService;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 class MatchingServiceTest {
     @Test

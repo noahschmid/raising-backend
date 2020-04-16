@@ -1,3 +1,4 @@
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\InteractionService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\FreeEmailRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\CompletePublicInformation.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\RowMapper.java
@@ -21,6 +22,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Start
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AssignmentTableService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Type.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtUtil.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\InteractionController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\CorporateShareholderRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\PublicInformationController.java
@@ -43,6 +45,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\Med
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ProfileService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtRequestFilter.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\MatchingController.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\InteractionRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UpdateQueryBuilder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AdditionalInformationService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AdminController.java
@@ -56,6 +59,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MailUt
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAuthorizedException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\State.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Country.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MatchingService.java
@@ -68,10 +72,12 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\ResetCo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\raisingbackend\RaisingBackendApplication.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Support.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Account.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\InteractionState.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\BoardmemberRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AccountDetails.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\PasswordResetException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AssignmentTableRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Interaction.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ExcepionHandler.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\SecurityConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PasswordResetRequest.java
