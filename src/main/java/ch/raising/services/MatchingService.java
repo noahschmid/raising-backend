@@ -193,6 +193,16 @@ public class MatchingService {
                     relationshipRepository.updateState(id, RelationshipState.HANDSHAKE);
             break;
 
+            case STARTUP_DECLINED: 
+                if(isStartup)
+                    relationshipRepository.updateState(id, RelationshipState.STARTUP_ACCEPTED);
+            break;
+
+            case INVESTOR_DECLINED:
+                if(!isStartup)
+                    relationshipRepository.updateState(id, RelationshipState.INVESTOR_ACCEPTED);
+            break;
+
             default:
             break;
         }
