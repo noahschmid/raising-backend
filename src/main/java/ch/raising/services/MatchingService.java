@@ -220,9 +220,15 @@ public class MatchingService {
             MatchResponse response = new MatchResponse();
             response.setMatchingPercent(getMatchingPercent(match.getMatchingScore()));
             response.setId(match.getId());
+            
             if(isStartup) {
                 response.setAccountId(match.getInvestorId());
-                Investor investor = investorRepository.find(match.getInvestorId());
+                Investor investor;
+                try {
+                    investor = investorService.getAccount(match.getInvestorId());
+                } catch (Exception e) {
+                    investor = new Investor();
+                }
                 response.setInvestorTypeId(investor.getInvestorTypeId());
                 response.setStartup(false);
                 response.setFirstName(investor.getFirstName());
@@ -231,14 +237,18 @@ public class MatchingService {
                 response.setProfilePictureId(investor.getProfilePictureId());
             } else {
                 response.setAccountId(match.getStartupId());
-                Startup startup = startupRepository.find(match.getStartupId());
+                Startup startup;
+                try {
+                    startup = (Startup)startupService.getAccount(match.getStartupId());
+                } catch(Exception e) {
+                    startup = new Startup();
+                }
                 response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
                 response.setStartup(true);
                 response.setCompanyName(startup.getCompanyName());
                 response.setDescription(startup.getDescription());
                 response.setProfilePictureId(startup.getProfilePictureId());
             }
-
             matchResponses.add(response);
         });
         return matchResponses;
