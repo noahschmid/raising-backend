@@ -5,6 +5,7 @@ ch\raising\utils\MediaNotAddedException.class
 ch\raising\utils\UpdateQueryBuilder$1.class
 ch\raising\controllers\AccountController.class
 ch\raising\services\AdditionalInformationService.class
+ch\raising\services\InteractionRequest.class
 ch\raising\data\PrivateShareholderRepository$1.class
 ch\raising\services\AssignmentTableService.class
 ch\raising\interfaces\IAdditionalInformationRepository.class
@@ -50,10 +51,12 @@ ch\raising\models\Account.class
 ch\raising\models\PrivateShareholder$PrivateShareholderBuilder.class
 ch\raising\data\InvestorRepository$1.class
 ch\raising\utils\ResetCodeUtil.class
+ch\raising\models\responses\CompleteInteractions.class
 ch\raising\models\InteractionState.class
 ch\raising\utils\JwtRequestFilter.class
 ch\raising\data\FounderRepository.class
 ch\raising\models\AccountDetails.class
+ch\raising\data\InteractionRepository$1.class
 ch\raising\utils\DatabaseOperationException.class
 ch\raising\utils\QueryBuilder.class
 ch\raising\data\StartupRepository.class
@@ -73,6 +76,7 @@ ch\raising\models\PrivateShareholder.class
 ch\raising\utils\InvalidProfileException.class
 ch\raising\data\AssignmentTableRepository$2.class
 ch\raising\models\Boardmember$BoardmemberBuilder.class
+ch\raising\utils\InvalidInteractionException.class
 ch\raising\data\MediaRepository.class
 ch\raising\models\Boardmember.class
 ch\raising\models\AssignmentTableModelWithDescription.class

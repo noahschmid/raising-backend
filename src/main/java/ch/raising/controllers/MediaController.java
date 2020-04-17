@@ -75,7 +75,7 @@ public class MediaController {
 	@GetMapping("/profilepicture/{id}")
 	public ResponseEntity<?> getProfilePicture(@PathVariable long id) throws DatabaseOperationException, DataAccessException, SQLException{
 		Media ppic = ppicService.getMedia(id);
-		MediaType returns = MediaType.parseMediaType(ppic.getContentType());
+		MediaType returns = ppic.getContentType().equals("none")? null : MediaType.parseMediaType(ppic.getContentType());
 		return ResponseEntity.ok().contentType(returns).body(ppic.getMedia());
 	}
 	/**

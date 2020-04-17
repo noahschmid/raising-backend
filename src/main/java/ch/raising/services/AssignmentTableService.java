@@ -170,10 +170,10 @@ public class AssignmentTableService {
 	}
 
 	public void updateAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
-		long accountId = getAccountId();
-		AssignmentTableRepository ar = atrFactory.getRepository(name);
-		ar.deleteEntriesByAccountId(accountId);
-		ar.addEntriesToAccount(accountId, models);
+			long accountId = getAccountId();
+			AssignmentTableRepository ar = atrFactory.getRepository(name);
+			ar.deleteEntriesByAccountId(accountId);
+			ar.addEntriesToAccount(accountId, models);
 	}
 	public void updateStartupAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
 		long accountId = getAccountId();

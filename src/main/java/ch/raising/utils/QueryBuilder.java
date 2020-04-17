@@ -128,7 +128,7 @@ public class QueryBuilder {
 	
 	public String insert() {
 		assert this.tableName != null;
-		assert this.valuesForInsertion != null;
+		assert this.valuesForInsertion != "";
 		assert this.attributesForInsertion != null;
 		return "INSERT INTO " + tableName + "(" + attributesForInsertion + ") VALUES (" + valuesForInsertion + ")";  
 	}

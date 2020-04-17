@@ -90,7 +90,7 @@ public class AssignmentTableRepository {
 	}
 
 	public void addEntriesToAccount(long accountId, List<Long> models) {
-		if (models == null)
+		if (models == null || models.isEmpty())
 			return;
 
 		String sql = "INSERT INTO " + TABLE_ASSIGNMENT + "(" + ACCOUNT_ID_NAME + ", " + TABLENAME + "Id) VALUES ";
