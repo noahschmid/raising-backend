@@ -99,11 +99,9 @@ public class MatchingService {
 
                 try {
                     if(relationshipRepository.exists(relationship))
-                        relationshipRepository.update(relationship);
+                        relationshipRepository.updateScore(relationship);
                     else {
-                        relationship.setState(null); //making sure state doesn't get overwritten
                         relationshipRepository.add(relationship);
-                        System.out.println("relationship already exists");
                     }
                 } catch (DataIntegrityViolationException  e) {
                     System.out.println("Error while adding/updating relationship: " + e.getMessage());
@@ -264,6 +262,9 @@ public class MatchingService {
         return matchResponses;
     }
 
+    /**
+     * Get percentage out of integer score
+     */
     public static int getMatchingPercent(int score) {
         float percent = score;
         percent /= MAX_SCORE;
