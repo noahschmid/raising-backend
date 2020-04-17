@@ -363,13 +363,18 @@ public class AccountService implements UserDetailsService {
 	 * @param request The Login Request containing the email and password
 	 *                {@link ch.raising.models.LoginRequest }
 	 * @return A login response Model {@link ch.raising.models.LoginResponse}
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
-	public LoginResponse login(LoginRequest request) throws AuthenticationException, UsernameNotFoundException {
+	public LoginResponse login(LoginRequest request) throws AuthenticationException, UsernameNotFoundException, DataAccessException, SQLException {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 		
 		Authentication auth = authenticationManager.authenticate(token);
 		
 		AccountDetails userDetails = (AccountDetails) auth.getPrincipal();
+		userDetails.setInvestor(accountRepository.isInvestor(userDetails.getId()));
+		userDetails.setStartup(accountRepository.isStartup(userDetails.getId()));
+		
 		final String returnToken = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}

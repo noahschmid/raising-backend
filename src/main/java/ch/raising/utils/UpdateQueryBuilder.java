@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer;
+
 import ch.raising.data.InvestorRepository;
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.responses.ErrorResponse;

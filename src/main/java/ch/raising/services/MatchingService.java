@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -219,8 +220,10 @@ public class MatchingService {
 
     /**
      * Get matches of an account
+     * @throws SQLException 
+     * @throws EmptyResultDataAccessException 
      */
-    public List<MatchResponse> getMatches(long accountId, boolean isStartup) {
+    public List<MatchResponse> getMatches(long accountId, boolean isStartup) throws EmptyResultDataAccessException, SQLException {
         List<Relationship> matches = relationshipRepository.getByAccountIdAndState(accountId, 
                                                                     RelationshipState.MATCH);
         List<MatchResponse> matchResponses = new ArrayList<>();

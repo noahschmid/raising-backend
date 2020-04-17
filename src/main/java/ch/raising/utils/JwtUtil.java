@@ -54,6 +54,10 @@ public class JwtUtil {
 	public boolean extractIsStartup(String token) {
 		return (boolean)extractAllClaims(token).get("isStartup");
 	}
+	
+	public boolean extractIsInvestor(String token) {
+		return (boolean)extractAllClaims(token).get("isInvestor");
+	}
 
 	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
 		final Claims claims = extractAllClaims(token);

@@ -2,6 +2,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\Int
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\FreeEmailRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\CompletePublicInformation.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\RowMapper.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidInteractionException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\StartupController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\LoginRequest.java
@@ -58,6 +59,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Priva
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MailUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAuthorizedException.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\InteractionRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\State.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
@@ -84,5 +86,6 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Passw
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\MediaRepositoryFactory.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSTwoParameters.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\RelationshipState.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\CompleteInteractions.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\InvestorService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AssignmentTableRepositoryFactory.java

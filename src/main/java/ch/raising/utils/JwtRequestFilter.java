@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import ch.raising.models.AccountDetails;
 import ch.raising.services.AccountService;
 
 @Component  
@@ -46,17 +47,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String token = null;
         long id = -1;
+        boolean isStartup = false;
+        boolean isInvestor = false;
         if(authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtUtil.extractUsername(token);
             id = jwtUtil.extractId(token);
-            LOGGER.info("extracted id: "+id);
+            isStartup = jwtUtil.extractIsStartup(token);
+            isInvestor = jwtUtil.extractIsInvestor(token);
         }
 
         if(id != -1 && SecurityContextHolder.getContext().getAuthentication() == null) {
-        	UserDetails userDetails;
+        	AccountDetails userDetails;
 			try{
 				userDetails = this.accountService.loadUserById(id);
+				userDetails.setInvestor(isInvestor);
+				userDetails.setStartup(isStartup);
 				if(jwtUtil.validateToken(token, userDetails)) {
 	                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
 	                    new UsernamePasswordAuthenticationToken(userDetails, null, 

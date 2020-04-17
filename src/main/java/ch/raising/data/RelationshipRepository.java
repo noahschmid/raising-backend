@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
@@ -19,8 +20,9 @@ import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class RelationshipRepository implements IRepository<Relationship> {
-    private JdbcTemplate jdbc;
+    private final JdbcTemplate jdbc;
 
+    
     @Autowired
     public RelationshipRepository(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
@@ -169,7 +171,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      * @param accountId id of the account to search for
      * @return list of all relationships containing given account
      */
-    public List<Relationship> getByAccountId(long accountId) {
+    public List<Relationship> getByAccountId(long accountId) throws EmptyResultDataAccessException, SQLException{
         try {
             String sql = "SELECT * FROM relationship WHERE startupId = ? OR investorId = ?;";
             return jdbc.query(sql, new Object[] { accountId, accountId }, this::mapRowToModel);
@@ -185,14 +187,10 @@ public class RelationshipRepository implements IRepository<Relationship> {
      * @param state the state to search for
      * @return list of relationships
      */
-    public List<Relationship> getByAccountIdAndState(long accountId, RelationshipState state) {
-        try {
+    public List<Relationship> getByAccountIdAndState(long accountId, RelationshipState state) throws EmptyResultDataAccessException, SQLException{
+       
             String sql = "SELECT * FROM relationship WHERE (startupId = ? OR investorId = ?) AND " +
                          "state = ?;";
             return jdbc.query(sql, new Object[] { accountId, accountId, state.name() }, this::mapRowToModel);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
-}
+} 

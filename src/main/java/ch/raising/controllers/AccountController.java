@@ -64,11 +64,13 @@ public class AccountController {
 	 * 
 	 * @param account provided by the request
 	 * @return response instance with message and status code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
 	 */
 	@PostMapping("/login")
 	@ResponseBody
 	public ResponseEntity<?> login(@RequestBody LoginRequest request)
-			throws AuthenticationException, UsernameNotFoundException {
+			throws AuthenticationException, UsernameNotFoundException, DataAccessException, SQLException {
 		return ResponseEntity.ok(accountService.login(request));
 	}
 
