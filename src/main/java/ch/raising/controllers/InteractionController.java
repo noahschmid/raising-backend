@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.models.Interaction;
+import ch.raising.models.InteractionRequest;
 import ch.raising.models.responses.ErrorResponse;
-import ch.raising.services.InteractionRequest;
 import ch.raising.services.InteractionService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.InvalidInteractionException;

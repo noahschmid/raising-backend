@@ -18,6 +18,7 @@ import ch.raising.data.InteractionRepository;
 import ch.raising.data.RelationshipRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.Interaction;
+import ch.raising.models.InteractionRequest;
 import ch.raising.models.InteractionState;
 import ch.raising.models.Relationship;
 import ch.raising.models.RelationshipState;
@@ -115,7 +116,7 @@ public class InteractionService {
 		if (isStartup()) {
 			interactionRepo.startupUpdate(State.ACCEPTED, interactionId, getAccountId());
 		} else if (isInvestor()) {
-			interactionRepo.startupUpdate(State.ACCEPTED, interactionId, getAccountId());
+			interactionRepo.investorUpdate(State.ACCEPTED, interactionId, getAccountId());
 		} else {
 			throw new InvalidInteractionException("This type of account cannot accept an interaction");
 		}
@@ -126,7 +127,7 @@ public class InteractionService {
 		if (isStartup()) {
 			interactionRepo.startupUpdate(State.DECLINED, interactionId, getAccountId());
 		} else if (isInvestor()) {
-			interactionRepo.startupUpdate(State.DECLINED, interactionId, getAccountId());
+			interactionRepo.investorUpdate(State.DECLINED, interactionId, getAccountId());
 		} else {
 			throw new InvalidInteractionException("This type of account cannot accept an interaction");
 		}
