@@ -120,6 +120,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 			throw new MediaException("this media(" + mediaId + ") is already used by someone else");
 		}
 		if (mediaId != -1 && mediaId != 0) {
+			jdbc.update(ADD_ACCOUNTID_TO_MEDIA, new Object[] {accountId, mediaId}, new int[] {Types.BIGINT, Types.BIGINT} );
 		}
 	}
 
