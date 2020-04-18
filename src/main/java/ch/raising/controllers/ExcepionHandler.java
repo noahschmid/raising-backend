@@ -29,8 +29,6 @@ import ch.raising.utils.NotAuthorizedException;
 
 @ControllerAdvice
 public class ExcepionHandler {
-
-	private static Logger LOGGER = LoggerFactory.getLogger(ExceptionHandler.class);
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ErrorResponse> handle(DataIntegrityViolationException e){

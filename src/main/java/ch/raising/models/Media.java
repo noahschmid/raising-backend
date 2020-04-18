@@ -1,5 +1,7 @@
 package ch.raising.models;
 
+import org.springframework.http.MediaType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

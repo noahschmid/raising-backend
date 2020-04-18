@@ -42,6 +42,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Founder
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Startup.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MediaNotAddedException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\InvestorController.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ShareService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MediaService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ProfileService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtRequestFilter.java
@@ -58,11 +59,12 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PrivateShareholder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MailUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableModel.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Share.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAuthorizedException.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\InteractionRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\State.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\InteractionRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Country.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MatchingService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidProfileException.java
@@ -71,6 +73,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Login
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MapUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IExtendedAssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\ResetCodeRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ShareController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\raisingbackend\RaisingBackendApplication.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Support.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Account.java

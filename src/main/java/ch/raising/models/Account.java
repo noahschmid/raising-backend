@@ -133,7 +133,7 @@ public class Account {
 	}
 
 	public boolean isComplete() {
-		return (roles == "ROLE_ADMIN" && password != "" && email != "") || (password != "" && email != ""
+		return (roles == "ROLE_ADMIN" && password != "" && email != "") || (firstName != "" && lastName != "" && password != "" && email != ""
 				&& ticketMinId != -1 && ticketMaxId != -1 && countryId != -1 && support != null && industries != null
 				&& !(countries.isEmpty() && continents.isEmpty()) && !support.isEmpty() && !industries.isEmpty());
 	}
