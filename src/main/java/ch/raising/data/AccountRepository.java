@@ -163,8 +163,10 @@ public class AccountRepository implements IRepository<Account> {
 				.pitch(rs.getString("pitch")).description(rs.getString("description")).email(rs.getString("emailHash"))
 				.roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
 				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password"))
-				.countryId(rs.getLong("countryId")).website(rs.getString("website"))
-				.profilePictureId(rs.getLong("profilepictureid")).build();
+				.countryId(rs.getObject("countryId") == null ? null : rs.getLong("countryId"))
+				.website(rs.getString("website"))
+				.profilePictureId(rs.getObject("profilepictureid") == null ?
+				-1 : rs.getLong("profilepictureid")).build();
 	}
 
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
