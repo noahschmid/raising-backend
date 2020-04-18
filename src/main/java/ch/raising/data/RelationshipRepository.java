@@ -87,7 +87,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
     }
 
     /**
-     * Update specific relationship
+     * Update specific relationship by investorId and startupId
      * @param update
      * @throws Exception
      */
@@ -109,6 +109,15 @@ public class RelationshipRepository implements IRepository<Relationship> {
     public void updateState(long id, RelationshipState state) throws Exception {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", id);
         updateQuery.addField(state.toString(), "state");
+        updateQuery.execute();
+    }
+
+    /**
+     * Update matching score of relationship
+     */
+    public void updateScore(Relationship relationship) throws Exception {
+        UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", relationship.getId());
+        updateQuery.addField(relationship.getMatchingScore(), "score");
         updateQuery.execute();
     }
 
