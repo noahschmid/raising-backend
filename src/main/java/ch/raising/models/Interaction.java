@@ -16,7 +16,7 @@ public class Interaction {
 	private long startupId = -1l;
 	@Builder.Default
 	private long investorId = -1l;
-	private InteractionState interaction;
+	private InteractionTypes interaction;
 	private State startupState;
 	private State investorState;
 }

@@ -17,42 +17,50 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.models.Interaction;
 import ch.raising.models.InteractionRequest;
+import ch.raising.models.Share;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.services.InteractionService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.InvalidInteractionException;
-
 
 @RequestMapping("/interaction")
 @Controller
 public class InteractionController {
 
 	private final InteractionService interactionService;
-	
+
 	@Autowired
 	public InteractionController(InteractionService relService) {
 		this.interactionService = relService;
 	}
+
 	@GetMapping
-	public ResponseEntity<?> getAllCurrentRelationships() throws EmptyResultDataAccessException, DataAccessException, SQLException {
+	public ResponseEntity<?> getAllCurrentRelationships()
+			throws EmptyResultDataAccessException, DataAccessException, SQLException {
 		return ResponseEntity.ok(interactionService.getAllByAccountId());
 	}
-	
+
 	@PostMapping
-	public ResponseEntity<?> addNewInteraction(@RequestBody InteractionRequest interaction) throws DataAccessException, SQLException, InvalidInteractionException{
+	public ResponseEntity<?> addNewInteraction(@RequestBody InteractionRequest interaction)
+			throws DataAccessException, SQLException, InvalidInteractionException {
 		interactionService.addInteraction(interaction);
 		return ResponseEntity.ok().build();
 	}
-	
+
 	@PatchMapping("/accept/{interactionId}")
-	public ResponseEntity<?> acceptRequest(@PathVariable long interactionId) throws DataAccessException, InvalidInteractionException, DatabaseOperationException{
-		interactionService.acceptInteraction(interactionId);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> acceptRequest(@PathVariable long interactionId)
+			throws DataAccessException, InvalidInteractionException, DatabaseOperationException, SQLException {
+		Share data = interactionService.acceptInteraction(interactionId);
+		if(data == null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(new ErrorResponse("The request was acceped, but the other party has not accepted yet"));
+		}
+		return ResponseEntity.ok(data);
 	}
-	
+
 	@PatchMapping("/reject/{interactionId}")
-	public ResponseEntity<?> rejectRequest(@PathVariable long interactionId) throws DataAccessException, DatabaseOperationException, InvalidInteractionException{
-		interactionService.declineInteraction(interactionId);
+	public ResponseEntity<?> rejectRequest(@PathVariable long interactionId)
+			throws DataAccessException, DatabaseOperationException, InvalidInteractionException, SQLException {
+		interactionService.rejectInteraction(interactionId);
 		return ResponseEntity.ok().build();
 	}
 }

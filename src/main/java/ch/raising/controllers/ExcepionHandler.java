@@ -108,5 +108,11 @@ public class ExcepionHandler {
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(400).body(new ErrorResponse("Your interactionrequest seems malformed", e.getMessage()));
 	}
+	@ExceptionHandler(Error.class)
+	public ResponseEntity<?> handle(Error e){
+		e.printStackTrace();
+		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
+		return ResponseEntity.status(500).body(new ErrorResponse("Threre was an Error: " + e.getMessage(), e));
+	}
 	
 }

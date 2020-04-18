@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ch.raising.models.Media;
 import ch.raising.models.responses.ErrorResponse;
-import ch.raising.models.responses.FileUploadResponse;
+import ch.raising.models.responses.ReturnIdResponse;
 import ch.raising.services.MediaService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MediaException;
@@ -56,7 +56,7 @@ public class MediaController {
 	public ResponseEntity<?> uploadVideo(@RequestBody Media video)
 			throws DataAccessException, SQLException, DatabaseOperationException, MediaException {
 		long videoid = videoService.uploadMediaAndReturnId(video);
-		return ResponseEntity.ok().body(new FileUploadResponse("added video", videoid));
+		return ResponseEntity.ok().body(new ReturnIdResponse("added video", videoid));
 	}
 
 	@DeleteMapping("/video/{videoId}")
@@ -102,7 +102,7 @@ public class MediaController {
 		if (file.getContentType().equals("image/png") || file.getContentType().equals("image/jpeg")
 				|| file.getContentType().equals("image/jpeg")) {
 			long picId = ppicService.uploadMediaAndReturnId(new Media(file.getBytes(), file.getContentType()));
-			return ResponseEntity.ok(new FileUploadResponse("Added new Profilepicture", picId));
+			return ResponseEntity.ok(new ReturnIdResponse("Added new Profilepicture", picId));
 		}
 		return ResponseEntity.status(415).body(new ErrorResponse("Filetype not supported, try .png or .jpeg"));
 	}

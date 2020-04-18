@@ -23,7 +23,7 @@ public class Share {
 	@Builder.Default
 	private String email  ="";
 	@Builder.Default
-	private String phone = "";
+	private int phone = -1;
 	@Builder.Default
 	private long businessPlanId = -1;
 	private Timestamp availableUntil;

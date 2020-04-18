@@ -33,7 +33,7 @@ import ch.raising.models.LoginResponse;
 import ch.raising.models.Media;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.responses.ErrorResponse;
-import ch.raising.models.responses.FileUploadResponse;
+import ch.raising.models.responses.ReturnIdResponse;
 import ch.raising.services.AccountService;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.MediaService;

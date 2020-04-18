@@ -11,10 +11,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Interaction;
-import ch.raising.models.InteractionState;
+import ch.raising.models.InteractionTypes;
 import ch.raising.models.State;
 import ch.raising.utils.DatabaseOperationException;
 
@@ -27,6 +28,7 @@ public class InteractionRepository {
 	private final String FIND_BY_ACCOUNTID_AND_ID;
 	private final String STARTUP_UPDATE;
 	private final String INVESTOR_UPDATE;
+	private final RowMapper<Interaction> interactionMapper = new InteractionMapper();
 
 	@Autowired
 	public InteractionRepository(JdbcTemplate jdbc) {
@@ -39,14 +41,7 @@ public class InteractionRepository {
 	}
 
 	public List<Interaction> findAll(long accountId) {
-		return jdbc.query(FIND_ALL, new Object[] { accountId, accountId }, this::mapRowToInteraction);
-	}
-
-	public Interaction mapRowToInteraction(ResultSet rs, int row) throws SQLException {
-		return Interaction.builder().id(rs.getLong("id")).startupId(rs.getLong("startupid"))
-				.investorId(rs.getLong("investorid")).interaction(InteractionState.valueOf(rs.getString("interaction")))
-				.startupState(State.valueOf(rs.getString("startupstate")))
-				.investorState(State.valueOf(rs.getString("investorState"))).build();
+		return jdbc.query(FIND_ALL, new Object[] { accountId, accountId }, this.interactionMapper);
 	}
 
 	public void addInteraction(Interaction interaction) {
@@ -55,7 +50,6 @@ public class InteractionRepository {
 
 	private PreparedStatementCallback<Boolean> insertInteractionCallback(Interaction interaction) {
 		return new PreparedStatementCallback<Boolean>() {
-
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
@@ -72,7 +66,7 @@ public class InteractionRepository {
 	public Interaction findByAccountIdAndId(long interactionId, long accountId)
 			throws EmptyResultDataAccessException, SQLException {
 		return jdbc.queryForObject(FIND_BY_ACCOUNTID_AND_ID, new Object[] { interactionId, accountId, accountId },
-				this::mapRowToInteraction);
+				this.interactionMapper);
 	}
 
 	public void startupUpdate(State state, long interactionId, long startupId) throws DatabaseOperationException ,DataAccessException{
@@ -89,6 +83,23 @@ public class InteractionRepository {
 		if (rowsAffected < 1)
 			throw new DatabaseOperationException("the combination interactionid(" + interactionId + ") and investorId("
 					+ investorId + ") could not be found");
+	}
+	
+	
+	public class InteractionMapper implements RowMapper<Interaction>{
+
+		@Override
+		public Interaction mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return Interaction.builder()
+					.id(rs.getLong("id"))
+					.startupId(rs.getLong("startupid"))
+					.investorId(rs.getLong("investorid"))
+					.interaction(InteractionTypes.valueOf(rs.getString("interaction")))
+					.startupState(State.valueOf(rs.getString("startupstate")))
+					.investorState(State.valueOf(rs.getString("investorState")))
+					.build();
+		}
+		
 	}
 
 }

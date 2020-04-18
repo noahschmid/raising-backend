@@ -1,7 +1,7 @@
 package ch.raising.models;
 
-public enum InteractionState {
-	VIDEO_CALL,
+public enum InteractionTypes {
+	VIDEO_CONFERENCE,
 	COFFEE,
 	BUSINESSPLAN,
 	PHONE_CALL,

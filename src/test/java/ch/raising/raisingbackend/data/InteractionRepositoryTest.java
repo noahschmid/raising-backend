@@ -22,7 +22,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import ch.raising.data.InteractionRepository;
 import ch.raising.models.Interaction;
-import ch.raising.models.InteractionState;
+import ch.raising.models.InteractionTypes;
 import ch.raising.models.State;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.QueryBuilder;
@@ -42,7 +42,7 @@ class InteractionRepositoryTest {
 	private final long investorId = 43;
 	private final State startupState = State.OPEN;
 	private final State investorState = State.OPEN;
-	private final InteractionState interactionState = InteractionState.COFFEE;
+	private final InteractionTypes interactionState = InteractionTypes.COFFEE;
 	private Interaction interaction;
 
 	private final InteractionRepository interactionRepo;
@@ -102,9 +102,9 @@ class InteractionRepositoryTest {
 	@Test
 	void addInteraction() {
 		Interaction insert = Interaction.builder().id(12).startupId(13).investorId(45)
-				.interaction(InteractionState.EMAIL).startupState(State.OPEN).investorState(State.OPEN).build();
+				.interaction(InteractionTypes.EMAIL).startupState(State.OPEN).investorState(State.OPEN).build();
 		interactionRepo.addInteraction(insert);
-		Interaction found = jdbc.queryForObject("SELECT * FROM interaction WHERE startupid = 13",interactionRepo::mapRowToInteraction);
+		Interaction found = jdbc.queryForObject("SELECT * FROM interaction WHERE startupid = 13",interactionRepo.new InteractionMapper());
 		assertEquals(insert, found);
 	}
 
@@ -119,7 +119,7 @@ class InteractionRepositoryTest {
 	void testStartupUpdate() throws DataAccessException, DatabaseOperationException {
 		interactionRepo.startupUpdate(State.ACCEPTED, id, startupId);
 		Interaction found = jdbc.queryForObject("SELECT * FROM interaction WHERE id = " + id,
-				interactionRepo::mapRowToInteraction);
+				interactionRepo.new InteractionMapper());
 		assertEquals(State.ACCEPTED, found.getStartupState());
 	}
 
@@ -134,7 +134,7 @@ class InteractionRepositoryTest {
 	void testInvestorUpdate() throws DataAccessException, DatabaseOperationException {
 		interactionRepo.investorUpdate(State.ACCEPTED, id, investorId);
 		Interaction foundInt = jdbc.queryForObject("SELECT * FROM interaction WHERE id = " + id,
-				interactionRepo::mapRowToInteraction);
+				interactionRepo.new InteractionMapper());
 		
 		assertEquals(State.ACCEPTED, foundInt.getInvestorState());
 	}
