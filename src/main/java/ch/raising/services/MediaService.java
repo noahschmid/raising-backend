@@ -16,7 +16,7 @@ import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.Media;
 import ch.raising.utils.DatabaseOperationException;
-import ch.raising.utils.MediaNotAddedException;
+import ch.raising.utils.MediaException;
 
 @Service
 public class MediaService{
@@ -41,25 +41,25 @@ public class MediaService{
 	 * @throws DataAccessException
 	 * @throws SQLException
 	 * @throws DatabaseOperationException
-	 * @throws MediaNotAddedException 
+	 * @throws MediaException 
 	 */
-	public long uploadMediaAndReturnId(Media media) throws DataAccessException, SQLException, DatabaseOperationException, MediaNotAddedException {
+	public long uploadMediaAndReturnId(Media media) throws DataAccessException, SQLException, DatabaseOperationException, MediaException {
 		long accountId = getAccountId();
 		if(mediaRepo.countMediaOfAccount(accountId) <= MAX_ALLOWED_ITEMS) {
 			media.setAccountId(accountId);
 			return mediaRepo.addMedia(media);
 		}
-		throw new MediaNotAddedException("All media items for this account were added. Try updating instead.");
+		throw new MediaException("All media items for this account were added. Try updating instead.");
 	}
 	
-	public void updateMediaOfAccount(MultipartFile file, long id) throws DataAccessException, SQLException, MediaNotAddedException, IOException {
+	public void updateMediaOfAccount(MultipartFile file, long id) throws DataAccessException, SQLException, MediaException, IOException {
 		Media media = new Media(id, getAccountId(), file.getContentType(), file.getBytes());
 		if(id > 0) {
 			media.setId(id);
 			media.setAccountId(getAccountId());
 			mediaRepo.updateMedia(media);
 		}else {
-			throw new MediaNotAddedException("mediaId not specified");
+			throw new MediaException("mediaId not specified");
 		}
 	}
 	
@@ -88,9 +88,9 @@ public class MediaService{
 	 * @throws SQLException
 	 * @throws IOException
 	 * @throws DatabaseOperationException
-	 * @throws MediaNotAddedException 
+	 * @throws MediaException 
 	 */
-	public List<Long> uploadMultipleAndReturnIds(MultipartFile[] gallery) throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaNotAddedException{
+	public List<Long> uploadMultipleAndReturnIds(MultipartFile[] gallery) throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException{
 		List<Long> ids = new ArrayList<Long>();
 		for(MultipartFile f: gallery) {
 			Media insert = new Media(f.getBytes(), f.getContentType());

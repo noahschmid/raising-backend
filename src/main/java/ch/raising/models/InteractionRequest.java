@@ -10,4 +10,5 @@ import lombok.Setter;
 public class InteractionRequest {
 	private long id;
 	private InteractionState interaction;
+	private Share data;
 }

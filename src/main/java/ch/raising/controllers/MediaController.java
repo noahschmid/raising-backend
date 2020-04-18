@@ -28,7 +28,7 @@ import ch.raising.models.responses.ErrorResponse;
 import ch.raising.models.responses.FileUploadResponse;
 import ch.raising.services.MediaService;
 import ch.raising.utils.DatabaseOperationException;
-import ch.raising.utils.MediaNotAddedException;
+import ch.raising.utils.MediaException;
 
 @RequestMapping("/media")
 @Controller
@@ -54,7 +54,7 @@ public class MediaController {
 
 	@PostMapping("/video")
 	public ResponseEntity<?> uploadVideo(@RequestBody Media video)
-			throws DataAccessException, SQLException, DatabaseOperationException, MediaNotAddedException {
+			throws DataAccessException, SQLException, DatabaseOperationException, MediaException {
 		long videoid = videoService.uploadMediaAndReturnId(video);
 		return ResponseEntity.ok().body(new FileUploadResponse("added video", videoid));
 	}
@@ -94,11 +94,11 @@ public class MediaController {
 	 * @throws SQLException
 	 * @throws IOException
 	 * @throws DatabaseOperationException
-	 * @throws MediaNotAddedException
+	 * @throws MediaException
 	 */
 	@PostMapping("/profilepicture")
 	public ResponseEntity<?> uploadProfilePicture(@RequestParam("profilePicture") MultipartFile file)
-			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaNotAddedException {
+			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
 		if (file.getContentType().equals("image/png") || file.getContentType().equals("image/jpeg")
 				|| file.getContentType().equals("image/jpeg")) {
 			long picId = ppicService.uploadMediaAndReturnId(new Media(file.getBytes(), file.getContentType()));
@@ -115,12 +115,12 @@ public class MediaController {
 	 * @return
 	 * @throws DataAccessException
 	 * @throws SQLException
-	 * @throws MediaNotAddedException
+	 * @throws MediaException
 	 * @throws IOException
 	 */
 	@PatchMapping("/profilepicture/{id}")
 	public ResponseEntity<?> updateProfilePicture(@RequestParam("profilePicture") MultipartFile file,
-			@PathVariable("id") long id) throws DataAccessException, SQLException, MediaNotAddedException, IOException {
+			@PathVariable("id") long id) throws DataAccessException, SQLException, MediaException, IOException {
 		if (file.getContentType().equals("image/png") || file.getContentType().equals("image/jpeg")) {
 			ppicService.updateMediaOfAccount(file, id);
 			return ResponseEntity.ok().build();
@@ -167,11 +167,11 @@ public class MediaController {
 	 * @throws SQLException
 	 * @throws IOException
 	 * @throws DatabaseOperationException
-	 * @throws MediaNotAddedException
+	 * @throws MediaException
 	 */
 	@PostMapping("/gallery")
 	public ResponseEntity<?> uploadGallery(@RequestParam("gallery") MultipartFile[] gallery)
-			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaNotAddedException {
+			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
 		if (gallery.length > MAX_GALLERY_SIZE) {
 			return ResponseEntity.status(413)
 					.body(new ErrorResponse("The account cannot have more than " + MAX_GALLERY_SIZE + "pictures"));
@@ -181,7 +181,7 @@ public class MediaController {
 
 	@PatchMapping("/gallery/{id}")
 	public ResponseEntity<?> updateGalleryImage(@RequestParam("gallery") MultipartFile file, @PathVariable long id)
-			throws DataAccessException, SQLException, MediaNotAddedException, IOException {
+			throws DataAccessException, SQLException, MediaException, IOException {
 		if (file.getContentType().equals("image/png") || file.getContentType().equals("image/jpeg")) {
 			galleryService.updateMediaOfAccount(file, id);
 			return ResponseEntity.ok().build();
@@ -205,7 +205,7 @@ public class MediaController {
 
 	@PostMapping("/document")
 	public ResponseEntity<?> uploadBusinessplan(@RequestParam("document") MultipartFile[] gallery)
-			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaNotAddedException {
+			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
 		if (gallery.length > MAX_GALLERY_SIZE) {
 			return ResponseEntity.status(413)
 					.body(new ErrorResponse("The account cannot have more than " + MAX_PDF_SIZE + "pictures"));
@@ -215,7 +215,7 @@ public class MediaController {
 
 	@PatchMapping("/document/{id}")
 	public ResponseEntity<?> updateDocument(@RequestParam("document") MultipartFile file, @PathVariable long id)
-			throws DataAccessException, SQLException, MediaNotAddedException, IOException {
+			throws DataAccessException, SQLException, MediaException, IOException {
 		if(!file.getContentType().equals("application/pdf"))
 			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be application/pdf"));
 		documentService.updateMediaOfAccount(file, id);

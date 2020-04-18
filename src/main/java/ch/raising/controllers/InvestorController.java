@@ -63,7 +63,7 @@ public class InvestorController {
 	@PatchMapping("/{id}")
 	public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Investor request)
 			throws DataAccessException, SQLException {
-		investorService.updateProfile(id, request);
+		investorService.updateAccount(id, request);
 		return ResponseEntity.ok().build();
 	}
 

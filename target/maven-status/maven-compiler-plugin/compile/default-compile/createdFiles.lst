@@ -1,14 +1,12 @@
 ch\raising\data\BoardmemberRepository.class
 ch\raising\models\Country.class
 ch\raising\controllers\AdminController.class
-ch\raising\utils\MediaNotAddedException.class
 ch\raising\utils\UpdateQueryBuilder$1.class
 ch\raising\controllers\AccountController.class
 ch\raising\services\AdditionalInformationService.class
 ch\raising\data\PrivateShareholderRepository$1.class
 ch\raising\services\AssignmentTableService.class
 ch\raising\interfaces\IAdditionalInformationRepository.class
-ch\raising\data\MediaRepository$1.class
 ch\raising\models\Share$ShareBuilder.class
 ch\raising\controllers\InteractionController.class
 ch\raising\data\ResetCodeRepository$3.class
@@ -44,6 +42,7 @@ ch\raising\data\AssignmentTableRepositoryFactory.class
 ch\raising\data\AssignmentTableRepository.class
 ch\raising\services\ProfileService.class
 ch\raising\models\responses\CompletePublicInformation.class
+ch\raising\utils\MediaException.class
 ch\raising\data\InteractionRepository.class
 ch\raising\services\MatchingService$1.class
 ch\raising\utils\PreparedStatementUtil$2.class

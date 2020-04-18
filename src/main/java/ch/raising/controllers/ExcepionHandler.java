@@ -24,7 +24,7 @@ import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.InvalidInteractionException;
 import ch.raising.utils.InvalidProfileException;
-import ch.raising.utils.MediaNotAddedException;
+import ch.raising.utils.MediaException;
 import ch.raising.utils.NotAuthorizedException;
 
 @ControllerAdvice
@@ -88,8 +88,8 @@ public class ExcepionHandler {
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(500).body(new ErrorResponse("File malformed", e.getMessage()));
 	}
-	@ExceptionHandler(MediaNotAddedException.class)
-	public ResponseEntity<?> handle(MediaNotAddedException e){
+	@ExceptionHandler(MediaException.class)
+	public ResponseEntity<?> handle(MediaException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(500).body(new ErrorResponse("Media could not be added", e.getMessage()));
 	}

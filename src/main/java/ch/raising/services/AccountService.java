@@ -35,6 +35,7 @@ import ch.raising.utils.JwtRequestFilter;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
+import ch.raising.utils.MediaException;
 import ch.raising.utils.PasswordResetException;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
@@ -59,8 +60,6 @@ public class AccountService implements UserDetailsService {
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
-	 private static Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
 	
 	protected AssignmentTableRepository countryRepo;
 	protected AssignmentTableRepository continentRepo;
@@ -180,10 +179,11 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param req sent from the frontend
 	 * @throws DatabaseOperationException
+	 * @throws MediaException 
 	 * @throws Exception
 	 */
 	protected long registerAccount(Account req)
-			throws SQLException, DataAccessException, InvalidProfileException, DatabaseOperationException {
+			throws SQLException, DataAccessException, InvalidProfileException, MediaException, DatabaseOperationException {
 		if (!req.isComplete()) {
 			throw new InvalidProfileException("Profile is inComplete");
 		}
@@ -249,7 +249,6 @@ public class AccountService implements UserDetailsService {
 		acc.setContinents(continents);
 		acc.setSupport(support);
 		acc.setIndustries(industries);
-		LOGGER.info("Stopwatch for getting Account: {}ms", System.currentTimeMillis()- begin);
 		return acc;
 	}
 
@@ -286,21 +285,11 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * should be used by
-	 * {@link ch.raising.controllers.StartupController},{@link ch.raising.controllersAccountController},{@link ch.raising.controllersInvestorController}
-	 * 
-	 * @param id
-	 * @param acc
-	 * @throws SQLException
-	 * @throws DataAccessException
-	 */
-	public void updateProfile(int id, Account acc) throws DataAccessException, SQLException {
-		updateAccount(id, acc);
-	}
-
-	/**
 	 * updates the account. should be overwritten and called by subtypes
 	 * {@link InvestorService} and {@link StartupService}
+	 * *
+	 * should be used by
+	 * {@link ch.raising.controllers.StartupController},{@link ch.raising.controllersAccountController},{@link ch.raising.controllersInvestorController}
 	 * 
 	 * @param id  the id for the account
 	 * @param acc Account containing all uninitialized fields to be updated
@@ -308,7 +297,7 @@ public class AccountService implements UserDetailsService {
 	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
-	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
+	public void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
 		countryRepo.updateAssignment(id, acc.getCountries());
 		continentRepo.updateAssignment(id, acc.getContinents());
 		supportRepo.updateAssignment(id, acc.getSupport());

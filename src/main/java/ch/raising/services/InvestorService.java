@@ -31,6 +31,7 @@ import ch.raising.utils.InvalidProfileException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
+import ch.raising.utils.MediaException;
 import ch.raising.utils.ResetCodeUtil;
 
 import ch.raising.models.MatchingProfile;
@@ -71,7 +72,7 @@ public class InvestorService extends AccountService {
 
 	@Override
 	protected long registerAccount(Account requestInvestor)
-			throws InvalidProfileException, DataAccessException, SQLException, DatabaseOperationException {
+			throws InvalidProfileException, DataAccessException, SQLException, MediaException, DatabaseOperationException {
 
 		Investor invReq = (Investor) requestInvestor;
 
@@ -111,7 +112,7 @@ public class InvestorService extends AccountService {
 	 * @throws Exception
 	 */
 	@Override
-	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
+	public void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
 		super.updateAccount(id, acc);
 		Investor inv = (Investor) acc;
 		investmentPhaseRepository.updateAssignment(id, inv.getInvestmentPhases());

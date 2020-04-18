@@ -9,6 +9,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Login
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAdditionalInformationRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\StartupRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AccountService.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MediaException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\StartupService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\PreparedStatementUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModelWithDescription.java
@@ -40,7 +41,6 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\QueryB
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\ResetCodeUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\FounderRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Startup.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MediaNotAddedException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\InvestorController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ShareService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MediaService.java

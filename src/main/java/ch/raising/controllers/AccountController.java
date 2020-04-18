@@ -211,7 +211,7 @@ public class AccountController {
 		if (!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
 
-		accountService.updateProfile(id, updateRequest);
+		accountService.updateAccount(id, updateRequest);
 		return ResponseEntity.ok().build();
 	}
 

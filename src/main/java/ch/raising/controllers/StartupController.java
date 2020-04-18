@@ -69,7 +69,7 @@ public class StartupController {
      */
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request) throws DataAccessException, SQLException {
-    	startupService.updateProfile(id, request);
+    	startupService.updateAccount(id, request);
         return ResponseEntity.ok().build();
     }
 	

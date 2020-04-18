@@ -18,6 +18,7 @@ import ch.raising.utils.InvalidProfileException;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
+import ch.raising.utils.MediaException;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.data.*;
 import ch.raising.interfaces.IAdditionalInformationRepository;
@@ -64,7 +65,7 @@ public class StartupService extends AccountService {
 
 	@Override
 	protected long registerAccount(Account account)
-			throws InvalidProfileException, DataAccessException, SQLException, DatabaseOperationException {
+			throws InvalidProfileException, DataAccessException, SQLException, DatabaseOperationException, MediaException {
 		Startup su = (Startup) account;
 
 		if (!su.isComplete()) {
@@ -143,7 +144,7 @@ public class StartupService extends AccountService {
 	 * @throws DataAccessException
 	 */
 	@Override
-	protected void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
+	public void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
 		super.updateAccount(id, acc);
 		Startup su = (Startup) acc;
 		investorTypeRepository.updateAssignment(id, su.getInvestorTypes());
