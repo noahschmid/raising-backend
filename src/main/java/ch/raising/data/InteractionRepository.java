@@ -1,8 +1,10 @@
 package ch.raising.data;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
@@ -11,6 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -28,37 +31,44 @@ public class InteractionRepository {
 	private final String FIND_BY_ACCOUNTID_AND_ID;
 	private final String STARTUP_UPDATE;
 	private final String INVESTOR_UPDATE;
+	private final String DELETE_BY_INTERACTION_ID;
 	private final RowMapper<Interaction> interactionMapper = new InteractionMapper();
 
 	@Autowired
 	public InteractionRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 		this.FIND_ALL = "SELECT * FROM interaction WHERE startupid = ? OR investorid = ?";
-		this.INSERT_INTERACTION = "INSERT INTO interaction(startupid, investorid, interaction, startupstate,investorstate) VALUES (?,?,?,?,?)";
+		this.INSERT_INTERACTION = "INSERT INTO interaction(startupid, investorid, interaction, startupstate, investorstate) VALUES (?,?,?,?,?) RETURNING id";
 		this.FIND_BY_ACCOUNTID_AND_ID = "SELECT * FROM interaction WHERE id = ? AND (startupid =? OR investorid=?)";
-		this.INVESTOR_UPDATE = "UPDATE interaction set investorstate = ? WHERE id = ? AND investorid = ?";
-		this.STARTUP_UPDATE = "UPDATE interaction set startupstate = ? WHERE id = ? AND startupid = ?";
+		this.INVESTOR_UPDATE = "UPDATE interaction SET investorstate = ?, acceptedat = now() WHERE id = ? AND investorid = ?";
+		this.STARTUP_UPDATE = "UPDATE interaction SET startupstate = ?, acceptedat = now() WHERE id = ? AND startupid = ?";
+		this.DELETE_BY_INTERACTION_ID = "DELETE FROM interaction WHERE id = ?";
 	}
 
 	public List<Interaction> findAll(long accountId) {
 		return jdbc.query(FIND_ALL, new Object[] { accountId, accountId }, this.interactionMapper);
 	}
 
-	public void addInteraction(Interaction interaction) {
-		jdbc.execute(INSERT_INTERACTION, insertInteractionCallback(interaction));
+	public long addInteraction(Interaction interaction) {
+		return jdbc.execute(new AddInteractionPreparedStatement(), insertInteractionCallback(interaction));
 	}
 
-	private PreparedStatementCallback<Boolean> insertInteractionCallback(Interaction interaction) {
-		return new PreparedStatementCallback<Boolean>() {
+	private PreparedStatementCallback<Long> insertInteractionCallback(Interaction interaction) {
+		return new PreparedStatementCallback<Long>() {
 			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+			public Long doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
 				ps.setLong(c++, interaction.getStartupId());
 				ps.setLong(c++, interaction.getInvestorId());
 				ps.setString(c++, interaction.getInteraction().name());
 				ps.setString(c++, interaction.getStartupState().name());
 				ps.setString(c++, interaction.getInvestorState().name());
-				return ps.execute();
+				if(ps.executeUpdate() > 0) {
+					if(ps.getGeneratedKeys().next()) {
+						return ps.getGeneratedKeys().getLong("id");
+					}
+				}
+				return -1l;
 			};
 		};
 	}
@@ -85,6 +95,18 @@ public class InteractionRepository {
 					+ investorId + ") could not be found");
 	}
 	
+	public void deleteByInteractionId(long interactionId) {
+		jdbc.update(DELETE_BY_INTERACTION_ID, new Object[] {interactionId}, new int[] {Types.BIGINT});
+	}
+	
+	private class AddInteractionPreparedStatement implements PreparedStatementCreator{
+
+		@Override
+		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+			return con.prepareStatement(INSERT_INTERACTION, Statement.RETURN_GENERATED_KEYS);
+		}
+		
+	}
 	
 	public class InteractionMapper implements RowMapper<Interaction>{
 
@@ -96,7 +118,9 @@ public class InteractionRepository {
 					.investorId(rs.getLong("investorid"))
 					.interaction(InteractionTypes.valueOf(rs.getString("interaction")))
 					.startupState(State.valueOf(rs.getString("startupstate")))
-					.investorState(State.valueOf(rs.getString("investorState")))
+					.investorState(State.valueOf(rs.getString("investorstate")))
+					.createdAt(rs.getTimestamp("createdat"))
+					.acceptedAt(rs.getTimestamp("acceptedat"))
 					.build();
 		}
 		

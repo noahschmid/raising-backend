@@ -158,15 +158,23 @@ public class AccountRepository implements IRepository<Account> {
 	 * @throws SQLException
 	 */
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Account.accountBuilder().accountId(rs.getLong("id")).firstName(rs.getString("firstname"))
-				.lastName(rs.getString("lastname")).companyName(rs.getString("companyName"))
-				.pitch(rs.getString("pitch")).description(rs.getString("description")).email(rs.getString("emailHash"))
-				.roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
-				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password"))
-				.countryId(rs.getObject("countryId") == null ? null : rs.getLong("countryId"))
+		return Account.accountBuilder()
+				.accountId(rs.getLong("id"))
+				.firstName(rs.getString("firstname"))
+				.lastName(rs.getString("lastname"))
+				.companyName(rs.getString("companyName"))
+				.pitch(rs.getString("pitch"))
+				.description(rs.getString("description"))
+				.email(rs.getString("emailHash"))
+				.roles(rs.getString("roles"))
+				.ticketMaxId(rs.getInt("ticketmaxid"))
+				.ticketMinId(rs.getInt("ticketminid"))
+				.password(rs.getString("password"))
+				.countryId(rs.getLong("countryId") == 0 ? -1 : rs.getLong("countryId"))
 				.website(rs.getString("website"))
-				.profilePictureId(rs.getObject("profilepictureid") == null ?
-				-1 : rs.getLong("profilepictureid")).build();
+				.profilePictureId(rs.getLong("profilepictureid") == 0 ?
+				-1 : rs.getLong("profilepictureid"))
+				.build();
 	}
 
 	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {

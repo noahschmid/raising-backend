@@ -1,5 +1,7 @@
 package ch.raising.models;
 
+import java.sql.Timestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +21,7 @@ public class Interaction {
 	private InteractionTypes interaction;
 	private State startupState;
 	private State investorState;
+	private Timestamp createdAt;
+	private Timestamp acceptedAt;
+	private SharedData data;
 }
