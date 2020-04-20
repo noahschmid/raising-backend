@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
 import ch.raising.models.Investor;
 import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.MapUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -110,5 +112,9 @@ public class InvestorRepository implements IRepository<Investor> {
 			System.out.println(e.toString());
 			throw e;
 		}
+	}
+
+	public long getInvestorType(long accountId) {
+		return jdbc.queryForObject("SELECT investortypeid FROM investor WHERE accountid = ?", new Object[] {accountId}, MapUtil::mapRowToFirstEntry);
 	}
 }

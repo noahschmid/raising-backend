@@ -1,7 +1,5 @@
 package ch.raising.models;
 
-import java.sql.Timestamp;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,10 +16,6 @@ public class SharedData {
 	private long accountId = -1l;
 	@Builder.Default
 	private long interactionId = -1l;
-	@Builder.Default
-	private String firstName = "";
-	@Builder.Default
-	private String lastName = "";
 	@Builder.Default
 	private String email  ="";
 	@Builder.Default

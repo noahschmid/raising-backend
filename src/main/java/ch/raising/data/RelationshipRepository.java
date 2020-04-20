@@ -3,6 +3,7 @@ package ch.raising.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.List;
 
@@ -11,21 +12,23 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Relationship;
 import ch.raising.models.RelationshipState;
+import ch.raising.models.responses.MatchResponse;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class RelationshipRepository implements IRepository<Relationship> {
     private final JdbcTemplate jdbc;
-
-    
+    private final String FIND_BY_STATE_AND_ACCOUNT_ID;
     @Autowired
     public RelationshipRepository(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
+        this.FIND_BY_STATE_AND_ACCOUNT_ID = "SELECT * FROM relationship WHERE (startupId = ? OR investorId = ?) AND state = ?;";
     }
 
     /**
@@ -188,9 +191,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      * @return list of relationships
      */
     public List<Relationship> getByAccountIdAndState(long accountId, RelationshipState state) throws EmptyResultDataAccessException, SQLException{
-       
-            String sql = "SELECT * FROM relationship WHERE (startupId = ? OR investorId = ?) AND " +
-                         "state = ?;";
-            return jdbc.query(sql, new Object[] { accountId, accountId, state.name() }, this::mapRowToModel);
+            return jdbc.query(FIND_BY_STATE_AND_ACCOUNT_ID, new Object[] { accountId, accountId, state.name() }, this::mapRowToModel);
     }
+
 } 

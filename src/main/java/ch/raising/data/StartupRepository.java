@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Startup;
 import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.MapUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -135,5 +136,9 @@ public class StartupRepository implements IRepository<Startup> {
 				return ps.execute();
 			}
 		});
+	}
+
+	public long getInvestmentPhase(long accountId) {
+		return jdbc.queryForObject("SELECT investmentphaseid from startup where accountid = ?", new Object[] {accountId}, MapUtil::mapRowToFirstEntry);
 	}
 }

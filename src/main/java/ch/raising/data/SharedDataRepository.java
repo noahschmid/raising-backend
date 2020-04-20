@@ -26,7 +26,7 @@ public class SharedDataRepository {
 	private final RowMapper<SharedData> ShareMapper = new ShareMapper();
 	private final JdbcTemplate jdbc;
 	private final String FIND_BY_ACCOUNT_ID;
-	private final String FIND_BY_INTERACTION_ID;
+	private final String FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID;
 	private final String INSERT_SHARED_DATA;
 	private final String DELETE_BY_INTERACTION_ID;
 	private final String DELETE_BY_ACCOUNT_ID;;
@@ -37,8 +37,8 @@ public class SharedDataRepository {
 	public SharedDataRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 		this.FIND_BY_ACCOUNT_ID = "SELECT * FROM share WHERE accountid = ?";
-		this.FIND_BY_INTERACTION_ID = "SELECT * FROM share WHERE interactionId = ? AND accountid = ?";
-		this.INSERT_SHARED_DATA = "INSERT INTO share(accountid, interactionid, firstname, lastname, email, phone, businessplanid) VALUES (?,?,?,?,?,?,?) RETURNING id";
+		this.FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID = "SELECT * FROM share WHERE interactionid = ? AND accountid = ?";
+		this.INSERT_SHARED_DATA = "INSERT INTO share(accountid, interactionid, email, phone, businessplanid) VALUES (?,?,?,?,?) RETURNING id";
 		this.DELETE_BY_INTERACTION_ID = "DELETE FROM share WHERE interactionid = ?";
 		this.DELETE_BY_ACCOUNT_ID = "DELETE FROM share WHERE accountid = ?";
 		this.DELETE_BY_ID = "DELETE FROM share WHERE id = ?";
@@ -50,7 +50,7 @@ public class SharedDataRepository {
 	}
 
 	public SharedData findByInteractionIdAndAccountId(long interactionId, long accountId) {
-		return jdbc.queryForObject(FIND_BY_INTERACTION_ID, new Object[] {interactionId, accountId}, ShareMapper);
+		return jdbc.queryForObject(FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID, new Object[] {interactionId, accountId}, ShareMapper);
 	}
 	
 	public void deleteByInteractionIdAndAccountId(long interactionId, long accountId) throws SQLException{
@@ -78,8 +78,6 @@ public class SharedDataRepository {
 				int c = 1;
 				ps.setLong(c++, data.getAccountId());
 				ps.setLong(c++, data.getInteractionId());
-				ps.setString(c++, data.getFirstName());
-				ps.setString(c++, data.getLastName());
 				ps.setString(c++, data.getEmail());
 				ps.setInt(c++, data.getPhone());
 				if(data.getBusinessPlanId() == -1) {
@@ -95,12 +93,6 @@ public class SharedDataRepository {
 					return -1l;
 			}
 		};
-	}
-	
-	public SharedData findByIdAndDelete(long interactionId, long accountId) throws SQLException {
-		SharedData data = findByInteractionIdAndAccountId(interactionId, accountId);
-		deleteByInteractionIdAndAccountId(interactionId, accountId);
-		return data;
 	}
 	
 	private class AddSharePreparedStaement implements PreparedStatementCreator{
@@ -120,8 +112,6 @@ public class SharedDataRepository {
 			.id(rs.getLong("id") != 0 ? rs.getLong("id") : -1)
 			.accountId(rs.getLong("accountid"))
 			.interactionId(rs.getLong("interactionid"))
-			.firstName(rs.getString("firstname"))
-			.lastName(rs.getString("lastname"))
 			.email(rs.getString("email"))
 			.phone(rs.getInt("phone"))
 			.businessPlanId(rs.getLong("businessplanid"))

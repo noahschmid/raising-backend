@@ -18,11 +18,11 @@ import ch.raising.data.StartupRepository;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.Investor;
-import ch.raising.models.MatchResponse;
 import ch.raising.models.MatchingProfile;
 import ch.raising.models.Relationship;
 import ch.raising.models.RelationshipState;
 import ch.raising.models.Startup;
+import ch.raising.models.responses.MatchResponse;
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
 import ch.raising.utils.DatabaseOperationException;
@@ -244,7 +244,6 @@ public class MatchingService {
                 response.setStartup(false);
                 response.setFirstName(investor.getFirstName());
                 response.setLastName(investor.getLastName());
-                response.setDescription(investor.getDescription());
                 response.setProfilePictureId(investor.getProfilePictureId());
             } else {
                 response.setAccountId(match.getStartupId());
@@ -257,7 +256,6 @@ public class MatchingService {
                 response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
                 response.setStartup(true);
                 response.setCompanyName(startup.getCompanyName());
-                response.setDescription(startup.getDescription());
                 response.setProfilePictureId(startup.getProfilePictureId());
             }
             matchResponses.add(response);

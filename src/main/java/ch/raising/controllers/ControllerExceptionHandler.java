@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -108,6 +109,12 @@ public class ControllerExceptionHandler {
 		e.printStackTrace();
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(500).body(new ErrorResponse("Threre was an Error: " + e.getMessage(), e));
+	}
+	@ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+	public ResponseEntity<?> handle(IncorrectResultSizeDataAccessException e){
+		e.printStackTrace();
+		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
+		return ResponseEntity.status(500).body(new ErrorResponse("There were more results than anticipated: " + e.getMessage(), e));
 	}
 	
 }

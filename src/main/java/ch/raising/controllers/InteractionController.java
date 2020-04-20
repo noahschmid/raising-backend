@@ -36,7 +36,7 @@ public class InteractionController {
 
 	@GetMapping
 	public ResponseEntity<?> getAllCurrentRelationships()
-			throws EmptyResultDataAccessException, DataAccessException, SQLException {
+			throws EmptyResultDataAccessException, DataAccessException, SQLException, InvalidInteractionException {
 		return ResponseEntity.ok(interactionService.getAllByAccountId());
 	}
 

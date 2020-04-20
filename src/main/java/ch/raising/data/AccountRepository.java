@@ -19,6 +19,8 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
+import ch.raising.models.responses.AccountForRelationship;
+import ch.raising.models.responses.MatchResponse;
 import ch.raising.services.AccountService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
@@ -33,6 +35,7 @@ public class AccountRepository implements IRepository<Account> {
 
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccountRepository.class);
+	private  final String FIND_DATA_FOR_MATCHRESPONSE;
 	
 	private final String ADD_ACCOUNT;
 	private final String ADD_ADMIN;
@@ -45,6 +48,7 @@ public class AccountRepository implements IRepository<Account> {
 				+ "description, ticketminid, ticketmaxid, countryid, website, profilepictureid) VALUES"
 				+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 		this.ADD_ADMIN = "INSERT INTO account(firstname, lastname, emailhash, password, roles) VALUES (?,?,?,?,?)";
+		this.FIND_DATA_FOR_MATCHRESPONSE ="SELECT id, firstname, lastname, companyname, profilepictureid FROM ACCOUNT WHERE id = ?";
 	}
 
 	/**
@@ -148,6 +152,20 @@ public class AccountRepository implements IRepository<Account> {
 				this::mapRowToModel);
 		return account;
 	}
+	
+	public MatchResponse getDataForMatchResponse(long accountId) {
+		return jdbc.queryForObject(FIND_DATA_FOR_MATCHRESPONSE, new Object[] {accountId}, this::mapRowToMatchResponse);
+	}
+	
+	private MatchResponse mapRowToMatchResponse(ResultSet rs, int row) throws SQLException {
+		MatchResponse match = new MatchResponse();
+		match.setAccountId(rs.getLong("id"));
+		match.setFirstName(rs.getString("firstname"));
+		match.setLastName(rs.getString("lastname"));
+		match.setCompanyName(rs.getString("companyname"));
+		match.setProfilePictureId(rs.getLong("profilepictureid"));
+		return match;
+	}
 
 	/**
 	 * Map a row of a result set to an account instance
@@ -175,10 +193,6 @@ public class AccountRepository implements IRepository<Account> {
 				.profilePictureId(rs.getLong("profilepictureid") == 0 ?
 				-1 : rs.getLong("profilepictureid"))
 				.build();
-	}
-
-	public long mapRowToId(ResultSet rs, int rowNum) throws SQLException {
-		return rs.getLong("id");
 	}
 
 	/**

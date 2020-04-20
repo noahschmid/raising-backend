@@ -45,7 +45,7 @@ public class InteractionRepository {
 		this.DELETE_BY_INTERACTION_ID = "DELETE FROM interaction WHERE id = ?";
 	}
 
-	public List<Interaction> findAll(long accountId) {
+	public List<Interaction> findAllByAccountId(long accountId) {
 		return jdbc.query(FIND_ALL, new Object[] { accountId, accountId }, this.interactionMapper);
 	}
 
