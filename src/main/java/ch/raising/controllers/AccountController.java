@@ -6,6 +6,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +42,7 @@ import ch.raising.services.MediaService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.JwtUtil;
+import ch.raising.utils.NotAuthorizedException;
 import ch.raising.utils.PasswordResetException;
 import ch.raising.controllers.AccountController;
 import ch.raising.models.ForgotPasswordRequest;
@@ -341,6 +344,11 @@ public class AccountController {
 			throws DataAccessException, SQLException {
 		assignmentTableService.deleteFromAccountById("industry", industries);
 		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/refresh")
+	public ResponseEntity<?> getNewToken(@RequestHeader("Authorization") String token) throws NotAuthorizedException{
+		return ResponseEntity.ok(accountService.refreshToken(token));
 	}
 
 }

@@ -36,6 +36,7 @@ import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.MediaException;
+import ch.raising.utils.NotAuthorizedException;
 import ch.raising.utils.PasswordResetException;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
@@ -366,6 +367,17 @@ public class AccountService implements UserDetailsService {
 		
 		final String returnToken = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
+	}
+	
+	public LoginResponse refreshToken(String token) throws NotAuthorizedException {
+		if(token == null) {
+			throw new NotAuthorizedException("token not found");
+		}
+		token = token.substring(7);
+		String username = jwtUtil.extractUsername(token);
+		
+		AccountDetails uDet = loadUserByUsername(username);
+		return new LoginResponse(jwtUtil.generateToken(uDet),uDet.getId(), uDet.getStartup(), uDet.getInvestor());
 	}
 
 }
