@@ -9,7 +9,8 @@ public enum Type {
 	SERIAL ("serial"), 
 	BYTEA ("bytea"),
 	BINARY ("binary"),
-	IDENTITY("identity");
+	IDENTITY("identity"),
+	TIMESTAMP("timestamp");
 	
 	String name;
 	Type(String name){

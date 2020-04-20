@@ -38,7 +38,7 @@ public class InteractionRepository {
 	public InteractionRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 		this.FIND_ALL = "SELECT * FROM interaction WHERE startupid = ? OR investorid = ?";
-		this.INSERT_INTERACTION = "INSERT INTO interaction(startupid, investorid, interaction, startupstate, investorstate) VALUES (?,?,?,?,?) RETURNING id";
+		this.INSERT_INTERACTION = "INSERT INTO interaction(startupid, investorid, interaction, startupstate, investorstate) VALUES (?,?,?,?,?)";
 		this.FIND_BY_ACCOUNTID_AND_ID = "SELECT * FROM interaction WHERE id = ? AND (startupid =? OR investorid=?)";
 		this.INVESTOR_UPDATE = "UPDATE interaction SET investorstate = ?, acceptedat = now() WHERE id = ? AND investorid = ?";
 		this.STARTUP_UPDATE = "UPDATE interaction SET startupstate = ?, acceptedat = now() WHERE id = ? AND startupid = ?";

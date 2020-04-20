@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +58,8 @@ class InteractionRepositoryTest {
 	void setup() throws SQLException {
 		String create = QueryBuilder.getInstance().tableName("interaction").pair("id", Type.SERIAL)
 				.pair("startupid", Type.BIGINT).pair("investorid", Type.BIGINT).pair("interaction", Type.VARCHAR)
-				.pair("startupstate", Type.VARCHAR).pair("investorstate", Type.VARCHAR).createTable();
+				.pair("startupstate", Type.VARCHAR).pair("investorstate", Type.VARCHAR)
+				.pair("createdat", Type.TIMESTAMP).pair("acceptedat", Type.TIMESTAMP).createTable();
 		jdbc.execute(create);
 		insert();
 	}
@@ -104,7 +106,8 @@ class InteractionRepositoryTest {
 		Interaction insert = Interaction.builder().id(12).startupId(13).investorId(45)
 				.interaction(InteractionTypes.EMAIL).startupState(State.OPEN).investorState(State.OPEN).build();
 		interactionRepo.addInteraction(insert);
-		Interaction found = jdbc.queryForObject("SELECT * FROM interaction WHERE startupid = 13",interactionRepo.new InteractionMapper());
+		Interaction found = jdbc.queryForObject("SELECT * FROM interaction WHERE startupid = 13",
+				interactionRepo.new InteractionMapper());
 		assertEquals(insert, found);
 	}
 
@@ -135,9 +138,10 @@ class InteractionRepositoryTest {
 		interactionRepo.investorUpdate(State.ACCEPTED, id, investorId);
 		Interaction foundInt = jdbc.queryForObject("SELECT * FROM interaction WHERE id = " + id,
 				interactionRepo.new InteractionMapper());
-		
+
 		assertEquals(State.ACCEPTED, foundInt.getInvestorState());
 	}
+
 	@Test
 	void testInvestorUpdateWrongId() throws DataAccessException, DatabaseOperationException {
 		assertThrows(DatabaseOperationException.class, () -> {
