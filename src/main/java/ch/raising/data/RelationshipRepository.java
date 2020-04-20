@@ -117,7 +117,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      */
     public void updateScore(Relationship relationship) throws Exception {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", relationship.getId());
-        updateQuery.addField(relationship.getMatchingScore(), "score");
+        updateQuery.addField(relationship.getMatchingScore(), "matchingScore");
         updateQuery.execute();
     }
 
