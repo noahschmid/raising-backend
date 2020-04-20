@@ -1,5 +1,9 @@
 package ch.raising.models;
 
+import java.sql.Timestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +17,15 @@ public class Interaction {
 	@Builder.Default
 	private long id = -1l;
 	@Builder.Default
+	@JsonIgnore
 	private long startupId = -1l;
 	@Builder.Default
+	@JsonIgnore
 	private long investorId = -1l;
 	private InteractionTypes interaction;
 	private State startupState;
 	private State investorState;
+	private Timestamp createdAt;
+	private Timestamp acceptedAt;
+	private SharedData data;
 }

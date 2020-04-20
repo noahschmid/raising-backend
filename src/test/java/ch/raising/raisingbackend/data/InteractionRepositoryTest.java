@@ -81,7 +81,7 @@ class InteractionRepositoryTest {
 
 	@Test
 	void testFindAllStartup() {
-		List<Interaction> foundStartup = interactionRepo.findAll(startupId);
+		List<Interaction> foundStartup = interactionRepo.findAllByAccountId(startupId);
 		assertNotNull(foundStartup);
 		assertEquals(1, foundStartup.size());
 		Interaction found = foundStartup.get(0);
@@ -91,7 +91,7 @@ class InteractionRepositoryTest {
 
 	@Test
 	void testFindAllInvestor() {
-		List<Interaction> foundStartup = interactionRepo.findAll(investorId);
+		List<Interaction> foundStartup = interactionRepo.findAllByAccountId(investorId);
 		assertNotNull(foundStartup);
 		assertEquals(1, foundStartup.size());
 		Interaction found = foundStartup.get(0);

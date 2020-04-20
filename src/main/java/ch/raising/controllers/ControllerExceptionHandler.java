@@ -4,21 +4,17 @@ import java.io.IOException;
 
 import java.sql.SQLException;
 
-import javax.management.BadAttributeValueExpException;
-
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.thymeleaf.engine.ElementModelStructureHandler;
-
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
@@ -28,7 +24,7 @@ import ch.raising.utils.MediaException;
 import ch.raising.utils.NotAuthorizedException;
 
 @ControllerAdvice
-public class ExcepionHandler {
+public class ControllerExceptionHandler {
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ErrorResponse> handle(DataIntegrityViolationException e){
@@ -81,7 +77,7 @@ public class ExcepionHandler {
 	public ResponseEntity<ErrorResponse> handle(Exception e){
 		e.printStackTrace();
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
-		return ResponseEntity.status(500).body(new ErrorResponse("An unexpected Exception : ." + e.getMessage(),  e));
+		return ResponseEntity.status(500).body(new ErrorResponse("An unexpected Exception : " + e.getMessage(),  e));
 	}
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<?> handle(IOException e){
@@ -113,6 +109,12 @@ public class ExcepionHandler {
 		e.printStackTrace();
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(500).body(new ErrorResponse("Threre was an Error: " + e.getMessage(), e));
+	}
+	@ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+	public ResponseEntity<?> handle(IncorrectResultSizeDataAccessException e){
+		e.printStackTrace();
+		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
+		return ResponseEntity.status(500).body(new ErrorResponse("There were more results than anticipated: " + e.getMessage(), e));
 	}
 	
 }

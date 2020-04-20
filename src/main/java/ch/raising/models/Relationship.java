@@ -9,4 +9,5 @@ public class Relationship {
     private Long startupId = -1l;
     private RelationshipState state = null;
     private int matchingScore = -1;
+    
 }

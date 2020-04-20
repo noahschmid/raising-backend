@@ -2,6 +2,7 @@ package ch.raising.controllers;
 
 import java.sql.SQLException;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,9 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ch.raising.models.Interaction;
 import ch.raising.models.InteractionRequest;
-import ch.raising.models.Share;
+import ch.raising.models.SharedData;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.services.InteractionService;
 import ch.raising.utils.DatabaseOperationException;
@@ -36,7 +36,7 @@ public class InteractionController {
 
 	@GetMapping
 	public ResponseEntity<?> getAllCurrentRelationships()
-			throws EmptyResultDataAccessException, DataAccessException, SQLException {
+			throws EmptyResultDataAccessException, DataAccessException, SQLException, InvalidInteractionException {
 		return ResponseEntity.ok(interactionService.getAllByAccountId());
 	}
 
@@ -47,10 +47,10 @@ public class InteractionController {
 		return ResponseEntity.ok().build();
 	}
 
-	@PatchMapping("/accept/{interactionId}")
-	public ResponseEntity<?> acceptRequest(@PathVariable long interactionId)
+	@PatchMapping("/accept")
+	public ResponseEntity<?> acceptRequest(@RequestBody InteractionRequest accept )
 			throws DataAccessException, InvalidInteractionException, DatabaseOperationException, SQLException {
-		Share data = interactionService.acceptInteraction(interactionId);
+		SharedData data = interactionService.acceptInteraction(accept);
 		if(data == null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(new ErrorResponse("The request was acceped, but the other party has not accepted yet"));
 		}

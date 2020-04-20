@@ -2,6 +2,9 @@ package ch.raising.raisingbackend.models;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import ch.raising.models.Interaction;
@@ -21,5 +24,14 @@ class RelationshipStateTest {
 		assertEquals(RelationshipState.valueOf("handshake".toUpperCase()), RelationshipState.HANDSHAKE);
 		
 	}
-
+	@Test
+	void make() {
+		List<Integer> test = new ArrayList<Integer>();
+		test.add(2);
+		trythat(test);
+		assertTrue(test.contains(99));
+	}
+	public void trythat(List<Integer> test) {
+		test.add(99);
+	}
 }
