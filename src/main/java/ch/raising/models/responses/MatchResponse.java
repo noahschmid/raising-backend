@@ -10,6 +10,7 @@ import lombok.Data;
 public class MatchResponse {
     private long id;
     private long accountId;
+    private String description;
     private RelationshipState state;
     private String companyName;
     private String firstName;

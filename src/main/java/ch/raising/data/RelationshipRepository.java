@@ -133,7 +133,6 @@ public class RelationshipRepository implements IRepository<Relationship> {
 	 */
 	public Relationship mapRowToModel(ResultSet rs, int row) throws SQLException {
         Relationship relationship = new Relationship();
-
         relationship.setId(rs.getLong("id"));
         relationship.setInvestorId(rs.getLong("investorId"));
         relationship.setStartupId(rs.getLong("startupId"));

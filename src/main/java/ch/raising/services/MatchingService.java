@@ -242,6 +242,7 @@ public class MatchingService {
                 }
                 response.setInvestorTypeId(investor.getInvestorTypeId());
                 response.setStartup(false);
+                response.setDescription(investor.getDescription());
                 response.setFirstName(investor.getFirstName());
                 response.setLastName(investor.getLastName());
                 response.setProfilePictureId(investor.getProfilePictureId());
@@ -255,6 +256,7 @@ public class MatchingService {
                 }
                 response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
                 response.setStartup(true);
+                response.setDescription(startup.getDescription());
                 response.setCompanyName(startup.getCompanyName());
                 response.setProfilePictureId(startup.getProfilePictureId());
             }
