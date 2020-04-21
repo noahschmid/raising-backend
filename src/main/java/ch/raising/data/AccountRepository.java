@@ -188,9 +188,9 @@ public class AccountRepository implements IRepository<Account> {
 				.ticketMaxId(rs.getInt("ticketmaxid"))
 				.ticketMinId(rs.getInt("ticketminid"))
 				.password(rs.getString("password"))
-				.countryId(rs.getLong("countryId") == 0 ? -1 : rs.getLong("countryId"))
+				.countryId(rs.getObject("countryId") == null ? -1 : rs.getLong("countryId"))
 				.website(rs.getString("website"))
-				.profilePictureId(rs.getLong("profilepictureid") == 0 ?
+				.profilePictureId(rs.getObject("profilepictureid") == null ?
 				-1 : rs.getLong("profilepictureid"))
 				.build();
 	}

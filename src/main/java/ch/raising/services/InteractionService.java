@@ -74,8 +74,10 @@ public class InteractionService {
 			m.setProfilePictureId(userData.getProfilePictureId());
 			if(isStartup()) {
 				m.setInvestorTypeId(invRepo.getInvestorType(m.getAccountId()));
+				m.setInvestmentPhaseId(-1);
 			}else if (isInvestor()) {
 				m.setInvestmentPhaseId(suRepo.getInvestmentPhase(m.getAccountId()));
+				m.setInvestorTypeId(-1);
 			}else {
 				throw new InvalidInteractionException("cannot map matches to an account that is neither a startup nor an investor");
 			}
