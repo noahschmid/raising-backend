@@ -1,5 +1,6 @@
-package ch.raising.models;
+package ch.raising.models.responses;
 
+import ch.raising.models.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

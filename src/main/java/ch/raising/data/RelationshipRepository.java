@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Relationship;
-import ch.raising.models.RelationshipState;
+import ch.raising.models.enums.RelationshipState;
 import ch.raising.models.responses.MatchResponse;
 import ch.raising.utils.UpdateQueryBuilder;
 

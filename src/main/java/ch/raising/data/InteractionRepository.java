@@ -18,8 +18,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Interaction;
-import ch.raising.models.InteractionTypes;
-import ch.raising.models.State;
+import ch.raising.models.enums.InteractionTypes;
+import ch.raising.models.enums.State;
 import ch.raising.utils.DatabaseOperationException;
 
 @Repository

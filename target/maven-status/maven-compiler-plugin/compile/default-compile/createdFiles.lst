@@ -14,6 +14,7 @@ ch\raising\data\RelationshipRepository.class
 ch\raising\controllers\InvestorController.class
 ch\raising\data\RelationshipRepository$1.class
 ch\raising\data\FounderRepository$1.class
+ch\raising\models\enums\InteractionTypes.class
 ch\raising\utils\EmailNotFoundException.class
 ch\raising\services\MatchingService.class
 ch\raising\controllers\PublicInformationController.class
@@ -28,6 +29,7 @@ ch\raising\models\CorporateShareholder$CorporateShareholderBuilder.class
 ch\raising\data\SharedDataRepository.class
 ch\raising\models\Account$AccountBuilder.class
 ch\raising\interfaces\IAssignmentTableModel.class
+ch\raising\models\responses\LoginResponse.class
 ch\raising\utils\UpdateQueryBuilder.class
 ch\raising\services\InvestorService.class
 ch\raising\data\CorporateShareholderRepository$1.class
@@ -45,6 +47,7 @@ ch\raising\utils\MediaException.class
 ch\raising\data\InteractionRepository.class
 ch\raising\services\MatchingService$1.class
 ch\raising\data\InteractionRepository$InteractionMapper.class
+ch\raising\data\NotificationRepository$1.class
 ch\raising\utils\PreparedStatementUtil$2.class
 ch\raising\models\Account.class
 ch\raising\models\PrivateShareholder$PrivateShareholderBuilder.class
@@ -57,6 +60,7 @@ ch\raising\data\InteractionRepository$1.class
 ch\raising\utils\DatabaseOperationException.class
 ch\raising\utils\QueryBuilder.class
 ch\raising\data\StartupRepository.class
+ch\raising\data\NotificationRepository$DeviceTokenMapper.class
 ch\raising\data\AccountRepository.class
 ch\raising\interfaces\IMediaRepository.class
 ch\raising\services\InteractionService$1.class
@@ -77,13 +81,17 @@ ch\raising\models\PrivateShareholder.class
 ch\raising\utils\InvalidProfileException.class
 ch\raising\data\AssignmentTableRepository$2.class
 ch\raising\models\Boardmember$BoardmemberBuilder.class
+ch\raising\models\DeviceToken.class
+ch\raising\models\enums\State.class
 ch\raising\utils\InvalidInteractionException.class
 ch\raising\data\MediaRepository.class
 ch\raising\models\Boardmember.class
+ch\raising\services\NotificationService.class
 ch\raising\models\responses\AccountForRelationship$AccountForRelationshipBuilder.class
 ch\raising\models\AssignmentTableModelWithDescription.class
 ch\raising\models\Investor.class
 ch\raising\interfaces\IRepository.class
+ch\raising\models\enums\Device.class
 ch\raising\data\SharedDataRepository$AddSharePreparedStaement.class
 ch\raising\utils\JwtUtil.class
 ch\raising\models\responses\CompletePublicInformation$CompletePublicInformationBuilder.class
@@ -95,8 +103,11 @@ ch\raising\models\Startup$StartupBuilder.class
 ch\raising\controllers\StartupController.class
 ch\raising\services\MediaService.class
 ch\raising\models\InteractionRequest.class
+ch\raising\models\enums\NotificationType.class
 ch\raising\data\InvestorRepository.class
 ch\raising\config\SecurityConfig.class
+ch\raising\models\DeviceToken$DeviceTokenBuilder.class
+ch\raising\data\NotificationRepository.class
 ch\raising\utils\MailUtil.class
 ch\raising\models\ResetCode.class
 ch\raising\models\ForgotPasswordRequest.class
@@ -105,17 +116,16 @@ ch\raising\models\Interaction.class
 ch\raising\data\AccountRepository$1.class
 ch\raising\models\SharedData.class
 ch\raising\models\responses\ErrorResponse.class
-ch\raising\models\InteractionTypes.class
 ch\raising\data\StartupRepository$1.class
 ch\raising\controllers\MatchingController.class
 ch\raising\models\Founder.class
 ch\raising\models\Investor$InvestorBuilder.class
 ch\raising\services\SharedDataService.class
+ch\raising\models\enums\RelationshipState.class
 ch\raising\utils\PreparedStatementUtil$5.class
 ch\raising\models\responses\AccountForRelationship.class
 ch\raising\utils\PreparedStatementUtil.class
 ch\raising\data\ResetCodeRepository$1.class
-ch\raising\models\RelationshipState.class
 ch\raising\interfaces\IAssignmentTableRepository.class
 ch\raising\models\AssignmentTableModel.class
 ch\raising\controllers\ProfileController.class
@@ -123,6 +133,7 @@ ch\raising\data\InteractionRepository$AddInteractionPreparedStatement.class
 ch\raising\models\Startup.class
 ch\raising\models\Media.class
 ch\raising\models\Support.class
+ch\raising\controllers\DeviceController.class
 ch\raising\data\MediaRepositoryFactory.class
 ch\raising\models\StartupMember.class
 ch\raising\data\SharedDataRepository$ShareMapper.class
@@ -132,6 +143,4 @@ ch\raising\interfaces\IExtendedAssignmentTableModel.class
 ch\raising\utils\PasswordResetException.class
 ch\raising\utils\Type.class
 ch\raising\models\Interaction$InteractionBuilder.class
-ch\raising\models\LoginResponse.class
-ch\raising\models\State.class
 ch\raising\data\AssignmentTableRepository$1.class

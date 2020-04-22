@@ -20,8 +20,8 @@ import ch.raising.models.Country;
 import ch.raising.models.Investor;
 import ch.raising.models.MatchingProfile;
 import ch.raising.models.Relationship;
-import ch.raising.models.RelationshipState;
 import ch.raising.models.Startup;
+import ch.raising.models.enums.RelationshipState;
 import ch.raising.models.responses.MatchResponse;
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
@@ -272,7 +272,6 @@ public class MatchingService {
         float percent = score;
         percent /= MAX_SCORE;
         percent *= 10;
-        System.out.println("percent: " + percent);
         return (int)((Math.round(percent * 2) / 2.0) * 10);
     }
 }

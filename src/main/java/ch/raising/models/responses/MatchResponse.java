@@ -3,7 +3,7 @@ package ch.raising.models.responses;
 import java.util.List;
 
 import ch.raising.models.Interaction;
-import ch.raising.models.RelationshipState;
+import ch.raising.models.enums.RelationshipState;
 import lombok.Data;
 
 @Data

@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import ch.raising.models.Interaction;
-import ch.raising.models.RelationshipState;
+import ch.raising.models.enums.RelationshipState;
 
 class RelationshipStateTest {
 

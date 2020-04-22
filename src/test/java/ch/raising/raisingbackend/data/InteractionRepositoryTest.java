@@ -23,8 +23,8 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import ch.raising.data.InteractionRepository;
 import ch.raising.models.Interaction;
-import ch.raising.models.InteractionTypes;
-import ch.raising.models.State;
+import ch.raising.models.enums.InteractionTypes;
+import ch.raising.models.enums.State;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;

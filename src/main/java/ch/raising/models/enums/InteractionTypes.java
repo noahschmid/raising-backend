@@ -1,4 +1,4 @@
-package ch.raising.models;
+package ch.raising.models.enums;
 
 public enum InteractionTypes {
 	VIDEO_CONFERENCE,

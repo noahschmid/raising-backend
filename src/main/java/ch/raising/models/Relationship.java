@@ -1,5 +1,6 @@
 package ch.raising.models;
 
+import ch.raising.models.enums.RelationshipState;
 import lombok.Data;
 
 @Data

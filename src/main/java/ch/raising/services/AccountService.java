@@ -26,8 +26,8 @@ import ch.raising.models.AccountDetails;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.Media;
 import ch.raising.models.LoginRequest;
-import ch.raising.models.LoginResponse;
 import ch.raising.models.PasswordResetRequest;
+import ch.raising.models.responses.LoginResponse;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.InvalidProfileException;
@@ -352,7 +352,7 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param request The Login Request containing the email and password
 	 *                {@link ch.raising.models.LoginRequest }
-	 * @return A login response Model {@link ch.raising.models.LoginResponse}
+	 * @return A login response Model {@link ch.raising.models.responses.LoginResponse}
 	 * @throws SQLException 
 	 * @throws DataAccessException 
 	 */

@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import ch.raising.models.enums.InteractionTypes;
+import ch.raising.models.enums.State;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
