@@ -64,6 +64,7 @@ ch\raising\data\StartupRepository.class
 ch\raising\data\NotificationRepository$DeviceTokenMapper.class
 ch\raising\data\AccountRepository.class
 ch\raising\interfaces\IMediaRepository.class
+ch\raising\services\FCMNotificationService.class
 ch\raising\services\InteractionService$1.class
 ch\raising\services\AccountService.class
 ch\raising\models\PasswordResetRequest.class
@@ -101,8 +102,8 @@ ch\raising\utils\functionalInterface\RowMapper.class
 ch\raising\controllers\MediaController.class
 ch\raising\models\responses\MatchResponse.class
 ch\raising\models\Startup$StartupBuilder.class
-ch\raising\services\NotificationDataService.class
 ch\raising\controllers\StartupController.class
+ch\raising\models\PushNotification.class
 ch\raising\services\MediaService.class
 ch\raising\models\InteractionRequest.class
 ch\raising\models\enums\NotificationType.class

@@ -49,7 +49,7 @@ public class ControllerExceptionHandler {
 	@ExceptionHandler(InvalidProfileException.class)
 	public ResponseEntity<ErrorResponse> handle(InvalidProfileException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
-		return ResponseEntity.status(500).body(new ErrorResponse(e.getMessage(), e.getAccount()));
+		return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage(), e.getAccount()));
 	}
 	@ExceptionHandler(EmailNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handle(EmailNotFoundException e){

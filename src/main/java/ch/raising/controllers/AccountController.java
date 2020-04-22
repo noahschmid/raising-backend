@@ -33,7 +33,7 @@ import ch.raising.models.responses.ErrorResponse;
 import ch.raising.models.responses.LoginResponse;
 import ch.raising.services.AccountService;
 import ch.raising.services.AssignmentTableService;
-import ch.raising.services.NotificationDataService;
+import ch.raising.services.NotificationService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.JwtUtil;

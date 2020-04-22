@@ -3,6 +3,7 @@ package ch.raising.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
 import java.util.List;
@@ -25,10 +26,12 @@ import ch.raising.utils.UpdateQueryBuilder;
 public class RelationshipRepository implements IRepository<Relationship> {
     private final JdbcTemplate jdbc;
     private final String FIND_BY_STATE_AND_ACCOUNT_ID;
+    private final String SET_LAST_CHANGED;
     @Autowired
     public RelationshipRepository(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
         this.FIND_BY_STATE_AND_ACCOUNT_ID = "SELECT * FROM relationship WHERE (startupId = ? OR investorId = ?) AND state = ?;";
+        this.SET_LAST_CHANGED = "UPDATE relationship SET lastchanged = now() WHERE id = ?";
     }
 
     /**
@@ -83,8 +86,8 @@ public class RelationshipRepository implements IRepository<Relationship> {
             updateQuery.addField(update.getStartupId(), "startupId");
             updateQuery.addField(update.getMatchingScore(), "matchingScore");
             updateQuery.addField(update.getState().toString(), "state");
-            updateQuery.addField("now()", "lastchanged");
             updateQuery.execute();
+            jdbc.update(SET_LAST_CHANGED, new Object[]{id}, new int[] {Types.BIGINT});
         } catch(Exception e) {
             throw new Error(e);
         }
@@ -101,8 +104,8 @@ public class RelationshipRepository implements IRepository<Relationship> {
             update.getInvestorId(), jdbc);
         updateQuery.addField(update.getMatchingScore(), "matchingScore");
         updateQuery.addField(update.getState().toString(), "state");
-        updateQuery.addField("now()", "lastchanged");
         updateQuery.execute(); 
+        jdbc.update(SET_LAST_CHANGED, new Object[]{update.getId()}, new int[] {Types.BIGINT});
     }
 
 
@@ -116,6 +119,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
         updateQuery.addField(state.toString(), "state");
         updateQuery.addField("now()", "lastchanged");
         updateQuery.execute();
+        jdbc.update(SET_LAST_CHANGED, new Object[]{id}, new int[] {Types.BIGINT});
     }
 
     /**
@@ -124,8 +128,8 @@ public class RelationshipRepository implements IRepository<Relationship> {
     public void updateScore(Relationship relationship) throws Exception {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", relationship.getId());
         updateQuery.addField(relationship.getMatchingScore(), "matchingScore");
-        updateQuery.addField("now()", "lastchanged");
         updateQuery.execute();
+        jdbc.update(SET_LAST_CHANGED, new Object[]{relationship.getId()}, new int[] {Types.BIGINT});
     }
 
     /**

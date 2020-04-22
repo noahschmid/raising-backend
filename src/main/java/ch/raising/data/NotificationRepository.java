@@ -40,7 +40,7 @@ public class NotificationRepository {
 	
 	public DeviceToken findDeviceTokenByAccountId(long accountId) {
 		
-		return jdbc.queryForObject(SELECT_BY_ACCOUNTID, new DeviceTokenMapper());
+		return jdbc.queryForObject(SELECT_BY_ACCOUNTID, new Object[] {accountId}, new DeviceTokenMapper());
 	}
 	
 	public void update(DeviceToken token, long accountId) throws SQLException, DataAccessException{
@@ -74,6 +74,7 @@ public class NotificationRepository {
 					.accountId(rs.getLong("accountid"))
 					.device(Device.valueOf(rs.getString("device")))
 					.notificationTypes(parseToEnum(rs.getString("notificationtypes")))
+					.token(rs.getString("token"))
 					.build();
 		}
 		

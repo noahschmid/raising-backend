@@ -15,6 +15,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Account
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\StartupMember.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AssignmentTableService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Type.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PushNotification.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\CorporateShareholderRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\PublicInformationController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\SharedDataRepository.java
@@ -24,13 +25,13 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Databa
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\QueryBuilder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\ResetCodeUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\InvestorController.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\FCMNotificationService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ProfileService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtRequestFilter.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\InteractionRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UpdateQueryBuilder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AdditionalInformationService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Relationship.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\NotificationDataService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\RelationshipRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ProfileController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\MediaController.java

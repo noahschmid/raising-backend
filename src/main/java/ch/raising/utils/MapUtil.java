@@ -73,8 +73,10 @@ public class MapUtil {
 	}
 
 	public static Media mapRowToMedia(ResultSet rs, int row) throws SQLException {
+		long id = rs.getLong("id");
+		id = id == 0?-1:id;
 		return rs == null ? Media.builder().build()
-				: Media.builder().id(rs.getLong("id")).accountId(rs.getLong("accountid")).media(rs.getBytes("media")).contentType(rs.getString("type"))
+				: Media.builder().id(id).accountId(rs.getLong("accountid")).media(rs.getBytes("media")).contentType(rs.getString("type"))
 						.build();
 	}
 
