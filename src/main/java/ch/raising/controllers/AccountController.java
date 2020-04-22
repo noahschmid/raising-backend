@@ -33,7 +33,7 @@ import ch.raising.models.responses.ErrorResponse;
 import ch.raising.models.responses.LoginResponse;
 import ch.raising.services.AccountService;
 import ch.raising.services.AssignmentTableService;
-import ch.raising.services.NotificationService;
+import ch.raising.services.NotificationDataService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.JwtUtil;
@@ -49,14 +49,12 @@ public class AccountController {
 
 	private final AccountService accountService;
 	private final AssignmentTableService assignmentTableService;
-	private final NotificationService notificationService;
 
 	@Autowired
 	public AccountController(AccountService accountService, AuthenticationManager authenticationManager,
-			JwtUtil jwtUtil, AssignmentTableService assignmentTableService, NotificationService notificationService) {
+			JwtUtil jwtUtil, AssignmentTableService assignmentTableService) {
 		this.accountService = accountService;
 		this.assignmentTableService = assignmentTableService;
-		this.notificationService = notificationService;
 	}
 	/**
 	 * Check whether account exists with the given username and password
@@ -170,8 +168,8 @@ public class AccountController {
 	@ResponseBody
 	public ResponseEntity<?> getAccountById(@PathVariable long id, HttpServletRequest request)
 			throws DataAccessException, SQLException, DatabaseOperationException {
-		if (!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
+		//if (!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
+			//return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
 		return ResponseEntity.ok().body(accountService.getAccount(id));
 	}
 

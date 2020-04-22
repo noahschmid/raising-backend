@@ -12,6 +12,7 @@ ch\raising\controllers\InteractionController.class
 ch\raising\data\ResetCodeRepository$3.class
 ch\raising\data\RelationshipRepository.class
 ch\raising\controllers\InvestorController.class
+ch\raising\config\FCMConfig.class
 ch\raising\data\RelationshipRepository$1.class
 ch\raising\data\FounderRepository$1.class
 ch\raising\models\enums\InteractionTypes.class
@@ -100,6 +101,7 @@ ch\raising\utils\functionalInterface\RowMapper.class
 ch\raising\controllers\MediaController.class
 ch\raising\models\responses\MatchResponse.class
 ch\raising\models\Startup$StartupBuilder.class
+ch\raising\services\NotificationDataService.class
 ch\raising\controllers\StartupController.class
 ch\raising\services\MediaService.class
 ch\raising\models\InteractionRequest.class

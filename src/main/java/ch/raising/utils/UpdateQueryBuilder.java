@@ -121,6 +121,11 @@ public class UpdateQueryBuilder {
 		}
 	}
 
+	
+	public void updateLastChanged() {
+		
+	}
+	
 	private void setFieldName(String fieldName) {
 		if (updates != "")
 			updates += ", ";

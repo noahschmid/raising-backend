@@ -1,5 +1,6 @@
 package ch.raising.models.responses;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import ch.raising.models.Interaction;
@@ -21,4 +22,5 @@ public class MatchResponse {
     private boolean isStartup;
     private int matchingPercent;
     private List<Interaction> interactions;
+    private Timestamp lastchanged;
 }

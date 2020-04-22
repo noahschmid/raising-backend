@@ -83,6 +83,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
             updateQuery.addField(update.getStartupId(), "startupId");
             updateQuery.addField(update.getMatchingScore(), "matchingScore");
             updateQuery.addField(update.getState().toString(), "state");
+            updateQuery.addField("now()", "lastchanged");
             updateQuery.execute();
         } catch(Exception e) {
             throw new Error(e);
@@ -100,6 +101,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
             update.getInvestorId(), jdbc);
         updateQuery.addField(update.getMatchingScore(), "matchingScore");
         updateQuery.addField(update.getState().toString(), "state");
+        updateQuery.addField("now()", "lastchanged");
         updateQuery.execute(); 
     }
 
@@ -112,6 +114,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
     public void updateState(long id, RelationshipState state) throws Exception {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", id);
         updateQuery.addField(state.toString(), "state");
+        updateQuery.addField("now()", "lastchanged");
         updateQuery.execute();
     }
 
@@ -121,6 +124,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
     public void updateScore(Relationship relationship) throws Exception {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", relationship.getId());
         updateQuery.addField(relationship.getMatchingScore(), "matchingScore");
+        updateQuery.addField("now()", "lastchanged");
         updateQuery.execute();
     }
 
@@ -138,7 +142,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
         relationship.setStartupId(rs.getLong("startupId"));
         relationship.setMatchingScore(rs.getInt("matchingScore"));
         relationship.setState(RelationshipState.valueOf(rs.getString("state")));
-
+        relationship.setLastchanged(rs.getTimestamp("lastchanged"));
         return relationship;
     }
     
@@ -148,7 +152,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
 	 */
 	public void add(Relationship relationship) throws Exception {
 		try {
-            String query = "INSERT INTO relationship(investorId, startupId, matchingScore, state) VALUES (?, ?, ?, ?);"; 
+            String query = "INSERT INTO relationship(investorId, startupId, matchingScore, state, lastchanged) VALUES (?, ?, ?, ?, now());"; 
 			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
 				@Override  
 				public Boolean doInPreparedStatement(PreparedStatement ps)  

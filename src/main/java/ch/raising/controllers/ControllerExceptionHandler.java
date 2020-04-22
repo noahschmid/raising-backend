@@ -92,6 +92,7 @@ public class ControllerExceptionHandler {
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<?> handle(BadCredentialsException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
+		e.printStackTrace();
 		return ResponseEntity.status(500).body(new ErrorResponse("Login failed", e.getMessage()));
 	}
 	@ExceptionHandler(EmptyResultDataAccessException.class)

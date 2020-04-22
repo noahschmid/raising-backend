@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.models.DeviceToken;
 import ch.raising.models.enums.NotificationType;
-import ch.raising.services.NotificationService;
+import ch.raising.services.NotificationDataService;
 
 @Controller
 @RequestMapping("/device")
 public class DeviceController {
 	
-	private final NotificationService notificationService;
+	private final NotificationDataService notificationService;
 
-	public DeviceController(NotificationService notificationService) {
+	public DeviceController(NotificationDataService notificationService) {
 		this.notificationService = notificationService;
 	}
 	

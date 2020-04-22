@@ -93,7 +93,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-			<version>9.0.30</version>
+			<version>9.0.30</version> <!-- Do not upgrade to 9.0.31 there is a bug with large file uploads -->
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -116,7 +116,11 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>6.8.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

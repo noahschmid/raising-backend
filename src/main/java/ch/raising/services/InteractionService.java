@@ -75,9 +75,11 @@ public class InteractionService {
 			if(isStartup()) {
 				m.setInvestorTypeId(invRepo.getInvestorType(m.getAccountId()));
 				m.setInvestmentPhaseId(-1);
+				m.setStartup(true);
 			}else if (isInvestor()) {
 				m.setInvestmentPhaseId(suRepo.getInvestmentPhase(m.getAccountId()));
 				m.setInvestorTypeId(-1);
+				m.setStartup(false);
 			}else {
 				throw new InvalidInteractionException("cannot map matches to an account that is neither a startup nor an investor");
 			}
@@ -111,6 +113,7 @@ public class InteractionService {
 			matchResp.setState(r.getState());
 			matchResp.setInteractions(interactionsOfR);
 			matchResp.setMatchingPercent(MatchingService.getMatchingPercent(r.getMatchingScore()));
+			matchResp.setLastchanged(r.getLastchanged());
 			if(isStartup()) {
 				matchResp.setAccountId(r.getInvestorId());
 			}else if(isInvestor()) {

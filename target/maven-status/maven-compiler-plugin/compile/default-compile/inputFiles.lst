@@ -30,6 +30,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Interac
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UpdateQueryBuilder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AdditionalInformationService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Relationship.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\NotificationDataService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\RelationshipRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ProfileController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\MediaController.java
@@ -41,6 +42,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Assig
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\InteractionRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\MatchResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MapUtil.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\FCMConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Account.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\BoardmemberRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\ReturnIdResponse.java
