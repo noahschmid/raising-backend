@@ -36,7 +36,7 @@ public class DeviceController {
 	
 	@PostMapping("/send")
 	public ResponseEntity<?> registerDevice(@RequestBody PushNotification dtr) throws InterruptedException, ExecutionException{
-		notificationService.sendTestNotificationToSelf(dtr.getAccountid(), dtr.getMessage(), dtr.getTitle());
+		notificationService.sendTestNotificationToSelf(dtr.getAccountId(), dtr.getMessage(), dtr.getTitle());
 		return ResponseEntity.ok().build();
 	}
 	

@@ -235,7 +235,7 @@ public class AccountService implements UserDetailsService {
 	 * @throws DataAccessException
 	 */
 	public Account getAccount(long id) throws DataAccessException, SQLException, DatabaseOperationException {
-		long begin = System.currentTimeMillis();
+		
 		List<Long> countries = countryRepo.findIdByAccountId(id);
 		List<Long> continents = continentRepo.findIdByAccountId(id);
 		List<Long> support = supportRepo.findIdByAccountId(id);
@@ -244,7 +244,7 @@ public class AccountService implements UserDetailsService {
 		Account acc = accountRepository.find(id);
 		acc.setPassword("");
 		acc.setRoles("");
-
+		
 		acc.setGallery(gallery);
 
 		acc.setCountries(countries);

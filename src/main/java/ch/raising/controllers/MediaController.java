@@ -204,13 +204,13 @@ public class MediaController {
 	}
 
 	@PostMapping("/document")
-	public ResponseEntity<?> uploadBusinessplan(@RequestParam("document") MultipartFile[] gallery)
+	public ResponseEntity<?> uploadBusinessplan(@RequestParam("document") MultipartFile[] docs)
 			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
-		if (gallery.length > MAX_GALLERY_SIZE) {
+		if (docs.length > MAX_GALLERY_SIZE) {
 			return ResponseEntity.status(413)
-					.body(new ErrorResponse("The account cannot have more than " + MAX_PDF_SIZE + "pictures"));
+					.body(new ErrorResponse("The account cannot have more than " + MAX_PDF_SIZE + "pdf"));
 		}
-		return ResponseEntity.ok().body(documentService.uploadMultipleAndReturnIds(gallery));
+		return ResponseEntity.ok().body(documentService.uploadMultipleAndReturnIds(docs));
 	}
 
 	@PatchMapping("/document/{id}")

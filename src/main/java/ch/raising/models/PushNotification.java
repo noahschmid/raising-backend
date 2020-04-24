@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PushNotification {
-	private long accountid;
+	private long accountId;
 	private String title;
 	private String message;
 	private Device device;

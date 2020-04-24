@@ -117,7 +117,6 @@ public class RelationshipRepository implements IRepository<Relationship> {
     public void updateState(long id, RelationshipState state) throws Exception {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", id);
         updateQuery.addField(state.toString(), "state");
-        updateQuery.addField("now()", "lastchanged");
         updateQuery.execute();
         jdbc.update(SET_LAST_CHANGED, new Object[]{id}, new int[] {Types.BIGINT});
     }

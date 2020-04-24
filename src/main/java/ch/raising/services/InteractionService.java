@@ -75,11 +75,11 @@ public class InteractionService {
 			if(isStartup()) {
 				m.setInvestorTypeId(invRepo.getInvestorType(m.getAccountId()));
 				m.setInvestmentPhaseId(-1);
-				m.setStartup(true);
+				m.setStartup(false);
 			}else if (isInvestor()) {
 				m.setInvestmentPhaseId(suRepo.getInvestmentPhase(m.getAccountId()));
 				m.setInvestorTypeId(-1);
-				m.setStartup(false);
+				m.setStartup(true);
 			}else {
 				throw new InvalidInteractionException("cannot map matches to an account that is neither a startup nor an investor");
 			}
@@ -179,7 +179,7 @@ public class InteractionService {
 
 		switch (state) {
 		case BUSINESSPLAN:
-			if (data.getBusinessPlanId() == -1 || data.getBusinessPlanId() == 0)
+			if (isStartup() && (data.getBusinessPlanId() == -1 || data.getBusinessPlanId() == 0))
 				throw new InvalidInteractionException("add data.businessplanId");
 		case PHONE_CALL:
 			if (data.getPhone() == -1 || data.getPhone() == 0)
