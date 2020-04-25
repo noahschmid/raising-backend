@@ -82,7 +82,6 @@ class MatchingServiceTest {
         MatchingProfile subject = new MatchingProfile();
         MatchingProfile object = new MatchingProfile();
 
-        // subject investment range inside object range
         int score = MatchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "No countries match 0");
         subject.addCountry(new Country("Switzerland", 1, 1));
@@ -97,6 +96,41 @@ class MatchingServiceTest {
         subject.addCountry(new Country("Germany", 2,1 ));
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple countries match");
+    }
+
+
+    @Test
+    void testContinentCountryMatch() throws Exception {
+        MatchingProfile subject = new MatchingProfile();
+        MatchingProfile object = new MatchingProfile();
+
+        int score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(0, score, "No countries match 0");
+        subject.addCountry(new Country("Switzerland", 1, 1));
+        object.addContinent(2l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(0, score, "No countries match 1");
+
+        object.addContinent(1l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(1, score, "Countries match");
+    }
+
+    @Test
+    void testContinentCountryMatch2() throws Exception {
+        MatchingProfile subject = new MatchingProfile();
+        MatchingProfile object = new MatchingProfile();
+
+        int score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(0, score, "No countries match 0");
+        object.addCountry(new Country("Switzerland", 1, 1));
+        subject.addContinent(2l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(0, score, "No countries match 1");
+
+        subject.addContinent(1l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(1, score, "Countries match");
     }
 
     @Test

@@ -220,6 +220,7 @@ public class AccountRepository implements IRepository<Account> {
 		update.addField(req.getTicketMinId(), "ticketminid");
 		update.addField(req.getWebsite(), "website");
 		update.addField(req.getCountryId(), "countryId");
+		update.addField(req.getProfilePictureId(), "profilePictureId");
 		update.execute();
 	}
 

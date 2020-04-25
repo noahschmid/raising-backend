@@ -130,10 +130,37 @@ public class MatchingService {
                 ++score;
         }
 
-        for(Country cntry : object.getCountries()) {
-            if(subject.getCountries().contains(cntry)) {
+        boolean marketsMatch = false;
+
+        continentLoop:
+        for(long contnt : object.getContinents()) {
+            if(subject.getContinents().contains(contnt)) {
                 ++score;
+                marketsMatch = true;
                 break;
+            }
+
+            for(Country cntry : subject.getCountries()) {
+                if(cntry.getContinentId() == contnt) {
+                    ++score;
+                    break continentLoop;
+                }
+            }
+        }
+
+        if(!marketsMatch) {
+            countryLoop:
+            for(Country cntry : object.getCountries()) {
+                if(subject.getCountries().contains(cntry)) {
+                    ++score;
+                    break;
+                }
+                for(long contnt : subject.getContinents()) {
+                    if(contnt == cntry.getContinentId()) {
+                        ++score;
+                        break countryLoop;
+                    }
+                }
             }
         }
 

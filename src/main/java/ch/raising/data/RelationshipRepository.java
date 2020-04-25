@@ -182,7 +182,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      */
     public List<Relationship> getByAccountId(long accountId) throws EmptyResultDataAccessException, SQLException{
         try {
-            String sql = "SELECT * FROM relationship WHERE startupId = ? OR investorId = ?;";
+            String sql = "SELECT * FROM relationship WHERE startupId = ? OR investorId = ? ORDER BY matchingScore;";
             return jdbc.query(sql, new Object[] { accountId, accountId }, this::mapRowToModel);
         } catch (Exception e) {
             System.out.println(e.getMessage());
