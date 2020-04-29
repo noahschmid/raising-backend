@@ -150,7 +150,7 @@ public class AdditionalInformationService {
 	/**
 	 * Update privateshareholder by id
 	 * 
-	 * @param psh {@link ch.raising.models.PrivateShareholder}
+	 * @param psh {@link ch.raising.test.models.PrivateShareholder}
 	 * @return
 	 * @throws Exception
 	 */
@@ -165,7 +165,7 @@ public class AdditionalInformationService {
 	/**
 	 * Add privateshareholder to startup by id
 	 * 
-	 * @param psh {@link ch.raising.models.PrivateShareholder}
+	 * @param psh {@link ch.raising.test.models.PrivateShareholder}
 	 * @return
 	 * @throws SQLException 
 	 * @throws DataAccessException 
@@ -194,7 +194,7 @@ public class AdditionalInformationService {
 	/**
 	 * Update privateshareholder by id
 	 * 
-	 * @param psh {@link ch.raising.models.CorporateShareholder}
+	 * @param psh {@link ch.raising.test.models.CorporateShareholder}
 	 * @return
 	 * @throws SQLException 
 	 * @throws DataAccessException 

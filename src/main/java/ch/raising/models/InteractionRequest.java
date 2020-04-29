@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class InteractionRequest {
-	private long interactionId;
 	private long accountId;
 	private InteractionTypes interaction;
 	private SharedData data;

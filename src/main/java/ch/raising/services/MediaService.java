@@ -45,7 +45,7 @@ public class MediaService{
 	 */
 	public long uploadMediaAndReturnId(Media media) throws DataAccessException, SQLException, DatabaseOperationException, MediaException {
 		long accountId = getAccountId();
-		if(mediaRepo.countMediaOfAccount(accountId) <= MAX_ALLOWED_ITEMS) {
+		if(mediaRepo.countMediaOfAccount(accountId) + 1 <= MAX_ALLOWED_ITEMS) {
 			media.setAccountId(accountId);
 			return mediaRepo.addMedia(media);
 		}
@@ -81,7 +81,7 @@ public class MediaService{
 	}
 
 	/**
-	 * should only be used in registration prcess, adds up to nine pics to the table
+	 * should only be used in registration process
 	 * @param gallery
 	 * @return
 	 * @throws DataAccessException
@@ -91,6 +91,12 @@ public class MediaService{
 	 * @throws MediaException 
 	 */
 	public List<Long> uploadMultipleAndReturnIds(MultipartFile[] gallery) throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException{
+		long accountId = getAccountId();
+		if(accountId >=0) {
+			if(mediaRepo.countMediaOfAccount(accountId) + gallery.length > MAX_ALLOWED_ITEMS) {
+				throw new MediaException("All media items for this account were added. Try updating instead.");
+			}
+		}
 		List<Long> ids = new ArrayList<Long>();
 		for(MultipartFile f: gallery) {
 			Media insert = new Media(f.getBytes(), f.getContentType());

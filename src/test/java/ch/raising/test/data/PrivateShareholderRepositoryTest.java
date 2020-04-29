@@ -1,4 +1,4 @@
-package ch.raising.raisingbackend.data;
+package ch.raising.test.data;
 
 import static org.junit.Assert.assertEquals;
 

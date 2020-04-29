@@ -1,4 +1,4 @@
-package ch.raising.raisingbackend.utils;
+package ch.raising.test.utils;
 
 import org.junit.jupiter.api.Test;
 

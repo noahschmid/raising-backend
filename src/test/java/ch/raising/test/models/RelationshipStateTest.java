@@ -1,4 +1,4 @@
-package ch.raising.raisingbackend.models;
+package ch.raising.test.models;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -39,6 +39,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Priva
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MailUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAuthorizedException.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UidUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\InteractionRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\MatchResponse.java
@@ -60,6 +61,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functi
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\StartupRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\SharedDataController.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\AdminAccountResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MediaException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\PreparedStatementUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\ErrorResponse.java

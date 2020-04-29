@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.models.Account;
+import ch.raising.models.LoginRequest;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.services.AccountService;
 
@@ -34,5 +35,9 @@ public class AdminController {
     @PostMapping("/register")
     public ResponseEntity<?> registerAdmin(@RequestBody Account admin) throws Exception{
     	return ResponseEntity.ok(accountService.registerAdmin(admin));
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest request) throws Exception{
+    	return ResponseEntity.ok(accountService.adminLogin(request));
     }
 }

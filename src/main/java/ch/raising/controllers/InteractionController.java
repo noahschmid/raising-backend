@@ -47,20 +47,20 @@ public class InteractionController {
 		return ResponseEntity.ok().build();
 	}
 
-	@PatchMapping("/accept")
-	public ResponseEntity<?> acceptRequest(@RequestBody InteractionRequest accept )
+	@PatchMapping("/{interactionId}/accept")
+	public ResponseEntity<?> acceptRequest(@PathVariable long interactionId, @RequestBody InteractionRequest accept )
 			throws DataAccessException, InvalidInteractionException, DatabaseOperationException, SQLException {
-		SharedData data = interactionService.acceptInteraction(accept);
+		SharedData data = interactionService.acceptInteraction(interactionId, accept);
 		if(data == null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(new ErrorResponse("The request was acceped, but the other party has not accepted yet"));
 		}
 		return ResponseEntity.ok(data);
 	}
 
-	@PatchMapping("/reject/{interactionId}")
+	@PatchMapping("/{interactionId}/decline")
 	public ResponseEntity<?> rejectRequest(@PathVariable long interactionId)
 			throws DataAccessException, DatabaseOperationException, InvalidInteractionException, SQLException {
-		interactionService.rejectInteraction(interactionId);
+		interactionService.declineInteraction(interactionId);
 		return ResponseEntity.ok().build();
 	}
 }

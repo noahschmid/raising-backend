@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 import ch.raising.models.Account;
 import ch.raising.models.Media;
 /**
- * Is used to store Prepared statements to be used in the {@see ch.raising.data} package.
+ * Is used to store Prepared statements to be used in the {@see ch.raising.test.data} package.
  * @author Manuel Schüpbach
  *
  */

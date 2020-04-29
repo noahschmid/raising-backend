@@ -34,6 +34,7 @@ ch\raising\models\responses\LoginResponse.class
 ch\raising\utils\UpdateQueryBuilder.class
 ch\raising\services\InvestorService.class
 ch\raising\data\CorporateShareholderRepository$1.class
+ch\raising\models\responses\AdminAccountResponse.class
 ch\raising\data\CorporateShareholderRepository.class
 ch\raising\utils\MapUtil.class
 ch\raising\models\Founder$FounderBuilder.class
@@ -111,6 +112,7 @@ ch\raising\data\InvestorRepository.class
 ch\raising\config\SecurityConfig.class
 ch\raising\models\DeviceToken$DeviceTokenBuilder.class
 ch\raising\data\NotificationRepository.class
+ch\raising\utils\UidUtil.class
 ch\raising\utils\MailUtil.class
 ch\raising\models\ResetCode.class
 ch\raising\models\ForgotPasswordRequest.class

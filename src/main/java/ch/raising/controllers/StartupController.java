@@ -3,7 +3,7 @@ package ch.raising.controllers;
 import java.sql.SQLException;
 import java.util.List;
 
-
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -83,6 +83,7 @@ public class StartupController {
 	 */
 	@PostMapping("/register")
 	public ResponseEntity<?> addStartup(@RequestBody Startup startup) throws DatabaseOperationException, SQLException, Exception {
+		LoggerFactory.getLogger(StartupController.class).info("uId of startup: " + startup.getUId());
 		return ResponseEntity.ok(startupService.registerProfile(startup));
 	}
 	/**

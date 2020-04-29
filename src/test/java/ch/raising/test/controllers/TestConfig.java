@@ -1,4 +1,5 @@
-package ch.raising.raisingbackend.data;
+package ch.raising.test.controllers;
+
 
 
 import javax.sql.DataSource;

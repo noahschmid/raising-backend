@@ -1,6 +1,7 @@
-package ch.raising.raisingbackend.controllers;
+package ch.raising.test.controllers;
 
 import java.sql.Date;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -14,16 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.raising.models.Account;
 import ch.raising.models.Boardmember;
 import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Founder;
-import ch.raising.models.Media;
 import ch.raising.models.PrivateShareholder;
 import ch.raising.utils.JwtUtil;
 

@@ -1,17 +1,15 @@
 package ch.raising.services;
 
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ch.raising.models.*;
+
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.InvalidProfileException;
@@ -20,8 +18,24 @@ import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.MediaException;
 import ch.raising.utils.ResetCodeUtil;
-import ch.raising.data.*;
-import ch.raising.interfaces.IAdditionalInformationRepository;
+import ch.raising.utils.UidUtil;
+import ch.raising.data.AccountRepository;
+import ch.raising.data.AssignmentTableRepository;
+import ch.raising.data.AssignmentTableRepositoryFactory;
+import ch.raising.data.BoardmemberRepository;
+import ch.raising.data.CorporateShareholderRepository;
+import ch.raising.data.FounderRepository;
+import ch.raising.data.MediaRepositoryFactory;
+import ch.raising.data.PrivateShareholderRepository;
+import ch.raising.data.StartupRepository;
+import ch.raising.models.Account;
+import ch.raising.models.Boardmember;
+import ch.raising.models.CorporateShareholder;
+import ch.raising.models.Country;
+import ch.raising.models.Founder;
+import ch.raising.models.MatchingProfile;
+import ch.raising.models.PrivateShareholder;
+import ch.raising.models.Startup;
 
 @Service
 public class StartupService extends AccountService {
@@ -67,10 +81,14 @@ public class StartupService extends AccountService {
 	protected long registerAccount(Account account)
 			throws InvalidProfileException, DataAccessException, SQLException, DatabaseOperationException, MediaException {
 		Startup su = (Startup) account;
-
+		
+		if(!UidUtil.isValidUId(su.getUId())) {
+			throw new InvalidProfileException("uId has invalid fromat: " + su.getUId(), su);
+		}
+		
 		if (!su.isComplete()) {
 			String name = "Startup";
-			if (!account.isComplete())
+			if (account.isComplete())
 				name = "Account";
 			throw new InvalidProfileException(name + " is incomplete", su);
 		}
@@ -111,7 +129,6 @@ public class StartupService extends AccountService {
 		}
 
 	}
-
 	/**
 	 * @param long the tableEntryId of the startup
 	 * @throws SQLException
@@ -207,4 +224,5 @@ public class StartupService extends AccountService {
 
 		return profiles;
 	}
+
 }

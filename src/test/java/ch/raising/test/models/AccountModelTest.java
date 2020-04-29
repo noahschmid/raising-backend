@@ -1,4 +1,4 @@
-package ch.raising.raisingbackend.models;
+package ch.raising.test.models;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,8 +18,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
+import ch.raising.test.data.TestConfig;
 import ch.raising.models.Account;
-import ch.raising.raisingbackend.data.TestConfig;
 
 @ContextConfiguration(classes = { TestConfig.class })
 @SpringBootTest

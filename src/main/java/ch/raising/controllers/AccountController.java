@@ -115,8 +115,8 @@ public class AccountController {
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ADMIN')")
 	@ResponseBody
-	public List<Account> getAccounts() throws DataAccessException, SQLException {
-		return accountService.getAccounts();
+	public ResponseEntity<?> getAccounts() throws DataAccessException, SQLException {
+		return ResponseEntity.ok(accountService.getAccounts());
 	}
 
 	/**

@@ -46,7 +46,7 @@ public class Account {
 	 * This constructor makes an Account represented by the account table in the
 	 * database. That means the country, continent, support, industries lists,
 	 * profilepicture and gallery will not be initialized. It should be used by the
-	 * {@link ch.raising.data.AccountRepository} and
+	 * {@link ch.raising.test.data.AccountRepository} and
 	 * {@link ch.raising.services.AccountService#registerAccount()}.
 	 * 
 	 * @param accountId

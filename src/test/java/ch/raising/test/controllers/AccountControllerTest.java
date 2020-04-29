@@ -1,4 +1,4 @@
-package ch.raising.raisingbackend.controllers;
+package ch.raising.test.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
@@ -47,6 +48,7 @@ import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.FreeEmailRequest;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.PasswordResetRequest;
+import ch.raising.models.responses.AdminAccountResponse;
 import ch.raising.models.responses.LoginResponse;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MapUtil;
@@ -130,10 +132,11 @@ public class AccountControllerTest extends AccountControllerTestBaseClass {
 		expected.setPassword(passwordHash);
 		expected.setEmail(emailHash);
 		MvcResult res = mockMvc.perform(get("/account")).andExpect(status().is(200)).andReturn();
-		Account[] foundAccounts = objectMapper.readValue(res.getResponse().getContentAsString(), Account[].class);
+		AdminAccountResponse foundAllForAdmin = objectMapper.readValue(res.getResponse().getContentAsString(), AdminAccountResponse.class);
+		List<Account> foundAccounts = foundAllForAdmin.getAccounts();
 		assertNotNull(foundAccounts);
-		assertEquals(1, foundAccounts.length);
-		Account found = foundAccounts[0];
+		assertEquals(1, foundAccounts.size());
+		Account found = foundAccounts.get(0);
 		assertEquals(account.getAccountId(), found.getAccountId());
 		assertEquals(account.getCompanyName(), found.getCompanyName());
 		assertEquals(passwordHash, found.getPassword());

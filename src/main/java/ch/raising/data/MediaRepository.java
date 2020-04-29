@@ -116,7 +116,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 	@Override
 	public void addAccountIdToMedia(long mediaId, long accountId)
 			throws DataAccessException, SQLException, MediaException {
-		if (mediaIsFree(mediaId, accountId)) {
+		if (mediaId != -1 && mediaIsFree(mediaId, accountId)) {
 			throw new MediaException("this media(" + mediaId + ") is already used by someone else");
 		}
 		if (mediaId != -1 && mediaId != 0) {
@@ -153,10 +153,8 @@ public class MediaRepository implements IMediaRepository<Media> {
 			assignedAccount = jdbc.queryForObject(FIND_ACCOUNT_ID_BY_MEDIA_ID, new Object[] { mediaId },
 					MapUtil::mapRowToAccountId);
 		} catch (EmptyResultDataAccessException e) {
-			System.out.println(assignedAccount + " " + mediaId);
 			return true;
 		}
 		return assignedAccount == -1;
 	}
-
 }

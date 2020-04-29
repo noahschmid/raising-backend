@@ -1,14 +1,13 @@
 package ch.raising.services;
 
 import java.sql.SQLException;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,14 +28,13 @@ import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.Media;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.PasswordResetRequest;
+import ch.raising.models.responses.AdminAccountResponse;
 import ch.raising.models.responses.LoginResponse;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.InvalidProfileException;
-import ch.raising.utils.JwtRequestFilter;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
-import ch.raising.utils.MapUtil;
 import ch.raising.utils.MediaException;
 import ch.raising.utils.NotAuthorizedException;
 import ch.raising.utils.PasswordResetException;
@@ -44,7 +43,6 @@ import ch.raising.utils.UpdateQueryBuilder;
 import ch.raising.data.AccountRepository;
 import ch.raising.data.AssignmentTableRepository;
 import ch.raising.data.AssignmentTableRepositoryFactory;
-import ch.raising.data.MediaRepository;
 import ch.raising.data.MediaRepositoryFactory;
 import ch.raising.interfaces.IMediaRepository;
 
@@ -59,20 +57,21 @@ public class AccountService implements UserDetailsService {
 	private PasswordEncoder encoder;
 	private IMediaRepository<Media> galleryRepository;
 	private IMediaRepository<Media> pPicRepository;
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	protected AssignmentTableRepository countryRepo;
 	protected AssignmentTableRepository continentRepo;
 	protected AssignmentTableRepository supportRepo;
 	protected AssignmentTableRepository industryRepo;
-	
+
 	private final JdbcTemplate jdbc;
 
 	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
-			JwtUtil jwtUtil, PasswordEncoder encoder, AssignmentTableRepositoryFactory assignmentFactory, MediaRepositoryFactory mrFactory, JdbcTemplate jdbc) throws SQLException {
+			JwtUtil jwtUtil, PasswordEncoder encoder, AssignmentTableRepositoryFactory assignmentFactory,
+			MediaRepositoryFactory mrFactory, JdbcTemplate jdbc) throws SQLException {
 		this.accountRepository = accountRepository;
 		this.mailUtil = mailUtil;
 		this.resetCodeUtil = resetCodeUtil;
@@ -103,16 +102,15 @@ public class AccountService implements UserDetailsService {
 			throw new UsernameNotFoundException(e.getMessage());
 		}
 	}
-	
+
 	public AccountDetails loadUserById(long id) throws UsernameNotFoundException {
 		try {
 			Account acc = accountRepository.find(id);
 			return new AccountDetails(acc);
-		}catch (DataAccessException | SQLException e) {
+		} catch (DataAccessException | SQLException e) {
 			throw new UsernameNotFoundException(e.getMessage());
 		}
-		
-		
+
 	}
 
 	/**
@@ -130,7 +128,7 @@ public class AccountService implements UserDetailsService {
 			return true;
 		}
 	}
-	
+
 	public LoginResponse registerAdmin(Account admin) throws Exception {
 		long id;
 		try {
@@ -181,11 +179,11 @@ public class AccountService implements UserDetailsService {
 	 * 
 	 * @param req sent from the frontend
 	 * @throws DatabaseOperationException
-	 * @throws MediaException 
+	 * @throws MediaException
 	 * @throws Exception
 	 */
-	protected long registerAccount(Account req)
-			throws SQLException, DataAccessException, InvalidProfileException, MediaException, DatabaseOperationException {
+	protected long registerAccount(Account req) throws SQLException, DataAccessException, InvalidProfileException,
+			MediaException, DatabaseOperationException {
 		if (!req.isComplete()) {
 			throw new InvalidProfileException("Profile is inComplete");
 		}
@@ -214,6 +212,7 @@ public class AccountService implements UserDetailsService {
 		}
 
 	}
+
 	/**
 	 * Delete user account
 	 * 
@@ -235,7 +234,7 @@ public class AccountService implements UserDetailsService {
 	 * @throws DataAccessException
 	 */
 	public Account getAccount(long id) throws DataAccessException, SQLException, DatabaseOperationException {
-		
+
 		List<Long> countries = countryRepo.findIdByAccountId(id);
 		List<Long> continents = continentRepo.findIdByAccountId(id);
 		List<Long> support = supportRepo.findIdByAccountId(id);
@@ -243,10 +242,7 @@ public class AccountService implements UserDetailsService {
 		List<Long> gallery = galleryRepository.findMediaIdByAccountId(id);
 		Account acc = accountRepository.find(id);
 		acc.setPassword("");
-		acc.setRoles("");
-		
 		acc.setGallery(gallery);
-
 		acc.setCountries(countries);
 		acc.setContinents(continents);
 		acc.setSupport(support);
@@ -261,8 +257,11 @@ public class AccountService implements UserDetailsService {
 	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
-	public List<Account> getAccounts() throws DataAccessException, SQLException {
+	public AdminAccountResponse getAccounts() throws DataAccessException, SQLException {
 		List<Account> accounts = accountRepository.getAll();
+		List<Account> startups = new ArrayList<Account>();
+		List<Account> investors = new ArrayList<Account>();
+
 		for (Account a : accounts) {
 			long accountId = a.getAccountId();
 			a.setCountries(countryRepo.findIdByAccountId(accountId));
@@ -270,8 +269,15 @@ public class AccountService implements UserDetailsService {
 			a.setSupport(supportRepo.findIdByAccountId(accountId));
 			a.setIndustries(industryRepo.findIdByAccountId(accountId));
 			a.setGallery(galleryRepository.findMediaIdByAccountId(accountId));
+			if (accountRepository.isInvestor(a.getAccountId())) {
+				investors.add(a);
+			} else if (accountRepository.isStartup(a.getAccountId())) {
+				startups.add(a);
+			}
 		}
-		return accounts;
+		accounts.removeAll(startups);
+		accounts.removeAll(investors);
+		return new AdminAccountResponse(startups, investors, accounts);
 	}
 
 	/**
@@ -288,10 +294,8 @@ public class AccountService implements UserDetailsService {
 
 	/**
 	 * updates the account. should be overwritten and called by subtypes
-	 * {@link InvestorService} and {@link StartupService}
-	 * *
-	 * should be used by
-	 * {@link ch.raising.controllers.StartupController},{@link ch.raising.controllersAccountController},{@link ch.raising.controllersInvestorController}
+	 * {@link InvestorService} and {@link StartupService} * should be used by
+	 * {@link ch.raising.test.controllers.StartupController},{@link ch.raising.controllersAccountController},{@link ch.raising.controllersInvestorController}
 	 * 
 	 * @param id  the id for the account
 	 * @param acc Account containing all uninitialized fields to be updated
@@ -349,36 +353,60 @@ public class AccountService implements UserDetailsService {
 
 	/**
 	 * Method to login a specific user. used by
-	 * {@link ch.raising.controllers.AccountController}
+	 * {@link ch.raising.test.controllers.AccountController}
 	 * 
 	 * @param request The Login Request containing the email and password
-	 *                {@link ch.raising.models.LoginRequest }
-	 * @return A login response Model {@link ch.raising.models.responses.LoginResponse}
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 *                {@link ch.raising.test.models.LoginRequest }
+	 * @return A login response Model
+	 *         {@link ch.raising.test.models.responses.LoginResponse}
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
-	public LoginResponse login(LoginRequest request) throws AuthenticationException, UsernameNotFoundException, DataAccessException, SQLException {
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-		
+	public LoginResponse login(LoginRequest request)
+			throws AuthenticationException, UsernameNotFoundException, DataAccessException, SQLException {
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.getEmail(),
+				request.getPassword());
+
 		Authentication auth = authenticationManager.authenticate(token);
-		
+
 		AccountDetails userDetails = (AccountDetails) auth.getPrincipal();
 		userDetails.setInvestor(accountRepository.isInvestor(userDetails.getId()));
 		userDetails.setStartup(accountRepository.isStartup(userDetails.getId()));
+
+		final String returnToken = jwtUtil.generateToken(userDetails);
+		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
+	}
+
+	public LoginResponse adminLogin(LoginRequest req)
+			throws UsernameNotFoundException, DataAccessException, AuthenticationException, SQLException, NotAuthorizedException {
+
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(req.getEmail(),
+				req.getPassword());
+
+		Authentication auth = authenticationManager.authenticate(token);
+
+		AccountDetails userDetails = (AccountDetails) auth.getPrincipal();
+		
+		List<String> roles = new ArrayList<String>();
+		for(GrantedAuthority g: userDetails.getAuthorities()) {
+			roles.add(g.getAuthority());
+		}
+		if(!roles.contains("ROLE_ADMIN"))
+			throw new NotAuthorizedException("not an admin");
 		
 		final String returnToken = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}
-	
+
 	public LoginResponse refreshToken(String token) throws NotAuthorizedException {
-		if(token == null) {
+		if (token == null) {
 			throw new NotAuthorizedException("token not found");
 		}
 		token = token.substring(7);
 		String username = jwtUtil.extractUsername(token);
-		
+
 		AccountDetails uDet = loadUserByUsername(username);
-		return new LoginResponse(jwtUtil.generateToken(uDet),uDet.getId(), uDet.getStartup(), uDet.getInvestor());
+		return new LoginResponse(jwtUtil.generateToken(uDet), uDet.getId(), uDet.getStartup(), uDet.getInvestor());
 	}
 
 }

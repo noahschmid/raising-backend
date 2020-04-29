@@ -178,7 +178,7 @@ public class InteractionService {
 			throw new InvalidInteractionException("add data.email");
 
 		switch (state) {
-		case BUSINESSPLAN:
+		case BUSINESS_PLAN:
 			if (isStartup() && (data.getBusinessPlanId() == -1 || data.getBusinessPlanId() == 0))
 				throw new InvalidInteractionException("add data.businessplanId");
 		case PHONE_CALL:
@@ -216,9 +216,8 @@ public class InteractionService {
 		return insert;
 	}
 
-	public SharedData acceptInteraction(InteractionRequest accept)
+	public SharedData acceptInteraction(long interactionId, InteractionRequest accept)
 			throws InvalidInteractionException, DataAccessException, DatabaseOperationException, SQLException {
-		long interactionId = accept.getInteractionId();
 		SharedData data = accept.getData();
 		validateSharedData(accept.getInteraction(), data);
 		data.setInteractionId(interactionId);
@@ -258,17 +257,17 @@ public class InteractionService {
 		return null;
 	}
 
-	public void rejectInteraction(long interactionId)
+	public void declineInteraction(long interactionId)
 			throws DataAccessException, DatabaseOperationException, InvalidInteractionException, SQLException {
 		long accountId = getAccountId();
 		if (isStartup()) {
-			interactionRepo.startupUpdate(State.REJECT, interactionId, accountId);
+			interactionRepo.startupUpdate(State.DECLINED, interactionId, accountId);
 			shareRepo.deleteByInteractionId(interactionId);
 		} else if (isInvestor()) {
-			interactionRepo.investorUpdate(State.REJECT, interactionId, accountId);
+			interactionRepo.investorUpdate(State.DECLINED, interactionId, accountId);
 			shareRepo.deleteByInteractionId(interactionId);
 		} else {
-			throw new InvalidInteractionException("This type of account cannot reject an interaction");
+			throw new InvalidInteractionException("This type of account cannot decline an interaction");
 		}
 	}
 

@@ -1,23 +1,23 @@
-package ch.raising.raisingbackend.data;
+package ch.raising.test.data;
 
 import static org.junit.Assert.assertEquals;
 
+
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterAll;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,11 +35,10 @@ import ch.raising.utils.Type;
 @SpringBootTest
 @ActiveProfiles("RepositoryTest")
 @TestInstance(Lifecycle.PER_CLASS)
-public class AssignmentTableTest2 {
+public class AssignmentTableTest {
 
 	AssignmentTableRepository repo;
 
-	
 	JdbcTemplate jdbc;
 
 	String tableName;
@@ -50,16 +49,16 @@ public class AssignmentTableTest2 {
 	String name;
 	long tableEntryId;
 
-	
+	List<Long> entries;
+
 	@Autowired
-	public AssignmentTableTest2(JdbcTemplate jdbc) {
+	public AssignmentTableTest(JdbcTemplate jdbc) {
+		this.jdbc = jdbc;
 		tableName = "continent";
 		name = "testcontinent";
 		tableIdName = tableName + "Id";
 		assignmentTableName = tableName + "assignment";
-		accountId = "startupid";
-		this.jdbc = jdbc;
-		repo = new AssignmentTableRepository(jdbc, tableName, accountId).withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
+		repo = new AssignmentTableRepository(jdbc,tableName);
 	}
 
 	@BeforeEach
@@ -68,38 +67,46 @@ public class AssignmentTableTest2 {
 		addEntries();
 	}
 
-	@AfterEach
-	public void cleanUp() {
-		JdbcTestUtils.dropTables(jdbc, tableName);
-		JdbcTestUtils.dropTables(jdbc, assignmentTableName);
-
-	}
 	private void createTable() {
-		String sql = QueryBuilder.getInstance().tableName(tableName).pair("description", Type.VARCHAR)
-				.pair("id", Type.SERIAL).pair("name", Type.VARCHAR).createTable();
+		String sql = QueryBuilder.getInstance().tableName(tableName).pair("id", Type.SERIAL).pair("name", Type.VARCHAR)
+				.createTable();
 		jdbc.execute(sql);
 		sql = QueryBuilder.getInstance().tableName(assignmentTableName).pair(tableIdName, Type.BIGINT)
 				.pair(accountId, Type.BIGINT).createTable();
 		jdbc.execute(sql);
 	}
 
-	private void addEntries() {
+	public void addEntries() {
 		String sql = QueryBuilder.getInstance().tableName(tableName).attribute("name").value(name).insert();
 		jdbc.execute(sql);
 
 		tableEntryId = getIdFor("name", tableName);
 		sql = QueryBuilder.getInstance().tableName(assignmentTableName).attribute(accountId).attribute(tableIdName)
 				.value("" + accountIdValue).value("" + tableEntryId).insert();
+		jdbc.execute(sql);
 
+		entries = Lists.newArrayList(2l, 3l, 4l, 5l, 7l, 8l);
+		sql = "INSERT INTO " + assignmentTableName + " (" + accountId + ", " + tableIdName + ") VALUES ";
+		for (long l : entries) {
+			sql += "(" + accountIdValue + ", " + l + "),";
+		}
+		sql = sql.substring(0, sql.length()-1); //Off-by-one-Error
 		jdbc.execute(sql);
 	}
 
-	private long getIdFor(String attribute, String nameOfTable) {
+	public long getIdFor(String attribute, String nameOfTable) {
 		long id;
 		String sql = QueryBuilder.getInstance().tableName(nameOfTable).whereEquals(attribute, name).select();
 		id = jdbc.queryForObject(sql, MapUtil::mapRowToId);
 		assertNotNull(id);
 		return id;
+	}
+
+	@AfterEach
+	public void cleanUp() {
+		JdbcTestUtils.dropTables(jdbc, tableName);
+		JdbcTestUtils.dropTables(jdbc, assignmentTableName);
+
 	}
 
 	@Test
@@ -127,14 +134,31 @@ public class AssignmentTableTest2 {
 	public void testAddEntryToAccountById() throws DataAccessException, SQLException {
 		repo.addEntryToAccountById(tableEntryId, accountIdValue);
 		int count = JdbcTestUtils.countRowsInTable(jdbc, assignmentTableName);
-		assertEquals(2, count);
+		assertEquals(entries.size() + 2, count);
 	}
 
 	@Test
 	public void deleteEntryFromAccountById() throws DataAccessException, SQLException {
 		repo.deleteEntryFromAccountById(tableEntryId, accountIdValue);
 		int count = JdbcTestUtils.countRowsInTable(jdbc, assignmentTableName);
-		assertEquals(0, count);
+		assertEquals(entries.size(), count);
+	}
+
+	@Test
+	public void deleteEntriesFromAccount() throws DataAccessException, SQLException {
+		repo.deleteEntriesByAccountId(accountIdValue);
+		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, assignmentTableName));
+	}
+
+	@Test
+	public void addEntriesToAccount() throws DataAccessException, SQLException {
+		List<Long> newEntries = Lists.newArrayList(10l,11l,12l,13l);
+		repo.addEntriesToAccount(accountIdValue, newEntries);
+		String sql = "SELECT " + tableName + "id FROM "+ assignmentTableName +" WHERE accountid = " + accountIdValue;
+		List<Long> found = jdbc.query(sql, MapUtil::mapRowToFirstEntry);
+		for(long l : newEntries) {
+			assertTrue(found.contains(l));
+		}
 	}
 
 }

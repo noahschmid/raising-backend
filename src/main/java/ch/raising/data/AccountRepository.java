@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -19,9 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Account;
-import ch.raising.models.responses.AccountForRelationship;
 import ch.raising.models.responses.MatchResponse;
-import ch.raising.services.AccountService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.MapUtil;
@@ -33,8 +29,6 @@ public class AccountRepository implements IRepository<Account> {
 	private JdbcTemplate jdbc;
 	private PasswordEncoder encoder;
 
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AccountRepository.class);
 	private  final String FIND_DATA_FOR_MATCHRESPONSE;
 	
 	private final String ADD_ACCOUNT;
@@ -63,8 +57,7 @@ public class AccountRepository implements IRepository<Account> {
 	}
 
 	/**
-	 * Find user account by email does not care if hashed or not. It checks for
-	 * both.
+	 * Find user by email. The parameter should not be encoded.
 	 * 
 	 * @param email the email to search for
 	 * @return instance of the found user account

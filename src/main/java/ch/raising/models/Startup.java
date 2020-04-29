@@ -131,7 +131,7 @@ public class Startup extends Account {
 
 	@Override
 	public boolean isComplete() {
-		return super.isComplete() && companyName != "" && foundingYear != -1 && revenueMaxId != -1 && revenueMinId != -1
+		return super.isComplete() && uId != "" && companyName != "" && foundingYear != -1 && revenueMaxId != -1 && revenueMinId != -1
 				&& closingTime != null && scope != -1 && investmentPhaseId != -1 && breakEvenYear != -1
 				&& financeTypeId != -1 && numberOfFte != -1 && investorTypes != null && founders != null
 				&& !investorTypes.isEmpty() && !founders.isEmpty();

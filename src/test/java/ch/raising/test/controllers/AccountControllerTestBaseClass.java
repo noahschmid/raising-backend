@@ -1,6 +1,4 @@
-package ch.raising.raisingbackend.controllers;
-
-import static org.junit.Assert.assertEquals;
+package ch.raising.test.controllers;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,15 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.assertj.core.util.Arrays;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -27,11 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.raising.models.Account;
 import ch.raising.models.Media;
+import ch.raising.raisingbackend.RaisingBackendApplication;
 import ch.raising.utils.JwtUtil;
 import ch.raising.utils.PreparedStatementUtil;
 import io.jsonwebtoken.lang.Collections;
 import testutils.TestDataUtil;
 
+@ContextConfiguration(classes = {RaisingBackendApplication.class})
 public class AccountControllerTestBaseClass {
 
 	
