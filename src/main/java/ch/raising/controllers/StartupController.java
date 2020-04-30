@@ -231,7 +231,7 @@ public class StartupController {
 	 * @throws SQLException 
 	 * @throws DataAccessException 
 	 */
-	@PostMapping("/corporateshreholder")
+	@PostMapping("/corporateshareholder")
 	public ResponseEntity<?> addCorporateShareholder(@RequestBody CorporateShareholder csh) throws DataAccessException, SQLException{
 		additionalInformationService.addCShareholderByStartupId(csh);
 		return ResponseEntity.ok().build();
