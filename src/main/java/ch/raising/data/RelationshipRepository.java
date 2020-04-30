@@ -191,6 +191,20 @@ public class RelationshipRepository implements IRepository<Relationship> {
     }
 
     /**
+     * Get relationships by relationship state
+     * @param state the state to search for
+     */
+    public List<Relationship> getByState(RelationshipState state) throws EmptyResultDataAccessException, SQLException{
+        try {
+            String sql = "SELECT * FROM relationship WHERE state = ? ORDER BY matchingScore;";
+            return jdbc.query(sql, new Object[] { state.name() }, this::mapRowToModel);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Get relationship by account and filter by given state
      * @param accountId the account to search for
      * @param state the state to search for
