@@ -15,17 +15,21 @@ import ch.raising.models.Account;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.services.AccountService;
+import ch.raising.services.MatchingService;
 
 @RequestMapping("/admin")
 @Controller
 public class AdminController {
 	
 	
-	private final AccountService accountService;
+    private final AccountService accountService;
+    private final MatchingService matchingService;
 	
 	@Autowired
-	public AdminController(AccountService accountService) {
-		this.accountService = accountService; 
+    public AdminController(AccountService accountService,
+    MatchingService matchingService) {
+        this.accountService = accountService;
+        this.matchingService = matchingService; 
 	}
 	
     @GetMapping("/")
@@ -39,5 +43,15 @@ public class AdminController {
     @PostMapping("/login")
     public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest request) throws Exception{
     	return ResponseEntity.ok(accountService.adminLogin(request));
+    }
+
+    @GetMapping("/match")
+    public ResponseEntity<?> getMatches() throws Exception {
+        return ResponseEntity.ok(matchingService.getAllMatches());
+    }
+
+    @GetMapping("/handshake")
+    public ResponseEntity<?> getHandshakes() throws Exception {
+        return ResponseEntity.ok(matchingService.getAllHandshakes());
     }
 }

@@ -301,4 +301,25 @@ public class MatchingService {
         percent *= 10;
         return (int)((Math.round(percent * 2) / 2.0) * 10);
     }
+
+
+    /**
+     * Get all matches
+     * @return
+     * @throws Exception
+     */
+    public List<Relationship> getAllMatches() throws Exception {
+        List<Relationship> matches = relationshipRepository.getByState(RelationshipState.MATCH);
+        return matches;
+    }
+
+    /**
+     * Get all handshakes
+     * @return
+     * @throws Exception
+     */
+    public List<Relationship> getAllHandshakes() throws Exception {
+        List<Relationship> matches = relationshipRepository.getByState(RelationshipState.HANDSHAKE);
+        return matches;
+    }
 }
