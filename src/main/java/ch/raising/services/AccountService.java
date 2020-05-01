@@ -326,7 +326,9 @@ public class AccountService implements UserDetailsService {
 			throws EmailNotFoundException, MessagingException, DataAccessException, SQLException {
 		Account account = accountRepository.findByEmail(request.getEmail());
 		String code = resetCodeUtil.createResetCode(account);
-		mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
+		if(code != null) {
+			mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
+		}
 	}
 
 	/**

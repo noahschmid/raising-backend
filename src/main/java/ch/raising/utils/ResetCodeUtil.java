@@ -22,7 +22,7 @@ public class ResetCodeUtil {
 
     @Autowired
     public ResetCodeUtil(ResetCodeRepository resetCodeRepository) {
-        resetCodeRepository = resetCodeRepository;
+        this.resetCodeRepository = resetCodeRepository;
     }
 
     private final static int CODE_LENGTH = 8;
@@ -65,6 +65,9 @@ public class ResetCodeUtil {
      * @return code as string
      */
     public String createResetCode(Account account) {
+        if(account == null)
+            return null;
+
         String code;
         do {
             code = generate();
