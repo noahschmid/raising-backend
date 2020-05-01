@@ -31,7 +31,7 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 		this.jdbc = jdbc;
 		this.ADD_MEMBER = "INSERT INTO corporateshareholder(startupid, name, website, equityshare, corporatebodyid, countryid) VALUES (?,?,?,?,?,?)";
 		this.FIND_BY_STARTUP_ID = "SELECT * FROM corporateshareholder WHERE startupid = ?";
-		this.DELETE_MEMBER = "DELETE FROM corporateshareholder WHERE startupid = ?";
+		this.DELETE_MEMBER = "DELETE FROM corporateshareholder WHERE id = ?";
 		this.FIND_BY_ID = "SELECT * FROM corporateshareholder WHERE id = ?";
 	}
 
@@ -94,7 +94,7 @@ public class CorporateShareholderRepository implements IAdditionalInformationRep
 
 	@Override
 	public List<CorporateShareholder> findByStartupId(long startupId) {
-		return jdbc.query("SELECT * FROM corporateshareholder WHERE startupid = ?", new Object[] { startupId },
+		return jdbc.query(FIND_BY_STARTUP_ID, new Object[] { startupId },
 				this::mapRowToModel);
 	}
 

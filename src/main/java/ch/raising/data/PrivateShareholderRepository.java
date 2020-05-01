@@ -99,7 +99,7 @@ public class PrivateShareholderRepository implements IAdditionalInformationRepos
 
 	@Override
 	public List<PrivateShareholder> findByStartupId(long startupId) throws SQLException, DataAccessException {
-		return jdbc.query("SELECT * FROM privateshareholder WHERE startupid = ?", new Object[] { startupId },
+		return jdbc.query(FIND_BY_STARTUP_ID, new Object[] { startupId },
 				this::mapRowToModel);
 	}
 

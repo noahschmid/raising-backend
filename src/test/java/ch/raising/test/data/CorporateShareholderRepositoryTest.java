@@ -107,7 +107,7 @@ public class CorporateShareholderRepositoryTest implements IAdditionalInformatio
 	@Test
 	@Override
 	public void testDeleteMemberById() throws DataAccessException, SQLException {
-		csr.deleteMemberById(2);
+		csr.deleteMemberById(1);
 		assertEquals(0, JdbcTestUtils.countRowsInTable(jdbc, "corporateshareholder"));
 	}
 
