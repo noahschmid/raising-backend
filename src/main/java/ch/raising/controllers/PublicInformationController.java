@@ -64,27 +64,27 @@ public class PublicInformationController {
 	
 	@GetMapping("/industry")
 	public ResponseEntity<?> getIndustry() throws DataAccessException, SQLException{
-		return ResponseEntity.ok(publicInformationService.getAll("industry"));
+		return ResponseEntity.ok(publicInformationService.getAllWithIcon("industry"));
 	}
 	
 	@GetMapping("/investmentphase")
 	public ResponseEntity<?> getInvestmentPhase() throws DataAccessException, SQLException{
-		return ResponseEntity.ok( publicInformationService.getAll("investmentphase"));
+		return ResponseEntity.ok( publicInformationService.getAllWithIcon("investmentphase"));
 	}
 
 	@GetMapping("/investortype")
 	public ResponseEntity<?> getInvestorType() throws DataAccessException, SQLException{
-		return ResponseEntity.ok( publicInformationService.getAll("investortype"));
+		return ResponseEntity.ok( publicInformationService.getAllWithIcon("investortype"));
 	}
 	
 	@GetMapping("/label")
 	public ResponseEntity<?> getLabel() throws DataAccessException, SQLException{
-		return ResponseEntity.ok(publicInformationService.getAll("label"));
+		return ResponseEntity.ok(publicInformationService.getAllWithIcon("label"));
 	}
 	
 	@GetMapping("/support")
 	public ResponseEntity<?> getSupport() throws DataAccessException, SQLException{
-		return ResponseEntity.ok().body( publicInformationService.getAll("support"));
+		return ResponseEntity.ok().body( publicInformationService.getAllWithIcon("support"));
 	}
 	
 	@GetMapping("/corporatebody")
