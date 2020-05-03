@@ -344,5 +344,4 @@ public class AccountController {
 	public ResponseEntity<?> getNewToken(@RequestHeader("Authorization") String token) throws NotAuthorizedException{
 		return ResponseEntity.ok(accountService.refreshToken(token));
 	}
-
 }

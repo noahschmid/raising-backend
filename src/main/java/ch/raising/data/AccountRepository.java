@@ -199,15 +199,24 @@ public class AccountRepository implements IRepository<Account> {
 	 */
 	public void update(long id, Account req) throws DataAccessException, SQLException {
 		String emailHash = null;
+		String password = null;
+
 		if (req.getEmail() != "") {
 			emailHash = encoder.encode(req.getEmail());
 		}
+
+
+		if(req.getPassword() != "") {
+			password = encoder.encode(req.getPassword());
+		}
+
 		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "account", id);
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getCompanyName(), "companyName");
 		update.addField(emailHash, "emailhash");
 		update.addField(req.getPitch(), "pitch");
+		update.addField(password, "password");
 		update.addField(req.getDescription(), "description");
 		update.addField(req.getTicketMaxId(), "ticketmaxid");
 		update.addField(req.getTicketMinId(), "ticketminid");
