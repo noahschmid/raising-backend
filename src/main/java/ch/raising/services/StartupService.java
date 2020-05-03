@@ -97,7 +97,7 @@ public class StartupService extends AccountService {
 			accountRepository.findByEmail(su.getEmail());
 			throw new InvalidProfileException("Email already exists");
 		} catch (EmailNotFoundException e) {
-
+			
 			long accountId = super.registerAccount(account);
 			su.setAccountId(accountId);
 			startupRepository.add(su);

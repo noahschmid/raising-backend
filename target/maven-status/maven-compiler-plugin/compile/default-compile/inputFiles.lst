@@ -17,6 +17,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\Ass
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Type.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PushNotification.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\CorporateShareholderRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableWithDescritionAndIcon.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\PublicInformationController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\SharedDataRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\EmailNotFoundException.java
@@ -50,11 +51,13 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Boardme
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\ReturnIdResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\SecurityConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PasswordResetRequest.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\IconService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\AccountForRelationship.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\MediaRepositoryFactory.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ControllerExceptionHandler.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AssignmentTableRepositoryFactory.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\SharedDataService.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Icon.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\InteractionService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\FreeEmailRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\RowMapper.java
@@ -66,6 +69,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MediaE
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\PreparedStatementUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\ErrorResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AccountController.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableWithIcon.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\NotificationService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\InteractionController.java
@@ -81,6 +85,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\Med
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\MatchingController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AdminController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Founder.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\IconRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\RelationshipState.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Country.java

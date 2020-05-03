@@ -3,6 +3,7 @@ package ch.raising.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Repository;
 import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.interfaces.IAssignmentTableRepository;
 import ch.raising.models.AssignmentTableModel;
+import ch.raising.models.AssignmentTableModelWithDescription;
+import ch.raising.models.AssignmentTableWithIcon;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.functionalInterface.RowMapper;
 
@@ -58,6 +61,10 @@ public class AssignmentTableRepository {
 
 	public List<IAssignmentTableModel> findAll() throws SQLException, DataAccessException {
 		final String QUERY = "SELECT * FROM " + TABLENAME;
+		return jdbc.query(QUERY, rowMapper::mapRowToModel);
+	}
+	public List<IAssignmentTableModel> findAllWithIcon() throws SQLException, DataAccessException {
+		final String QUERY = "SELECT * FROM " + TABLENAME + " INNER JOIN icon ON icon.id = iconid";
 		return jdbc.query(QUERY, rowMapper::mapRowToModel);
 	}
 
@@ -106,6 +113,10 @@ public class AssignmentTableRepository {
 			deleteEntriesByAccountId(accountId);
 			addEntriesToAccount(accountId, models);
 		}
+	}
+	
+	public int addIconToTable(long iconId, long tableEntryId) {
+		return jdbc.update("UPDATE " + TABLENAME + " SET iconid = ? WHERE id = ?", new Object[] {iconId, tableEntryId}, new int[] {Types.BIGINT, Types.BIGINT} );
 	}
 
 	private PreparedStatementCallback<Boolean> getAddIdsCallback(long accountId, List<Long> models) {

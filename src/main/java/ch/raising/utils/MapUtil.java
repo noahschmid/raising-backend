@@ -4,10 +4,14 @@ import java.sql.ResultSet;
 
 import java.sql.SQLException;
 
+import org.slf4j.LoggerFactory;
+
 import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.Account;
+import ch.raising.models.AssignmentTableWithDescritionAndIcon;
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.AssignmentTableModelWithDescription;
+import ch.raising.models.AssignmentTableWithIcon;
 import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Country;
 import ch.raising.models.Founder;
@@ -42,6 +46,27 @@ public class MapUtil {
 			throws SQLException {
 		return new AssignmentTableModelWithDescription(rs.getString("name"), rs.getLong("id"),
 				rs.getString("description"));
+	}
+	
+	public static AssignmentTableWithIcon mapRowToAssignmentTableWithIcon(ResultSet rs, int row) throws SQLException {
+		byte[] icon;
+		try {
+			icon = rs.getBytes("media");
+		}catch(SQLException e){
+			icon = new byte[0];
+		}
+		return new AssignmentTableWithIcon(rs.getString("name"), rs.getLong("id"), icon);
+		
+	}
+	
+	public static AssignmentTableWithDescritionAndIcon mapRowToAssignmentTableWithDescriptionAndIcon(ResultSet rs, int row) throws SQLException {
+		byte[] icon;
+		try {
+			icon = rs.getBytes("media");
+		}catch(SQLException e) {
+			icon = new byte[0];
+		}
+		return  new AssignmentTableWithDescritionAndIcon(rs.getString("name"), rs.getLong("id"), rs.getString("description"), icon);
 	}
 
 	public static Country mapRowToCountry(ResultSet rs, int row) throws SQLException {

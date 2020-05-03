@@ -24,21 +24,29 @@ public class AssignmentTableRepositoryFactory {
 		case "continent":
 			return new AssignmentTableRepository(jdbc, "continent");
 		case "support":
-			return new AssignmentTableRepository(jdbc, "support");
+			return new AssignmentTableRepository(jdbc, "support").withRowMapper(MapUtil::mapRowToAssignmentTableWithIcon);
 		case "industry":
-			return new AssignmentTableRepository(jdbc, "industry");
+			return new AssignmentTableRepository(jdbc, "industry").withRowMapper(MapUtil::mapRowToAssignmentTableWithIcon);
 		case "revenue":
 			return new AssignmentTableRepository(jdbc, "revenue").withRowMapper(MapUtil::mapRowToRevenue);
 		case "ticketsize":
 			return new AssignmentTableRepository(jdbc, "ticketsize");
 		case "investmentphase":
-			return new AssignmentTableRepository(jdbc, "investmentphase");
+			return new AssignmentTableRepository(jdbc, "investmentphase").withRowMapper(MapUtil::mapRowToAssignmentTableWithIcon);
 		case "corporateBody":
 			return new AssignmentTableRepository(jdbc, "corporateBody");
 		case "financeType":
 			return new AssignmentTableRepository(jdbc, "financeType");
 		default:
-			throw new SQLException("assignmenttable " + table + " does not exist");
+			try {
+				return getRepositoryForStartup(table);
+			} catch (SQLException e) {
+				try {
+					return getRepositoryForInvestor(table);
+				} catch (SQLException es) {
+					throw new SQLException("assignmenttable " + table + " does not exist: " + es.getMessage());
+				}
+			}
 		}
 
 	}
@@ -47,10 +55,10 @@ public class AssignmentTableRepositoryFactory {
 		switch (table) {
 		case "label":
 			return new AssignmentTableRepository(jdbc, "label", "startupid")
-					.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
+					.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescriptionAndIcon);
 		case "investortype":
 			return new AssignmentTableRepository(jdbc, "investortype", "startupid")
-					.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescription);
+					.withRowMapper(MapUtil::mapRowToAssignmentTableWithDescriptionAndIcon);
 		default:
 			throw new SQLException("assignmenttable " + table + " does not exist for startup");
 
@@ -60,7 +68,7 @@ public class AssignmentTableRepositoryFactory {
 	public AssignmentTableRepository getRepositoryForInvestor(String table) throws SQLException {
 		switch (table) {
 		case "investmentphase":
-			return new AssignmentTableRepository(jdbc, "investmentphase", "investorid");
+			return new AssignmentTableRepository(jdbc, "investmentphase", "investorid").withRowMapper(MapUtil::mapRowToAssignmentTableWithIcon);
 		default:
 			throw new SQLException("assignmenttable " + table + " does not exist for investor");
 		}

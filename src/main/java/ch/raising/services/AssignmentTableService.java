@@ -16,50 +16,49 @@ import org.springframework.stereotype.Service;
 
 import ch.raising.data.AssignmentTableRepository;
 import ch.raising.data.AssignmentTableRepositoryFactory;
+import ch.raising.data.IconRepository;
 import ch.raising.interfaces.IAssignmentTableModel;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.AssignmentTableModel;
+import ch.raising.models.AssignmentTableWithDescritionAndIcon;
 import ch.raising.models.responses.CompletePublicInformation;
 import ch.raising.utils.MapUtil;
 
 @Service
 public class AssignmentTableService {
 
-	AssignmentTableRepositoryFactory atrFactory;
+	private final AssignmentTableRepositoryFactory atrFactory;
+	private final IconService iconService;
 
 	@Autowired
-	public AssignmentTableService(AssignmentTableRepositoryFactory atrFactory) {
+	public AssignmentTableService(AssignmentTableRepositoryFactory atrFactory, IconService iconService) {
 		this.atrFactory = atrFactory;
+		this.iconService = iconService;
 	}
 
 	public List<IAssignmentTableModel> getAll(String name) throws DataAccessException, SQLException {
 		return atrFactory.getRepository(name).findAll();
 	}
+	
+	public List<IAssignmentTableModel> getAllWithIcon(String name) throws DataAccessException, SQLException{
+		return atrFactory.getRepository(name).findAllWithIcon();
+	}
 
 	@Cacheable("completePublicInformation")
 	public CompletePublicInformation getAllTables() throws DataAccessException, SQLException {
-		CompletePublicInformation pr = CompletePublicInformation.builder().ticketSizes(getAll("ticketsize"))
-				.continents(getAll("continent")).countries(getAllCountries()).industries(getAll("industry"))
-				.investmentPhases(getAll("investmentphase")).labels(getAllWithDescription("label"))
-				.investorTypes(getAllWithDescription("investortype")).support(getAll("support"))
-				.corporateBodies(getAll("corporateBody")).financeTypes(getAll("financeType"))
-				.revenues(getAllRevenueSteps()).build();
+		CompletePublicInformation pr = CompletePublicInformation.builder()
+				.ticketSizes(getAll("ticketsize"))
+				.continents(getAll("continent"))
+				.countries(getAll("country"))
+				.industries(getAllWithIcon("industry"))
+				.investmentPhases(getAllWithIcon("investmentphase"))
+				.labels(getAllWithIcon("label"))
+				.investorTypes(getAllWithIcon("investortype"))
+				.support(getAllWithIcon("support"))
+				.corporateBodies(getAll("corporateBody"))
+				.financeTypes(getAll("financeType"))
+				.revenues(getAll("revenue")).build();
 		return pr;
-	}
-
-	@Cacheable("allAssignmentTablesWithDescription")
-	public List<IAssignmentTableModel> getAllWithDescription(String name) throws DataAccessException, SQLException {
-		return atrFactory.getRepositoryForStartup(name).findAll();
-	}
-
-	@Cacheable("allCountries")
-	public List<IAssignmentTableModel> getAllCountries() throws DataAccessException, SQLException {
-		return atrFactory.getRepository("country").findAll();
-	}
-
-	@Cacheable("allRevenueSteps")
-	public List<IAssignmentTableModel> getAllRevenueSteps() throws DataAccessException, SQLException {
-		return atrFactory.getRepository("revenue").findAll();
 	}
 
 	/**
@@ -170,17 +169,19 @@ public class AssignmentTableService {
 	}
 
 	public void updateAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
-			long accountId = getAccountId();
-			AssignmentTableRepository ar = atrFactory.getRepository(name);
-			ar.deleteEntriesByAccountId(accountId);
-			ar.addEntriesToAccount(accountId, models);
+		long accountId = getAccountId();
+		AssignmentTableRepository ar = atrFactory.getRepository(name);
+		ar.deleteEntriesByAccountId(accountId);
+		ar.addEntriesToAccount(accountId, models);
 	}
+
 	public void updateStartupAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
 		long accountId = getAccountId();
 		AssignmentTableRepository ar = atrFactory.getRepositoryForStartup(name);
 		ar.deleteEntriesByAccountId(accountId);
 		ar.addEntriesToAccount(accountId, models);
 	}
+
 	public void updateInvestorAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
 		long accountId = getAccountId();
 		AssignmentTableRepository ar = atrFactory.getRepositoryForInvestor(name);
@@ -189,8 +190,7 @@ public class AssignmentTableService {
 	}
 
 	private long getAccountId() {
-		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-				.getId();
+		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 	}
 
 }
