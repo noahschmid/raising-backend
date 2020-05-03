@@ -41,11 +41,6 @@ public class PublicInformationController {
 		String pwHash = encoder.encode(hashes.getPassword());
 		return ResponseEntity.ok(new LoginRequest(emailHash, pwHash));
 	}
-
-	@GetMapping("/all")
-	public ResponseEntity<?> getAllForTest() throws DataAccessException, SQLException, JsonProcessingException {
-		return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(publicInformationService.getAllTables());
-	}
 	
 	@GetMapping
 	public ResponseEntity<?> getAll() throws DataAccessException, SQLException, JsonProcessingException {
@@ -64,7 +59,7 @@ public class PublicInformationController {
 	
 	@GetMapping("/country")
 	public ResponseEntity<?> getCountry() throws DataAccessException, SQLException{
-		return ResponseEntity.ok(publicInformationService.getAllCountries());
+		return ResponseEntity.ok(publicInformationService.getAll("country"));
 	}
 	
 	@GetMapping("/industry")
@@ -79,12 +74,12 @@ public class PublicInformationController {
 
 	@GetMapping("/investortype")
 	public ResponseEntity<?> getInvestorType() throws DataAccessException, SQLException{
-		return ResponseEntity.ok( publicInformationService.getAllWithDescription("investortype"));
+		return ResponseEntity.ok( publicInformationService.getAll("investortype"));
 	}
 	
 	@GetMapping("/label")
 	public ResponseEntity<?> getLabel() throws DataAccessException, SQLException{
-		return ResponseEntity.ok(publicInformationService.getAllWithDescription("label"));
+		return ResponseEntity.ok(publicInformationService.getAll("label"));
 	}
 	
 	@GetMapping("/support")

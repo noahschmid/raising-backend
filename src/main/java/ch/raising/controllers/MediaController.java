@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ch.raising.models.Media;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.models.responses.ReturnIdResponse;
+import ch.raising.services.IconService;
 import ch.raising.services.MediaService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MediaException;
@@ -38,6 +39,7 @@ public class MediaController {
 	MediaService ppicService;
 	MediaService galleryService;
 	MediaService documentService;
+	IconService iconService;
 
 	private final static int MAX_GALLERY_SIZE = 9;
 	private final static int MAX_VIDEO_SIZE = 1;
@@ -45,11 +47,12 @@ public class MediaController {
 	private final static int MAX_PDF_SIZE = 1;
 
 	@Autowired
-	public MediaController(JdbcTemplate jdbc) {
+	public MediaController(JdbcTemplate jdbc, IconService iconService) {
 		this.videoService = new MediaService(jdbc, "video", MAX_VIDEO_SIZE);
 		this.ppicService = new MediaService(jdbc, "profilepicture", MAX_PPIC_SIZE);
 		this.galleryService = new MediaService(jdbc, "gallery", MAX_GALLERY_SIZE);
 		this.documentService = new MediaService(jdbc, "document", MAX_PDF_SIZE);
+		this.iconService = iconService;
 	}
 
 	@PostMapping("/video")
@@ -65,10 +68,10 @@ public class MediaController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/video/{accountId}")
-	public ResponseEntity<?> getVideoOfAccount(@PathVariable long accountId)
+	@GetMapping("/video/{id}")
+	public ResponseEntity<?> getVideoOfAccount(@PathVariable long id)
 			throws DataAccessException, SQLException, DatabaseOperationException {
-		return ResponseEntity.ok().body(videoService.getMedia(accountId));
+		return ResponseEntity.ok().body(videoService.getMedia(id));
 	}
 
 	/**
@@ -231,4 +234,46 @@ public class MediaController {
 	private MediaType getMediaType(Media ppic) throws InvalidMediaTypeException {
 		return ppic.getContentType().equals("none") ? null : MediaType.parseMediaType(ppic.getContentType());
 	}
+	
+	@PostMapping("/icon/investortype/{tableEntryId}")
+	public ResponseEntity<?> uploadInvTypeIcon(@PathVariable long tableEntryId,@RequestParam("icon") MultipartFile icon)
+			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
+		if(!icon.getContentType().equals("image/svg+xml"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/svg+xml"));
+		iconService.addToInvestortype(icon, tableEntryId);
+		return ResponseEntity.ok().build();
+	}
+	@PostMapping("/icon/investmentphase/{tableEntryId}")
+	public ResponseEntity<?> uploadInvPhaseIcon(@PathVariable long tableEntryId,@RequestParam("icon") MultipartFile icon)
+			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
+		if(!icon.getContentType().equals("image/svg+xml"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/svg+xml"));
+		iconService.addToInvestmentPhase(icon, tableEntryId);
+		return ResponseEntity.ok().build();
+	}
+	@PostMapping("/icon/support/{tableEntryId}")
+	public ResponseEntity<?> uploadSupIcon(@PathVariable long tableEntryId,@RequestParam("icon") MultipartFile icon)
+			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
+		if(!icon.getContentType().equals("image/svg+xml"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/svg+xml"));
+		iconService.addToSupport(icon, tableEntryId);
+		return ResponseEntity.ok().build();
+	}	
+	@PostMapping("/icon/industry/{tableEntryId}")
+	public ResponseEntity<?> uploadIndustryIcon(@PathVariable long tableEntryId, @RequestParam("icon") MultipartFile icon)
+			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
+		if(!icon.getContentType().equals("image/svg+xml"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/svg+xml"));
+		iconService.addToIndustry(icon, tableEntryId);
+		return ResponseEntity.ok().build();
+	}
+	@PostMapping("/icon/label/{tableEntryId}")
+	public ResponseEntity<?> uploadLabelIcon(@PathVariable long tableEntryId, @RequestParam("icon") MultipartFile icon)
+			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
+		if(!icon.getContentType().equals("image/svg+xml"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/svg+xml"));
+		iconService.addToLabel(icon, tableEntryId);
+		return ResponseEntity.ok().build();
+	}
+
 }

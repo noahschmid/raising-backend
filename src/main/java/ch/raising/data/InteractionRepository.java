@@ -50,7 +50,7 @@ public class InteractionRepository {
 	}
 
 	public long addInteraction(Interaction interaction) {
-		return jdbc.execute(new AddInteractionPreparedStatement(), insertInteractionCallback(interaction));
+		return jdbc.execute(new AddAndReturnIdPreparedStatement(), insertInteractionCallback(interaction));
 	}
 
 	private PreparedStatementCallback<Long> insertInteractionCallback(Interaction interaction) {
@@ -99,7 +99,7 @@ public class InteractionRepository {
 		jdbc.update(DELETE_BY_INTERACTION_ID, new Object[] {interactionId}, new int[] {Types.BIGINT});
 	}
 	
-	private class AddInteractionPreparedStatement implements PreparedStatementCreator{
+	private class AddAndReturnIdPreparedStatement implements PreparedStatementCreator{
 
 		@Override
 		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
