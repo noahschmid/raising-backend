@@ -22,5 +22,4 @@ public class SharedData {
 	private int phone = -1;
 	@Builder.Default
 	private long businessPlanId = -1;
-
 }
