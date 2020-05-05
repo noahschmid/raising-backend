@@ -283,11 +283,16 @@ public class MatchingService {
     public List<MatchResponse> getMatches(long accountId, boolean isStartup) throws EmptyResultDataAccessException, SQLException {
         List<Relationship> matches = relationshipRepository.getByAccountId(accountId);
         List<MatchResponse> matchResponses = new ArrayList<>();
-        int matchesPreference = settingService.getSettings().getNumberOfMatches();
+        int matchesPreference = MAX_WEEKLY_MATCHES_COUNT;
+        try {
+            matchesPreference = settingService.getSettings().getNumberOfMatches();
+        } catch (Exception e) {
+            System.out.println("getMatches: couldn't find settings for account " + accountId);
+        }
         int matchesCount = 0;
         int weeklyMatchesCount = matchesPreference <= MAX_WEEKLY_MATCHES_COUNT ? matchesPreference : MAX_WEEKLY_MATCHES_COUNT;
 
-        // date where last matches were made
+        // last "release date" of matches
         Date matchDay = Date.from(LocalDate
         .now()
         .with(
