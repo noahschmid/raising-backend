@@ -48,20 +48,23 @@ public class MatchingService {
     
     private RelationshipRepository relationshipRepository;
 
+    private SettingService settingService;
+
     private final static int MAX_SCORE = 6;
 
-    private final static int WEEKLY_MATCHES_COUNT = 5;
+    private final static int MAX_WEEKLY_MATCHES_COUNT = 5;
 
     @Autowired
     public MatchingService(RelationshipRepository relationshipRepository,
         StartupService startupService, StartupRepository startupRepository,
         InvestorService investorService, InvestorRepository investorRepository,
-        AccountRepository accountRepository) {
+        AccountRepository accountRepository, SettingService settingService) {
         this.startupService = startupService;
         this.relationshipRepository = relationshipRepository;
         this.investorService = investorService;
         this.investorRepository = investorRepository;
         this.startupRepository = startupRepository;
+        this.settingService = settingService;
     }
 
      /**
@@ -280,7 +283,9 @@ public class MatchingService {
     public List<MatchResponse> getMatches(long accountId, boolean isStartup) throws EmptyResultDataAccessException, SQLException {
         List<Relationship> matches = relationshipRepository.getByAccountId(accountId);
         List<MatchResponse> matchResponses = new ArrayList<>();
+        int matchesPreference = settingService.getSettings().getNumberOfMatches();
         int matchesCount = 0;
+        int weeklyMatchesCount = matchesPreference <= MAX_WEEKLY_MATCHES_COUNT ? matchesPreference : MAX_WEEKLY_MATCHES_COUNT;
 
         // date where last matches were made
         Date matchDay = Date.from(LocalDate
@@ -308,7 +313,7 @@ public class MatchingService {
             if(match.getState() != RelationshipState.MATCH) {
                 ++matchesCount;
 
-                if(matchesCount < 5)
+                if(matchesCount < weeklyMatchesCount)
                     continue;
                 else
                     break;
@@ -348,7 +353,7 @@ public class MatchingService {
             }
             matchResponses.add(response);
             ++matchesCount;
-            if(matchesCount == WEEKLY_MATCHES_COUNT) {
+            if(matchesCount == weeklyMatchesCount) {
                 break;
             }
         }
