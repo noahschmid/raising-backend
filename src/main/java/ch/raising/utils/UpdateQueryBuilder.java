@@ -2,6 +2,7 @@ package ch.raising.utils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,6 +120,11 @@ public class UpdateQueryBuilder {
 				setFieldName(fieldName);
 			}
 		}
+
+		if(field instanceof Timestamp) {
+			fields.add(field);
+			setFieldName(fieldName);
+		}
 	}
 
 	
@@ -174,6 +180,8 @@ public class UpdateQueryBuilder {
 						ps.setFloat(i, (float) o);
 					if (o instanceof Long)
 						ps.setLong(i, (long) o);
+					if (o instanceof Timestamp)
+						ps.setTimestamp(i, (Timestamp) o);
 				}
 
 				if(where == null)

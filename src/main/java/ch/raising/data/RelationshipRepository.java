@@ -3,9 +3,9 @@ package ch.raising.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.Collection;
-import java.util.List;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,25 +13,22 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.interfaces.IRepository;
 import ch.raising.models.Relationship;
 import ch.raising.models.enums.RelationshipState;
-import ch.raising.models.responses.MatchResponse;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
 public class RelationshipRepository implements IRepository<Relationship> {
     private final JdbcTemplate jdbc;
     private final String FIND_BY_STATE_AND_ACCOUNT_ID;
-    private final String SET_LAST_CHANGED;
+
     @Autowired
     public RelationshipRepository(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
         this.FIND_BY_STATE_AND_ACCOUNT_ID = "SELECT * FROM relationship WHERE (startupId = ? OR investorId = ?) AND state = ?;";
-        this.SET_LAST_CHANGED = "UPDATE relationship SET lastchanged = now() WHERE id = ?";
     }
 
     /**
@@ -86,8 +83,8 @@ public class RelationshipRepository implements IRepository<Relationship> {
             updateQuery.addField(update.getStartupId(), "startupId");
             updateQuery.addField(update.getMatchingScore(), "matchingScore");
             updateQuery.addField(update.getState().toString(), "state");
+            updateQuery.addField(new Timestamp(new Date().getTime()), "lastchanged");
             updateQuery.execute();
-            jdbc.update(SET_LAST_CHANGED, new Object[]{id}, new int[] {Types.BIGINT});
         } catch(Exception e) {
             throw new Error(e);
         }
@@ -104,8 +101,10 @@ public class RelationshipRepository implements IRepository<Relationship> {
             update.getInvestorId(), jdbc);
         updateQuery.addField(update.getMatchingScore(), "matchingScore");
         updateQuery.addField(update.getState().toString(), "state");
+        updateQuery.addField(update.getInvestorDecidedAt(), "investorDecidedAt");
+        updateQuery.addField(update.getStartupDecidedAt(), "startupDecidedAt");
+        updateQuery.addField(new Timestamp(new Date().getTime()), "lastchanged");
         updateQuery.execute(); 
-        jdbc.update(SET_LAST_CHANGED, new Object[]{update.getId()}, new int[] {Types.BIGINT});
     }
 
 
@@ -117,8 +116,8 @@ public class RelationshipRepository implements IRepository<Relationship> {
     public void updateState(long id, RelationshipState state) throws Exception {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", id);
         updateQuery.addField(state.toString(), "state");
+        updateQuery.addField(new Timestamp(new Date().getTime()), "lastchanged");
         updateQuery.execute();
-        jdbc.update(SET_LAST_CHANGED, new Object[]{id}, new int[] {Types.BIGINT});
     }
 
     /**
@@ -127,8 +126,8 @@ public class RelationshipRepository implements IRepository<Relationship> {
     public void updateScore(Relationship relationship) throws Exception {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", relationship.getId());
         updateQuery.addField(relationship.getMatchingScore(), "matchingScore");
+        updateQuery.addField(new Timestamp(new Date().getTime()), "lastchanged");
         updateQuery.execute();
-        jdbc.update(SET_LAST_CHANGED, new Object[]{relationship.getId()}, new int[] {Types.BIGINT});
     }
 
     /**
@@ -146,6 +145,8 @@ public class RelationshipRepository implements IRepository<Relationship> {
         relationship.setMatchingScore(rs.getInt("matchingScore"));
         relationship.setState(RelationshipState.valueOf(rs.getString("state")));
         relationship.setLastchanged(rs.getTimestamp("lastchanged"));
+        relationship.setInvestorDecidedAt(rs.getTimestamp("investorDecidedAt"));
+        relationship.setStartupDecidedAt(rs.getTimestamp("startupDecidedAt"));
         return relationship;
     }
     
@@ -213,5 +214,4 @@ public class RelationshipRepository implements IRepository<Relationship> {
     public List<Relationship> getByAccountIdAndState(long accountId, RelationshipState state) throws EmptyResultDataAccessException, SQLException{
             return jdbc.query(FIND_BY_STATE_AND_ACCOUNT_ID, new Object[] { accountId, accountId, state.name() }, this::mapRowToModel);
     }
-
 } 

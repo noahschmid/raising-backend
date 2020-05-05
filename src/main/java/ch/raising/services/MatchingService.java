@@ -1,7 +1,14 @@
 package ch.raising.services;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +50,8 @@ public class MatchingService {
 
     private final static int MAX_SCORE = 6;
 
+    private final static int WEEKLY_MATCHES_COUNT = 5;
+
     @Autowired
     public MatchingService(RelationshipRepository relationshipRepository,
         StartupService startupService, StartupRepository startupRepository,
@@ -62,7 +71,6 @@ public class MatchingService {
      * @throws Exception throws Exception if there was a problem writing to relationship table
      */
     public void match(long id, boolean isStartup) throws Exception {
-        System.out.println("Is account startup? -> " + isStartup);
         List<MatchingProfile> objects;
         MatchingProfile subject;
         if(isStartup) {
@@ -201,37 +209,46 @@ public class MatchingService {
      */
     public void accept(long id, boolean isStartup) throws Exception {
         Relationship relationship = relationshipRepository.find(id);
+
+        if(isStartup && relationship.getStartupDecidedAt() == null) 
+            relationship.setStartupDecidedAt(new Timestamp(new Date().getTime()));
+        
+        if(!isStartup && relationship.getInvestorDecidedAt() == null) 
+            relationship.setInvestorDecidedAt(new Timestamp(new Date().getTime()));
+
         switch(relationship.getState()) {
             case MATCH:
                 if(isStartup)
-                    relationshipRepository.updateState(id, RelationshipState.STARTUP_ACCEPTED);
+                    relationship.setState(RelationshipState.STARTUP_ACCEPTED);
                 else
-                    relationshipRepository.updateState(id, RelationshipState.INVESTOR_ACCEPTED);
+                    relationship.setState(RelationshipState.INVESTOR_ACCEPTED);
             break;
             
             case INVESTOR_ACCEPTED:
                 if(isStartup)
-                    relationshipRepository.updateState(id, RelationshipState.HANDSHAKE);
+                    relationship.setState(RelationshipState.HANDSHAKE);
             break;
 
             case STARTUP_ACCEPTED:
                 if(!isStartup)
-                    relationshipRepository.updateState(id, RelationshipState.HANDSHAKE);
+                    relationship.setState(RelationshipState.HANDSHAKE);
             break;
 
             case STARTUP_DECLINED: 
                 if(isStartup)
-                    relationshipRepository.updateState(id, RelationshipState.STARTUP_ACCEPTED);
+                    relationship.setState(RelationshipState.STARTUP_ACCEPTED);
             break;
 
             case INVESTOR_DECLINED:
                 if(!isStartup)
-                    relationshipRepository.updateState(id, RelationshipState.INVESTOR_ACCEPTED);
+                    relationship.setState(RelationshipState.INVESTOR_ACCEPTED);
             break;
 
             default:
             break;
         }
+
+        relationshipRepository.update(relationship);
     }
 
     /**
@@ -239,10 +256,20 @@ public class MatchingService {
      * @param id id of the match to decline
      */
     public void decline(long id, boolean isStartup) throws Exception {
-        if(isStartup)
-            relationshipRepository.updateState(id, RelationshipState.STARTUP_DECLINED);
-        else
-            relationshipRepository.updateState(id, RelationshipState.INVESTOR_DECLINED);
+        Relationship relationship = relationshipRepository.find(id);
+        if(isStartup) {
+            if(relationship.getStartupDecidedAt() == null) {
+                relationship.setStartupDecidedAt(new Timestamp(new Date().getTime()));
+            }
+            relationship.setState(RelationshipState.STARTUP_DECLINED);
+            relationshipRepository.update(relationship);
+        } else {
+            if(relationship.getInvestorDecidedAt() == null) {
+                relationship.setInvestorDecidedAt(new Timestamp(new Date().getTime()));
+            }
+            relationship.setState(RelationshipState.INVESTOR_DECLINED);
+            relationshipRepository.update(relationship);
+        }
     }
 
     /**
@@ -251,10 +278,42 @@ public class MatchingService {
      * @throws EmptyResultDataAccessException 
      */
     public List<MatchResponse> getMatches(long accountId, boolean isStartup) throws EmptyResultDataAccessException, SQLException {
-        List<Relationship> matches = relationshipRepository.getByAccountIdAndState(accountId, 
-                                                                    RelationshipState.MATCH);
+        List<Relationship> matches = relationshipRepository.getByAccountId(accountId);
         List<MatchResponse> matchResponses = new ArrayList<>();
-        matches.forEach(match -> {
+        int matchesCount = 0;
+
+        // date where last matches were made
+        Date matchDay = Date.from(LocalDate
+        .now()
+        .with(
+            TemporalAdjusters.previousOrSame( DayOfWeek.MONDAY )
+        ).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        matchDay = getZeroTimeDate(matchDay);
+
+        System.out.println("Last matchday: " + matchDay.toString());
+
+        for(Relationship match : matches) {
+            if(match.getStartupDecidedAt() != null) {
+                if(getZeroTimeDate(match.getStartupDecidedAt()).before(matchDay) && isStartup) {
+                    continue;
+                }
+            }
+            if(match.getInvestorDecidedAt() != null) {
+                if(getZeroTimeDate(match.getInvestorDecidedAt()).before(matchDay) && !isStartup) {
+                    continue;
+                }
+            }
+
+            if(match.getState() != RelationshipState.MATCH) {
+                ++matchesCount;
+
+                if(matchesCount < 5)
+                    continue;
+                else
+                    break;
+            }
+
             MatchResponse response = new MatchResponse();
             response.setMatchingPercent(getMatchingPercent(match.getMatchingScore()));
             response.setId(match.getId());
@@ -288,8 +347,30 @@ public class MatchingService {
                 response.setProfilePictureId(startup.getProfilePictureId());
             }
             matchResponses.add(response);
-        });
+            ++matchesCount;
+            if(matchesCount == WEEKLY_MATCHES_COUNT) {
+                break;
+            }
+        }
         return matchResponses;
+    }
+
+    /**
+     * Set time value to 0 for a Date instance
+     */
+    private static Date getZeroTimeDate(Date fecha) {
+        Date res = fecha;
+        Calendar calendar = Calendar.getInstance();
+    
+        calendar.setTime( fecha );
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+    
+        res = calendar.getTime();
+    
+        return res;
     }
 
     /**

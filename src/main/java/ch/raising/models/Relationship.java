@@ -13,4 +13,6 @@ public class Relationship {
     private RelationshipState state = null;
     private int matchingScore = -1;
     private Timestamp lastchanged;
+    private Timestamp investorDecidedAt;
+    private Timestamp startupDecidedAt;
 }
