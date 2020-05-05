@@ -54,10 +54,13 @@ public class InvestorService extends AccountService {
 
 	private AssignmentTableRepository investorTypeRepository;
 
+	private MatchingService matchingService;
+
 	@Autowired
 	public InvestorService(AccountRepository accountRepository, InvestorRepository investorRepository,
 			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, JwtUtil jwtUtil, PasswordEncoder encoder,
-			AssignmentTableRepositoryFactory atrFactory, MediaRepositoryFactory mrFactory) throws SQLException {
+			AssignmentTableRepositoryFactory atrFactory, MediaRepositoryFactory mrFactory,
+			MatchingService matchingService) throws SQLException {
 		super(accountRepository, mailUtil, resetCodeUtil, jwtUtil, encoder, atrFactory, mrFactory, jdbc);
 
 		this.investmentPhaseRepository = atrFactory.getRepositoryForInvestor("investmentphase");
@@ -68,6 +71,7 @@ public class InvestorService extends AccountService {
 		this.supportRepository = atrFactory.getRepository("support");
 		this.industryRepository = atrFactory.getRepository("industry");
 		this.investorTypeRepository = atrFactory.getRepositoryForStartup("investortype");
+		this.matchingService = matchingService;
 	}
 
 	@Override
@@ -89,7 +93,7 @@ public class InvestorService extends AccountService {
 			investorRepository.add(invReq);
 
 			investmentPhaseRepository.addEntriesToAccount(accountId, invReq.getInvestmentPhases());
-
+			matchingService.match(accountId, false);
 			return accountId;
 		}
 	}
@@ -117,6 +121,7 @@ public class InvestorService extends AccountService {
 		Investor inv = (Investor) acc;
 		investmentPhaseRepository.updateAssignment(id, inv.getInvestmentPhases());
 		investorRepository.update(id, inv);
+		matchingService.match(id, false);
 	}
 
     /**

@@ -1,4 +1,4 @@
-package ch.raising.test.utils;
+package ch.raising.test.service;
 
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +50,8 @@ class MatchingServiceTest {
         object.setInvestmentMin(100);
         int score = MatchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Subject range inside object range");
+        score = MatchingService.getMatchingScore(object, subject);
+        assertEquals(1, score, "Subject range inside object range");
 
         // object investment range inside subject range
         object.setInvestmentMax(500);
@@ -58,16 +60,22 @@ class MatchingServiceTest {
         subject.setInvestmentMin(100);
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Object range inside subject range");
+        score = MatchingService.getMatchingScore(object, subject);
+        assertEquals(1, score, "Object range inside subject range");
 
         // ranges intersecting
         subject.setInvestmentMax(1000);
         subject.setInvestmentMin(400);
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Ranges intersecting");
+        score = MatchingService.getMatchingScore(object, subject);
+        assertEquals(1, score, "Ranges intersecting");
 
         subject.setInvestmentMax(400);
         subject.setInvestmentMin(100);
         score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(1, score, "Ranges intersecting 2");
+        score = MatchingService.getMatchingScore(object, subject);
         assertEquals(1, score, "Ranges intersecting 2");
 
         // not intersecting
@@ -75,6 +83,14 @@ class MatchingServiceTest {
         subject.setInvestmentMin(100);
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(0, score, "Ranges not intersecting");
+        score = MatchingService.getMatchingScore(object, subject);
+        assertEquals(0, score, "Ranges not intersecting");
+
+        // same range
+        object.setInvestmentMax(200);
+        object.setInvestmentMin(100);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(1, score, "Same range");
     }
 
     @Test

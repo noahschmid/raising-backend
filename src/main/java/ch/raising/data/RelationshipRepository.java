@@ -122,8 +122,11 @@ public class RelationshipRepository implements IRepository<Relationship> {
 
     /**
      * Update matching score of relationship
+     * 
+     * @throws SQLException
+     * @throws DataAccessException
      */
-    public void updateScore(Relationship relationship) throws Exception {
+    public void updateScore(Relationship relationship) throws DataAccessException, SQLException {
         UpdateQueryBuilder updateQuery = new UpdateQueryBuilder(jdbc, "relationship", relationship.getId());
         updateQuery.addField(relationship.getMatchingScore(), "matchingScore");
         updateQuery.addField(new Timestamp(new Date().getTime()), "lastchanged");
@@ -154,26 +157,21 @@ public class RelationshipRepository implements IRepository<Relationship> {
 	 * Add a new relationship to the database
 	 * @param relationship the relationship to add
 	 */
-	public void add(Relationship relationship) throws Exception {
-		try {
-            String query = "INSERT INTO relationship(investorId, startupId, matchingScore, state, lastchanged) VALUES (?, ?, ?, ?, now());"; 
-			jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
-				@Override  
-				public Boolean doInPreparedStatement(PreparedStatement ps)  
-						throws SQLException, DataAccessException {  
-						
-                    ps.setLong(1,relationship.getInvestorId()); 
-                    ps.setLong(2, relationship.getStartupId());
-                    ps.setInt(3, relationship.getMatchingScore());
-                    ps.setString(4, relationship.getState() + "");
+	public void add(Relationship relationship) throws SQLException, DataAccessException {
+        String query = "INSERT INTO relationship(investorId, startupId, matchingScore, state, lastchanged) VALUES (?, ?, ?, ?, now());"; 
+        jdbc.execute(query, new PreparedStatementCallback<Boolean>(){  
+            @Override  
+            public Boolean doInPreparedStatement(PreparedStatement ps)  
+                    throws SQLException, DataAccessException {  
+                    
+                ps.setLong(1,relationship.getInvestorId()); 
+                ps.setLong(2, relationship.getStartupId());
+                ps.setInt(3, relationship.getMatchingScore());
+                ps.setString(4, relationship.getState() + "");
 
-					return ps.execute();  
-				}  
-			});  
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			throw e;
-		}
+                return ps.execute();  
+            }  
+        });  
     }
     
     /**

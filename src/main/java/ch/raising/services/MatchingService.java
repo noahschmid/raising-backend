@@ -65,12 +65,16 @@ public class MatchingService {
     }
 
      /**
-     * Loop through all profiles and save matches inside relationship table
-     * @param id the account id of the profile to be matched with
-     * @param isStartup indicates whether the given profile is a startup
-     * @throws Exception throws Exception if there was a problem writing to relationship table
-     */
-    public void match(long id, boolean isStartup) throws Exception {
+      * Loop through all profiles and save matches inside relationship table
+      * 
+      * @param id        the account id of the profile to be matched with
+      * @param isStartup indicates whether the given profile is a startup
+      * @throws SQLException
+      * @throws DataAccessException
+      * @throws Exception           throws Exception if there was a problem writing
+      *                             to relationship table
+      */
+     public void match(long id, boolean isStartup) throws DataAccessException, SQLException {
         List<MatchingProfile> objects;
         MatchingProfile subject;
         if(isStartup) {
@@ -106,14 +110,10 @@ public class MatchingService {
                 System.out.println("Match found: " + relationship.getInvestorId() + 
                 " <--> " + relationship.getStartupId() + " state: " + relationship.getState());
 
-                try {
-                    if(relationshipRepository.exists(relationship))
-                        relationshipRepository.updateScore(relationship);
-                    else {
-                        relationshipRepository.add(relationship);
-                    }
-                } catch (DataIntegrityViolationException  e) {
-                    System.out.println("Error while adding/updating relationship: " + e.getMessage());
+                if(relationshipRepository.exists(relationship))
+                    relationshipRepository.updateScore(relationship);
+                else {
+                    relationshipRepository.add(relationship);
                 }
             }
         }
