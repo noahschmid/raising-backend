@@ -1,15 +1,20 @@
 package ch.raising.data;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+
 
 import ch.raising.models.Icon;
 
@@ -17,8 +22,10 @@ import ch.raising.models.Icon;
 @Repository
 public class IconRepository {
 	
-	JdbcTemplate jdbc;
-	String INSERT_ICON = "INSERT INTO icon(media, type, lastchanged) VALUES (?,?,now())";
+	private final JdbcTemplate jdbc;
+	private final String INSERT_ICON = "INSERT INTO icon(media, type, lastchanged) VALUES (?,?,now())";
+	private final String FIND_BY_ID = "SELECT * FROM icon where id = ?";
+	private final String UPDATE = "UPDATE icon set type = ?, media = ? where id = ?";
 
 	public IconRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
@@ -28,7 +35,13 @@ public class IconRepository {
 		return jdbc.execute(new AddAndReturnIdPreparedStatement(), addIconCallback(icon));
 	}    
 	
-	
+	public Icon find(long id) {
+		return jdbc.queryForObject(FIND_BY_ID, new Object[] {id}, new IconMapper());
+	}
+
+	public void update(Icon build) throws DataAccessException{
+		jdbc.update(UPDATE, new Object[] {build.getContentType(), build.getIcon(), build.getId()}, new int[] {Types.VARCHAR, Types.BLOB, Types.BIGINT});
+	}
 	
 	private PreparedStatementCallback<Long> addIconCallback(Icon icon) {
 		return new PreparedStatementCallback<Long>() {
@@ -52,6 +65,15 @@ public class IconRepository {
 		@Override
 		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 			return con.prepareStatement(INSERT_ICON, Statement.RETURN_GENERATED_KEYS);
+		}
+		
+	}
+	
+	private class IconMapper implements RowMapper<Icon>{
+
+		@Override
+		public Icon mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return Icon.builder().id(rs.getLong("id")).contentType(rs.getString("type")).icon(rs.getBytes("media")).build();
 		}
 		
 	}

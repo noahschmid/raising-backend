@@ -84,13 +84,14 @@ public class SettingRepository {
 
 		@Override
 		public Settings mapRow(ResultSet rs, int rowNum) throws SQLException {
+			String numberOfMatches = rs.getString("numberofmatches") == null ? "1": rs.getString("numberofmatches");
 			return Settings.builder()
 					.accountId(rs.getLong("accountid"))
 					.device(Device.valueOf(rs.getString("device")))
 					.notificationTypes(parseToEnum(rs.getString("notificationtypes")))
 					.token(rs.getString("token"))
 					.language(rs.getString("language"))
-					.numberOfMatches(Integer.parseInt(rs.getString("numberofmatches")))
+					.numberOfMatches(Integer.parseInt(numberOfMatches))
 					.build();
 		}
 		

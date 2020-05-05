@@ -64,7 +64,7 @@ public class InvestorService extends AccountService {
 			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, JwtUtil jwtUtil, PasswordEncoder encoder,
 			AssignmentTableRepositoryFactory atrFactory, MediaRepositoryFactory mrFactory,
 			SettingRepository settingRepo) throws SQLException {
-		super(accountRepository, mailUtil, resetCodeUtil, jwtUtil, encoder, atrFactory, mrFactory, jdbc);
+		super(accountRepository, mailUtil, resetCodeUtil, jwtUtil, encoder, atrFactory, mrFactory, jdbc, settingRepo);
 
 		this.investmentPhaseRepository = atrFactory.getRepositoryForInvestor("investmentphase");
 		this.investorRepository = investorRepository;

@@ -11,6 +11,7 @@ import lombok.Setter;
 public class PushNotification {
 	private long accountId;
 	private String title;
+	private String collapseBy;
 	private String message;
 	private Device device;
 	private String token;

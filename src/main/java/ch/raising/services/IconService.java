@@ -61,5 +61,13 @@ public class IconService{
 		insert.setContentType(icon.getContentType());
 		return iconRepo.addMedia(insert);
 	}
+	
+	public Icon getIcon(long id) {
+		return iconRepo.find(id);
+	}
+
+	public void update(int id, MultipartFile build) throws DataAccessException, IOException {
+		iconRepo.update(Icon.builder().icon(build.getBytes()).contentType(build.getContentType()).build());
+	}
 
 }

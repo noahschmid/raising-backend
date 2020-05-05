@@ -27,6 +27,7 @@ import ch.raising.data.CorporateShareholderRepository;
 import ch.raising.data.FounderRepository;
 import ch.raising.data.MediaRepositoryFactory;
 import ch.raising.data.PrivateShareholderRepository;
+import ch.raising.data.SettingRepository;
 import ch.raising.data.StartupRepository;
 import ch.raising.models.Account;
 import ch.raising.models.Boardmember;
@@ -58,9 +59,9 @@ public class StartupService extends AccountService {
 			BoardmemberRepository bmemRepository, FounderRepository founderRepository, MailUtil mailUtil,
 			ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, PrivateShareholderRepository pshRepository,
 			CorporateShareholderRepository cshRepository, JwtUtil jwtUtil, PasswordEncoder encoder,
-			AssignmentTableRepositoryFactory atrFactory, MediaRepositoryFactory mrFactory) throws SQLException {
+			AssignmentTableRepositoryFactory atrFactory, MediaRepositoryFactory mrFactory, SettingRepository settingRepo) throws SQLException {
 
-		super(accountRepository, mailUtil, resetCodeUtil, jwtUtil, encoder, atrFactory, mrFactory, jdbc);
+		super(accountRepository, mailUtil, resetCodeUtil, jwtUtil, encoder, atrFactory, mrFactory, jdbc, settingRepo);
 
 		this.investorTypeRepository = atrFactory.getRepositoryForStartup("investortype");
 		this.labelRepository = atrFactory.getRepositoryForStartup("label");

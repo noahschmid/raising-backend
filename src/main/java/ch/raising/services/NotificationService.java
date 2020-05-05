@@ -10,9 +10,16 @@ import org.springframework.stereotype.Service;
 
 import ch.raising.data.SettingRepository;
 import ch.raising.models.AccountDetails;
+import ch.raising.models.Interaction;
 import ch.raising.models.PushNotification;
 import ch.raising.models.Settings;
+import ch.raising.models.enums.InteractionTypes;
 
+/**
+ * 
+ * @author manus
+ * This class manages different notifications and if the user wants to receive them.
+ */
 @Service
 public class NotificationService {
 
@@ -32,6 +39,13 @@ public class NotificationService {
 		notification.setTitle(title);
 		notification.setToken(token.getToken());
 		fcmService.sendMessage(notification);
+	}
+	
+	public void sendLeadNotificationTo(long accountId, InteractionTypes type) {
+		String message = "You have got a new lead for " + type.name();
+		String title = "New Lead";
+		
+		
 	}
 	
 	private long getAccountId() {

@@ -28,6 +28,8 @@ import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.Media;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.PasswordResetRequest;
+import ch.raising.models.Settings;
+import ch.raising.models.enums.NotificationType;
 import ch.raising.models.responses.AdminAccountResponse;
 import ch.raising.models.responses.LoginResponse;
 import ch.raising.utils.DatabaseOperationException;
@@ -44,12 +46,15 @@ import ch.raising.data.AccountRepository;
 import ch.raising.data.AssignmentTableRepository;
 import ch.raising.data.AssignmentTableRepositoryFactory;
 import ch.raising.data.MediaRepositoryFactory;
+import ch.raising.data.SettingRepository;
 import ch.raising.interfaces.IMediaRepository;
 
 @Primary
 @Service
 public class AccountService implements UserDetailsService {
 
+	private final int NUMBER_OF_MATCHES = 5;
+	private final String STANDARD_LANGUAGE = "english";
 	protected AccountRepository accountRepository;
 	private MailUtil mailUtil;
 	private ResetCodeUtil resetCodeUtil;
@@ -57,6 +62,7 @@ public class AccountService implements UserDetailsService {
 	private PasswordEncoder encoder;
 	private IMediaRepository<Media> galleryRepository;
 	private IMediaRepository<Media> pPicRepository;
+	private final SettingRepository settingRepo;
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -71,7 +77,8 @@ public class AccountService implements UserDetailsService {
 	@Autowired
 	public AccountService(AccountRepository accountRepository, MailUtil mailUtil, ResetCodeUtil resetCodeUtil,
 			JwtUtil jwtUtil, PasswordEncoder encoder, AssignmentTableRepositoryFactory assignmentFactory,
-			MediaRepositoryFactory mrFactory, JdbcTemplate jdbc) throws SQLException {
+			MediaRepositoryFactory mrFactory, JdbcTemplate jdbc, SettingRepository settingRepo) throws SQLException {
+		this.settingRepo = settingRepo;
 		this.accountRepository = accountRepository;
 		this.mailUtil = mailUtil;
 		this.resetCodeUtil = resetCodeUtil;
@@ -193,6 +200,9 @@ public class AccountService implements UserDetailsService {
 		} catch (EmailNotFoundException e) {
 			req.setEmail(req.getEmail().toLowerCase());
 			long accountId = accountRepository.add(req);
+
+			settingRepo.addSettings(Settings.builder().accountId(accountId).notificationTypes(NotificationType.getAll())
+					.numberOfMatches(NUMBER_OF_MATCHES).language(STANDARD_LANGUAGE).build());
 
 			if (req.getGallery() != null) {
 				for (long pic : req.getGallery()) {
@@ -326,7 +336,7 @@ public class AccountService implements UserDetailsService {
 			throws EmailNotFoundException, MessagingException, DataAccessException, SQLException {
 		Account account = accountRepository.findByEmail(request.getEmail());
 		String code = resetCodeUtil.createResetCode(account);
-		if(code != null) {
+		if (code != null) {
 			mailUtil.sendPasswordForgotEmail(request.getEmail(), code);
 		}
 	}
@@ -379,8 +389,8 @@ public class AccountService implements UserDetailsService {
 		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}
 
-	public LoginResponse adminLogin(LoginRequest req)
-			throws UsernameNotFoundException, DataAccessException, AuthenticationException, SQLException, NotAuthorizedException {
+	public LoginResponse adminLogin(LoginRequest req) throws UsernameNotFoundException, DataAccessException,
+			AuthenticationException, SQLException, NotAuthorizedException {
 
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(req.getEmail(),
 				req.getPassword());
@@ -388,14 +398,14 @@ public class AccountService implements UserDetailsService {
 		Authentication auth = authenticationManager.authenticate(token);
 
 		AccountDetails userDetails = (AccountDetails) auth.getPrincipal();
-		
+
 		List<String> roles = new ArrayList<String>();
-		for(GrantedAuthority g: userDetails.getAuthorities()) {
+		for (GrantedAuthority g : userDetails.getAuthorities()) {
 			roles.add(g.getAuthority());
 		}
-		if(!roles.contains("ROLE_ADMIN"))
+		if (!roles.contains("ROLE_ADMIN"))
 			throw new NotAuthorizedException("not an admin");
-		
+
 		final String returnToken = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}
