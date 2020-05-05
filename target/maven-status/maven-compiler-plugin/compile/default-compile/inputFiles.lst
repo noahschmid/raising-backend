@@ -4,13 +4,13 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Invali
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\StartupController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\LoginRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAdditionalInformationRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Settings.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AccountService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\StartupService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModelWithDescription.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\MatchingProfile.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\CorporateShareholder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IMediaRepository.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\NotificationRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AccountRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\StartupMember.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AssignmentTableService.java
@@ -20,6 +20,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Corpora
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableWithDescritionAndIcon.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\PublicInformationController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\SharedDataRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\SettingRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\EmailNotFoundException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\ResetCode.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\DatabaseOperationException.java
@@ -30,6 +31,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\FCM
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\ProfileService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\JwtRequestFilter.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\InteractionRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\SettingService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UpdateQueryBuilder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AdditionalInformationService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Relationship.java
@@ -93,8 +95,8 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\Mat
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidProfileException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\PrivateShareholderRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IExtendedAssignmentTableModel.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\DeviceController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\ResetCodeRepository.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\SettingsController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\raisingbackend\RaisingBackendApplication.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\SharedData.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Support.java
@@ -103,7 +105,6 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Passwo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AssignmentTableRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\Device.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Interaction.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\DeviceToken.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\LoginResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSTwoParameters.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\NotificationType.java

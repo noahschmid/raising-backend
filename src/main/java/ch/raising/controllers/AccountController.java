@@ -1,6 +1,7 @@
 package ch.raising.controllers;
 
 import java.sql.SQLException;
+
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -26,14 +27,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ch.raising.models.Account;
-import ch.raising.models.DeviceToken;
 import ch.raising.models.LoginRequest;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.models.responses.LoginResponse;
 import ch.raising.services.AccountService;
 import ch.raising.services.AssignmentTableService;
-import ch.raising.services.NotificationService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.JwtUtil;
