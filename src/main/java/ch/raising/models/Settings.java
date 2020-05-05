@@ -15,10 +15,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DeviceToken {
-	private long id;
+public class Settings {
 	private long accountId;
 	private String token;
 	private Device device;
 	private List<NotificationType> notificationTypes;
+	private String language;
+	private int numberOfMatches;
 }

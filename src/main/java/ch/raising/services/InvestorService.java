@@ -2,7 +2,7 @@ package ch.raising.services;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ import ch.raising.data.AssignmentTableRepository;
 import ch.raising.data.AssignmentTableRepositoryFactory;
 import ch.raising.data.InvestorRepository;
 import ch.raising.data.MediaRepositoryFactory;
+import ch.raising.data.SettingRepository;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 
@@ -35,6 +36,8 @@ import ch.raising.utils.MediaException;
 import ch.raising.utils.ResetCodeUtil;
 
 import ch.raising.models.MatchingProfile;
+import ch.raising.models.Settings;
+import ch.raising.models.enums.NotificationType;
 import ch.raising.models.responses.ErrorResponse;
 
 @Service
@@ -55,28 +58,30 @@ public class InvestorService extends AccountService {
 	private AssignmentTableRepository investorTypeRepository;
 
 	private MatchingService matchingService;
+	
+	private final SettingRepository settingRepo;
 
 	@Autowired
 	public InvestorService(AccountRepository accountRepository, InvestorRepository investorRepository,
 			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, JwtUtil jwtUtil, PasswordEncoder encoder,
 			AssignmentTableRepositoryFactory atrFactory, MediaRepositoryFactory mrFactory,
-			MatchingService matchingService) throws SQLException {
+			MatchingService matchingService, SettingRepository settingRepo) throws SQLException {
 		super(accountRepository, mailUtil, resetCodeUtil, jwtUtil, encoder, atrFactory, mrFactory, jdbc);
 
 		this.investmentPhaseRepository = atrFactory.getRepositoryForInvestor("investmentphase");
 		this.investorRepository = investorRepository;
-		this.countryRepository = atrFactory.getRepository("country")
-				.withRowMapper(MapUtil::mapRowToCountry);
+		this.countryRepository = atrFactory.getRepository("country").withRowMapper(MapUtil::mapRowToCountry);
 		this.continentRepository = atrFactory.getRepository("continent");
 		this.supportRepository = atrFactory.getRepository("support");
 		this.industryRepository = atrFactory.getRepository("industry");
 		this.investorTypeRepository = atrFactory.getRepositoryForStartup("investortype");
+		this.settingRepo = settingRepo;
 		this.matchingService = matchingService;
 	}
 
 	@Override
-	protected long registerAccount(Account requestInvestor)
-			throws InvalidProfileException, DataAccessException, SQLException, MediaException, DatabaseOperationException {
+	protected long registerAccount(Account requestInvestor) throws InvalidProfileException, DataAccessException,
+			SQLException, MediaException, DatabaseOperationException {
 
 		Investor invReq = (Investor) requestInvestor;
 
@@ -91,7 +96,6 @@ public class InvestorService extends AccountService {
 			long accountId = super.registerAccount(invReq);
 			invReq.setAccountId(accountId);
 			investorRepository.add(invReq);
-
 			investmentPhaseRepository.addEntriesToAccount(accountId, invReq.getInvestmentPhases());
 			matchingService.match(accountId, false);
 			return accountId;
@@ -124,59 +128,61 @@ public class InvestorService extends AccountService {
 		matchingService.match(id, false);
 	}
 
-    /**
-     * Get matching profile of investor (the required information for matching)
-     * @return Matching profile of investor
-     * @throws SQLException 
-     * @throws DataAccessException 
-     */
-    public MatchingProfile getMatchingProfile(Investor investor) throws DataAccessException, SQLException {
-        if(investor == null)
-            return null;
-        
+	/**
+	 * Get matching profile of investor (the required information for matching)
+	 * 
+	 * @return Matching profile of investor
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	public MatchingProfile getMatchingProfile(Investor investor) throws DataAccessException, SQLException {
+		if (investor == null)
+			return null;
+
 		MatchingProfile profile = new MatchingProfile();
 
 		List<Long> continents = continentRepository.findIdByAccountId(investor.getAccountId());
-        List<Long> industries = industryRepository.findIdByAccountId(investor.getAccountId());
-        List<Long> investmentPhases = investmentPhaseRepository.findIdByAccountId(investor.getAccountId());
+		List<Long> industries = industryRepository.findIdByAccountId(investor.getAccountId());
+		List<Long> investmentPhases = investmentPhaseRepository.findIdByAccountId(investor.getAccountId());
 		List<Long> supports = supportRepository.findIdByAccountId(investor.getAccountId());
 		profile.addInvestorType(investor.getInvestorTypeId());
-		
+
 		countryRepository.findByAccountId(investor.getAccountId()).forEach(country -> {
-			profile.addCountry((Country)country);
-	   });
+			profile.addCountry((Country) country);
+		});
 
-        profile.setAccountId(investor.getAccountId());
-        profile.setName(investor.getCompanyName());
-        profile.setDescription(investor.getDescription());
-        profile.setInvestmentMax(investor.getTicketMaxId());
-        profile.setInvestmentMin(investor.getTicketMinId());
-        profile.setStartup(false);
-        
-        profile.setContinents(continents);
-        profile.setIndustries(industries);
+		profile.setAccountId(investor.getAccountId());
+		profile.setName(investor.getCompanyName());
+		profile.setDescription(investor.getDescription());
+		profile.setInvestmentMax(investor.getTicketMaxId());
+		profile.setInvestmentMin(investor.getTicketMinId());
+		profile.setStartup(false);
+
+		profile.setContinents(continents);
+		profile.setIndustries(industries);
 		profile.setInvestmentPhases(investmentPhases);
-        profile.setSupport(supports);
+		profile.setSupport(supports);
 
-        return profile;
-    }
+		return profile;
+	}
 
-    /**
-     * Get all matching profiles of all investors
-     * @return List of matching profiles
-     * @throws SQLException 
-     * @throws DataAccessException 
-     */
-    public List<MatchingProfile> getAllMatchingProfiles() throws DataAccessException, SQLException {
-        List<Investor> investors = investorRepository.getAll();
-        List<MatchingProfile> profiles = new ArrayList<>();
-        if(investors.size() == 0)
-            return null;
+	/**
+	 * Get all matching profiles of all investors
+	 * 
+	 * @return List of matching profiles
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	public List<MatchingProfile> getAllMatchingProfiles() throws DataAccessException, SQLException {
+		List<Investor> investors = investorRepository.getAll();
+		List<MatchingProfile> profiles = new ArrayList<>();
+		if (investors.size() == 0)
+			return null;
 
-        for(Investor investor : investors) {
-            profiles.add(getMatchingProfile(investor));
-        }
+		for (Investor investor : investors) {
+			profiles.add(getMatchingProfile(investor));
+		}
 
-        return profiles;
-    }
+		return profiles;
+	}
 }

@@ -177,15 +177,9 @@ public class InteractionService {
 		if (data.getEmail() == "" || data.getEmail() == null)
 			throw new InvalidInteractionException("add data.email");
 
-		switch (state) {
-		case BUSINESS_PLAN:
-			if (isStartup() && (data.getBusinessPlanId() == -1 || data.getBusinessPlanId() == 0))
-				throw new InvalidInteractionException("add data.businessplanId");
-		case PHONE_CALL:
+		if(state == InteractionTypes.PHONE_CALL) {
 			if (data.getPhone() == -1 || data.getPhone() == 0)
 				throw new InvalidInteractionException("add data.phone");
-		default:
-			break;
 		}
 	}
 

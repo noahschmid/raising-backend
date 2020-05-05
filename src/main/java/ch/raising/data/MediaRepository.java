@@ -28,8 +28,6 @@ import ch.raising.utils.functionalInterface.RowMapper;
 public class MediaRepository implements IMediaRepository<Media> {
 
 	private final JdbcTemplate jdbc;
-	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Media, Long> PS_ADD;
-	private final PSTwoParameters<PreparedStatementCallback<Boolean>, Long, Long> PS_DELETE;
 	private final RowMapper<ResultSet, Integer, Media> rowMapper;
 
 	private final String INSERT_MEDIA;
@@ -44,8 +42,6 @@ public class MediaRepository implements IMediaRepository<Media> {
 	private final String FIND_ACCOUNT_ID_BY_MEDIA_ID;
 
 	public MediaRepository(JdbcTemplate jdbc, String tableName) {
-		this.PS_ADD = PreparedStatementUtil::addMediaByIdCallback;
-		this.PS_DELETE = PreparedStatementUtil::setIdAccountIdCallback;
 		this.rowMapper = MapUtil::mapRowToMedia;
 		this.INSERT_MEDIA = "INSERT INTO " + tableName + "(type, media, accountid) VALUES (?,?, ?)";
 		this.FIND_BY_ACCOUNTID = "SELECT * FROM " + tableName + " WHERE accountid = ?";
@@ -95,7 +91,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 
 	@Override
 	public void deleteMediaFromAccount(long mediaId, long accountId) throws DataAccessException, SQLException {
-		jdbc.execute(DELETE_ENTRY_FROM_ACCOUNT, PS_DELETE.getCallback(mediaId, accountId));
+		jdbc.update(DELETE_ENTRY_FROM_ACCOUNT, new Object[] {mediaId, accountId}, new int[] {Types.BIGINT, Types.BIGINT});
 	}
 
 	@Override
