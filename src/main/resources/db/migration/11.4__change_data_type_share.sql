@@ -1,0 +1,4 @@
+ALTER TABLE share DROP COLUMN IF EXISTS phone;
+ALTER TABLE share ADD COLUMN IF NOT EXISTS phone varchar;
+
+ALTER TABLE interaction ADD COLUMN IF NOT EXISTS relationshipid REFERENCES relationship(id) ON DELETE CASCADE;

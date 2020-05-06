@@ -84,14 +84,11 @@ public class StartupService extends AccountService {
 		Startup su = (Startup) account;
 		
 		if(!UidUtil.isValidUId(su.getUId())) {
-			throw new InvalidProfileException("uId has invalid fromat: " + su.getUId(), su);
+			throw new InvalidProfileException("uid has invalid fromat: " + su.getUId(), su);
 		}
 		
 		if (!su.isComplete()) {
-			String name = "Startup";
-			if (account.isComplete())
-				name = "Account";
-			throw new InvalidProfileException(name + " is incomplete", su);
+			throw new InvalidProfileException("startup is incomplete", su);
 		}
 
 		try {
