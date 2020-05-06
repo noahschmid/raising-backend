@@ -13,16 +13,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import ch.raising.data.AccountRepository;
 import ch.raising.data.InvestorRepository;
 import ch.raising.data.RelationshipRepository;
 import ch.raising.data.StartupRepository;
-import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.Country;
 import ch.raising.models.Investor;
 import ch.raising.models.MatchingProfile;
@@ -32,7 +29,6 @@ import ch.raising.models.enums.RelationshipState;
 import ch.raising.models.responses.MatchResponse;
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
-import ch.raising.utils.DatabaseOperationException;
 
 @Service
 public class MatchingService {
