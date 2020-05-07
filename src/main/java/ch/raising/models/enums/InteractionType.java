@@ -1,6 +1,6 @@
 package ch.raising.models.enums;
 
-public enum InteractionTypes {
+public enum InteractionType {
 	VIDEO_CONFERENCE("a video confernce"),
 	COFFEE("a coffee"),
 	BUSINESS_PLAN("a business plan"),
@@ -8,12 +8,12 @@ public enum InteractionTypes {
 	EMAIL("an email");
 	
 	String pretty;
-	InteractionTypes(String pretty) {
+	InteractionType(String pretty) {
 		this.pretty = pretty;
 	}
 	
-	@Override
-	public String toString() {
+	
+	public String getPretty() {
 		return pretty;
 	}
 }

@@ -36,8 +36,8 @@ public class FCMNotificationService {
 	}
 
 	private AndroidConfig getAndroidConfig(String collapseBy) {
-		return AndroidConfig.builder().setTtl(120000).setCollapseKey(collapseBy).setPriority(Priority.NORMAL)
-				.setNotification(AndroidNotification.builder().setTag(collapseBy).build()).build();
+		return AndroidConfig.builder().setTtl(120000).setRestrictedPackageName("com.raising.app").setPriority(Priority.HIGH).setCollapseKey(collapseBy)
+				.setNotification(AndroidNotification.builder().setChannelId("1").setTag(collapseBy).build()).build();
 	}
 
 	private ApnsConfig getApnsConfig(String collapseBy) {

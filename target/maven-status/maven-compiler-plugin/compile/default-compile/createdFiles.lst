@@ -5,6 +5,7 @@ ch\raising\interfaces\IAdditionalInformationRepository.class
 ch\raising\controllers\InteractionController.class
 ch\raising\data\ResetCodeRepository$3.class
 ch\raising\controllers\InvestorController.class
+ch\raising\data\IconRepository$IconMapper.class
 ch\raising\config\FCMConfig.class
 ch\raising\data\SettingRepository.class
 ch\raising\data\BoardmemberRepository$1.class
@@ -14,6 +15,7 @@ ch\raising\data\ResetCodeRepository.class
 ch\raising\models\MatchingProfile.class
 ch\raising\data\IconRepository.class
 ch\raising\services\InvestorService.class
+ch\raising\data\SettingRepository$NotificationSettingMapper.class
 ch\raising\data\CorporateShareholderRepository$1.class
 ch\raising\data\CorporateShareholderRepository.class
 ch\raising\utils\MapUtil.class
@@ -87,10 +89,10 @@ ch\raising\services\AdditionalInformationService.class
 ch\raising\data\PrivateShareholderRepository$1.class
 ch\raising\models\SharedData$SharedDataBuilder.class
 ch\raising\services\AssignmentTableService.class
+ch\raising\data\IOSSubscriptionRepository.class
 ch\raising\data\RelationshipRepository.class
 ch\raising\data\RelationshipRepository$1.class
 ch\raising\data\FounderRepository$1.class
-ch\raising\models\enums\InteractionTypes.class
 ch\raising\utils\EmailNotFoundException.class
 ch\raising\services\MatchingService.class
 ch\raising\controllers\PublicInformationController.class
@@ -141,6 +143,7 @@ ch\raising\models\PushNotification.class
 ch\raising\models\enums\NotificationType.class
 ch\raising\config\SecurityConfig.class
 ch\raising\utils\MailUtil.class
+ch\raising\models\enums\InteractionType.class
 ch\raising\models\ForgotPasswordRequest.class
 ch\raising\models\SharedData.class
 ch\raising\models\responses\ErrorResponse.class

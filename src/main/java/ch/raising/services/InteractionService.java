@@ -25,7 +25,7 @@ import ch.raising.models.Interaction;
 import ch.raising.models.InteractionRequest;
 import ch.raising.models.Relationship;
 import ch.raising.models.SharedData;
-import ch.raising.models.enums.InteractionTypes;
+import ch.raising.models.enums.InteractionType;
 import ch.raising.models.enums.RelationshipState;
 import ch.raising.models.enums.State;
 import ch.raising.models.responses.MatchResponse;
@@ -173,17 +173,17 @@ public class InteractionService {
 			interactionRepo.deleteByInteractionId(interactionId);
 			throw e;
 		}
-		
+		notificationService.sendLeadNotificationTo(interaction.getAccountId(), interaction.getInteraction());
 	}
 
-	private void validateSharedData(InteractionTypes state, SharedData data) throws InvalidInteractionException {
+	private void validateSharedData(InteractionType state, SharedData data) throws InvalidInteractionException {
 
 		if (data.getAccountId() == -1 || data.getAccountId() == 0)
 			throw new InvalidInteractionException("add data.accountId");
 		if (data.getEmail() == "" || data.getEmail() == null)
 			throw new InvalidInteractionException("add data.email");
 
-		if (state == InteractionTypes.PHONE_CALL) {
+		if (state == InteractionType.PHONE_CALL) {
 			if (data.getPhone() == -1 || data.getPhone() == 0)
 				throw new InvalidInteractionException("add data.phone");
 		}
@@ -235,6 +235,7 @@ public class InteractionService {
 			shareRepo.deleteById(dataId);
 			throw e;
 		}
+		notificationService.sendConnectionNotification(accept.getAccountId(), accept.getInteraction());
 		return getSharedDataAndDelete(interactionId);
 	}
 

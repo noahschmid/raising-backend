@@ -16,10 +16,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Settings {
-	private long accountId;
-	private String token;
+	@Builder.Default private long accountId = -1;
+	@Builder.Default private String token = "";
 	private Device device;
 	private List<NotificationType> notificationTypes;
-	private String language;
-	private int numberOfMatches;
+	@Builder.Default private String language = "";
+	@Builder.Default private int numberOfMatches = -1;
 }

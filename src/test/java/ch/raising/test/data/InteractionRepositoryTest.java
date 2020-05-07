@@ -23,7 +23,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import ch.raising.data.InteractionRepository;
 import ch.raising.models.Interaction;
-import ch.raising.models.enums.InteractionTypes;
+import ch.raising.models.enums.InteractionType;
 import ch.raising.models.enums.State;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.QueryBuilder;
@@ -43,7 +43,7 @@ class InteractionRepositoryTest {
 	private final long investorId = 43;
 	private final State startupState = State.OPEN;
 	private final State investorState = State.OPEN;
-	private final InteractionTypes interactionState = InteractionTypes.COFFEE;
+	private final InteractionType interactionState = InteractionType.COFFEE;
 	private Interaction interaction;
 
 	private final InteractionRepository interactionRepo;
@@ -104,7 +104,7 @@ class InteractionRepositoryTest {
 	@Test
 	void addInteraction() {
 		Interaction insert = Interaction.builder().id(12).startupId(13).investorId(45)
-				.interaction(InteractionTypes.EMAIL).startupState(State.OPEN).investorState(State.OPEN).build();
+				.interaction(InteractionType.EMAIL).startupState(State.OPEN).investorState(State.OPEN).build();
 		interactionRepo.addInteraction(insert);
 		Interaction found = jdbc.queryForObject("SELECT * FROM interaction WHERE startupid = 13",
 				interactionRepo.new InteractionMapper());

@@ -33,380 +33,391 @@ import ch.raising.services.StartupService;
 @Service
 public class MatchingService {
 
-    
-    private InvestorRepository investorRepository;
-    
-    private InvestorService investorService;
+	private InvestorRepository investorRepository;
 
-    private StartupRepository startupRepository;
-    
-    private StartupService startupService;
-    
-    private RelationshipRepository relationshipRepository;
+	private InvestorService investorService;
 
-    private SettingService settingService;
+	private StartupRepository startupRepository;
 
-    private final static int MAX_SCORE = 6;
+	private StartupService startupService;
 
-    private final static int MAX_WEEKLY_MATCHES_COUNT = 5;
+	private RelationshipRepository relationshipRepository;
 
-    @Autowired
-    public MatchingService(RelationshipRepository relationshipRepository,
-        StartupService startupService, StartupRepository startupRepository,
-        InvestorService investorService, InvestorRepository investorRepository,
-        AccountRepository accountRepository, SettingService settingService) {
-        this.startupService = startupService;
-        this.relationshipRepository = relationshipRepository;
-        this.investorService = investorService;
-        this.investorRepository = investorRepository;
-        this.startupRepository = startupRepository;
-        this.settingService = settingService;
-    }
+	private SettingService settingService;
 
-     /**
-      * Loop through all profiles and save matches inside relationship table
-      * 
-      * @param id        the account id of the profile to be matched with
-      * @param isStartup indicates whether the given profile is a startup
-      * @throws SQLException
-      * @throws DataAccessException
-      * @throws Exception           throws Exception if there was a problem writing
-      *                             to relationship table
-      */
-     public void match(long id, boolean isStartup) throws DataAccessException, SQLException {
-        List<MatchingProfile> objects;
-        MatchingProfile subject;
-        if(isStartup) {
-            objects = investorService.getAllMatchingProfiles();
-            Startup startup = startupRepository.find(id);
-            subject = startupService.getMatchingProfile(startup);
-        }
-        else {
-            objects = startupService.getAllMatchingProfiles();
-            Investor investor = investorRepository.find(id);
-            subject = investorService.getMatchingProfile(investor);
-        }
+	private NotificationService notificationService;
 
-        if(subject == null)
-            throw new Error("account could not be found");
+	private final static int MAX_SCORE = 6;
 
-        for(MatchingProfile object : objects) {
-            int score = getMatchingScore(subject, object);
+	private final static int MAX_WEEKLY_MATCHES_COUNT = 5;
 
-            if(score > 0) {
-                Relationship relationship = new Relationship();
-                if(isStartup) {
-                    relationship.setInvestorId(object.getAccountId());
-                    relationship.setStartupId(subject.getAccountId());
-                } else {
-                    relationship.setStartupId(object.getAccountId());
-                    relationship.setInvestorId(subject.getAccountId());
-                }
+	@Autowired
+	public MatchingService(RelationshipRepository relationshipRepository, StartupService startupService,
+			StartupRepository startupRepository, InvestorService investorService, InvestorRepository investorRepository,
+			AccountRepository accountRepository, SettingService settingService,
+			NotificationService notificationService) {
+		this.startupService = startupService;
+		this.relationshipRepository = relationshipRepository;
+		this.investorService = investorService;
+		this.investorRepository = investorRepository;
+		this.startupRepository = startupRepository;
+		this.settingService = settingService;
+		this.notificationService = notificationService;
+	}
 
-                relationship.setMatchingScore(score);
-                relationship.setState(RelationshipState.MATCH);
+	/**
+	 * Loop through all profiles and save matches inside relationship table
+	 * 
+	 * @param id        the account id of the profile to be matched with
+	 * @param isStartup indicates whether the given profile is a startup
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 * @throws Exception           throws Exception if there was a problem writing
+	 *                             to relationship table
+	 */
+	public void match(long id, boolean isStartup) throws DataAccessException, SQLException {
+		List<MatchingProfile> objects;
+		MatchingProfile subject;
+		if (isStartup) {
+			objects = investorService.getAllMatchingProfiles();
+			Startup startup = startupRepository.find(id);
+			subject = startupService.getMatchingProfile(startup);
+		} else {
+			objects = startupService.getAllMatchingProfiles();
+			Investor investor = investorRepository.find(id);
+			subject = investorService.getMatchingProfile(investor);
+		}
 
-                System.out.println("Match found: " + relationship.getInvestorId() + 
-                " <--> " + relationship.getStartupId() + " state: " + relationship.getState());
+		if (subject == null)
+			throw new Error("account could not be found");
 
-                if(relationshipRepository.exists(relationship))
-                    relationshipRepository.updateScore(relationship);
-                else {
-                    relationshipRepository.add(relationship);
-                }
-            }
-        }
-    }
+		for (MatchingProfile object : objects) {
+			int score = getMatchingScore(subject, object);
 
-    /**
-     * Loop through matching criteria and return matching score of two profiles
-     * @param subject the first matching profile to be matched with
-     * @param object the second matching profile to be matched with
-     * @return matching score
-     */
-    public static int getMatchingScore(MatchingProfile subject, MatchingProfile object) {
-        int score = 0;
-        boolean found = false;
+			if (score > 0) {
+				Relationship relationship = new Relationship();
+				if (isStartup) {
+					relationship.setInvestorId(object.getAccountId());
+					relationship.setStartupId(subject.getAccountId());
+				} else {
+					relationship.setStartupId(object.getAccountId());
+					relationship.setInvestorId(subject.getAccountId());
+				}
 
-        if(subject.getInvestmentMin() != -1 && subject.getInvestmentMax() != -1 && 
-            object.getInvestmentMax() != -1 && object.getInvestmentMin() != -1) {
-            if(subject.getInvestmentMax() >= object.getInvestmentMin() &&  
-                subject.getInvestmentMin() <= object.getInvestmentMax() &&
-                object.getInvestmentMax() >= subject.getInvestmentMin() &&  
-                object.getInvestmentMin() <= subject.getInvestmentMax())
-                ++score;
-        }
+				relationship.setMatchingScore(score);
+				relationship.setState(RelationshipState.MATCH);
 
-        boolean marketsMatch = false;
+				System.out.println("Match found: " + relationship.getInvestorId() + " <--> "
+						+ relationship.getStartupId() + " state: " + relationship.getState());
 
-        continentLoop:
-        for(long contnt : object.getContinents()) {
-            if(subject.getContinents().contains(contnt)) {
-                ++score;
-                marketsMatch = true;
-                break;
-            }
+				if (relationshipRepository.exists(relationship))
+					relationshipRepository.updateScore(relationship);
+				else {
+					relationshipRepository.add(relationship);
+				}
+			}
+		}
+	}
 
-            for(Country cntry : subject.getCountries()) {
-                if(cntry.getContinentId() == contnt) {
-                    ++score;
-                    break continentLoop;
-                }
-            }
-        }
+	/**
+	 * Loop through matching criteria and return matching score of two profiles
+	 * 
+	 * @param subject the first matching profile to be matched with
+	 * @param object  the second matching profile to be matched with
+	 * @return matching score
+	 */
+	public static int getMatchingScore(MatchingProfile subject, MatchingProfile object) {
+		int score = 0;
+		boolean found = false;
 
-        if(!marketsMatch) {
-            countryLoop:
-            for(Country cntry : object.getCountries()) {
-                if(subject.getCountries().contains(cntry)) {
-                    ++score;
-                    break;
-                }
-                for(long contnt : subject.getContinents()) {
-                    if(contnt == cntry.getContinentId()) {
-                        ++score;
-                        break countryLoop;
-                    }
-                }
-            }
-        }
+		if (subject.getInvestmentMin() != -1 && subject.getInvestmentMax() != -1 && object.getInvestmentMax() != -1
+				&& object.getInvestmentMin() != -1) {
+			if (subject.getInvestmentMax() >= object.getInvestmentMin()
+					&& subject.getInvestmentMin() <= object.getInvestmentMax()
+					&& object.getInvestmentMax() >= subject.getInvestmentMin()
+					&& object.getInvestmentMin() <= subject.getInvestmentMax())
+				++score;
+		}
 
-        for(Long phase : object.getInvestmentPhases()) {
-            if(subject.getInvestmentPhases().contains(phase)) {
-                ++score;
-                break;
-            }
-        }
+		boolean marketsMatch = false;
 
-        for(Long type : object.getInvestorTypes()) {
-            if(subject.getInvestorTypes().contains(type)) {
-                ++score;
-                break;
-            }
-        }
+		continentLoop: for (long contnt : object.getContinents()) {
+			if (subject.getContinents().contains(contnt)) {
+				++score;
+				marketsMatch = true;
+				break;
+			}
 
-        for(Long industry : object.getIndustries()) {
-            if(subject.getIndustries().contains(industry)) {
-                ++score;
-                break;
-            }
-        }
+			for (Country cntry : subject.getCountries()) {
+				if (cntry.getContinentId() == contnt) {
+					++score;
+					break continentLoop;
+				}
+			}
+		}
 
-        for(Long support : object.getSupport()) {
-            if(subject.getSupport().contains(support)) {
-                ++score;
-                break;
-            }
-        }
+		if (!marketsMatch) {
+			countryLoop: for (Country cntry : object.getCountries()) {
+				if (subject.getCountries().contains(cntry)) {
+					++score;
+					break;
+				}
+				for (long contnt : subject.getContinents()) {
+					if (contnt == cntry.getContinentId()) {
+						++score;
+						break countryLoop;
+					}
+				}
+			}
+		}
 
-        return score;
-    }
+		for (Long phase : object.getInvestmentPhases()) {
+			if (subject.getInvestmentPhases().contains(phase)) {
+				++score;
+				break;
+			}
+		}
 
-    /**
-     * Accept match
-     * @param id id of the match to decline
-     */
-    public void accept(long id, boolean isStartup) throws Exception {
-        Relationship relationship = relationshipRepository.find(id);
+		for (Long type : object.getInvestorTypes()) {
+			if (subject.getInvestorTypes().contains(type)) {
+				++score;
+				break;
+			}
+		}
 
-        if(isStartup && relationship.getStartupDecidedAt() == null) 
-            relationship.setStartupDecidedAt(new Timestamp(new Date().getTime()));
-        
-        if(!isStartup && relationship.getInvestorDecidedAt() == null) 
-            relationship.setInvestorDecidedAt(new Timestamp(new Date().getTime()));
+		for (Long industry : object.getIndustries()) {
+			if (subject.getIndustries().contains(industry)) {
+				++score;
+				break;
+			}
+		}
 
-        switch(relationship.getState()) {
-            case MATCH:
-                if(isStartup)
-                    relationship.setState(RelationshipState.STARTUP_ACCEPTED);
-                else
-                    relationship.setState(RelationshipState.INVESTOR_ACCEPTED);
-            break;
-            
-            case INVESTOR_ACCEPTED:
-                if(isStartup)
-                    relationship.setState(RelationshipState.HANDSHAKE);
-            break;
+		for (Long support : object.getSupport()) {
+			if (subject.getSupport().contains(support)) {
+				++score;
+				break;
+			}
+		}
 
-            case STARTUP_ACCEPTED:
-                if(!isStartup)
-                    relationship.setState(RelationshipState.HANDSHAKE);
-            break;
+		return score;
+	}
 
-            case STARTUP_DECLINED: 
-                if(isStartup)
-                    relationship.setState(RelationshipState.STARTUP_ACCEPTED);
-            break;
+	/**
+	 * Accept match
+	 * 
+	 * @param id id of the match to decline
+	 */
+	public void accept(long id, boolean isStartup) throws Exception {
+		Relationship relationship = relationshipRepository.find(id);
 
-            case INVESTOR_DECLINED:
-                if(!isStartup)
-                    relationship.setState(RelationshipState.INVESTOR_ACCEPTED);
-            break;
+		if (isStartup && relationship.getStartupDecidedAt() == null)
+			relationship.setStartupDecidedAt(new Timestamp(new Date().getTime()));
 
-            default:
-            break;
-        }
+		if (!isStartup && relationship.getInvestorDecidedAt() == null)
+			relationship.setInvestorDecidedAt(new Timestamp(new Date().getTime()));
 
-        relationshipRepository.update(relationship);
-    }
+		switch (relationship.getState()) {
+		case MATCH:
+			if (isStartup) {
+				relationship.setState(RelationshipState.STARTUP_ACCEPTED);
+				notificationService.sendAcceptMatchNotification(relationship.getInvestorId());
+			} else {
+				relationship.setState(RelationshipState.INVESTOR_ACCEPTED);
+				notificationService.sendAcceptMatchNotification(relationship.getStartupId());
+			}
 
-    /**
-     * Decline match
-     * @param id id of the match to decline
-     */
-    public void decline(long id, boolean isStartup) throws Exception {
-        Relationship relationship = relationshipRepository.find(id);
-        if(isStartup) {
-            if(relationship.getStartupDecidedAt() == null) {
-                relationship.setStartupDecidedAt(new Timestamp(new Date().getTime()));
-            }
-            relationship.setState(RelationshipState.STARTUP_DECLINED);
-            relationshipRepository.update(relationship);
-        } else {
-            if(relationship.getInvestorDecidedAt() == null) {
-                relationship.setInvestorDecidedAt(new Timestamp(new Date().getTime()));
-            }
-            relationship.setState(RelationshipState.INVESTOR_DECLINED);
-            relationshipRepository.update(relationship);
-        }
-    }
+			break;
 
-    /**
-     * Get matches of an account
-     * @throws SQLException 
-     * @throws EmptyResultDataAccessException 
-     */
-    public List<MatchResponse> getMatches(long accountId, boolean isStartup) throws EmptyResultDataAccessException, SQLException {
-        List<Relationship> matches = relationshipRepository.getByAccountId(accountId);
-        List<MatchResponse> matchResponses = new ArrayList<>();
-        int matchesPreference = MAX_WEEKLY_MATCHES_COUNT;
-        try {
-            matchesPreference = settingService.getSettings().getNumberOfMatches();
-        } catch (Exception e) {
-            System.out.println("getMatches: couldn't find settings for account " + accountId);
-        }
-        int matchesCount = 0;
-        int weeklyMatchesCount = matchesPreference <= MAX_WEEKLY_MATCHES_COUNT ? matchesPreference : MAX_WEEKLY_MATCHES_COUNT;
+		case INVESTOR_ACCEPTED:
+			if (isStartup) {
+				relationship.setState(RelationshipState.HANDSHAKE);
+				notificationService.sendAcceptMatchNotification(relationship.getInvestorId());
+			}
+			break;
 
-        // last "release date" of matches
-        Date matchDay = Date.from(LocalDate
-        .now()
-        .with(
-            TemporalAdjusters.previousOrSame( DayOfWeek.MONDAY )
-        ).atStartOfDay(ZoneId.systemDefault()).toInstant());
+		case STARTUP_ACCEPTED:
+			if (!isStartup) {
+				relationship.setState(RelationshipState.HANDSHAKE);
+				notificationService.sendAcceptMatchNotification(relationship.getStartupId());
+			}
+			break;
 
-        matchDay = getZeroTimeDate(matchDay);
+		case STARTUP_DECLINED:
+			if (isStartup)
+				relationship.setState(RelationshipState.STARTUP_ACCEPTED);
+			break;
 
-        System.out.println("Last matchday: " + matchDay.toString());
+		case INVESTOR_DECLINED:
+			if (!isStartup)
+				relationship.setState(RelationshipState.INVESTOR_ACCEPTED);
+			break;
 
-        for(Relationship match : matches) {
-            if(match.getStartupDecidedAt() != null) {
-                if(getZeroTimeDate(match.getStartupDecidedAt()).before(matchDay) && isStartup) {
-                    continue;
-                }
-            }
-            if(match.getInvestorDecidedAt() != null) {
-                if(getZeroTimeDate(match.getInvestorDecidedAt()).before(matchDay) && !isStartup) {
-                    continue;
-                }
-            }
+		default:
+			break;
+		}
 
-            if(match.getState() != RelationshipState.MATCH) {
-                ++matchesCount;
+		relationshipRepository.update(relationship);
+	}
 
-                if(matchesCount < weeklyMatchesCount)
-                    continue;
-                else
-                    break;
-            }
+	/**
+	 * Decline match
+	 * 
+	 * @param id id of the match to decline
+	 */
+	public void decline(long id, boolean isStartup) throws Exception {
+		Relationship relationship = relationshipRepository.find(id);
+		if (isStartup) {
+			if (relationship.getStartupDecidedAt() == null) {
+				relationship.setStartupDecidedAt(new Timestamp(new Date().getTime()));
+			}
+			relationship.setState(RelationshipState.STARTUP_DECLINED);
+			relationshipRepository.update(relationship);
+		} else {
+			if (relationship.getInvestorDecidedAt() == null) {
+				relationship.setInvestorDecidedAt(new Timestamp(new Date().getTime()));
+			}
+			relationship.setState(RelationshipState.INVESTOR_DECLINED);
+			relationshipRepository.update(relationship);
+		}
+	}
 
-            MatchResponse response = new MatchResponse();
-            response.setMatchingPercent(getMatchingPercent(match.getMatchingScore()));
-            response.setId(match.getId());
-            
-            if(isStartup) {
-                response.setAccountId(match.getInvestorId());
-                Investor investor;
-                try {
-                    investor = investorService.getAccount(match.getInvestorId());
-                } catch (Exception e) {
-                    investor = new Investor();
-                }
-                response.setInvestorTypeId(investor.getInvestorTypeId());
-                response.setStartup(false);
-                response.setDescription(investor.getDescription());
-                response.setFirstName(investor.getFirstName());
-                response.setLastName(investor.getLastName());
-                response.setProfilePictureId(investor.getProfilePictureId());
-            } else {
-                response.setAccountId(match.getStartupId());
-                Startup startup;
-                try {
-                    startup = (Startup)startupService.getAccount(match.getStartupId());
-                } catch(Exception e) {
-                    startup = new Startup();
-                }
-                response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
-                response.setStartup(true);
-                response.setDescription(startup.getDescription());
-                response.setCompanyName(startup.getCompanyName());
-                response.setProfilePictureId(startup.getProfilePictureId());
-            }
-            matchResponses.add(response);
-            ++matchesCount;
-            if(matchesCount == weeklyMatchesCount) {
-                break;
-            }
-        }
-        return matchResponses;
-    }
+	/**
+	 * Get matches of an account
+	 * 
+	 * @throws SQLException
+	 * @throws EmptyResultDataAccessException
+	 */
+	public List<MatchResponse> getMatches(long accountId, boolean isStartup)
+			throws EmptyResultDataAccessException, SQLException {
+		List<Relationship> matches = relationshipRepository.getByAccountId(accountId);
+		List<MatchResponse> matchResponses = new ArrayList<>();
+		int matchesPreference = MAX_WEEKLY_MATCHES_COUNT;
+		try {
+			matchesPreference = settingService.getSettings().getNumberOfMatches();
+		} catch (Exception e) {
+			System.out.println("getMatches: couldn't find settings for account " + accountId);
+		}
+		int matchesCount = 0;
+		int weeklyMatchesCount = matchesPreference <= MAX_WEEKLY_MATCHES_COUNT ? matchesPreference
+				: MAX_WEEKLY_MATCHES_COUNT;
 
-    /**
-     * Set time value to 0 for a Date instance
-     */
-    private static Date getZeroTimeDate(Date fecha) {
-        Date res = fecha;
-        Calendar calendar = Calendar.getInstance();
-    
-        calendar.setTime( fecha );
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-    
-        res = calendar.getTime();
-    
-        return res;
-    }
+		// last "release date" of matches
+		Date matchDay = Date.from(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+				.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-    /**
-     * Get percentage out of integer score
-     */
-    public static int getMatchingPercent(int score) {
-        float percent = score;
-        percent /= MAX_SCORE;
-        percent *= 10;
-        return (int)((Math.round(percent * 2) / 2.0) * 10);
-    }
+		matchDay = getZeroTimeDate(matchDay);
 
+		System.out.println("Last matchday: " + matchDay.toString());
 
-    /**
-     * Get all matches
-     * @return
-     * @throws Exception
-     */
-    public List<Relationship> getAllMatches() throws Exception {
-        List<Relationship> matches = relationshipRepository.getByState(RelationshipState.MATCH);
-        return matches;
-    }
+		for (Relationship match : matches) {
+			if (match.getStartupDecidedAt() != null) {
+				if (getZeroTimeDate(match.getStartupDecidedAt()).before(matchDay) && isStartup) {
+					continue;
+				}
+			}
+			if (match.getInvestorDecidedAt() != null) {
+				if (getZeroTimeDate(match.getInvestorDecidedAt()).before(matchDay) && !isStartup) {
+					continue;
+				}
+			}
 
-    /**
-     * Get all handshakes
-     * @return
-     * @throws Exception
-     */
-    public List<Relationship> getAllHandshakes() throws Exception {
-        List<Relationship> matches = relationshipRepository.getByState(RelationshipState.HANDSHAKE);
-        return matches;
-    }
+			if (match.getState() != RelationshipState.MATCH) {
+				++matchesCount;
+
+				if (matchesCount < weeklyMatchesCount)
+					continue;
+				else
+					break;
+			}
+
+			MatchResponse response = new MatchResponse();
+			response.setMatchingPercent(getMatchingPercent(match.getMatchingScore()));
+			response.setId(match.getId());
+
+			if (isStartup) {
+				response.setAccountId(match.getInvestorId());
+				Investor investor;
+				try {
+					investor = investorService.getAccount(match.getInvestorId());
+				} catch (Exception e) {
+					investor = new Investor();
+				}
+				response.setInvestorTypeId(investor.getInvestorTypeId());
+				response.setStartup(false);
+				response.setDescription(investor.getDescription());
+				response.setFirstName(investor.getFirstName());
+				response.setLastName(investor.getLastName());
+				response.setProfilePictureId(investor.getProfilePictureId());
+			} else {
+				response.setAccountId(match.getStartupId());
+				Startup startup;
+				try {
+					startup = (Startup) startupService.getAccount(match.getStartupId());
+				} catch (Exception e) {
+					startup = new Startup();
+				}
+				response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
+				response.setStartup(true);
+				response.setDescription(startup.getDescription());
+				response.setCompanyName(startup.getCompanyName());
+				response.setProfilePictureId(startup.getProfilePictureId());
+			}
+			matchResponses.add(response);
+			++matchesCount;
+			if (matchesCount == weeklyMatchesCount) {
+				break;
+			}
+		}
+		return matchResponses;
+	}
+
+	/**
+	 * Set time value to 0 for a Date instance
+	 */
+	private static Date getZeroTimeDate(Date fecha) {
+		Date res = fecha;
+		Calendar calendar = Calendar.getInstance();
+
+		calendar.setTime(fecha);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+
+		res = calendar.getTime();
+
+		return res;
+	}
+
+	/**
+	 * Get percentage out of integer score
+	 */
+	public static int getMatchingPercent(int score) {
+		float percent = score;
+		percent /= MAX_SCORE;
+		percent *= 10;
+		return (int) ((Math.round(percent * 2) / 2.0) * 10);
+	}
+
+	/**
+	 * Get all matches
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Relationship> getAllMatches() throws Exception {
+		List<Relationship> matches = relationshipRepository.getByState(RelationshipState.MATCH);
+		return matches;
+	}
+
+	/**
+	 * Get all handshakes
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Relationship> getAllHandshakes() throws Exception {
+		List<Relationship> matches = relationshipRepository.getByState(RelationshipState.HANDSHAKE);
+		return matches;
+	}
 }
