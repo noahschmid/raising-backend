@@ -48,7 +48,7 @@ public class StartupService extends AccountService {
 	private final PrivateShareholderRepository pshRepository;
 	private final CorporateShareholderRepository cshRepository;
 	private final AssignmentTableRepository investorTypeRepository;
-	private final MatchingService matchingService;
+	//private final MatchingService matchingService;
 
 	private final AssignmentTableRepository countryRepository;
 	private final AssignmentTableRepository continentRepository;
@@ -61,7 +61,7 @@ public class StartupService extends AccountService {
 			ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, PrivateShareholderRepository pshRepository,
 			CorporateShareholderRepository cshRepository, JwtUtil jwtUtil, PasswordEncoder encoder,
 			AssignmentTableRepositoryFactory atrFactory, MediaRepositoryFactory mrFactory,
-			MatchingService matchingService, SettingRepository settingRepo) throws SQLException {
+			SettingRepository settingRepo) throws SQLException {
 
 		super(accountRepository, mailUtil, resetCodeUtil, jwtUtil, encoder, atrFactory, mrFactory, jdbc, settingRepo);
 
@@ -78,7 +78,7 @@ public class StartupService extends AccountService {
 		this.continentRepository = atrFactory.getRepository("continent");
 		this.supportRepository = atrFactory.getRepository("support");
 		this.industryRepository = atrFactory.getRepository("industry");
-		this.matchingService = matchingService;
+	//	this.matchingService = matchingService;
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class StartupService extends AccountService {
 				}
 			}
 
-			matchingService.match(accountId, true);
+		//	matchingService.match(accountId, true);
 			return accountId;
 		}
 
@@ -170,7 +170,7 @@ public class StartupService extends AccountService {
 		investorTypeRepository.updateAssignment(id, su.getInvestorTypes());
 		labelRepository.updateAssignment(id, su.getLabels());
 		startupRepository.update(id, su);
-		matchingService.match(id, true);
+	//	matchingService.match(id, true);
 	}
 
 	/**

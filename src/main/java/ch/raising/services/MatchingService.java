@@ -318,10 +318,10 @@ public class MatchingService {
             if(match.getState() != RelationshipState.MATCH) {
                 ++matchesCount;
 
-                if(matchesCount < weeklyMatchesCount)
+               /* if(matchesCount < weeklyMatchesCount)
                     continue;
                 else
-                    break;
+                    break;*/
             }
 
             MatchResponse response = new MatchResponse();
@@ -358,9 +358,9 @@ public class MatchingService {
             }
             matchResponses.add(response);
             ++matchesCount;
-            if(matchesCount == weeklyMatchesCount) {
+           /* if(matchesCount == weeklyMatchesCount) {
                 break;
-            }
+            }*/
         }
         return matchResponses;
     }
