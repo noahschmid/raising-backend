@@ -45,7 +45,7 @@ public class MatchingService {
 
 	private SettingService settingService;
 
-	private NotificationService notificationService;
+	private final NotificationService notificationService;
 
 	private final static int MAX_SCORE = 6;
 
@@ -257,6 +257,7 @@ public class MatchingService {
 		}
 
 		relationshipRepository.update(relationship);
+
 	}
 
 	/**
@@ -324,10 +325,9 @@ public class MatchingService {
 			if (match.getState() != RelationshipState.MATCH) {
 				++matchesCount;
 
-				if (matchesCount < weeklyMatchesCount)
-					continue;
-				else
-					break;
+				/*
+				 * if(matchesCount < weeklyMatchesCount) continue; else break;
+				 */
 			}
 
 			MatchResponse response = new MatchResponse();
@@ -364,9 +364,9 @@ public class MatchingService {
 			}
 			matchResponses.add(response);
 			++matchesCount;
-			if (matchesCount == weeklyMatchesCount) {
-				break;
-			}
+			/*
+			 * if(matchesCount == weeklyMatchesCount) { break; }
+			 */
 		}
 		return matchResponses;
 	}
@@ -411,13 +411,12 @@ public class MatchingService {
 	}
 
 	/**
-	 * Get all handshakes
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public List<Relationship> getAllHandshakes() throws Exception {
-		List<Relationship> matches = relationshipRepository.getByState(RelationshipState.HANDSHAKE);
-		return matches;
-	}
+     * Get all handshakes
+     * @return
+     * @throws Exception
+     */
+    public List<Relationship> getAllHandshakes() throws Exception {
+        List<Relationship> matches = relationshipRepository.getByState(RelationshipState.HANDSHAKE);
+        return matches;
+    }
 }
