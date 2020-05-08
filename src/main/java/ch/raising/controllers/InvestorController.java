@@ -107,9 +107,9 @@ public class InvestorController {
 	@PostMapping("/{accountId}/investmentphase/delete")
 	@Secured("ROLE_ADMIN")
 	@ResponseBody
-	public ResponseEntity<?> deleteInvestmentphaseByAccountId(@RequestBody List<Long> invPhases, @RequestParam long accountId)
+	public ResponseEntity<?> deleteInvestmentphaseByAccountId(@RequestBody List<Long> invPhases, @PathVariable long accountId)
 			throws DataAccessException, SQLException {
-		assignmentService.deleteFromInvestorById(accountId, "investmentphase", invPhases);
+		assignmentService.deleteFromInvestorById(accountId, "support", invPhases);
 		return ResponseEntity.ok().build();
 	}
 
