@@ -79,7 +79,7 @@ public class SharedDataRepository {
 				ps.setLong(c++, data.getAccountId());
 				ps.setLong(c++, data.getInteractionId());
 				ps.setString(c++, data.getEmail());
-				ps.setInt(c++, data.getPhone());
+				ps.setString(c++, data.getPhone());
 				if(data.getBusinessPlanId() == -1) {
 					ps.setNull(c++, Types.BIGINT);
 				}else {
@@ -113,7 +113,7 @@ public class SharedDataRepository {
 			.accountId(rs.getLong("accountid"))
 			.interactionId(rs.getLong("interactionid"))
 			.email(rs.getString("email"))
-			.phone(rs.getInt("phone"))
+			.phone(rs.getString("phone"))
 			.businessPlanId(rs.getLong("businessplanid"))
 			.build();
 		}

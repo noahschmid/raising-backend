@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.AssignmentTableModelWithDescription;
@@ -120,7 +122,7 @@ public class StartupController {
 	 * @throws DataAccessException 
 	 */
 	@PostMapping("/boardmember")
-	public ResponseEntity<?> addBoardmemeber(@RequestBody Boardmember bmem) throws DataAccessException, SQLException{
+	public ResponseEntity<?> addBoardmember(@RequestBody Boardmember bmem) throws DataAccessException, SQLException{
 		additionalInformationService.addBoardmemberByStartupId(bmem);
 		return ResponseEntity.ok().build();
 	}
@@ -273,6 +275,7 @@ public class StartupController {
 		assignmentTableService.deleteFromStartupById("investortype", invTypes);
 		return ResponseEntity.ok().build();
 	}
+
 	/**
 	 * Add a founder to a startup
 	 * @param stakeholder to be added
@@ -281,10 +284,23 @@ public class StartupController {
 	 * @throws DataAccessException 
 	 */
 	@PostMapping("/investortype")
-	public ResponseEntity<?> addInvestmentphase(@RequestBody List<Long> invTypes) throws DataAccessException, SQLException{
+	public ResponseEntity<?> addInvestmentPhase(@RequestBody List<Long> invTypes) throws DataAccessException, SQLException{
 		assignmentTableService.addToStartupById("investortype", invTypes);
 		return ResponseEntity.ok().build();
 	}
-	
-	
+
+	/**
+	 * Add a founder to a startup
+	 * @param invTypes investor types to be added
+	 * @return a response with a code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
+	 */
+	@PostMapping("/{accountId}/investortype")
+	@Secured("ROLE_ADMIN")
+	public ResponseEntity<?> addInvestmentPhaseByAccountId(@RequestBody List<Long> invTypes, 
+		@RequestParam long accountId) throws DataAccessException, SQLException{
+		assignmentTableService.addToStartupById(accountId, "investortype", invTypes);
+		return ResponseEntity.ok().build();
+	}
 }

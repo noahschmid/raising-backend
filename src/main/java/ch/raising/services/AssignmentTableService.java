@@ -78,6 +78,23 @@ public class AssignmentTableService {
 	}
 
 	/**
+	 * Adds the ids into the table and handles all responses
+	 * 
+	 * @param id id of account
+	 * @param assignmentRepo the repository of the models you want to assign
+	 * @param models lit of models you want to assign
+	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	private void addById(long id, AssignmentTableRepository assignmentRepo, List<Long> models)
+			throws DataAccessException, SQLException {
+		for (Long m : models) {
+			assignmentRepo.addEntryToAccountById(m, id);
+		}
+	}
+
+	/**
 	 * Add entry in assignmenttable with both ids to account
 	 * 
 	 * @param countryId
@@ -101,6 +118,20 @@ public class AssignmentTableService {
 	}
 
 	/**
+	 * Add entry in assignmenttable with both ids to investor
+	 * 
+	 * @param accountId id of account to update
+	 * @param tableName name of the table to update
+	 * @param models list of models you want to assign 
+	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	public void addToInvestorById(long accountId, String tableName, List<Long> models) throws DataAccessException, SQLException {
+		addById(accountId, atrFactory.getRepository(tableName), models);
+	}
+
+	/**
 	 * Add entry in assignmenttable with both ids to startup
 	 * 
 	 * @param countryId
@@ -110,6 +141,20 @@ public class AssignmentTableService {
 	 */
 	public void addToStartupById(String tableName, List<Long> models) throws DataAccessException, SQLException {
 		addById(atrFactory.getRepositoryForStartup(tableName), models);
+	}
+
+	/**
+	 * Add entry in assignmenttable with both ids to startup
+	 * 
+	 * @param accountId id of account to update
+	 * @param tableName name of the table to update
+	 * @param models list of models you want to assign 
+	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	public void addToStartupById(long accountId, String tableName, List<Long> models) throws DataAccessException, SQLException {
+		addById(accountId, atrFactory.getRepositoryForStartup(tableName), models);
 	}
 
 	/**
@@ -126,6 +171,23 @@ public class AssignmentTableService {
 		long accDet = getAccountId();
 		for (Long model : models) {
 			assignmentRepo.deleteEntryFromAccountById(model, accDet);
+		}
+	}
+
+	/**
+	 * remove entry in assignmenttable specified by those ids
+	 * 
+	 * @param id account id
+	 * @param assignmentRepo repository of assignment table
+	 * @param models list of models you want to delete from assignment
+	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	private void deleteById(long id, AssignmentTableRepository assignmentRepo, List<Long> models)
+			throws DataAccessException, SQLException {
+		for (Long model : models) {
+			assignmentRepo.deleteEntryFromAccountById(model, id);
 		}
 	}
 
@@ -153,6 +215,21 @@ public class AssignmentTableService {
 	 */
 	public void deleteFromInvestorById(String name, List<Long> models) throws DataAccessException, SQLException {
 		deleteById(atrFactory.getRepositoryForInvestor(name), models);
+	}
+
+	/**
+	 * remove entry in assignmenttable specified by those ids and the name from
+	 * investor
+	 * 
+	 * @param id account id
+	 * @param name name of table
+	 * @param models list of models you want to delete from assignment
+	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	public void deleteFromInvestorById(long id, String name, List<Long> models) throws DataAccessException, SQLException {
+		deleteById(id, atrFactory.getRepositoryForInvestor(name), models);
 	}
 
 	/**

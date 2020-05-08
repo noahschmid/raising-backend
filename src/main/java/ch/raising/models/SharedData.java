@@ -19,7 +19,7 @@ public class SharedData {
 	@Builder.Default
 	private String email  ="";
 	@Builder.Default
-	private int phone = -1;
+	private String phone = "";
 	@Builder.Default
 	private long businessPlanId = -1;
 }

@@ -7,19 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import ch.raising.models.AssignmentTableModel;
+import org.springframework.web.bind.annotation.RequestParam;
 import ch.raising.models.Investor;
-import ch.raising.models.LoginRequest;
-import ch.raising.services.AccountService;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.InvestorService;
 import ch.raising.utils.DatabaseOperationException;
@@ -91,9 +88,25 @@ public class InvestorController {
 	 * @throws DataAccessException
 	 */
 	@PostMapping("/investmentphase/delete")
-	public ResponseEntity<?> deleteInvestmentphaseByInvestorId(@RequestBody List<Long> invPhases)
+	public ResponseEntity<?> deleteInvestmentphaseByToken(@RequestBody List<Long> invPhases)
 			throws DataAccessException, SQLException {
 		assignmentService.deleteFromInvestorById("investmentphase", invPhases);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * deletes the investmentphase of investor by id
+	 * 
+	 * @param tableEntryId
+	 * @return
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	@PostMapping("/{accountId}/investmentphase/delete")
+	@Secured("ROLE_ADMIN")
+	public ResponseEntity<?> deleteInvestmentphaseByAccountId(@RequestBody List<Long> invPhases, @RequestParam long accountId)
+			throws DataAccessException, SQLException {
+		assignmentService.deleteFromInvestorById(accountId, "investmentphase", invPhases);
 		return ResponseEntity.ok().build();
 	}
 
@@ -107,9 +120,26 @@ public class InvestorController {
 	 */
 
 	@PostMapping("/investmentphase")
-	public ResponseEntity<?> addInvestmentphaseByInvestorId(@RequestBody List<Long> invPhases)
+	public ResponseEntity<?> addInvestmentphaseByToken(@RequestBody List<Long> invPhases)
 			throws DataAccessException, SQLException {
 		assignmentService.addToInvestorById("investmentphase", invPhases);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * adds investmentphase to investor by id
+	 * 
+	 * @param tableEntryId
+	 * @return
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+
+	@PostMapping("/{accountId}/investmentphase")
+	@Secured("ROLE_ADMIN")
+	public ResponseEntity<?> addInvestmentphaseByAccountId(@RequestBody List<Long> invPhases, @RequestParam long accountId)
+			throws DataAccessException, SQLException {
+		assignmentService.addToInvestorById(accountId, "investmentphase", invPhases);
 		return ResponseEntity.ok().build();
 	}
 }

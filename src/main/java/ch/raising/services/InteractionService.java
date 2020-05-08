@@ -184,7 +184,7 @@ public class InteractionService {
 			throw new InvalidInteractionException("add data.email");
 
 		if (state == InteractionType.PHONE_CALL) {
-			if (data.getPhone() == -1 || data.getPhone() == 0)
+			if (data.getPhone() == null || data.getPhone() == "")
 				throw new InvalidInteractionException("add data.phone");
 		}
 	}
