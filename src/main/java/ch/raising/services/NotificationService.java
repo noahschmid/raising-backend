@@ -43,14 +43,13 @@ public class NotificationService {
 		notification.setMessage(msg);
 		notification.setTitle(title);
 		notification.setToken(token.getToken());
-		notification.setCollapseBy("hello");
 		fcmService.sendMessage(notification);
 	}
 
 	public void sendLeadNotificationTo(long partnerAccountId, InteractionType type) {
 		String message = "You have got a new lead for " + type.getPretty() + ".";
 		String title = "New Lead";
-		sendMessage(partnerAccountId, message, title, "Leads", NotificationType.LEAD);
+		sendMessage(partnerAccountId, message, title, NotificationType.LEAD);
 	}
 
 	public void sendConnectionNotification(long partnerAccountId, InteractionType interaction) {
@@ -63,7 +62,7 @@ public class NotificationService {
 			message = partner.getFirstName() + " " + partner.getLastName() + " accepted your Request for "
 					+ interaction.getPretty() + ".";
 		} 
-		sendMessage(partnerAccountId, message, title, "Connections", NotificationType.CONNECTION);
+		sendMessage(partnerAccountId, message, title, NotificationType.CONNECTION);
 	}
 
 	public void sendRequestMatchNotification(long partnerAccount) {
@@ -75,7 +74,7 @@ public class NotificationService {
 			message += "requested a match.";
 		} 
 
-		sendMessage(partnerAccount, message, title, "Request", NotificationType.REQUEST);
+		sendMessage(partnerAccount, message, title, NotificationType.REQUEST);
 	}
 	
 	public void sendAcceptMatchNotification(long partnerAccount) {
@@ -87,7 +86,7 @@ public class NotificationService {
 			message += "accepted your request.";
 		}
 
-		sendMessage(partnerAccount, message, title, "Match", NotificationType.REQUEST);
+		sendMessage(partnerAccount, message, title, NotificationType.REQUEST);
 	}
 
 	private Account getPartnerAccount(long partnerAccount) {
@@ -101,7 +100,7 @@ public class NotificationService {
 		}
 	}
 
-	private void sendMessage(long partnerAccountId, String message, String title, String collapseBy,
+	private void sendMessage(long partnerAccountId, String message, String title,
 			NotificationType type) {
 		try {
 			Settings notificationSettings = settingRepo.findInfoByAccountId(partnerAccountId);
@@ -111,7 +110,7 @@ public class NotificationService {
 				notification.setMessage(message);
 				notification.setTitle(title);
 				notification.setToken(notificationSettings.getToken());
-				notification.setCollapseBy(collapseBy);
+				notification.setClickAction(type.name());
 				fcmService.sendMessage(notification);
 			}
 		} catch (DataAccessException | SQLException e) {
