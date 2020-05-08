@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import ch.raising.models.Investor;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.InvestorService;
@@ -104,6 +106,7 @@ public class InvestorController {
 	 */
 	@PostMapping("/{accountId}/investmentphase/delete")
 	@Secured("ROLE_ADMIN")
+	@ResponseBody
 	public ResponseEntity<?> deleteInvestmentphaseByAccountId(@RequestBody List<Long> invPhases, @RequestParam long accountId)
 			throws DataAccessException, SQLException {
 		assignmentService.deleteFromInvestorById(accountId, "investmentphase", invPhases);
@@ -137,6 +140,7 @@ public class InvestorController {
 
 	@PostMapping("/{accountId}/investmentphase")
 	@Secured("ROLE_ADMIN")
+	@ResponseBody
 	public ResponseEntity<?> addInvestmentphaseByAccountId(@RequestBody List<Long> invPhases, @RequestParam long accountId)
 			throws DataAccessException, SQLException {
 		assignmentService.addToInvestorById(accountId, "investmentphase", invPhases);
