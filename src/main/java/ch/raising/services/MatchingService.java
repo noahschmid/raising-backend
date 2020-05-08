@@ -281,7 +281,7 @@ public class MatchingService {
      * @throws EmptyResultDataAccessException 
      */
     public List<MatchResponse> getMatches(long accountId, boolean isStartup) throws EmptyResultDataAccessException, SQLException {
-        List<Relationship> matches = relationshipRepository.getByAccountId(accountId);
+        List<Relationship> matches = relationshipRepository.getByAccountIdAndState(accountId, RelationshipState.MATCH);
         List<MatchResponse> matchResponses = new ArrayList<>();
         int matchesPreference = MAX_WEEKLY_MATCHES_COUNT;
         try {
