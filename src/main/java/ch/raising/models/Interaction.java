@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ch.raising.models.enums.InteractionTypes;
+import ch.raising.models.enums.InteractionType;
 import ch.raising.models.enums.State;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class Interaction {
 	@Builder.Default
 	@JsonIgnore
 	private long investorId = -1l;
-	private InteractionTypes interaction;
+	private InteractionType interaction;
 	private State startupState;
 	private State investorState;
 	private Timestamp createdAt;

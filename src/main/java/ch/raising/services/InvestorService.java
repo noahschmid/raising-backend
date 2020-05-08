@@ -60,7 +60,7 @@ public class InvestorService extends AccountService {
 	//private MatchingService matchingService;
 	
 	private final SettingRepository settingRepo;
-
+	
 	@Autowired
 	public InvestorService(AccountRepository accountRepository, InvestorRepository investorRepository,
 			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, JwtUtil jwtUtil, PasswordEncoder encoder,
@@ -126,6 +126,7 @@ public class InvestorService extends AccountService {
 		Investor inv = (Investor) acc;
 		investmentPhaseRepository.updateAssignment(id, inv.getInvestmentPhases());
 		investorRepository.update(id, inv);
+
 	//	matchingService.match(id, false);
 	}
 

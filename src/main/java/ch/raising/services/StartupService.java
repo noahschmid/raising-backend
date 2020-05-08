@@ -48,12 +48,14 @@ public class StartupService extends AccountService {
 	private final PrivateShareholderRepository pshRepository;
 	private final CorporateShareholderRepository cshRepository;
 	private final AssignmentTableRepository investorTypeRepository;
+
 	//private final MatchingService matchingService;
 
 	private final AssignmentTableRepository countryRepository;
 	private final AssignmentTableRepository continentRepository;
 	private final AssignmentTableRepository industryRepository;
 	private final AssignmentTableRepository supportRepository;
+	
 	
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
@@ -78,6 +80,7 @@ public class StartupService extends AccountService {
 		this.continentRepository = atrFactory.getRepository("continent");
 		this.supportRepository = atrFactory.getRepository("support");
 		this.industryRepository = atrFactory.getRepository("industry");
+
 	//	this.matchingService = matchingService;
 	}
 
@@ -126,7 +129,6 @@ public class StartupService extends AccountService {
 					cshRepository.addMemberByStartupId(c, accountId);
 				}
 			}
-
 		//	matchingService.match(accountId, true);
 			return accountId;
 		}
@@ -170,6 +172,7 @@ public class StartupService extends AccountService {
 		investorTypeRepository.updateAssignment(id, su.getInvestorTypes());
 		labelRepository.updateAssignment(id, su.getLabels());
 		startupRepository.update(id, su);
+
 	//	matchingService.match(id, true);
 	}
 

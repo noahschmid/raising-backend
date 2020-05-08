@@ -28,10 +28,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
     
-    private static Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
- 
-
-    
     /**
      * Check whether request supplies a valid token in the header 
      * @param request the user request
@@ -42,7 +38,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, 
                                     HttpServletResponse response, 
                                     FilterChain chain) throws ServletException, IOException{
-    	long begin = System.currentTimeMillis();
         final String authHeader = request.getHeader("Authorization");
         String username = null;
         String token = null;
@@ -71,7 +66,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 	                
 	                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-	                LOGGER.info("Filter Stopwatch: {}ms", System.currentTimeMillis() - begin);
 	            }
 			} catch (DataAccessException e) {
 				throw new ServletException(e.getMessage());

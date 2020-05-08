@@ -18,7 +18,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.models.Interaction;
-import ch.raising.models.enums.InteractionTypes;
+import ch.raising.models.enums.InteractionType;
 import ch.raising.models.enums.State;
 import ch.raising.utils.DatabaseOperationException;
 
@@ -116,7 +116,7 @@ public class InteractionRepository {
 					.id(rs.getLong("id"))
 					.startupId(rs.getLong("startupid"))
 					.investorId(rs.getLong("investorid"))
-					.interaction(InteractionTypes.valueOf(rs.getString("interaction")))
+					.interaction(InteractionType.valueOf(rs.getString("interaction")))
 					.startupState(State.valueOf(rs.getString("startupstate")))
 					.investorState(State.valueOf(rs.getString("investorstate")))
 					.createdAt(rs.getTimestamp("createdat"))

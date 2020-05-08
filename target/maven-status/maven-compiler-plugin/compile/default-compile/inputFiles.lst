@@ -41,11 +41,14 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PrivateShareholder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MailUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAssignmentTableModel.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\IOSSubscriptionRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAuthorizedException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UidUtil.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AndroidSubscriptionRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\InteractionRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\MatchResponse.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\SubscriptionController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MapUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\FCMConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Account.java
@@ -86,10 +89,12 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Start
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MediaService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\MatchingController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AdminController.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\InteractionType.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Founder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\IconRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\RelationshipState.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\SubscriptionService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Country.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MatchingService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidProfileException.java
@@ -109,4 +114,3 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\respo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSTwoParameters.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\NotificationType.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\InvestorService.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\InteractionTypes.java

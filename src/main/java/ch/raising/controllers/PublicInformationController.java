@@ -2,14 +2,15 @@ package ch.raising.controllers;
 
 
 import java.sql.SQLException;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.raising.models.AccountDetails;
 import ch.raising.models.LoginRequest;
 import ch.raising.services.AssignmentTableService;
 
@@ -27,12 +29,14 @@ import ch.raising.services.AssignmentTableService;
 public class PublicInformationController {
 	
 	private final AssignmentTableService publicInformationService;
-	private final BCryptPasswordEncoder encoder;
+	private final PasswordEncoder encoder;
+	private final ObjectMapper mapper;
 	
 	 
-	public PublicInformationController(AssignmentTableService pis) {
+	public PublicInformationController(AssignmentTableService pis, PasswordEncoder encoder, MappingJackson2HttpMessageConverter mapper) {
 		this.publicInformationService =pis;
-		this.encoder = new BCryptPasswordEncoder();
+		this.encoder = encoder;
+		this.mapper = mapper.getObjectMapper();
 	}
 	
 	@PostMapping("/getHash")
