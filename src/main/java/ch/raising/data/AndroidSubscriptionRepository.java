@@ -11,16 +11,15 @@ import org.springframework.stereotype.Repository;
 import ch.raising.utils.MapUtil;
 
 @Repository
-public class IOSSubscriptionRepository {
+public class AndroidSubscriptionRepository {
 
 	private final JdbcTemplate jdbc;
-	private static final String INSERT_RECEIPT = "INSERT into iossubscription(latestreceiptdata, accountId) VALUES (?,?)";
-	private static final String UPDATE_RECEIPT = "UPDATE iossubscription SET receipt = ? WHERE accountid = ?";
-
-	private static final String HAS_ROW = "select accountId from iossubscription where accountid =?";
+	private static final String INSERT_RECEIPT = "INSERT into androidsubscription(purchasetoken, accountId) VALUES (?,?)";
+	private static final String UPDATE_RECEIPT = "UPDATE androidsubscription SET purchasetoken = ? WHERE accountid = ?";
+	private static final String HAS_ROW = "select accountId from androidsubscription where accountid =?";
 
 	@Autowired
-	public IOSSubscriptionRepository(JdbcTemplate jdbc) {
+	public AndroidSubscriptionRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 	}
 
@@ -33,13 +32,11 @@ public class IOSSubscriptionRepository {
 	}
 
 	public boolean hasEntry(long accountId) {
-
 		try {
-			jdbc.queryForObject(HAS_ROW, new Object[] { accountId }, MapUtil::mapRowToAccountId);
+			jdbc.queryForObject(HAS_ROW, new Object[] {accountId}, MapUtil::mapRowToAccountId);
 			return true;
-		} catch (EmptyResultDataAccessException e) {
+		}catch(EmptyResultDataAccessException e) {
 			return false;
 		}
-
 	}
 }

@@ -44,9 +44,11 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\I
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\IOSSubscriptionRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\NotAuthorizedException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\UidUtil.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AndroidSubscriptionRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModel.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\InteractionRequest.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\MatchResponse.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\SubscriptionController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MapUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\config\FCMConfig.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Account.java
@@ -92,6 +94,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Found
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\IconRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Media.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\RelationshipState.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\SubscriptionService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Country.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MatchingService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidProfileException.java

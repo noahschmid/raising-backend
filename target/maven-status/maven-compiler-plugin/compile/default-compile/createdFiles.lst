@@ -9,6 +9,7 @@ ch\raising\data\IconRepository$IconMapper.class
 ch\raising\config\FCMConfig.class
 ch\raising\data\SettingRepository.class
 ch\raising\data\BoardmemberRepository$1.class
+ch\raising\data\AndroidSubscriptionRepository.class
 ch\raising\data\AssignmentTableRepository$3.class
 ch\raising\utils\PreparedStatementUtil$3.class
 ch\raising\data\ResetCodeRepository.class
@@ -21,6 +22,7 @@ ch\raising\data\CorporateShareholderRepository.class
 ch\raising\utils\MapUtil.class
 ch\raising\models\Founder$FounderBuilder.class
 ch\raising\models\CorporateShareholder$1.class
+ch\raising\controllers\SubscriptionController.class
 ch\raising\services\ProfileService.class
 ch\raising\utils\MediaException.class
 ch\raising\data\InteractionRepository.class
@@ -149,6 +151,7 @@ ch\raising\models\SharedData.class
 ch\raising\models\responses\ErrorResponse.class
 ch\raising\data\StartupRepository$1.class
 ch\raising\controllers\MatchingController.class
+ch\raising\services\SubscriptionService.class
 ch\raising\models\Founder.class
 ch\raising\models\Investor$InvestorBuilder.class
 ch\raising\models\enums\RelationshipState.class
