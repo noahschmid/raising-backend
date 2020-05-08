@@ -29,19 +29,19 @@ public class FCMNotificationService {
 	}
 
 	private Message getMessage(PushNotification notification) {
-		return Message.builder().setAndroidConfig(getAndroidConfig(notification.getCollapseBy())).setApnsConfig(getApnsConfig(notification.getCollapseBy()))
+		return Message.builder().setAndroidConfig(getAndroidConfig(notification.getClickAction())).setApnsConfig(getApnsConfig(notification.getClickAction()))
 				.setToken(notification.getToken())
 				.setNotification(new Notification(notification.getTitle(), notification.getMessage()))
 				.build();
 	}
 
-	private AndroidConfig getAndroidConfig(String collapseBy) {
-		return AndroidConfig.builder().setTtl(120000).setRestrictedPackageName("com.raising.app").setPriority(Priority.HIGH).setCollapseKey(collapseBy)
-				.setNotification(AndroidNotification.builder().setChannelId("1").setTag(collapseBy).build()).build();
+	private AndroidConfig getAndroidConfig(String clickAction) {
+		return AndroidConfig.builder().setTtl(120000).setRestrictedPackageName("com.raising.app").setPriority(Priority.HIGH)
+				.setNotification(AndroidNotification.builder().setClickAction(clickAction).setChannelId("1").build()).build();
 	}
 
-	private ApnsConfig getApnsConfig(String collapseBy) {
-		return ApnsConfig.builder().setAps(Aps.builder().setCategory(collapseBy).setThreadId(collapseBy).build()).build();
+	private ApnsConfig getApnsConfig(String clickAction) {
+		return ApnsConfig.builder().setAps(Aps.builder().setCategory(clickAction).setThreadId(clickAction).build()).build();
 	}
 
 }

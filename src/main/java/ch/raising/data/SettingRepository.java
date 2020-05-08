@@ -57,9 +57,9 @@ public class SettingRepository {
 	}
 
 	private String parseToString(List<NotificationType> types) {
-		if (types == null)
-			return NotificationType.NEVER.name();
 		String result = "";
+		if (types == null)
+			return result;
 		for (NotificationType t : types) {
 			result += t.name() + ", ";
 		}
@@ -68,6 +68,8 @@ public class SettingRepository {
 
 	private List<NotificationType> parseToEnum(String strings) {
 		List<NotificationType> types = new ArrayList<NotificationType>();
+		if(strings == "" || strings == null)
+			return types;
 		for (String s : strings.split(",")) {
 			types.add(NotificationType.valueOf(s.trim()));
 		}
