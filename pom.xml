@@ -121,6 +121,11 @@
 			<artifactId>firebase-admin</artifactId>
 			<version>6.8.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-androidpublisher</artifactId>
+			<version>v3-rev20200421-1.30.9</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -271,5 +271,18 @@ public class InteractionService {
 			throw new InvalidInteractionException("This type of account cannot decline an interaction");
 		}
 	}
+	
+	public void reopenInteraction(long interactionId) throws DataAccessException, SQLException, DatabaseOperationException, InvalidInteractionException {
+		long accountId = getAccountId();
+		if(isStartup()) {
+			interactionRepo.startupUpdate(State.OPEN, interactionId, accountId);
+			shareRepo.deleteByInteractionId(interactionId);
+		}else if(isInvestor()) {
+			interactionRepo.investorUpdate(State.OPEN, interactionId, accountId);
+			shareRepo.deleteByInteractionId(interactionId);
+		}else {
+			throw new InvalidInteractionException("This type of account cannot decline an interaction");
+		}
+	}
 
 }

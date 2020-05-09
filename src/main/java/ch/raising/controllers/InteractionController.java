@@ -63,4 +63,11 @@ public class InteractionController {
 		interactionService.declineInteraction(interactionId);
 		return ResponseEntity.ok().build();
 	}
+	
+	@PatchMapping("/{interactionId}/reopen")
+	public ResponseEntity<?> reopenRequest(@PathVariable long interactionId)
+			throws DataAccessException, DatabaseOperationException, InvalidInteractionException, SQLException {
+		interactionService.reopenInteraction(interactionId);
+		return ResponseEntity.ok().build();
+	}
 }
