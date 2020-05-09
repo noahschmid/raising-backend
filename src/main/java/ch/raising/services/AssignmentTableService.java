@@ -106,6 +106,17 @@ public class AssignmentTableService {
 	}
 
 	/**
+	 * Add entry in assignmenttable with both ids to account
+	 * 
+	 * @param countryId
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	public void addToAccountById(long accountId, String tableName, List<Long> model) throws DataAccessException, SQLException {
+		addById(accountId, atrFactory.getRepository(tableName), model);
+	}
+
+	/**
 	 * Add entry in assignmenttable with both ids to investor
 	 * 
 	 * @param countryId
@@ -206,6 +217,19 @@ public class AssignmentTableService {
 
 	/**
 	 * remove entry in assignmenttable specified by those ids and the name from
+	 * account given by accountId
+	 * 
+	 * @param countryId
+	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	public void deleteFromAccountById(long accountId, String name, List<Long> countries) throws DataAccessException, SQLException {
+		deleteById(accountId, atrFactory.getRepository(name), countries);
+	}
+
+	/**
+	 * remove entry in assignmenttable specified by those ids and the name from
 	 * investor
 	 * 
 	 * @param countryId
@@ -243,6 +267,19 @@ public class AssignmentTableService {
 	 */
 	public void deleteFromStartupById(String name, List<Long> models) throws DataAccessException, SQLException {
 		deleteById(atrFactory.getRepositoryForStartup(name), models);
+	}
+
+	/**
+	 * remove entry in assignmenttable specified by those ids and the name from
+	 * startup
+	 * 
+	 * @param id
+	 * @return Responsenetitiy with a statuscode and an optional body
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	public void deleteFromStartupById(long accountId, String name, List<Long> models) throws DataAccessException, SQLException {
+		deleteById(accountId, atrFactory.getRepositoryForStartup(name), models);
 	}
 
 	public void updateAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {

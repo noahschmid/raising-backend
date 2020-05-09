@@ -33,13 +33,27 @@ public class RelationshipRepository implements IRepository<Relationship> {
 
     /**
 	 * Find relationship by id
-	 * @param id id of the desired investor
-	 * @return instance of the found investor
+	 * @param id id of the desired relationship
+	 * @return list of matches
 	 */
 	public Relationship find(long id) {
         try {
             String sql = "SELECT * FROM relationship WHERE id = ?";
             return jdbc.queryForObject(sql, new Object[] { id }, this::mapRowToModel);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+	 * Get all relationships
+	 * @return list of relationships
+	 */
+	public List<Relationship> getAll() {
+        try {
+            String sql = "SELECT * FROM relationship";
+            return jdbc.query(sql, new Object[] {}, this::mapRowToModel);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

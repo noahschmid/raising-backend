@@ -238,6 +238,7 @@ public class StartupController {
 		additionalInformationService.addCShareholderByStartupId(csh);
 		return ResponseEntity.ok().build();
 	}
+
 	/**
 	 * Deletes a label specified by id.
 	 * @param id to be deleted
@@ -250,6 +251,20 @@ public class StartupController {
 		assignmentTableService.deleteFromStartupById("label",labels);
 		return ResponseEntity.ok().build();
 	}
+
+	/**
+	 * Deletes a label specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws DataAccessException 
+	 */
+	@PostMapping("/{accountId}/label/delete")
+	@Secured("ROLE_ADMIN")
+	public ResponseEntity<?> deleteLabelByAccountId(@RequestBody List<Long> labels, @PathVariable long accountId) throws DataAccessException, SQLException{
+		assignmentTableService.deleteFromStartupById(accountId, "label",labels);
+		return ResponseEntity.ok().build();
+	}
 	/**
 	 * Add a label to a startup
 	 * @param stakeholder to be added
@@ -260,6 +275,21 @@ public class StartupController {
 	@PostMapping("/label")
 	public ResponseEntity<?> addLabel(@RequestBody List<Long> labels) throws DataAccessException, SQLException{
 		assignmentTableService.addToStartupById("label", labels);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * Add a label to a startup
+	 * @param stakeholder to be added
+	 * @return a response with a code
+	 * @throws SQLException 
+	 * @throws DataAccessException 
+	 */
+	@PostMapping("{accountId}/label")
+	@Secured("ROLE_ADMIN")
+	public ResponseEntity<?> addLabel(@RequestBody List<Long> labels,
+		@PathVariable long accountId) throws DataAccessException, SQLException{
+		assignmentTableService.addToStartupById(accountId, "label", labels);
 		return ResponseEntity.ok().build();
 	}
 	
@@ -277,6 +307,21 @@ public class StartupController {
 	}
 
 	/**
+	 * Deletes a founder specified by id.
+	 * @param id to be deleted
+	 * @return response with statuscode
+	 * @throws SQLException 
+	 * @throws DataAccessException 
+	 */
+	@PostMapping("/{accountId}/investortype/delete")
+	@Secured("ROLE_ADMIN")
+	public ResponseEntity<?> deleteInvestmentPhaseById(@RequestBody List<Long> invTypes,
+		@PathVariable long accountId) throws DataAccessException, SQLException{
+		assignmentTableService.deleteFromStartupById(accountId, "investortype", invTypes);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
 	 * Add a founder to a startup
 	 * @param stakeholder to be added
 	 * @return a response with a code
@@ -284,7 +329,7 @@ public class StartupController {
 	 * @throws DataAccessException 
 	 */
 	@PostMapping("/investortype")
-	public ResponseEntity<?> addInvestmentPhase(@RequestBody List<Long> invTypes) throws DataAccessException, SQLException{
+	public ResponseEntity<?> addInvestorType(@RequestBody List<Long> invTypes) throws DataAccessException, SQLException{
 		assignmentTableService.addToStartupById("investortype", invTypes);
 		return ResponseEntity.ok().build();
 	}
@@ -298,8 +343,8 @@ public class StartupController {
 	 */
 	@PostMapping("/{accountId}/investortype")
 	@Secured("ROLE_ADMIN")
-	public ResponseEntity<?> addInvestmentPhaseByAccountId(@RequestBody List<Long> invTypes, 
-		@RequestParam long accountId) throws DataAccessException, SQLException{
+	public ResponseEntity<?> addInvestorTypeByAccountId(@RequestBody List<Long> invTypes, 
+		@PathVariable long accountId) throws DataAccessException, SQLException{
 		assignmentTableService.addToStartupById(accountId, "investortype", invTypes);
 		return ResponseEntity.ok().build();
 	}

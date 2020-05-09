@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
@@ -204,7 +209,20 @@ public class AccountRepository implements IRepository<Account> {
 			emailHash = encoder.encode(req.getEmail());
 		}
 
+		boolean isAdmin;
+		try {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			
+			isAdmin = authentication.getAuthorities().stream()
+				.anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+		} catch(NullPointerException e) {
+			isAdmin = false;
+		}
+
 		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "account", id);
+		if (isAdmin) {
+			update.addField(req.getRoles(), "roles");
+		}
 		update.addField(req.getFirstName(), "firstname");
 		update.addField(req.getLastName(), "lastname");
 		update.addField(req.getCompanyName(), "companyName");

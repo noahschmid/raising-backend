@@ -67,6 +67,12 @@ public class InteractionService {
 		return matchResponses;
 	}
 
+	public List<Interaction> getInteractionsByInvestorAndStartup(long investorId, long startupId) {
+		List<Interaction> response = new ArrayList<Interaction>();
+		response.addAll(interactionRepo.findByInvestorAndStartup(investorId, startupId));
+		return response;
+	} 
+
 	private void populateWithAccountInfo(List<MatchResponse> matchResponses) throws InvalidInteractionException {
 		for (MatchResponse m : matchResponses) {
 			MatchResponse userData = accountRepo.getDataForMatchResponse(m.getAccountId());
