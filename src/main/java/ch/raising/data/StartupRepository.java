@@ -17,6 +17,7 @@ import ch.raising.interfaces.IRepository;
 import ch.raising.models.Startup;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MapUtil;
+import ch.raising.utils.UidUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -63,7 +64,10 @@ public class StartupRepository implements IRepository<Startup> {
 	 */
 	@Override
 	public void update(long id, Startup req) throws SQLException, DataAccessException {
-
+		String uid = req.getUId();
+		if(!UidUtil.isValidUId(uid)) {
+			uid = null;
+		}
 		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "startup", id, "accountid");
 		update.addField(req.getInvestmentPhaseId(), "investmentphaseid");
 		update.addField(req.getBreakEvenYear(), "breakevenyear");
@@ -79,7 +83,6 @@ public class StartupRepository implements IRepository<Startup> {
 		update.addField(req.getRaised(), "raised");
 		update.execute();
 	}
-
 	/**
 	 * Map a row of a result set to an account instance
 	 * 
