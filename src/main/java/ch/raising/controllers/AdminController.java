@@ -54,4 +54,9 @@ public class AdminController {
     public ResponseEntity<?> getHandshakes() throws Exception {
         return ResponseEntity.ok(matchingService.getAllHandshakes());
     }
+
+    @GetMapping("/relationship")
+    public ResponseEntity<?> getRelationships() throws Exception {
+        return ResponseEntity.ok(matchingService.getAllRelationships());
+    }
 }

@@ -408,6 +408,17 @@ public class MatchingService {
 	public List<Relationship> getAllMatches() throws Exception {
 		List<Relationship> matches = relationshipRepository.getByState(RelationshipState.MATCH);
 		return matches;
+    }
+    
+    /**
+	 * Get all relationships
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Relationship> getAllRelationships() throws Exception {
+		List<Relationship> matches = relationshipRepository.getAll();
+		return matches;
 	}
 
 	/**
