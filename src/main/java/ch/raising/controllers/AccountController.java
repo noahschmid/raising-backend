@@ -245,6 +245,40 @@ public class AccountController {
 	}
 
 	/**
+	 * add country to account
+	 * 
+	 * @param accountId
+	 * @return
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	@PostMapping("/{accountId}/country")
+	@Secured("ROLE_ADMIN")
+	@ResponseBody
+	public ResponseEntity<?> addCountryToAccountByAccountId(@RequestBody List<Long> countries, @PathVariable long accountId)
+			throws DataAccessException, SQLException {
+		assignmentTableService.addToAccountById(accountId, "country", countries);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * delete country from account
+	 * 
+	 * @param accountId
+	 * @return
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	@PostMapping("/{accountId}/country/delete")
+	@Secured("ROLE_ADMIN")
+	@ResponseBody
+	public ResponseEntity<?> deleteCountryFromAccountByAccountId(@RequestBody List<Long> countries, @PathVariable long accountId)
+			throws DataAccessException, SQLException {
+		assignmentTableService.deleteFromAccountById(accountId, "country", countries);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
 	 * add continent to account
 	 * 
 	 * @param continentId
@@ -277,9 +311,43 @@ public class AccountController {
 	}
 
 	/**
+	 * add continent to account
+	 * 
+	 * @param accountId
+	 * @return
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	@PostMapping("/{accountId}/continent")
+	@Secured("ROLE_ADMIN")
+	@ResponseBody
+	public ResponseEntity<?> addContinentToAccountByAccountId(@RequestBody List<Long> continents, @PathVariable long accountId)
+			throws DataAccessException, SQLException {
+		assignmentTableService.addToAccountById(accountId, "continent", continents);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * delete continent from account
+	 * 
+	 * @param accountId
+	 * @return
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
+	@PostMapping("/{accountId}/continent/delete")
+	@Secured("ROLE_ADMIN")
+	@ResponseBody
+	public ResponseEntity<?> deleteContinentFromAccountByAccountId(@RequestBody List<Long> continents,
+		@PathVariable long accountId)
+			throws DataAccessException, SQLException {
+		assignmentTableService.deleteFromAccountById(accountId, "continent", continents);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
 	 * add supporttype to account
 	 * 
-	 * @param supportId
 	 * @return
 	 * @throws SQLException
 	 * @throws DataAccessException
@@ -295,7 +363,7 @@ public class AccountController {
 	/**
 	 * add supporttype to account
 	 * 
-	 * @param supportId
+	 * @param accountId
 	 * @return
 	 * @throws SQLException
 	 * @throws DataAccessException
@@ -312,7 +380,6 @@ public class AccountController {
 	/**
 	 * delete supporttype from account
 	 * 
-	 * @param supportId
 	 * @return
 	 * @throws SQLException
 	 * @throws DataAccessException
@@ -328,7 +395,7 @@ public class AccountController {
 	/**
 	 * delete supporttype from account
 	 * 
-	 * @param supportId
+	 * @param accountId
 	 * @return
 	 * @throws SQLException
 	 * @throws DataAccessException
@@ -361,7 +428,7 @@ public class AccountController {
 	/**
 	 * add industry to account
 	 * 
-	 * @param industryId
+	 * @param accountId
 	 * @return
 	 * @throws SQLException
 	 * @throws DataAccessException
@@ -394,7 +461,7 @@ public class AccountController {
 	/**
 	 * delete industry form account
 	 * 
-	 * @param industryId
+	 * @param accountId
 	 * @return
 	 * @throws SQLException
 	 * @throws DataAccessException

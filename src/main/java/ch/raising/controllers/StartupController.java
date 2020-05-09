@@ -344,7 +344,7 @@ public class StartupController {
 	@PostMapping("/{accountId}/investortype")
 	@Secured("ROLE_ADMIN")
 	public ResponseEntity<?> addInvestorTypeByAccountId(@RequestBody List<Long> invTypes, 
-		@RequestParam long accountId) throws DataAccessException, SQLException{
+		@PathVariable long accountId) throws DataAccessException, SQLException{
 		assignmentTableService.addToStartupById(accountId, "investortype", invTypes);
 		return ResponseEntity.ok().build();
 	}
