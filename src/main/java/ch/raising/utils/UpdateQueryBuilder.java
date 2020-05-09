@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +126,11 @@ public class UpdateQueryBuilder {
 			fields.add(field);
 			setFieldName(fieldName);
 		}
+
+		else if(field instanceof Date) {
+			fields.add(field);
+			setFieldName(fieldName);
+		}
 	}
 
 	
@@ -182,6 +188,8 @@ public class UpdateQueryBuilder {
 						ps.setLong(i, (long) o);
 					if (o instanceof Timestamp)
 						ps.setTimestamp(i, (Timestamp) o);
+					if(o instanceof Date)
+						ps.setDate(i, (Date)o);
 				}
 
 				if(where == null)
