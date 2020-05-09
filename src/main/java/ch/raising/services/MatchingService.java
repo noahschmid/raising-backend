@@ -26,6 +26,7 @@ import ch.raising.models.MatchingProfile;
 import ch.raising.models.Relationship;
 import ch.raising.models.Startup;
 import ch.raising.models.enums.RelationshipState;
+import ch.raising.models.responses.AdminMatchResponse;
 import ch.raising.models.responses.MatchResponse;
 import ch.raising.services.InvestorService;
 import ch.raising.services.StartupService;
@@ -416,9 +417,35 @@ public class MatchingService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Relationship> getAllRelationships() throws Exception {
-		List<Relationship> matches = relationshipRepository.getAll();
-		return matches;
+	public List<AdminMatchResponse> getAllRelationships() throws Exception {
+        List<Relationship> matches = relationshipRepository.getAll();
+        List<AdminMatchResponse> matchResponses = new ArrayList<>();
+
+        for (Relationship match : matches) {
+			AdminMatchResponse response = new AdminMatchResponse();
+			response.setMatchingPercent(getMatchingPercent(match.getMatchingScore()));
+            response.setId(match.getId());
+            response.setLastchanged(match.getLastchanged());
+
+            Investor investor;
+            try {
+                investor = investorService.getAccount(match.getInvestorId());
+            } catch (Exception e) {
+                investor = new Investor();
+            }
+            response.setInvestor(investor);
+        
+            Startup startup;
+            try {
+                startup = (Startup) startupService.getAccount(match.getStartupId());
+            } catch (Exception e) {
+                startup = new Startup();
+            }
+
+			response.setStartup(startup);
+			matchResponses.add(response);
+		}
+		return matchResponses;
 	}
 
 	/**
