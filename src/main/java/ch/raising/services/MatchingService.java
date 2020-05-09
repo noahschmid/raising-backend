@@ -46,7 +46,9 @@ public class MatchingService {
 
 	private SettingService settingService;
 
-	private final NotificationService notificationService;
+    private final NotificationService notificationService;
+    
+    private InteractionService interactionService;
 
 	private final static int MAX_SCORE = 6;
 
@@ -55,7 +57,7 @@ public class MatchingService {
 	@Autowired
 	public MatchingService(RelationshipRepository relationshipRepository, StartupService startupService,
 			StartupRepository startupRepository, InvestorService investorService, InvestorRepository investorRepository,
-			AccountRepository accountRepository, SettingService settingService,
+			AccountRepository accountRepository, SettingService settingService, InteractionService interactionService,
 			NotificationService notificationService) {
 		this.startupService = startupService;
 		this.relationshipRepository = relationshipRepository;
@@ -63,7 +65,8 @@ public class MatchingService {
 		this.investorRepository = investorRepository;
 		this.startupRepository = startupRepository;
 		this.settingService = settingService;
-		this.notificationService = notificationService;
+        this.notificationService = notificationService;
+        this.interactionService = interactionService;
 	}
 
 	/**
@@ -426,6 +429,9 @@ public class MatchingService {
 			response.setMatchingPercent(getMatchingPercent(match.getMatchingScore()));
             response.setId(match.getId());
             response.setLastchanged(match.getLastchanged());
+            response.setState(match.getState());
+            response.setInteractions(interactionService.getInteractionsByInvestorAndStartup(
+                match.getInvestorId(), match.getStartupId()));
 
             Investor investor;
             try {

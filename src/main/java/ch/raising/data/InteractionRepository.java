@@ -32,6 +32,8 @@ public class InteractionRepository {
 	private final String STARTUP_UPDATE;
 	private final String INVESTOR_UPDATE;
 	private final String DELETE_BY_INTERACTION_ID;
+	private final String FIND_BY_STARTUP_AND_INVESTOR_ID;
+
 	private final RowMapper<Interaction> interactionMapper = new InteractionMapper();
 
 	@Autowired
@@ -43,10 +45,15 @@ public class InteractionRepository {
 		this.INVESTOR_UPDATE = "UPDATE interaction SET investorstate = ?, acceptedat = now() WHERE id = ? AND investorid = ?";
 		this.STARTUP_UPDATE = "UPDATE interaction SET startupstate = ?, acceptedat = now() WHERE id = ? AND startupid = ?";
 		this.DELETE_BY_INTERACTION_ID = "DELETE FROM interaction WHERE id = ?";
+		this.FIND_BY_STARTUP_AND_INVESTOR_ID = "SELECT * FROM interaction WHERE investorid = ? AND startupid = ?";
 	}
 
 	public List<Interaction> findAllByAccountId(long accountId) {
 		return jdbc.query(FIND_ALL, new Object[] { accountId, accountId }, this.interactionMapper);
+	}
+
+	public List<Interaction> findByInvestorAndStartup(long investorId, long startupId) {
+		return jdbc.query(FIND_BY_STARTUP_AND_INVESTOR_ID, new Object[] { investorId, startupId }, this.interactionMapper);
 	}
 
 	public long addInteraction(Interaction interaction) {
