@@ -13,6 +13,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Corpo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IMediaRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AccountRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\StartupMember.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AppStoreService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AssignmentTableService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Type.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PushNotification.java
@@ -110,6 +111,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Passwo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AssignmentTableRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\Device.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Interaction.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\AdminMatchResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\LoginResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSTwoParameters.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\NotificationType.java

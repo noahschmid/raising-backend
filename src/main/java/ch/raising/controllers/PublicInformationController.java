@@ -1,6 +1,7 @@
 package ch.raising.controllers;
 
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.raising.models.LoginRequest;
+import ch.raising.services.AppStoreService;
 import ch.raising.services.AssignmentTableService;
 
 @Controller
@@ -31,12 +34,14 @@ public class PublicInformationController {
 	private final AssignmentTableService publicInformationService;
 	private final PasswordEncoder encoder;
 	private final ObjectMapper mapper;
+	private final AppStoreService iosService;
 	
 	 
-	public PublicInformationController(AssignmentTableService pis, PasswordEncoder encoder, MappingJackson2HttpMessageConverter mapper) {
+	public PublicInformationController(AssignmentTableService pis, PasswordEncoder encoder, MappingJackson2HttpMessageConverter mapper, AppStoreService iosService) {
 		this.publicInformationService =pis;
 		this.encoder = encoder;
 		this.mapper = mapper.getObjectMapper();
+		this.iosService = iosService;
 	}
 	
 	@PostMapping("/getHash")
@@ -44,6 +49,12 @@ public class PublicInformationController {
 		String emailHash = encoder.encode(hashes.getEmail());
 		String pwHash = encoder.encode(hashes.getPassword());
 		return ResponseEntity.ok(new LoginRequest(emailHash, pwHash));
+	}
+	
+	@PostMapping("/sandbox")
+	public ResponseEntity<?> test(@RequestBody Map<String, String> req) throws IOException{
+		iosService.verifyReceipt(req.get("receipt"));
+		return ResponseEntity.ok().build();
 	}
 	
 	@GetMapping

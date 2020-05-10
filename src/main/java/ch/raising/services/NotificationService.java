@@ -104,6 +104,9 @@ public class NotificationService {
 			NotificationType type) {
 		try {
 			Settings notificationSettings = settingRepo.findInfoByAccountId(partnerAccountId);
+			if(notificationSettings.getToken() == null || notificationSettings.getToken().equals("")) {
+				return; //we cannot send a notification if there is no token
+			}
 			if (!notificationSettings.getNotificationTypes().contains(NotificationType.NEVER)
 					&& notificationSettings.getNotificationTypes().contains(type)) {
 				PushNotification notification = new PushNotification();

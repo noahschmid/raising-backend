@@ -62,6 +62,7 @@ ch\raising\services\MediaService.class
 ch\raising\models\InteractionRequest.class
 ch\raising\data\InvestorRepository.class
 ch\raising\utils\UidUtil.class
+ch\raising\models\responses\AdminMatchResponse.class
 ch\raising\controllers\SettingsController.class
 ch\raising\models\ResetCode.class
 ch\raising\models\Media$MediaBuilder.class
@@ -77,6 +78,7 @@ ch\raising\utils\PreparedStatementUtil.class
 ch\raising\data\ResetCodeRepository$1.class
 ch\raising\models\Startup.class
 ch\raising\models\Media.class
+ch\raising\services\AppStoreService.class
 ch\raising\data\MediaRepositoryFactory.class
 ch\raising\models\StartupMember.class
 ch\raising\data\SharedDataRepository$ShareMapper.class
