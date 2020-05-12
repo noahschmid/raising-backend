@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.models.Investor;
+import ch.raising.models.responses.LoginResponse;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.InvestorService;
+import ch.raising.services.MatchingService;
 import ch.raising.utils.DatabaseOperationException;
 
 @Controller
@@ -29,11 +31,14 @@ public class InvestorController {
 
 	InvestorService investorService;
 	AssignmentTableService assignmentService;
+	MatchingService matchingService;
 
 	@Autowired
-	public InvestorController(InvestorService investorService, AssignmentTableService assignmentService) {
+	public InvestorController(InvestorService investorService, AssignmentTableService assignmentService,
+		MatchingService matchingService) {
 		this.investorService = investorService;
 		this.assignmentService = assignmentService;
+		this.matchingService = matchingService;
 	}
 
 	/**
@@ -63,6 +68,7 @@ public class InvestorController {
 	public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Investor request)
 			throws DataAccessException, SQLException {
 		investorService.updateAccount(id, request);
+		matchingService.match(id, false);
 		return ResponseEntity.ok().build();
 	}
 
@@ -78,7 +84,9 @@ public class InvestorController {
 	@PostMapping("/register")
 	public ResponseEntity<?> addInvestor(@RequestBody Investor investor)
 			throws DatabaseOperationException, SQLException, Exception {
-		return ResponseEntity.ok(investorService.registerProfile(investor));
+		LoginResponse registrationResponse = investorService.registerProfile(investor);
+		matchingService.match(registrationResponse.getId(), false);
+		return ResponseEntity.ok(registrationResponse);
 	}
 
 	/**
