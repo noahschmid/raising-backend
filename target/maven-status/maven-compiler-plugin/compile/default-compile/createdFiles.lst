@@ -1,5 +1,6 @@
 ch\raising\controllers\AdminController.class
 ch\raising\utils\UpdateQueryBuilder$1.class
+ch\raising\models\responses\IOSSubscription$Builder.class
 ch\raising\data\SettingRepository$SettingMapper.class
 ch\raising\interfaces\IAdditionalInformationRepository.class
 ch\raising\controllers\InteractionController.class
@@ -7,9 +8,11 @@ ch\raising\data\ResetCodeRepository$3.class
 ch\raising\controllers\InvestorController.class
 ch\raising\data\IconRepository$IconMapper.class
 ch\raising\config\FCMConfig.class
+ch\raising\data\AndroidSubscriptionRepository$ExpiresDateMapper.class
 ch\raising\data\SettingRepository.class
 ch\raising\data\BoardmemberRepository$1.class
 ch\raising\data\AndroidSubscriptionRepository.class
+ch\raising\services\IOSService$IOSReceiptValidationRequest.class
 ch\raising\data\AssignmentTableRepository$3.class
 ch\raising\utils\PreparedStatementUtil$3.class
 ch\raising\data\ResetCodeRepository.class
@@ -40,6 +43,7 @@ ch\raising\models\PasswordResetRequest.class
 ch\raising\models\FreeEmailRequest.class
 ch\raising\models\responses\ReturnIdResponse.class
 ch\raising\utils\PreparedStatementUtil$4.class
+ch\raising\services\GooglePlayService.class
 ch\raising\models\Relationship.class
 ch\raising\interfaces\IAdditionalInformationRepository$1.class
 ch\raising\models\LoginRequest.class
@@ -58,11 +62,13 @@ ch\raising\data\ResetCodeRepository$2.class
 ch\raising\models\Icon.class
 ch\raising\models\AssignmentTableWithDescritionAndIcon.class
 ch\raising\data\SettingRepository$1.class
+ch\raising\data\IOSSubscriptionRepository$ExpiresDateMapper.class
 ch\raising\services\MediaService.class
 ch\raising\models\InteractionRequest.class
 ch\raising\data\InvestorRepository.class
 ch\raising\utils\UidUtil.class
 ch\raising\models\responses\AdminMatchResponse.class
+ch\raising\models\responses\IOSSubscription$1.class
 ch\raising\controllers\SettingsController.class
 ch\raising\models\ResetCode.class
 ch\raising\models\Media$MediaBuilder.class
@@ -78,7 +84,6 @@ ch\raising\utils\PreparedStatementUtil.class
 ch\raising\data\ResetCodeRepository$1.class
 ch\raising\models\Startup.class
 ch\raising\models\Media.class
-ch\raising\services\AppStoreService.class
 ch\raising\data\MediaRepositoryFactory.class
 ch\raising\models\StartupMember.class
 ch\raising\data\SharedDataRepository$ShareMapper.class
@@ -97,6 +102,7 @@ ch\raising\data\IOSSubscriptionRepository.class
 ch\raising\data\RelationshipRepository.class
 ch\raising\data\RelationshipRepository$1.class
 ch\raising\data\FounderRepository$1.class
+ch\raising\utils\InvalidSubscriptionException.class
 ch\raising\utils\EmailNotFoundException.class
 ch\raising\services\MatchingService.class
 ch\raising\controllers\PublicInformationController.class
@@ -123,9 +129,11 @@ ch\raising\models\Account.class
 ch\raising\models\PrivateShareholder$PrivateShareholderBuilder.class
 ch\raising\data\InvestorRepository$1.class
 ch\raising\utils\ResetCodeUtil.class
+ch\raising\data\IOSSubscriptionRepository$1.class
 ch\raising\data\InteractionRepository$1.class
 ch\raising\utils\QueryBuilder.class
 ch\raising\data\StartupRepository.class
+ch\raising\data\AndroidSubscriptionRepository$1.class
 ch\raising\utils\PreparedStatementUtil$1.class
 ch\raising\controllers\SharedDataController.class
 ch\raising\data\PrivateShareholderRepository.class
@@ -138,6 +146,7 @@ ch\raising\models\responses\AccountForRelationship$AccountForRelationshipBuilder
 ch\raising\models\Investor.class
 ch\raising\interfaces\IRepository.class
 ch\raising\data\SharedDataRepository$AddSharePreparedStaement.class
+ch\raising\models\responses\IOSSubscription.class
 ch\raising\utils\functionalInterface\RowMapper.class
 ch\raising\controllers\MediaController.class
 ch\raising\models\responses\MatchResponse.class
@@ -151,6 +160,7 @@ ch\raising\models\enums\InteractionType.class
 ch\raising\models\ForgotPasswordRequest.class
 ch\raising\models\SharedData.class
 ch\raising\models\responses\ErrorResponse.class
+ch\raising\services\IOSService.class
 ch\raising\data\StartupRepository$1.class
 ch\raising\controllers\MatchingController.class
 ch\raising\services\SubscriptionService.class

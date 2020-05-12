@@ -235,14 +235,14 @@ public class MatchingService {
 		case INVESTOR_ACCEPTED:
 			if (isStartup) {
 				relationship.setState(RelationshipState.HANDSHAKE);
-				notificationService.sendAcceptMatchNotification(relationship.getInvestorId());
+				notificationService.sendAcceptMatchNotification(relationship.getStartupId());
 			}
 			break;
 
 		case STARTUP_ACCEPTED:
 			if (!isStartup) {
 				relationship.setState(RelationshipState.HANDSHAKE);
-				notificationService.sendAcceptMatchNotification(relationship.getStartupId());
+				notificationService.sendAcceptMatchNotification(relationship.getInvestorId());
 			}
 			break;
 

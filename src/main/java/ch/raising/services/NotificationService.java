@@ -68,10 +68,10 @@ public class NotificationService {
 	public void sendRequestMatchNotification(long partnerAccount) {
 		Account partner = getPartnerAccount(partnerAccount);
 		String message = "";
-		String title = "New Matching Request";
+		String title = "New Matching Request ";
 		if (partner != null) {
 			message += partner.getFirstName() + " " + partner.getLastName();
-			message += "requested a match.";
+			message += " requested a match.";
 		} 
 
 		sendMessage(partnerAccount, message, title, NotificationType.REQUEST);

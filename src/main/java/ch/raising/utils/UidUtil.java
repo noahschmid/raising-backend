@@ -6,23 +6,19 @@ public class UidUtil {
 		if(unternehmensId.length() < 13)
 			return false;
 		char[] uId = unternehmensId.toCharArray();
-		int[] checkNum = new int[] {5,4,3,2,7,6,5,4};
 		int[] uIdNumber = compileUIdNumber(uId);
-		if(!beginsWithThreeUpper(uId))
+		if(uIdNumber.length < 9)
 			return false;
-		if(uId[3] != '-')
-			return false;
-		if(uIdNumber.length != 9)
-			return false;
-		if(!checkNumber(checkNum, uIdNumber))
+		if(!checkNumber(uIdNumber))
 			return false;
 		
 		return true;
 	}
 
-	private static boolean checkNumber(int[] checkNum, int[] uIdNumber) {
+	private static boolean checkNumber(int[] uIdNumber) {
 		int modulo = 0;
 		int crossSum = 0;
+		int[] checkNum = new int[] {5,4,3,2,7,6,5,4};
 		for(int i = 0; i < checkNum.length; i++) {
 			uIdNumber[i] *= checkNum[i];
 		}

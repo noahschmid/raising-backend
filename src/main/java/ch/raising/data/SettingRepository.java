@@ -35,7 +35,7 @@ public class SettingRepository {
 
 	public void addSettings(Settings settings) throws DataAccessException, SQLException {
 		String notificationTypes = parseToString(settings.getNotificationTypes());
-		String device = settings.getDevice() == null ? "" : settings.getDevice().name();
+		String device = settings.getDevice() == null ? "NONE" : settings.getDevice().name();
 		jdbc.update(INSERT_DEVICE_TOKEN,
 				new Object[] { settings.getAccountId(), settings.getToken(), device, notificationTypes,
 						settings.getLanguage(), settings.getNumberOfMatches() },

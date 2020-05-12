@@ -3,10 +3,11 @@ package ch.raising.controllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,18 +15,18 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.raising.models.LoginRequest;
-import ch.raising.services.AppStoreService;
+import ch.raising.services.IOSService;
 import ch.raising.services.AssignmentTableService;
+import ch.raising.services.GooglePlayService;
+import ch.raising.utils.InvalidSubscriptionException;
 
 @Controller
 @RequestMapping("/public")
@@ -34,14 +35,14 @@ public class PublicInformationController {
 	private final AssignmentTableService publicInformationService;
 	private final PasswordEncoder encoder;
 	private final ObjectMapper mapper;
-	private final AppStoreService iosService;
+	private final GooglePlayService andService;
 	
 	 
-	public PublicInformationController(AssignmentTableService pis, PasswordEncoder encoder, MappingJackson2HttpMessageConverter mapper, AppStoreService iosService) {
+	public PublicInformationController(AssignmentTableService pis, PasswordEncoder encoder, MappingJackson2HttpMessageConverter mapper, GooglePlayService andService) {
 		this.publicInformationService =pis;
 		this.encoder = encoder;
 		this.mapper = mapper.getObjectMapper();
-		this.iosService = iosService;
+		this.andService = andService;
 	}
 	
 	@PostMapping("/getHash")
@@ -51,9 +52,9 @@ public class PublicInformationController {
 		return ResponseEntity.ok(new LoginRequest(emailHash, pwHash));
 	}
 	
-	@PostMapping("/sandbox")
-	public ResponseEntity<?> test(@RequestBody Map<String, String> req) throws IOException{
-		iosService.verifyReceipt(req.get("receipt"));
+	@PostMapping("/test")
+	public ResponseEntity<?> test(@RequestBody Map<String, String> req) throws IOException, InvalidSubscriptionException{
+		andService.verifyPurchaseToken(req.get("purchaseToken"), req.get("subscriptionId"));
 		return ResponseEntity.ok().build();
 	}
 	
@@ -115,6 +116,16 @@ public class PublicInformationController {
 	@GetMapping("/revenue")
 	public ResponseEntity<?> getRevenueSteps() throws DataAccessException, SQLException{
 		return ResponseEntity.ok(publicInformationService.getAll("revenue"));
+	}
+	@GetMapping("/subscriptions")
+	public ResponseEntity<?> getSubscriptions(){
+		List<String> list = new ArrayList<String>();
+		list.add("ch.swissef.raisingapp.subscription1y");
+		list.add("ch.swissef.raisingapp.subscription6m");
+		list.add("ch.swissef.raisingapp.subscription3m");
+		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+		map.put("subscriptions", list);
+		return ResponseEntity.ok(map);
 	}
 	
  }

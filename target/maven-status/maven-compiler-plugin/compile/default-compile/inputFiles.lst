@@ -13,7 +13,6 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Corpo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IMediaRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AccountRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\StartupMember.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AppStoreService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AssignmentTableService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\Type.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\PushNotification.java
@@ -25,6 +24,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Setting
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\EmailNotFoundException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\ResetCode.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\DatabaseOperationException.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\InvalidSubscriptionException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\QueryBuilder.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\ResetCodeUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\InvestorController.java
@@ -61,6 +61,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\Ico
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\AccountForRelationship.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\MediaRepositoryFactory.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\ControllerExceptionHandler.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\IOSService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\AssignmentTableRepositoryFactory.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\SharedDataService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Icon.java
@@ -74,6 +75,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\respo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MediaException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\PreparedStatementUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\ErrorResponse.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\IOSSubscription.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AccountController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableWithIcon.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\NotificationService.java
@@ -112,6 +114,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\Assignm
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\Device.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Interaction.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\AdminMatchResponse.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\GooglePlayService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\LoginResponse.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\functionalInterface\PSTwoParameters.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\enums\NotificationType.java

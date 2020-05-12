@@ -37,11 +37,13 @@ import ch.raising.utils.MediaException;
 @Controller
 public class MediaController {
 
-	MediaService videoService;
-	MediaService ppicService;
-	MediaService galleryService;
-	MediaService documentService;
-	IconService iconService;
+	private final MediaService videoService;
+	private final MediaService ppicService;
+	private final MediaService galleryService;
+	private final MediaService documentService;
+	private final IconService iconService;
+	
+	private final static int RAISING_ICON = 49;
 
 	private final static int MAX_GALLERY_SIZE = 9;
 	private final static int MAX_VIDEO_SIZE = 1;
@@ -221,8 +223,9 @@ public class MediaController {
 	@PatchMapping("/document/{id}")
 	public ResponseEntity<?> updateDocument(@RequestParam("document") MultipartFile file, @PathVariable long id)
 			throws DataAccessException, SQLException, MediaException, IOException {
-		if(!file.getContentType().equals("application/pdf"))
-			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be application/pdf"));
+		if (!file.getContentType().equals("application/pdf"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+					.body(new ErrorResponse("Content-type must be application/pdf"));
 		documentService.updateMediaOfAccount(file, id);
 		return ResponseEntity.ok().build();
 	}
@@ -236,56 +239,77 @@ public class MediaController {
 	private MediaType getMediaType(String type) throws InvalidMediaTypeException {
 		return type.equals("none") ? null : MediaType.parseMediaType(type);
 	}
-	
+
 	@PostMapping("/icon/investortype/{tableEntryId}")
-	public ResponseEntity<?> uploadInvTypeIcon(@PathVariable long tableEntryId,@RequestParam("icon") MultipartFile icon)
+	public ResponseEntity<?> uploadInvTypeIcon(@PathVariable long tableEntryId,
+			@RequestParam("icon") MultipartFile icon)
 			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
-		if(!icon.getContentType().equals("image/png"))
-			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/png"));
+		if (!icon.getContentType().equals("image/png"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+					.body(new ErrorResponse("Content-type must be image/png"));
 		iconService.addToInvestortype(icon, tableEntryId);
 		return ResponseEntity.ok().build();
 	}
+
 	@PostMapping("/icon/investmentphase/{tableEntryId}")
-	public ResponseEntity<?> uploadInvPhaseIcon(@PathVariable long tableEntryId,@RequestParam("icon") MultipartFile icon)
+	public ResponseEntity<?> uploadInvPhaseIcon(@PathVariable long tableEntryId,
+			@RequestParam("icon") MultipartFile icon)
 			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
-		if(!icon.getContentType().equals("image/png"))
-			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/png"));
+		if (!icon.getContentType().equals("image/png"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+					.body(new ErrorResponse("Content-type must be image/png"));
 		iconService.addToInvestmentPhase(icon, tableEntryId);
 		return ResponseEntity.ok().build();
 	}
+
 	@PostMapping("/icon/support/{tableEntryId}")
-	public ResponseEntity<?> uploadSupIcon(@PathVariable long tableEntryId,@RequestParam("icon") MultipartFile icon)
+	public ResponseEntity<?> uploadSupIcon(@PathVariable long tableEntryId, @RequestParam("icon") MultipartFile icon)
 			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
-		if(!icon.getContentType().equals("image/png"))
-			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/png"));
+		if (!icon.getContentType().equals("image/png"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+					.body(new ErrorResponse("Content-type must be image/png"));
 		iconService.addToSupport(icon, tableEntryId);
 		return ResponseEntity.ok().build();
-	}	
+	}
+
 	@PostMapping("/icon/industry/{tableEntryId}")
-	public ResponseEntity<?> uploadIndustryIcon(@PathVariable long tableEntryId, @RequestParam("icon") MultipartFile icon)
+	public ResponseEntity<?> uploadIndustryIcon(@PathVariable long tableEntryId,
+			@RequestParam("icon") MultipartFile icon)
 			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
-		if(!icon.getContentType().equals("image/png"))
-			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/png"));
+		if (!icon.getContentType().equals("image/png"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+					.body(new ErrorResponse("Content-type must be image/png"));
 		iconService.addToIndustry(icon, tableEntryId);
 		return ResponseEntity.ok().build();
 	}
-	@PostMapping("/icon/label/{tableEntryId}")
-	public ResponseEntity<?> uploadLabelIcon(@PathVariable long tableEntryId, @RequestParam("icon") MultipartFile icon)
+
+	@PostMapping("/icon")
+	public ResponseEntity<?> uploadLabelIcon(@RequestParam("icon") MultipartFile icon)
 			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
-		if(!icon.getContentType().equals("image/png"))
-			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse("Content-type must be image/png"));
-		iconService.addToLabel(icon, tableEntryId);
-		return ResponseEntity.ok().build();
+		if (!icon.getContentType().equals("image/png"))
+			return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+					.body(new ErrorResponse("Content-type must be image/png"));
+		return ResponseEntity.ok(iconService.addIconAndReturnId(icon));
 	}
+
 	@PostMapping("/icon/{id}")
-	public ResponseEntity<?> updateIcon(@PathVariable int id, @RequestParam("icon") MultipartFile icon) throws DataAccessException, IOException{
+	public ResponseEntity<?> updateIcon(@PathVariable int id, @RequestParam("icon") MultipartFile icon)
+			throws DataAccessException, IOException {
 		iconService.update(id, icon);
 		return ResponseEntity.ok().build();
 	}
-	@GetMapping("/icon/{id}")	
-	public ResponseEntity<?> getIcon(@PathVariable long id){
+
+	@GetMapping("/icon/{id}")
+	public ResponseEntity<?> getIcon(@PathVariable long id) {
 		Icon icon = iconService.getIcon(id);
 		MediaType returns = getMediaType(icon.getContentType());
 		return ResponseEntity.ok().contentType(returns).body(icon.getIcon());
-		}
+	}
+	
+	@GetMapping("/icon/raising")
+	public ResponseEntity<?> getRaisingIcon() {
+		Icon icon = iconService.getIcon(RAISING_ICON);
+		MediaType returns = getMediaType(icon.getContentType());
+		return ResponseEntity.ok().contentType(returns).body(icon.getIcon());
+	}
 }
