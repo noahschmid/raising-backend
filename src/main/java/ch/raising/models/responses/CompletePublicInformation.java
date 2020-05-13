@@ -22,4 +22,5 @@ public class CompletePublicInformation {
 	List<IAssignmentTableModel> corporateBodies;
 	List<IAssignmentTableModel> financeTypes;
 	List<IAssignmentTableModel> revenues;
+	List<IAssignmentTableModel> boardmemberTypes;
 }

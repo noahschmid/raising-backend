@@ -2,6 +2,7 @@ package ch.raising.services;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 
 import org.slf4j.Logger;
@@ -19,34 +20,40 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.androidpublisher.AndroidPublisher;
+import com.google.api.services.androidpublisher.AndroidPublisher.Purchases.Subscriptions;
+import com.google.api.services.androidpublisher.AndroidPublisher.Purchases.Subscriptions.Get;
 import com.google.api.services.androidpublisher.AndroidPublisherRequestInitializer;
 import com.google.api.services.androidpublisher.AndroidPublisherScopes;
 
 @Service
 public class GooglePlayService {
 	
-	private final static String PATH_TO_CREDENTIALS2 = "/googleapi_credentials/api-8284263320575791019-789165-c3ce80fd9122.json";
+	private final static String PATH_TO_CREDENTIALS = "/googleapi_credentials/api-8284263320575791019-789165-c3ce80fd9122.json";
+	private final static String PACKAGE_NAME = "com.raising.app";
 	private final ObjectMapper mapper;
 	private final JacksonFactory fac;
+	private final GoogleCredential cred;
 	
 	private static final Logger Logger = LoggerFactory.getLogger(GooglePlayService.class);
 
-	public GooglePlayService(MappingJackson2HttpMessageConverter mapper, JacksonFactory fac) {
+	public GooglePlayService(MappingJackson2HttpMessageConverter mapper, JacksonFactory fac) throws IOException {
 		this.mapper = mapper.getObjectMapper();
 		this.fac = fac;
+		this.cred = GoogleCredential
+				.fromStream(new ClassPathResource(PATH_TO_CREDENTIALS).getInputStream())
+				.createScoped(Collections.singleton(AndroidPublisherScopes.ANDROIDPUBLISHER));
 	}
 
-	public void verifyPurchaseToken(String token, String subscriptionId) throws FileNotFoundException, IOException {
-		GoogleCredential cred = GoogleCredential
-				.fromStream(new ClassPathResource(PATH_TO_CREDENTIALS2).getInputStream())
-				.createScoped(Collections.singleton(AndroidPublisherScopes.ANDROIDPUBLISHER));
-		
-		AndroidPublisherRequestInitializer req = new AndroidPublisherRequestInitializer(cred.getAccessToken());
+	public void verifyPurchaseToken(String token, String subscriptionId) {
 		HttpTransport http = new NetHttpTransport();
-		
 		AndroidPublisher pub = new AndroidPublisher(http, fac, cred);
+		try {
+			Get sub = pub.purchases().subscriptions().get(PACKAGE_NAME, subscriptionId, token);	
+			Logger.info("google api request response: {}", sub.entrySet());
+		}catch(IOException e) {
+			Logger.error("did not work");
+		}
 		
-		//use collection	
 		
 		
 	}

@@ -1,5 +1,6 @@
 package ch.raising.controllers;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,10 @@ public class SubscriptionController {
 		else
 			return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
 	}
-	
+	@GetMapping("/ios")
+	public ResponseEntity<?> getSubscriptionInfo() throws DataAccessException, SQLException{
+		return ResponseEntity.ok(subService.getIOSInfo());
+	}
 	
 	@PatchMapping("/android")
 	public ResponseEntity<?> updatePurchaseToken(@RequestBody Map<String, String> json) {
@@ -58,11 +62,10 @@ public class SubscriptionController {
 	
 	@GetMapping("/android")
 	public ResponseEntity<?> getSubscriptionInfoToken() {
-		HashMap<String, String> resp = new HashMap<String,String>();
-		resp.put("subscriptionId","ch.swissef.raisingapp.subscription1y");
-		resp.put("expiresDate", "2020-05-10T09:53:42.028+0000");
-		resp.put("purchaseToken", "dbkaldngninmfnkoninbhope.AO-J1Ow2JVFxbA4PZzmQBpJecHKgY4osvzBHMnFMgzAQYRzD1GqoQZFGmHu4gi-wmXXbCB_ZAQECeAl6_nvUpxSyRYfhaOsVD05aWzJ46GHD8_w1csewojvtFO-Gz2t10jO9hS8B30GdS52hPpbYpWu5pSGQy3oebQ");
-		return ResponseEntity.ok().body(resp);
+//		resp.put("subscriptionId","ch.swissef.raisingapp.subscription1y");
+//		resp.put("expiresDate", "2020-05-10T09:53:42.028+0000");
+//		resp.put("purchaseToken", "dbkaldngninmfnkoninbhope.AO-J1Ow2JVFxbA4PZzmQBpJecHKgY4osvzBHMnFMgzAQYRzD1GqoQZFGmHu4gi-wmXXbCB_ZAQECeAl6_nvUpxSyRYfhaOsVD05aWzJ46GHD8_w1csewojvtFO-Gz2t10jO9hS8B30GdS52hPpbYpWu5pSGQy3oebQ");
+		return ResponseEntity.ok(subService.getAndroidInfo());
 
 	}
 }

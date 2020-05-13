@@ -30,7 +30,7 @@ public class SettingService {
 		if(settingRepo.hasSettings(getAccountId()))
 			settingRepo.update(token, getAccountId());
 		else 
-			settingRepo.addSettings(token);
+			settingRepo.addSettings(getAccountId(), token);
 	}
 
 	private long getAccountId() {

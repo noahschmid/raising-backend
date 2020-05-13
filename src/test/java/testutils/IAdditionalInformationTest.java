@@ -1,4 +1,4 @@
-package ch.raising.test.data;
+package testutils;
 
 import java.sql.SQLException;
 

@@ -117,6 +117,12 @@ public class PublicInformationController {
 	public ResponseEntity<?> getRevenueSteps() throws DataAccessException, SQLException{
 		return ResponseEntity.ok(publicInformationService.getAll("revenue"));
 	}
+	
+	@GetMapping("/boardmembertype")
+	public ResponseEntity<?> getBoardmemberTypes() throws DataAccessException, SQLException{
+		return ResponseEntity.ok(publicInformationService.getAll("boardmemberType"));
+	}
+	
 	@GetMapping("/subscriptions")
 	public ResponseEntity<?> getSubscriptions(){
 		List<String> list = new ArrayList<String>();

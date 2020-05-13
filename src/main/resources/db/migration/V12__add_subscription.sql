@@ -3,3 +3,7 @@ CREATE TABLE IF NOT EXISTS androidsubscription(accountid bigint PRIMARY KEY REFE
 
 ALTER TABLE androidsubscription ADD COLUMN IF NOT EXISTS subscriptionid varchar;
 ALTER TABLE iossubscription ADD COLUMN IF NOT EXISTS subscriptionid varchar;
+
+CREATE TABLE boardmembertype(id bigint PRIMARY KEY, name varchar);
+
+INSERT INTO boardmembertype(id, name) VALUES (1, 'President'),(2, 'Vice President'),(3, 'Member');

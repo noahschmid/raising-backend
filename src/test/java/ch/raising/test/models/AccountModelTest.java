@@ -1,6 +1,7 @@
 package ch.raising.test.models;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -16,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.raising.models.AssignmentTableModel;
-import ch.raising.models.Country;
 import ch.raising.test.data.TestConfig;
 import ch.raising.models.Account;
 

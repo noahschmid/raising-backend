@@ -13,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -123,6 +124,11 @@ public class ControllerExceptionHandler {
 	public ResponseEntity<?> handle(ClientAbortException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(500).body(new ErrorResponse("Connection reseted by peer: " + e.getMessage(), e));
+	}
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<?> handle(HttpRequestMethodNotSupportedException e){
+		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
+		return ResponseEntity.status(405).body(new ErrorResponse("Method not supported: " + e.getMessage(), e));
 	}
 	
 }

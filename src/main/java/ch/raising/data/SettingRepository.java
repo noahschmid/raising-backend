@@ -33,11 +33,11 @@ public class SettingRepository {
 		this.jdbc = jdbc;
 	}
 
-	public void addSettings(Settings settings) throws DataAccessException, SQLException {
+	public void addSettings(long accountId, Settings settings) throws DataAccessException, SQLException {
 		String notificationTypes = parseToString(settings.getNotificationTypes());
 		String device = settings.getDevice() == null ? "NONE" : settings.getDevice().name();
 		jdbc.update(INSERT_DEVICE_TOKEN,
-				new Object[] { settings.getAccountId(), settings.getToken(), device, notificationTypes,
+				new Object[] { accountId, settings.getToken(), device, notificationTypes,
 						settings.getLanguage(), settings.getNumberOfMatches() },
 				new int[] { Types.BIGINT, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER });
 	}

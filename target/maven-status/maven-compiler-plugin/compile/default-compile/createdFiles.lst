@@ -25,6 +25,7 @@ ch\raising\data\CorporateShareholderRepository.class
 ch\raising\utils\MapUtil.class
 ch\raising\models\Founder$FounderBuilder.class
 ch\raising\models\CorporateShareholder$1.class
+ch\raising\data\IOSSubscriptionRepository$SubscriptionMapper.class
 ch\raising\controllers\SubscriptionController.class
 ch\raising\services\ProfileService.class
 ch\raising\utils\MediaException.class
