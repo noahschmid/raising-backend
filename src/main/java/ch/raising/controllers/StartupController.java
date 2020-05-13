@@ -94,8 +94,9 @@ public class StartupController {
 		LoggerFactory.getLogger(StartupController.class).info("uId of startup: " + startup.getUId());
 		LoginResponse registrationResponse = startupService.registerProfile(startup);
 		matchingService.match(registrationResponse.getId(), true);
-		return ResponseEntity.ok(startupService.registerProfile(startup));
+		return ResponseEntity.ok(registrationResponse);
 	}
+
 	/**
 	 * Deletes a boardmember specified by id.
 	 * @param id to be deleted

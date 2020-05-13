@@ -191,4 +191,48 @@ class MatchingServiceTest {
         score = MatchingService.getMatchingScore(subject, object);
         assertEquals(1, score, "Multiple industries match");
     }
+
+    @Test
+    void testInvestorTypeMatch() throws Exception {
+        MatchingProfile subject = new MatchingProfile();
+        MatchingProfile object = new MatchingProfile();
+
+        // subject investment range inside object range
+        int score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(0, score, "No investor types match");
+        subject.addInvestorType(1l);
+        object.addInvestorType(2l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(0, score, "No investor types match");
+
+        object.addInvestorType(1l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(1, score, "investor types match");
+
+        subject.addInvestorType(2l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(1, score, "Multiple investor types match");
+    }
+
+    @Test
+    void testSupportMatch() throws Exception {
+        MatchingProfile subject = new MatchingProfile();
+        MatchingProfile object = new MatchingProfile();
+
+        // subject investment range inside object range
+        int score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(0, score, "No supports match");
+        subject.addSupport(1l);
+        object.addSupport(2l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(0, score, "No supports match");
+
+        object.addSupport(1l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(1, score, "supportsmatch");
+
+        subject.addSupport(2l);
+        score = MatchingService.getMatchingScore(subject, object);
+        assertEquals(1, score, "Multiple supports match");
+    }
 }

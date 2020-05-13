@@ -28,8 +28,6 @@ import ch.raising.models.Startup;
 import ch.raising.models.enums.RelationshipState;
 import ch.raising.models.responses.AdminMatchResponse;
 import ch.raising.models.responses.MatchResponse;
-import ch.raising.services.InvestorService;
-import ch.raising.services.StartupService;
 
 @Service
 public class MatchingService {
