@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.google.api.client.json.jackson2.JacksonFactory;
+
 @SpringBootApplication(scanBasePackages = {
 	"ch.raising.filters", 
 	"ch.raising.utils", 
@@ -27,4 +29,8 @@ public class RaisingBackendApplication {
     public PasswordEncoder getEncoder() {
     	return new BCryptPasswordEncoder();
     }
+	@Bean
+	public JacksonFactory getJacksonFactory() {
+		return new JacksonFactory();
+	}
 }
