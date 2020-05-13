@@ -28,8 +28,10 @@ import ch.raising.models.Founder;
 import ch.raising.models.PrivateShareholder;
 import ch.raising.models.Startup;
 import ch.raising.models.responses.ErrorResponse;
+import ch.raising.models.responses.LoginResponse;
 import ch.raising.services.AdditionalInformationService;
 import ch.raising.services.AssignmentTableService;
+import ch.raising.services.MatchingService;
 import ch.raising.services.StartupService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.NotAuthorizedException;
@@ -41,12 +43,15 @@ public class StartupController {
 	private StartupService startupService;
 	private AssignmentTableService assignmentTableService;
 	private AdditionalInformationService additionalInformationService;
+	private MatchingService matchingService;
 	
 	@Autowired
-	public StartupController(StartupService startupService, AssignmentTableService assignmentTableService, AdditionalInformationService additionalInformationService) {
+	public StartupController(StartupService startupService, AssignmentTableService assignmentTableService, 
+		AdditionalInformationService additionalInformationService, MatchingService matchingService) {
 		this.startupService = startupService;
 		this.assignmentTableService = assignmentTableService;
 		this.additionalInformationService = additionalInformationService;
+		this.matchingService = matchingService;
 	}
 	
 	/**
@@ -71,7 +76,8 @@ public class StartupController {
      */
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request) throws DataAccessException, SQLException {
-    	startupService.updateAccount(id, request);
+		startupService.updateAccount(id, request);
+		matchingService.match(id, true);
         return ResponseEntity.ok().build();
     }
 	
@@ -86,6 +92,8 @@ public class StartupController {
 	@PostMapping("/register")
 	public ResponseEntity<?> addStartup(@RequestBody Startup startup) throws DatabaseOperationException, SQLException, Exception {
 		LoggerFactory.getLogger(StartupController.class).info("uId of startup: " + startup.getUId());
+		LoginResponse registrationResponse = startupService.registerProfile(startup);
+		matchingService.match(registrationResponse.getId(), true);
 		return ResponseEntity.ok(startupService.registerProfile(startup));
 	}
 	/**
