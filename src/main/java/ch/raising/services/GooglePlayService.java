@@ -19,6 +19,7 @@ public class GooglePlayService {
 
 	private final static String PATH_TO_CREDENTIALS = "/googleapi_credentials/raising-32593-c3dc64321c53.json";
 	private final static String PATH_TO_CREDENTIALS2 = "/googleapi_credentials/api-8284263320575791019-789165-c3ce80fd9122.json";
+	private final static String API_KEY = "AIzaSyChpK3H-vexg_JcDZhnCLKMTGj-j-H-Dds";
 	private final ObjectMapper mapper;
 
 	private static final Logger Logger = LoggerFactory.getLogger(GooglePlayService.class);
@@ -29,11 +30,9 @@ public class GooglePlayService {
 
 	public void verifyPurchaseToken(String token, String subscriptionId) throws FileNotFoundException, IOException {
 		GoogleCredential cred = GoogleCredential
-				.fromStream(new ClassPathResource(PATH_TO_CREDENTIALS).getInputStream())
+				.fromStream(new ClassPathResource(PATH_TO_CREDENTIALS2).getInputStream())
 				.createScoped(Collections.singleton(AndroidPublisherScopes.ANDROIDPUBLISHER));
-		Logger.info("got new refreshtoken: " + cred.refreshToken());
-		Logger.info("Access token: {}", cred.getAccessToken());
-		Logger.info("Refresh token: {}", cred.getExpiresInSeconds());
+		
 	}
 
 }

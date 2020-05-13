@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import java.sql.SQLException;
 
+import org.apache.catalina.connector.ClientAbortException;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -82,7 +83,7 @@ public class ControllerExceptionHandler {
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<?> handle(IOException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
-		return ResponseEntity.status(500).body(new ErrorResponse("File malformed", e.getMessage()));
+		return ResponseEntity.status(500).contentType(null).body(new ErrorResponse("File malformed: ", e.getMessage()));
 	}
 	@ExceptionHandler(MediaException.class)
 	public ResponseEntity<?> handle(MediaException e){
@@ -116,6 +117,11 @@ public class ControllerExceptionHandler {
 		e.printStackTrace();
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(500).body(new ErrorResponse("There were more results than anticipated: " + e.getMessage(), e));
+	}
+	@ExceptionHandler(ClientAbortException.class)
+	public ResponseEntity<?> handle(ClientAbortException e){
+		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
+		return ResponseEntity.status(500).body(new ErrorResponse("Connection reseted by peer: " + e.getMessage(), e));
 	}
 	
 }
