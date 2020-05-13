@@ -179,7 +179,7 @@ public class InteractionService {
 			interactionRepo.deleteByInteractionId(interactionId);
 			throw e;
 		}
-		notificationService.sendLeadNotificationTo(interaction.getAccountId(), interaction.getInteraction());
+		notificationService.sendLeadNotification(interaction.getAccountId(), interaction.getInteraction());
 	}
 
 	private void validateSharedData(InteractionType state, SharedData data) throws InvalidInteractionException {
@@ -241,7 +241,7 @@ public class InteractionService {
 			shareRepo.deleteById(dataId);
 			throw e;
 		}
-		notificationService.sendConnectionNotification(accept.getAccountId(), accept.getInteraction());
+		notificationService.sendConnectionNotification(getAccountId(), accept.getAccountId(), accept.getInteraction());
 		return getSharedDataAndDelete(interactionId);
 	}
 

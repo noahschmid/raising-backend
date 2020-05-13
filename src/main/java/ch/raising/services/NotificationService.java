@@ -36,76 +36,53 @@ public class NotificationService {
 		this.accountService = accountService;
 	}
 
-	public void sendTestNotificationToSelf(long id, String msg, String title)
-			throws InterruptedException, ExecutionException, DataAccessException, SQLException {
-		PushNotification notification = new PushNotification();
-		Settings token = settingRepo.findByAccountId(id);
-		notification.setMessage(msg);
-		notification.setTitle(title);
-		notification.setToken(token.getToken());
-		fcmService.sendMessage(notification);
-	}
-
-	public void sendLeadNotificationTo(long partnerAccountId, InteractionType type) {
+	public void sendLeadNotification(long partnerAccountId, InteractionType type) {
 		String message = "You have got a new lead for " + type.getPretty() + ".";
 		String title = "New Lead";
 		sendMessage(partnerAccountId, message, title, NotificationType.LEAD);
 	}
 
-	public void sendConnectionNotification(long partnerAccountId, InteractionType interaction) {
-		Account partner;
-		String message = "";
+	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction) {
+		String name = getAccountName(requesteeId);
 		String title = "New Connection";
-
-		partner = getPartnerAccount(partnerAccountId);
-		if (partner != null) {
-			message = partner.getFirstName() + " " + partner.getLastName() + " accepted your Request for "
-					+ interaction.getPretty() + ".";
-		} 
+		String message = name + " accepted your Request for " + interaction.getPretty() + ".";
 		sendMessage(partnerAccountId, message, title, NotificationType.CONNECTION);
 	}
 
-	public void sendRequestMatchNotification(long partnerAccount) {
-		Account partner = getPartnerAccount(partnerAccount);
-		String message = "";
-		String title = "New Matching Request ";
-		if (partner != null) {
-			message += partner.getFirstName() + " " + partner.getLastName();
-			message += " requested a match.";
-		} 
-
-		sendMessage(partnerAccount, message, title, NotificationType.REQUEST);
-	}
-	
-	public void sendAcceptMatchNotification(long partnerAccount) {
-		Account partner = getPartnerAccount(partnerAccount);
-		String message = "";
-		String title = "Accepted Matching Request";
-		if (partner != null) {
-			message += partner.getFirstName() + " " + partner.getLastName();
-			message += "accepted your request.";
-		}
-
-		sendMessage(partnerAccount, message, title, NotificationType.REQUEST);
+	public void sendRequestMatch(long requesteeId, long partnerId) {
+		String name = getAccountName(requesteeId);
+		String title = "New Matching Request";
+		String message = "You got a new handshake request from " + name + ".";
+		sendMessage(partnerId, message, title, NotificationType.REQUEST);
 	}
 
-	private Account getPartnerAccount(long partnerAccount) {
+	public void sendMatchRequestAccept(long requesteeId, long partnerId) {
+		String name = getAccountName(requesteeId);
+		String title = "Accepted Match";
+		String message = name + " accepted your request.";
+		sendMessage(partnerId, message, title, NotificationType.REQUEST);
+	}
+
+	private String getAccountName(long partnerAccount) {
 		try {
-			Account partner = accountService.getAccount(partnerAccount);
-			return partner;
+			Account requestee = accountService.getAccount(partnerAccount);
+			String name = requestee != null ? requestee.getFirstName() + " " + requestee.getLastName() : "someone";
+			if (requestee != null && accountService.isStartup(requestee.getAccountId())) {
+				name = requestee.getCompanyName();
+			}
+			return name;
 		} catch (DataAccessException | SQLException | DatabaseOperationException e) {
 			LoggerFactory.getLogger(NotificationService.class)
 					.error("Partneraccount for notification could not be fetched: " + e.getMessage());
-			return null;
+			return "someone";
 		}
 	}
 
-	private void sendMessage(long partnerAccountId, String message, String title,
-			NotificationType type) {
+	private void sendMessage(long partnerAccountId, String message, String title, NotificationType type) {
 		try {
 			Settings notificationSettings = settingRepo.findInfoByAccountId(partnerAccountId);
-			if(notificationSettings.getToken() == null || notificationSettings.getToken().equals("")) {
-				return; //we cannot send a notification if there is no token
+			if (notificationSettings.getToken() == null || notificationSettings.getToken().equals("")) {
+				return; // we cannot send a notification if there is no token
 			}
 			if (!notificationSettings.getNotificationTypes().contains(NotificationType.NEVER)
 					&& notificationSettings.getNotificationTypes().contains(type)) {
@@ -124,4 +101,5 @@ public class NotificationService {
 					.error("Notification could not be sent: " + e.getMessage());
 		}
 	}
+
 }

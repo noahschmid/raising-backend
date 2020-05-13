@@ -57,17 +57,16 @@ public class InvestorService extends AccountService {
 
 	private AssignmentTableRepository investorTypeRepository;
 
-	//private MatchingService matchingService;
-	
+	// private MatchingService matchingService;
+
 	private final SettingRepository settingRepo;
-	
+
 	@Autowired
 	public InvestorService(AccountRepository accountRepository, InvestorRepository investorRepository,
 			MailUtil mailUtil, ResetCodeUtil resetCodeUtil, JdbcTemplate jdbc, JwtUtil jwtUtil, PasswordEncoder encoder,
 			AssignmentTableRepositoryFactory atrFactory, MediaRepositoryFactory mrFactory,
 			SettingRepository settingRepo) throws SQLException {
 		super(accountRepository, mailUtil, resetCodeUtil, jwtUtil, encoder, atrFactory, mrFactory, jdbc, settingRepo);
-
 
 		this.investmentPhaseRepository = atrFactory.getRepositoryForInvestor("investmentphase");
 		this.investorRepository = investorRepository;
@@ -77,7 +76,7 @@ public class InvestorService extends AccountService {
 		this.industryRepository = atrFactory.getRepository("industry");
 		this.investorTypeRepository = atrFactory.getRepositoryForStartup("investortype");
 		this.settingRepo = settingRepo;
-		//this.matchingService = matchingService;
+		// this.matchingService = matchingService;
 	}
 
 	@Override
@@ -89,18 +88,13 @@ public class InvestorService extends AccountService {
 		if (!invReq.isComplete()) {
 			throw new InvalidProfileException("Profile is incomplete", invReq);
 		}
+		long accountId = super.registerAccount(invReq);
+		invReq.setAccountId(accountId);
+		investorRepository.add(invReq);
+		investmentPhaseRepository.addEntriesToAccount(accountId, invReq.getInvestmentPhases());
+		// matchingService.match(accountId, false);
+		return accountId;
 
-		try {
-			accountRepository.findByEmail(invReq.getEmail());
-			throw new InvalidProfileException("Email already exists");
-		} catch (EmailNotFoundException e) {
-			long accountId = super.registerAccount(invReq);
-			invReq.setAccountId(accountId);
-			investorRepository.add(invReq);
-			investmentPhaseRepository.addEntriesToAccount(accountId, invReq.getInvestmentPhases());
-		//	matchingService.match(accountId, false);
-			return accountId;
-		}
 	}
 
 	@Override
@@ -127,7 +121,7 @@ public class InvestorService extends AccountService {
 		investmentPhaseRepository.updateAssignment(id, inv.getInvestmentPhases());
 		investorRepository.update(id, inv);
 
-	//	matchingService.match(id, false);
+		// matchingService.match(id, false);
 	}
 
 	/**

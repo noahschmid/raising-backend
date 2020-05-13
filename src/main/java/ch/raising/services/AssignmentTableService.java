@@ -28,12 +28,10 @@ import ch.raising.utils.MapUtil;
 public class AssignmentTableService {
 
 	private final AssignmentTableRepositoryFactory atrFactory;
-	private final IconService iconService;
 
 	@Autowired
-	public AssignmentTableService(AssignmentTableRepositoryFactory atrFactory, IconService iconService) {
+	public AssignmentTableService(AssignmentTableRepositoryFactory atrFactory) {
 		this.atrFactory = atrFactory;
-		this.iconService = iconService;
 	}
 
 	public List<IAssignmentTableModel> getAll(String name) throws DataAccessException, SQLException {
@@ -57,7 +55,8 @@ public class AssignmentTableService {
 				.support(getAllWithIcon("support"))
 				.corporateBodies(getAll("corporateBody"))
 				.financeTypes(getAll("financeType"))
-				.revenues(getAll("revenue")).build();
+				.revenues(getAll("revenue"))
+				.boardmemberTypes(getAll("boardmemberType")).build();
 		return pr;
 	}
 

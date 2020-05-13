@@ -33,12 +33,6 @@ public class SettingsController {
 		this.notificationService = notificationService;
 	}
 	
-	@PostMapping("/send")
-	public ResponseEntity<?> registerDevice(@RequestBody PushNotification dtr) throws InterruptedException, ExecutionException, DataAccessException, SQLException{
-		notificationService.sendTestNotificationToSelf(dtr.getAccountId(), dtr.getMessage(), dtr.getTitle());
-		return ResponseEntity.ok().build();
-	}
-	
 	@PatchMapping
 	public ResponseEntity<?> addOrUpdateDevice(@RequestBody Settings dtr) throws DataAccessException, SQLException{
 		settingService.update(dtr);

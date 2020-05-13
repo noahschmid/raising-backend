@@ -1,7 +1,7 @@
 package ch.raising.services;
 
-import java.sql.SQLException;
-
+import java.sql.SQLException
+;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +10,6 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,13 +19,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import ch.raising.data.AccountRepository;
+import ch.raising.data.AssignmentTableRepository;
+import ch.raising.data.AssignmentTableRepositoryFactory;
+import ch.raising.data.MediaRepositoryFactory;
+import ch.raising.data.SettingRepository;
+import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.Account;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.ForgotPasswordRequest;
-import ch.raising.models.Media;
 import ch.raising.models.LoginRequest;
+import ch.raising.models.Media;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.Settings;
 import ch.raising.models.enums.NotificationType;
@@ -42,12 +48,6 @@ import ch.raising.utils.NotAuthorizedException;
 import ch.raising.utils.PasswordResetException;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
-import ch.raising.data.AccountRepository;
-import ch.raising.data.AssignmentTableRepository;
-import ch.raising.data.AssignmentTableRepositoryFactory;
-import ch.raising.data.MediaRepositoryFactory;
-import ch.raising.data.SettingRepository;
-import ch.raising.interfaces.IMediaRepository;
 
 @Primary
 @Service
@@ -194,32 +194,29 @@ public class AccountService implements UserDetailsService {
 		if (!req.isComplete()) {
 			throw new InvalidProfileException("Profile is inComplete");
 		}
-		try {
-			accountRepository.findByEmail(req.getEmail().toLowerCase());
+		if (!this.isEmailFree(req.getEmail().toLowerCase())) {
 			throw new InvalidProfileException("Email already exists");
-		} catch (EmailNotFoundException e) {
-			req.setEmail(req.getEmail().toLowerCase());
-			long accountId = accountRepository.add(req);
-
-			settingRepo.addSettings(Settings.builder().accountId(accountId).notificationTypes(NotificationType.getAll())
-					.numberOfMatches(NUMBER_OF_MATCHES).language(STANDARD_LANGUAGE).build());
-
-			if (req.getGallery() != null) {
-				for (long pic : req.getGallery()) {
-					galleryRepository.addAccountIdToMedia(pic, accountId);
-				}
-			}
-
-			pPicRepository.addAccountIdToMedia(req.getProfilePictureId(), accountId);
-
-			countryRepo.addEntriesToAccount(accountId, req.getCountries());
-			continentRepo.addEntriesToAccount(accountId, req.getContinents());
-			supportRepo.addEntriesToAccount(accountId, req.getSupport());
-			industryRepo.addEntriesToAccount(accountId, req.getIndustries());
-
-			return accountId;
-
 		}
+		req.setEmail(req.getEmail().toLowerCase());
+		long accountId = accountRepository.add(req);
+
+		settingRepo.addSettings(accountId, Settings.builder().accountId(accountId).notificationTypes(NotificationType.getAll())
+				.numberOfMatches(NUMBER_OF_MATCHES).language(STANDARD_LANGUAGE).build());
+
+		if (req.getGallery() != null) {
+			for (long pic : req.getGallery()) {
+				galleryRepository.addAccountIdToMedia(pic, accountId);
+			}
+		}
+
+		pPicRepository.addAccountIdToMedia(req.getProfilePictureId(), accountId);
+
+		countryRepo.addEntriesToAccount(accountId, req.getCountries());
+		continentRepo.addEntriesToAccount(accountId, req.getContinents());
+		supportRepo.addEntriesToAccount(accountId, req.getSupport());
+		industryRepo.addEntriesToAccount(accountId, req.getIndustries());
+
+		return accountId;
 
 	}
 
@@ -419,6 +416,20 @@ public class AccountService implements UserDetailsService {
 
 		AccountDetails uDet = loadUserByUsername(username);
 		return new LoginResponse(jwtUtil.generateToken(uDet), uDet.getId(), uDet.getStartup(), uDet.getInvestor());
+	}
+	public boolean isStartup(long accountId) {
+		try {
+			return accountRepository.isStartup(accountId);
+		} catch (DataAccessException | SQLException e) {
+			return false;
+		}
+	}
+	public boolean isInvestor(long accountId) {
+		try {
+			return accountRepository.isInvestor(accountId);
+		} catch (DataAccessException | SQLException e) {
+			return false;
+		}
 	}
 
 }

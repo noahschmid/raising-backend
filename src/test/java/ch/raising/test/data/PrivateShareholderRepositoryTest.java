@@ -25,6 +25,7 @@ import ch.raising.models.PrivateShareholder;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.QueryBuilder;
 import ch.raising.utils.Type;
+import testutils.IAdditionalInformationTest;
 
 @ContextConfiguration(classes = { TestConfig.class })
 @SpringBootTest

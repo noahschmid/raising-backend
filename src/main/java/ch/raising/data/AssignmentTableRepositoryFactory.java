@@ -37,6 +37,8 @@ public class AssignmentTableRepositoryFactory {
 			return new AssignmentTableRepository(jdbc, "corporateBody");
 		case "financeType":
 			return new AssignmentTableRepository(jdbc, "financeType");
+		case "boardmemberType":
+			return new AssignmentTableRepository(jdbc, "boardmemberType");
 		default:
 			try {
 				return getRepositoryForStartup(table);

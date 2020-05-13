@@ -58,4 +58,8 @@ public class AndroidSubscriptionRepository {
 		}
 
 	}
+	public Object findSubscription(long accountId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -49,14 +49,13 @@ public class StartupService extends AccountService {
 	private final CorporateShareholderRepository cshRepository;
 	private final AssignmentTableRepository investorTypeRepository;
 
-	//private final MatchingService matchingService;
+	// private final MatchingService matchingService;
 
 	private final AssignmentTableRepository countryRepository;
 	private final AssignmentTableRepository continentRepository;
 	private final AssignmentTableRepository industryRepository;
 	private final AssignmentTableRepository supportRepository;
-	
-	
+
 	@Autowired
 	public StartupService(AccountRepository accountRepository, StartupRepository startupRepository,
 			BoardmemberRepository bmemRepository, FounderRepository founderRepository, MailUtil mailUtil,
@@ -75,70 +74,63 @@ public class StartupService extends AccountService {
 		this.founderRepository = founderRepository;
 		this.pshRepository = pshRepository;
 		this.cshRepository = cshRepository;
-		this.countryRepository = atrFactory.getRepository("country")
-				.withRowMapper(MapUtil::mapRowToCountry);
+		this.countryRepository = atrFactory.getRepository("country").withRowMapper(MapUtil::mapRowToCountry);
 		this.continentRepository = atrFactory.getRepository("continent");
 		this.supportRepository = atrFactory.getRepository("support");
 		this.industryRepository = atrFactory.getRepository("industry");
 
-	//	this.matchingService = matchingService;
+		// this.matchingService = matchingService;
 	}
 
 	@Override
-	protected long registerAccount(Account account)
-			throws InvalidProfileException, DataAccessException, SQLException, DatabaseOperationException, MediaException {
+	protected long registerAccount(Account account) throws InvalidProfileException, DataAccessException, SQLException,
+			DatabaseOperationException, MediaException {
 		Startup su = (Startup) account;
-		
-		if(!UidUtil.isValidUId(su.getUId())) {
+
+		if (!UidUtil.isValidUId(su.getUId())) {
 			throw new InvalidProfileException("uid has invalid fromat: " + su.getUId(), su);
 		}
-		
+
 		if (!su.isComplete()) {
 			throw new InvalidProfileException("startup is incomplete", su);
 		}
+		long accountId = super.registerAccount(account);
+		su.setAccountId(accountId);
+		startupRepository.add(su);
 
-		try {
-			accountRepository.findByEmail(su.getEmail());
-			throw new InvalidProfileException("Email already exists");
-		} catch (EmailNotFoundException e) {
-			
-			long accountId = super.registerAccount(account);
-			su.setAccountId(accountId);
-			startupRepository.add(su);
+		labelRepository.addEntriesToAccount(accountId, su.getLabels());
+		investorTypeRepository.addEntriesToAccount(accountId, su.getInvestorTypes());
 
-			labelRepository.addEntriesToAccount(accountId, su.getLabels());
-			investorTypeRepository.addEntriesToAccount(accountId, su.getInvestorTypes());
-
-			if (su.getBoardmembers() != null) {
-				for (Boardmember m : su.getBoardmembers()) {
-					bmemRepository.addMemberByStartupId(m, accountId);
-				}
+		if (su.getBoardmembers() != null) {
+			for (Boardmember m : su.getBoardmembers()) {
+				bmemRepository.addMemberByStartupId(m, accountId);
 			}
-			if (su.getFounders() != null) {
-				for (Founder f : su.getFounders()) {
-					founderRepository.addMemberByStartupId(f, accountId);
-				}
-			}
-			if (su.getPrivateShareholders() != null) {
-				for (PrivateShareholder p : su.getPrivateShareholders()) {
-					pshRepository.addMemberByStartupId(p, accountId);
-				}
-			}
-			if (su.getCorporateShareholders() != null) {
-				for (CorporateShareholder c : su.getCorporateShareholders()) {
-					cshRepository.addMemberByStartupId(c, accountId);
-				}
-			}
-		//	matchingService.match(accountId, true);
-			return accountId;
 		}
+		if (su.getFounders() != null) {
+			for (Founder f : su.getFounders()) {
+				founderRepository.addMemberByStartupId(f, accountId);
+			}
+		}
+		if (su.getPrivateShareholders() != null) {
+			for (PrivateShareholder p : su.getPrivateShareholders()) {
+				pshRepository.addMemberByStartupId(p, accountId);
+			}
+		}
+		if (su.getCorporateShareholders() != null) {
+			for (CorporateShareholder c : su.getCorporateShareholders()) {
+				cshRepository.addMemberByStartupId(c, accountId);
+			}
+		}
+		// matchingService.match(accountId, true);
+		return accountId;
 
 	}
+
 	/**
 	 * @param long the tableEntryId of the startup
 	 * @throws SQLException
 	 * @throws DataAccessException
-	 * @throws DatabaseOperationException 
+	 * @throws DatabaseOperationException
 	 * @returns Account a fully initialised Startup object
 	 */
 	@Override
@@ -173,7 +165,7 @@ public class StartupService extends AccountService {
 		labelRepository.updateAssignment(id, su.getLabels());
 		startupRepository.update(id, su);
 
-	//	matchingService.match(id, true);
+		// matchingService.match(id, true);
 	}
 
 	/**
@@ -191,8 +183,9 @@ public class StartupService extends AccountService {
 		List<Long> types = investorTypeRepository.findIdByAccountId(startup.getAccountId());
 		List<Long> continents = continentRepository.findIdByAccountId(startup.getAccountId());
 		countryRepository.findByAccountId(startup.getAccountId()).forEach(country -> {
-			profile.addCountry((Country)country);
-		});;
+			profile.addCountry((Country) country);
+		});
+		;
 		List<Long> industries = industryRepository.findIdByAccountId(startup.getAccountId());
 		List<Long> supports = supportRepository.findIdByAccountId(startup.getAccountId());
 

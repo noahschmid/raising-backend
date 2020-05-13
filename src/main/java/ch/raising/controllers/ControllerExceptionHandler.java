@@ -13,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -49,6 +50,7 @@ public class ControllerExceptionHandler {
 	}
 	@ExceptionHandler(InvalidProfileException.class)
 	public ResponseEntity<ErrorResponse> handle(InvalidProfileException e){
+		e.printStackTrace();
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage(), e.getAccount()));
 	}
@@ -83,7 +85,7 @@ public class ControllerExceptionHandler {
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<?> handle(IOException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
-		return ResponseEntity.status(500).contentType(null).body(new ErrorResponse("File malformed: ", e.getMessage()));
+		return ResponseEntity.status(500).contentType(null).body(new ErrorResponse("File malformed", e.getMessage()));
 	}
 	@ExceptionHandler(MediaException.class)
 	public ResponseEntity<?> handle(MediaException e){
@@ -122,6 +124,11 @@ public class ControllerExceptionHandler {
 	public ResponseEntity<?> handle(ClientAbortException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(500).body(new ErrorResponse("Connection reseted by peer: " + e.getMessage(), e));
+	}
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<?> handle(HttpRequestMethodNotSupportedException e){
+		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
+		return ResponseEntity.status(405).body(new ErrorResponse("Method not supported: " + e.getMessage(), e));
 	}
 	
 }

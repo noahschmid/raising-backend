@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -22,6 +23,7 @@ public class IOSSubscriptionRepository {
 	private static final String INSERT_RECEIPT = "INSERT into iossubscription(latestreceiptdata, accountId, expires_date, originalTransactionId) VALUES (?,?,?,?)";
 	private static final String UPDATE_RECEIPT = "UPDATE iossubscription SET latestreceiptdata = ?, expires_date = ?, originalTransactionId = ? WHERE accountid = ?";
 	private static final String FIND_EXPIRES = "SELECT expires_date FROM iossubscription WHERE accountid = ?";
+	private static final String FIND_INFO = "SELECT * FROM iossubscription WHERE accountid = ?";
 
 	private static final String HAS_ROW = "select accountId from iossubscription where accountid =?";
 
@@ -61,6 +63,19 @@ public class IOSSubscriptionRepository {
 
 	}
 
+	public IOSSubscription getSubscriptionInfo(long accountId) throws DataAccessException, SQLException {
+		return jdbc.queryForObject(FIND_INFO, new Object[] {accountId}, new SubscriptionMapper());
+	}
+	
+	private class SubscriptionMapper implements RowMapper<IOSSubscription> {
+
+		@Override
+		public IOSSubscription mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return IOSSubscription.builder().expiresDate(rs.getTimestamp("expires_date")).subscriptionId(rs.getString("subscriptionid")).build();
+		}
+
+	}
+	
 	private class ExpiresDateMapper implements RowMapper<Long> {
 
 		@Override
