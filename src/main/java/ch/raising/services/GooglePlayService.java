@@ -46,7 +46,7 @@ public class GooglePlayService {
 		
 		AndroidPublisher pub = new AndroidPublisher(http, fac, cred);
 		
-		//use collection
+		//use collection	
 		
 		
 	}

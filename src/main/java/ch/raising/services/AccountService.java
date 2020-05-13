@@ -194,32 +194,29 @@ public class AccountService implements UserDetailsService {
 		if (!req.isComplete()) {
 			throw new InvalidProfileException("Profile is inComplete");
 		}
-		try {
-			accountRepository.findByEmail(req.getEmail().toLowerCase());
+		if (!this.isEmailFree(req.getEmail().toLowerCase())) {
 			throw new InvalidProfileException("Email already exists");
-		} catch (EmailNotFoundException e) {
-			req.setEmail(req.getEmail().toLowerCase());
-			long accountId = accountRepository.add(req);
-
-			settingRepo.addSettings(Settings.builder().accountId(accountId).notificationTypes(NotificationType.getAll())
-					.numberOfMatches(NUMBER_OF_MATCHES).language(STANDARD_LANGUAGE).build());
-
-			if (req.getGallery() != null) {
-				for (long pic : req.getGallery()) {
-					galleryRepository.addAccountIdToMedia(pic, accountId);
-				}
-			}
-
-			pPicRepository.addAccountIdToMedia(req.getProfilePictureId(), accountId);
-
-			countryRepo.addEntriesToAccount(accountId, req.getCountries());
-			continentRepo.addEntriesToAccount(accountId, req.getContinents());
-			supportRepo.addEntriesToAccount(accountId, req.getSupport());
-			industryRepo.addEntriesToAccount(accountId, req.getIndustries());
-
-			return accountId;
-
 		}
+		req.setEmail(req.getEmail().toLowerCase());
+		long accountId = accountRepository.add(req);
+
+		settingRepo.addSettings(Settings.builder().accountId(accountId).notificationTypes(NotificationType.getAll())
+				.numberOfMatches(NUMBER_OF_MATCHES).language(STANDARD_LANGUAGE).build());
+
+		if (req.getGallery() != null) {
+			for (long pic : req.getGallery()) {
+				galleryRepository.addAccountIdToMedia(pic, accountId);
+			}
+		}
+
+		pPicRepository.addAccountIdToMedia(req.getProfilePictureId(), accountId);
+
+		countryRepo.addEntriesToAccount(accountId, req.getCountries());
+		continentRepo.addEntriesToAccount(accountId, req.getContinents());
+		supportRepo.addEntriesToAccount(accountId, req.getSupport());
+		industryRepo.addEntriesToAccount(accountId, req.getIndustries());
+
+		return accountId;
 
 	}
 

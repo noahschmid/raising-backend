@@ -49,6 +49,7 @@ public class ControllerExceptionHandler {
 	}
 	@ExceptionHandler(InvalidProfileException.class)
 	public ResponseEntity<ErrorResponse> handle(InvalidProfileException e){
+		e.printStackTrace();
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
 		return ResponseEntity.status(400).body(new ErrorResponse(e.getMessage(), e.getAccount()));
 	}
