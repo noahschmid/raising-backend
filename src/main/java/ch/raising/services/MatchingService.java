@@ -52,11 +52,13 @@ public class MatchingService {
 
 	private final static int MAX_WEEKLY_MATCHES_COUNT = 5;
 
+	private SubscriptionService subscriptionService;
+
 	@Autowired
 	public MatchingService(RelationshipRepository relationshipRepository, StartupService startupService,
 			StartupRepository startupRepository, InvestorService investorService, InvestorRepository investorRepository,
 			AccountRepository accountRepository, SettingService settingService, InteractionService interactionService,
-			NotificationService notificationService) {
+			NotificationService notificationService, SubscriptionService subscriptionService) {
 		this.startupService = startupService;
 		this.relationshipRepository = relationshipRepository;
 		this.investorService = investorService;
@@ -64,7 +66,8 @@ public class MatchingService {
 		this.startupRepository = startupRepository;
 		this.settingService = settingService;
         this.notificationService = notificationService;
-        this.interactionService = interactionService;
+		this.interactionService = interactionService;
+		this.subscriptionService = subscriptionService;
 	}
 
 	/**
@@ -313,6 +316,13 @@ public class MatchingService {
 		System.out.println("Last matchday: " + matchDay.toString());
 
 		for (Relationship match : matches) {
+			boolean startupSubscribed = subscriptionService.isSubscribed(match.getStartupId());
+			boolean investorSubscribed = subscriptionService.isSubscribed(match.getInvestorId());
+
+			if(!isStartup && !startupSubscribed || isStartup && !investorSubscribed) {
+				break;
+			}
+
 			if (match.getStartupDecidedAt() != null) {
 				if (getZeroTimeDate(match.getStartupDecidedAt()).before(matchDay) && isStartup) {
 					continue;
@@ -337,32 +347,37 @@ public class MatchingService {
 			response.setId(match.getId());
 
 			if (isStartup) {
-				response.setAccountId(match.getInvestorId());
-				Investor investor;
-				try {
-					investor = investorService.getAccount(match.getInvestorId());
-				} catch (Exception e) {
-					investor = new Investor();
-				}
-				response.setInvestorTypeId(investor.getInvestorTypeId());
 				response.setStartup(false);
-				response.setDescription(investor.getDescription());
-				response.setFirstName(investor.getFirstName());
-				response.setLastName(investor.getLastName());
-				response.setProfilePictureId(investor.getProfilePictureId());
+
+				if(startupSubscribed) {
+					response.setAccountId(match.getInvestorId());
+					Investor investor;
+					try {
+						investor = investorService.getAccount(match.getInvestorId());
+					} catch (Exception e) {
+						investor = new Investor();
+					}
+					response.setInvestorTypeId(investor.getInvestorTypeId());
+					response.setDescription(investor.getDescription());
+					response.setFirstName(investor.getFirstName());
+					response.setLastName(investor.getLastName());
+					response.setProfilePictureId(investor.getProfilePictureId());
+				} 
 			} else {
-				response.setAccountId(match.getStartupId());
-				Startup startup;
-				try {
-					startup = (Startup) startupService.getAccount(match.getStartupId());
-				} catch (Exception e) {
-					startup = new Startup();
-				}
-				response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
 				response.setStartup(true);
-				response.setDescription(startup.getDescription());
-				response.setCompanyName(startup.getCompanyName());
-				response.setProfilePictureId(startup.getProfilePictureId());
+				if(investorSubscribed) {
+					response.setAccountId(match.getStartupId());
+					Startup startup;
+					try {
+						startup = (Startup) startupService.getAccount(match.getStartupId());
+					} catch (Exception e) {
+						startup = new Startup();
+					}
+					response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
+					response.setDescription(startup.getDescription());
+					response.setCompanyName(startup.getCompanyName());
+					response.setProfilePictureId(startup.getProfilePictureId());
+				}
 			}
 			matchResponses.add(response);
 			++matchesCount;
