@@ -1,4 +1,4 @@
-package ch.raising.models.responses;
+package ch.raising.models;
 
 import java.sql.Timestamp;
 

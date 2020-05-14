@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import ch.raising.services.SubscriptionService;
 import ch.raising.utils.InvalidSubscriptionException;
 
@@ -47,8 +50,20 @@ public class SubscriptionController {
 	}
 	
 	@PatchMapping("/android")
-	public ResponseEntity<?> updatePurchaseToken(@RequestBody Map<String, String> json) {
-		subService.updateAndroidSubscription(json.get("purchaseToken"),json.get("subscriptionId"));
+	public ResponseEntity<?> updatePurchaseToken(@RequestBody Map<String, String> json) throws InvalidSubscriptionException {
+		subService.verifyAndroidSubscription(json.get("purchaseToken"),json.get("subscriptionId"));
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/android/notify")
+	public ResponseEntity<?> notifyAndroid(@RequestBody Map<String, String> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
+		subService.processAndroidPush(json);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/ios/notify")
+	public ResponseEntity<?> notifyIOS(@RequestBody Map<String, String> json) throws InvalidSubscriptionException, DataAccessException, JsonMappingException, JsonProcessingException {
+		subService.processIOSPush(json);
 		return ResponseEntity.ok().build();
 	}
 	

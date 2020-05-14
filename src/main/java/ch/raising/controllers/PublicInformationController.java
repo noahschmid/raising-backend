@@ -110,7 +110,7 @@ public class PublicInformationController {
 	
 	@GetMapping("/financetype")
 	public ResponseEntity<?> getFinanceType() throws DataAccessException, SQLException{
-		return ResponseEntity.ok(publicInformationService.getAll("financetype"));
+		return ResponseEntity.ok(publicInformationService.getAll("financeType"));
 	}
 	
 	@GetMapping("/revenue")

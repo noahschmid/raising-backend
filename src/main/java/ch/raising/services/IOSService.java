@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.raising.models.responses.IOSSubscription;
+import ch.raising.models.IOSSubscription;
 import ch.raising.utils.InvalidSubscriptionException;
 
 @Service
@@ -57,14 +57,14 @@ public class IOSService {
 			response = productionRequest(request.toJson());
 			
 			if(response.getStatus() == 0) {
-				Logger.info("Payment verified successfully for production environment: {}", response.toString());
+				Logger.info("Payment verified successfully for ios-production environment: {}", response.toString());
 				return response;
 			}else if(response.getStatus() == 21007){
 				response = sandboxRequest(request.toJson());
 				if(response.getStatus() != 0) {
 					throw new InvalidSubscriptionException("cannot validate sandbox-receipt. status: " + response.getStatus());
 				}else {
-					Logger.info("Payment verified successfully for sandbox environment: {}", response.toString());
+					Logger.info("Payment verified successfully for ios-sandbox environment: {}", response.toString());
 					return response;
 				}
 			}else {
@@ -101,10 +101,13 @@ public class IOSService {
 		JsonNode jn = mapper.readTree(response.toString());
 		int status = jn.findValue("status").asInt();
 		if (status == 0) {
-			return IOSSubscription.builder().status(jn.findValue("status").asInt())
+			String latestReceipt = jn.findValue("latest_receipt").asText();
+			jn = jn.findValue("latest_receipt_info");
+			return IOSSubscription.builder().status(status)
 					.expiresDate(jn.findValue("expires_date_ms").asLong())
-					.latestReceiptData(jn.findValue("latest_receipt").asText())
-					.originalTransactionId(jn.findValue("original_transaction_id").asText()).build();
+					.latestReceiptData(latestReceipt)
+					.originalTransactionId(jn.findValue("original_transaction_id").asText())
+					.subscriptionId(jn.findValue("product_id").asText()).build();
 		} else {
 			return IOSSubscription.builder().status(status).build();
 		}

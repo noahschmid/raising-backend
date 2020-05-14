@@ -6,6 +6,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Login
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\interfaces\IAdditionalInformationRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Settings.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\AccountService.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AndroidSubscription.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\StartupService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableModelWithDescription.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\MatchingProfile.java
@@ -75,7 +76,6 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\respo
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\MediaException.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\utils\PreparedStatementUtil.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\ErrorResponse.java
-C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\responses\IOSSubscription.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AccountController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\AssignmentTableWithIcon.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\NotificationService.java
@@ -89,6 +89,7 @@ C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Board
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\MediaRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\data\FounderRepository.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\Startup.java
+C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\models\IOSSubscription.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\services\MediaService.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\MatchingController.java
 C:\work\$raising\workspace\raising-backend\src\main\java\ch\raising\controllers\AdminController.java
