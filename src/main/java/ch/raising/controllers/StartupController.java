@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-
+import org.springframework.util.IdGenerator;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,6 +29,7 @@ import ch.raising.models.PrivateShareholder;
 import ch.raising.models.Startup;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.models.responses.LoginResponse;
+import ch.raising.services.AccountService;
 import ch.raising.services.AdditionalInformationService;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.MatchingService;
@@ -44,14 +45,17 @@ public class StartupController {
 	private AssignmentTableService assignmentTableService;
 	private AdditionalInformationService additionalInformationService;
 	private MatchingService matchingService;
+	private AccountService accountService;
 	
 	@Autowired
 	public StartupController(StartupService startupService, AssignmentTableService assignmentTableService, 
-		AdditionalInformationService additionalInformationService, MatchingService matchingService) {
+		AdditionalInformationService additionalInformationService, MatchingService matchingService,
+		AccountService accountService) {
 		this.startupService = startupService;
 		this.assignmentTableService = assignmentTableService;
 		this.additionalInformationService = additionalInformationService;
 		this.matchingService = matchingService;
+		this.accountService = accountService;
 	}
 	
 	/**
@@ -78,7 +82,7 @@ public class StartupController {
     public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request) throws DataAccessException, SQLException {
 		startupService.updateAccount(id, request);
 		matchingService.match(id, true);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(accountService.createToken(id));
     }
 	
 	/**

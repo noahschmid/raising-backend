@@ -417,6 +417,12 @@ public class AccountService implements UserDetailsService {
 		AccountDetails uDet = loadUserByUsername(username);
 		return new LoginResponse(jwtUtil.generateToken(uDet), uDet.getId(), uDet.getStartup(), uDet.getInvestor());
 	}
+
+	public LoginResponse createToken(long accountId) throws UsernameNotFoundException {
+		AccountDetails uDet = loadUserById(accountId);
+		return new LoginResponse(jwtUtil.generateToken(uDet), uDet.getId(), uDet.getStartup(), uDet.getInvestor());
+	}
+
 	public boolean isStartup(long accountId) {
 		try {
 			return accountRepository.isStartup(accountId);

@@ -349,35 +349,32 @@ public class MatchingService {
 			if (isStartup) {
 				response.setStartup(false);
 
-				if(startupSubscribed) {
-					response.setAccountId(match.getInvestorId());
-					Investor investor;
-					try {
-						investor = investorService.getAccount(match.getInvestorId());
-					} catch (Exception e) {
-						investor = new Investor();
-					}
-					response.setInvestorTypeId(investor.getInvestorTypeId());
-					response.setDescription(investor.getDescription());
-					response.setFirstName(investor.getFirstName());
-					response.setLastName(investor.getLastName());
-					response.setProfilePictureId(investor.getProfilePictureId());
-				} 
+				response.setAccountId(match.getInvestorId());
+				Investor investor;
+				try {
+					investor = investorService.getAccount(match.getInvestorId());
+				} catch (Exception e) {
+					investor = new Investor();
+				}
+				response.setInvestorTypeId(investor.getInvestorTypeId());
+				response.setDescription(investor.getDescription());
+				response.setFirstName(investor.getFirstName());
+				response.setLastName(investor.getLastName());
+				response.setProfilePictureId(investor.getProfilePictureId());
+
 			} else {
 				response.setStartup(true);
-				if(investorSubscribed) {
-					response.setAccountId(match.getStartupId());
-					Startup startup;
-					try {
-						startup = (Startup) startupService.getAccount(match.getStartupId());
-					} catch (Exception e) {
-						startup = new Startup();
-					}
-					response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
-					response.setDescription(startup.getDescription());
-					response.setCompanyName(startup.getCompanyName());
-					response.setProfilePictureId(startup.getProfilePictureId());
+				response.setAccountId(match.getStartupId());
+				Startup startup;
+				try {
+					startup = (Startup) startupService.getAccount(match.getStartupId());
+				} catch (Exception e) {
+					startup = new Startup();
 				}
+				response.setInvestmentPhaseId(startup.getInvestmentPhaseId());
+				response.setDescription(startup.getDescription());
+				response.setCompanyName(startup.getCompanyName());
+				response.setProfilePictureId(startup.getProfilePictureId());
 			}
 			matchResponses.add(response);
 			++matchesCount;

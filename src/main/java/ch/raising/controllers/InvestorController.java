@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.raising.models.Investor;
 import ch.raising.models.responses.LoginResponse;
+import ch.raising.services.AccountService;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.InvestorService;
 import ch.raising.services.MatchingService;
@@ -32,13 +33,15 @@ public class InvestorController {
 	InvestorService investorService;
 	AssignmentTableService assignmentService;
 	MatchingService matchingService;
+	AccountService accountService;
 
 	@Autowired
 	public InvestorController(InvestorService investorService, AssignmentTableService assignmentService,
-		MatchingService matchingService) {
+		MatchingService matchingService, AccountService accountService) {
 		this.investorService = investorService;
 		this.assignmentService = assignmentService;
 		this.matchingService = matchingService;
+		this.accountService = accountService;
 	}
 
 	/**
@@ -69,7 +72,7 @@ public class InvestorController {
 			throws DataAccessException, SQLException {
 		investorService.updateAccount(id, request);
 		matchingService.match(id, false);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(accountService.createToken(id));
 	}
 
 	/**
