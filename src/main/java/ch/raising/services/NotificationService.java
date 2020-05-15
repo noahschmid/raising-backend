@@ -36,31 +36,61 @@ public class NotificationService {
 		this.accountService = accountService;
 	}
 
-	public void sendLeadNotification(long partnerAccountId, InteractionType type) {
+	public void sendLeadNotification(long partnerAccountId, InteractionType type, long actionId) {
 		String message = "You have got a new lead for " + type.getPretty() + ".";
 		String title = "New Lead";
-		sendMessage(partnerAccountId, message, title, NotificationType.LEAD);
+		PushNotification push = PushNotification.builder()
+				.accountId(partnerAccountId)
+				.message(message)
+				.title(title)
+				.actionId(actionId)
+				.type(NotificationType.LEAD)
+				.build();
+		sendMessage(push);
 	}
 
-	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction) {
+	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction, long actionId) {
 		String name = getAccountName(requesteeId);
 		String title = "New Connection";
 		String message = name + " accepted your Request for " + interaction.getPretty() + ".";
-		sendMessage(partnerAccountId, message, title, NotificationType.CONNECTION);
+		PushNotification push = PushNotification.builder()
+				.accountId(partnerAccountId)
+				.requesteeId(requesteeId)
+				.message(message)
+				.title(title)
+				.actionId(actionId)
+				.type(NotificationType.CONNECTION)
+				.build();
+		sendMessage(push);
 	}
 
-	public void sendRequestMatch(long requesteeId, long partnerId) {
+	public void sendRequestMatch(long requesteeId, long partnerId, long actionId) {
 		String name = getAccountName(requesteeId);
 		String title = "New Matching Request";
 		String message = "You got a new handshake request from " + name + ".";
-		sendMessage(partnerId, message, title, NotificationType.REQUEST);
+		PushNotification push = new PushNotification();
+		push.setMessage(message);
+		push.setActionId(actionId);
+		push.setTitle(title);
+		push.setRequesteeId(requesteeId);
+		push.setType(NotificationType.REQUEST);
+		push.setAccountId(partnerId);
+		sendMessage(push);
 	}
 
-	public void sendMatchRequestAccept(long requesteeId, long partnerId) {
+	public void sendMatchRequestAccept(long requesteeId, long partnerId, long actionId) {
 		String name = getAccountName(requesteeId);
 		String title = "Accepted Match";
 		String message = name + " accepted your request.";
-		sendMessage(partnerId, message, title, NotificationType.REQUEST);
+		PushNotification push = PushNotification.builder()
+									.accountId(partnerId)
+									.requesteeId(requesteeId)
+									.message(message)
+									.title(title)
+									.actionId(actionId)
+									.type(NotificationType.REQUEST)
+									.build();
+				sendMessage(push);
 	}
 
 	private String getAccountName(long partnerAccount) {
@@ -78,20 +108,16 @@ public class NotificationService {
 		}
 	}
 
-	private void sendMessage(long partnerAccountId, String message, String title, NotificationType type) {
+	private void sendMessage(PushNotification push) {
 		try {
-			Settings notificationSettings = settingRepo.findInfoByAccountId(partnerAccountId);
+			Settings notificationSettings = settingRepo.findInfoByAccountId(push.getAccountId());
 			if (notificationSettings.getToken() == null || notificationSettings.getToken().equals("")) {
 				return; // we cannot send a notification if there is no token
 			}
 			if (!notificationSettings.getNotificationTypes().contains(NotificationType.NEVER)
-					&& notificationSettings.getNotificationTypes().contains(type)) {
-				PushNotification notification = new PushNotification();
-				notification.setMessage(message);
-				notification.setTitle(title);
-				notification.setToken(notificationSettings.getToken());
-				notification.setClickAction(type.name());
-				fcmService.sendMessage(notification);
+					&& notificationSettings.getNotificationTypes().contains(push.getType())) {
+				push.setToken(notificationSettings.getToken());
+				fcmService.sendMessage(push);
 			}
 		} catch (DataAccessException | SQLException e) {
 			LoggerFactory.getLogger(NotificationService.class).error("Could not retreive settings");

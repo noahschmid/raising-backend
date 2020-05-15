@@ -20,6 +20,9 @@ import ch.raising.models.PushNotification;
 @Service
 public class FCMNotificationService {
 
+	private final static String ANDROIDCLICKACTION = "NOTIFICATION";
+	private final static String CHANNELID = "1";
+	
 	public void sendMessage(PushNotification notification) throws InterruptedException, ExecutionException {
 		LoggerFactory.getLogger(FCMNotificationService.class).info("sending message: " + notification.getMessage());
 		Message m = getMessage(notification);
@@ -29,15 +32,20 @@ public class FCMNotificationService {
 	}
 
 	private Message getMessage(PushNotification notification) {
-		return Message.builder().setAndroidConfig(getAndroidConfig(notification.getClickAction())).setApnsConfig(getApnsConfig(notification.getClickAction()))
+		return Message.builder()
+				.setAndroidConfig(getAndroidConfig())
+				.setApnsConfig(getApnsConfig(notification.getType().name()))
 				.setToken(notification.getToken())
 				.setNotification(new Notification(notification.getTitle(), notification.getMessage()))
+				.putData("interaction", notification.getType().name())
+				.putData("id", "" + notification.getActionId())
+				.putData("accountId", "" + notification.getRequesteeId())
 				.build();
 	}
 
-	private AndroidConfig getAndroidConfig(String clickAction) {
+	private AndroidConfig getAndroidConfig() {
 		return AndroidConfig.builder().setTtl(120000).setRestrictedPackageName("com.raising.app").setPriority(Priority.HIGH)
-				.setNotification(AndroidNotification.builder().setClickAction(clickAction).setChannelId("1").build()).build();
+				.setNotification(AndroidNotification.builder().setClickAction(ANDROIDCLICKACTION).setChannelId(CHANNELID).build()).build();
 	}
 
 	private ApnsConfig getApnsConfig(String clickAction) {

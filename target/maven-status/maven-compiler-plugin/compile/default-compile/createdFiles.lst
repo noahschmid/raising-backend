@@ -144,6 +144,7 @@ ch\raising\models\AndroidSubscription.class
 ch\raising\controllers\ControllerExceptionHandler.class
 ch\raising\utils\InvalidProfileException.class
 ch\raising\models\Boardmember$BoardmemberBuilder.class
+ch\raising\models\PushNotification$PushNotificationBuilder.class
 ch\raising\utils\InvalidInteractionException.class
 ch\raising\data\MediaRepository.class
 ch\raising\models\responses\AccountForRelationship$AccountForRelationshipBuilder.class
@@ -154,6 +155,7 @@ ch\raising\data\SharedDataRepository$AddSharePreparedStaement.class
 ch\raising\utils\functionalInterface\RowMapper.class
 ch\raising\controllers\MediaController.class
 ch\raising\models\responses\MatchResponse.class
+ch\raising\data\IconRepository$2.class
 ch\raising\models\Startup$StartupBuilder.class
 ch\raising\controllers\StartupController.class
 ch\raising\models\PushNotification.class
