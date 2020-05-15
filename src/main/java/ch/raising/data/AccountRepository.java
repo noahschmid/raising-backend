@@ -206,7 +206,9 @@ public class AccountRepository implements IRepository<Account> {
 		String emailHash = null;
 
 		if (req.getEmail() != "") {
+			System.out.println("req.getEmail(): " + req.getEmail());
 			emailHash = encoder.encode(req.getEmail());
+			System.out.println("hashed email: " + emailHash);
 		}
 
 		boolean isAdmin;

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -72,7 +71,7 @@ public class InvestorController {
 			throws DataAccessException, SQLException {
 		investorService.updateAccount(id, request);
 		matchingService.match(id, false);
-		return ResponseEntity.ok(accountService.createToken(id));
+		return ResponseEntity.ok().build();
 	}
 
 	/**

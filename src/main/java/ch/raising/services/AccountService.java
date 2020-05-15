@@ -112,12 +112,14 @@ public class AccountService implements UserDetailsService {
 
 	public AccountDetails loadUserById(long id) throws UsernameNotFoundException {
 		try {
-			Account acc = accountRepository.find(id);
-			return new AccountDetails(acc);
+			Account account = accountRepository.find(id);
+			AccountDetails accDet = new AccountDetails(account);
+			accDet.setStartup(accountRepository.isStartup(accDet.getId()));
+			accDet.setInvestor(accountRepository.isInvestor(accDet.getId()));
+			return accDet;
 		} catch (DataAccessException | SQLException e) {
 			throw new UsernameNotFoundException(e.getMessage());
 		}
-
 	}
 
 	/**
@@ -217,7 +219,6 @@ public class AccountService implements UserDetailsService {
 		industryRepo.addEntriesToAccount(accountId, req.getIndustries());
 
 		return accountId;
-
 	}
 
 	/**
@@ -420,6 +421,7 @@ public class AccountService implements UserDetailsService {
 
 	public LoginResponse createToken(long accountId) throws UsernameNotFoundException {
 		AccountDetails uDet = loadUserById(accountId);
+		System.out.println("user details: " + uDet.getId() + " " + uDet.getUsername());
 		return new LoginResponse(jwtUtil.generateToken(uDet), uDet.getId(), uDet.getStartup(), uDet.getInvestor());
 	}
 

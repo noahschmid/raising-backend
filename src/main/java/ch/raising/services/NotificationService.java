@@ -27,6 +27,7 @@ public class NotificationService {
 	private final SettingRepository settingRepo;
 	private final FCMNotificationService fcmService;
 	private final AccountService accountService;
+	private final String title = "Rai$ing";
 
 	@Autowired
 	public NotificationService(SettingRepository notificationRepo, FCMNotificationService fcmService,
@@ -37,29 +38,25 @@ public class NotificationService {
 	}
 
 	public void sendLeadNotification(long partnerAccountId, InteractionType type) {
-		String message = "You have got a new lead for " + type.getPretty() + ".";
-		String title = "New Lead";
+		String message = getAccountName(partnerAccountId) + " wants to " + type.getActionString() + " with you.";
 		sendMessage(partnerAccountId, message, title, NotificationType.LEAD);
 	}
 
 	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction) {
 		String name = getAccountName(requesteeId);
-		String title = "New Connection";
-		String message = name + " accepted your Request for " + interaction.getPretty() + ".";
+		String message = name + " accepted your request for " + interaction.getPretty() + ".";
 		sendMessage(partnerAccountId, message, title, NotificationType.CONNECTION);
 	}
 
 	public void sendRequestMatch(long requesteeId, long partnerId) {
 		String name = getAccountName(requesteeId);
-		String title = "New Matching Request";
-		String message = "You got a new handshake request from " + name + ".";
+		String message = name + " would like to get in contact with you. Check out their profile";
 		sendMessage(partnerId, message, title, NotificationType.REQUEST);
 	}
 
 	public void sendMatchRequestAccept(long requesteeId, long partnerId) {
 		String name = getAccountName(requesteeId);
-		String title = "Accepted Match";
-		String message = name + " accepted your request.";
+		String message = name + " is now a lead. Open Rai$ing and start interacting!";
 		sendMessage(partnerId, message, title, NotificationType.REQUEST);
 	}
 

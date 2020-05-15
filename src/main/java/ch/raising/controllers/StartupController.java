@@ -82,7 +82,7 @@ public class StartupController {
     public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request) throws DataAccessException, SQLException {
 		startupService.updateAccount(id, request);
 		matchingService.match(id, true);
-        return ResponseEntity.ok(accountService.createToken(id));
+        return ResponseEntity.ok().build();
     }
 	
 	/**
