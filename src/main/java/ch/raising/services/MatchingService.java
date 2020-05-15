@@ -225,10 +225,10 @@ public class MatchingService {
 		case MATCH:
 			if (isStartup) {
 				relationship.setState(RelationshipState.STARTUP_ACCEPTED);
-				notificationService.sendRequestMatch(relationship.getStartupId(), relationship.getInvestorId());
+				notificationService.sendRequestMatch(relationship.getStartupId(), relationship.getInvestorId(), id);
 			} else {
 				relationship.setState(RelationshipState.INVESTOR_ACCEPTED);
-				notificationService.sendRequestMatch(relationship.getInvestorId(), relationship.getStartupId());
+				notificationService.sendRequestMatch(relationship.getInvestorId(), relationship.getStartupId(), id);
 			}
 
 			break;
@@ -236,14 +236,14 @@ public class MatchingService {
 		case INVESTOR_ACCEPTED:
 			if (isStartup) {
 				relationship.setState(RelationshipState.HANDSHAKE);
-				notificationService.sendMatchRequestAccept(relationship.getStartupId(), relationship.getInvestorId());
+				notificationService.sendMatchRequestAccept(relationship.getStartupId(), relationship.getInvestorId(), id);
 			}
 			break;
 
 		case STARTUP_ACCEPTED:
 			if (!isStartup) {
 				relationship.setState(RelationshipState.HANDSHAKE);
-				notificationService.sendMatchRequestAccept(relationship.getInvestorId(), relationship.getStartupId	());
+				notificationService.sendMatchRequestAccept(relationship.getInvestorId(), relationship.getStartupId(), id);
 			}
 			break;
 

@@ -1,5 +1,6 @@
 package ch.raising.data;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +20,7 @@ import ch.raising.models.Settings;
 import ch.raising.models.enums.Device;
 import ch.raising.models.enums.NotificationType;
 import ch.raising.utils.MapUtil;
+import ch.raising.utils.Type;
 import ch.raising.utils.UpdateQueryBuilder;
 
 @Repository
@@ -27,6 +30,7 @@ public class SettingRepository {
 	private final static String INSERT_DEVICE_TOKEN = "INSERT INTO settings(accountid, token, device, notificationtypes, language, numberofmatches) VALUES (?,?,?,?,?,?)";
 	private final static String SELECT_BY_ACCOUNTID = "SELECT * FROM settings WHERE accountid = ?;";
 	private final static String FIND_NOTIFICATIONSETTINGS_BY_ACCOUNTID = "SELECT token, notificationtypes FROM settings WHERE accountid = ?";
+	private final static String SET_DEVICE_NULL = "update settings set token = ? where accountid = ?";
 
 	@Autowired
 	public SettingRepository(JdbcTemplate jdbc) {
@@ -111,6 +115,19 @@ public class SettingRepository {
 					.language(rs.getString("language")).numberOfMatches(Integer.parseInt(numberOfMatches)).build();
 		}
 
+	}
+
+	public void setDevicetokenNull(long accountId) {
+		jdbc.execute(SET_DEVICE_NULL, new PreparedStatementCallback<Boolean>() {
+
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				int c =1;
+				ps.setNull(c++, Types.VARCHAR);
+				ps.setLong(c++, accountId);
+				return ps.execute();
+			}
+		});
 	}
 
 }

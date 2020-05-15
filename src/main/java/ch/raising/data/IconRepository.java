@@ -43,7 +43,18 @@ public class IconRepository {
 	}
 
 	public void update(Icon build) throws DataAccessException{
-		jdbc.update(UPDATE, new Object[] {build.getContentType(), build.getIcon(), build.getId()}, new int[] {Types.VARCHAR, Types.BLOB, Types.BIGINT});
+		jdbc.execute(UPDATE, new PreparedStatementCallback<Boolean>() {
+
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				int c = 1;
+				ps.setString(c++, build.getContentType());
+				ps.setBytes(c++, build.getIcon());
+				ps.setLong(c++, build.getId());
+				return ps.execute();
+			}
+		
+		} );
 	}
 	
 	private PreparedStatementCallback<Long> addIconCallback(Icon icon) {

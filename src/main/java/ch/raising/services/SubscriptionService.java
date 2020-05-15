@@ -175,7 +175,7 @@ public class SubscriptionService {
 	public void processAndroidPush(Map<String, String> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
 		String purchaseToken = "";
 		String subscriptionId = "";
-//		Logger.info("Got a push from GooglePlay-API");
+		Logger.info("Got a push from GooglePlay-API");
 //		JsonNode message = mapper.readTree(json.get("message"));
 //		String base64Payload = message.findValue("data").asText();
 //		String decodedPayload = new String(Base64.getDecoder().decode(base64Payload));
