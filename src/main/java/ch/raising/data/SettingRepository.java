@@ -51,9 +51,10 @@ public class SettingRepository {
 	}
 
 	public void update(Settings token, long accountId) throws SQLException, DataAccessException {
+		System.out.println(token.toString());
 		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "settings", accountId, "accountid");
 		update.addField(token.getToken(), "token");
-		update.addField(token.getDevice(), "device");
+		update.addField(token.getDevice().name(), "device");
 		update.addField(parseToString(token.getNotificationTypes()), "notificationtypes");
 		update.addField(token.getLanguage(), "language");
 		update.addField(token.getNumberOfMatches(), "numberofmatches");
@@ -62,7 +63,7 @@ public class SettingRepository {
 
 	private String parseToString(List<NotificationType> types) {
 		String result = "";
-		if (types == null)
+		if (types == null || types.isEmpty())
 			return result;
 		for (NotificationType t : types) {
 			result += t.name() + ", ";
