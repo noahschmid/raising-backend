@@ -37,4 +37,8 @@ public class SettingService {
 		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 	}
 
+	public void deleteNotificationToken() throws DataAccessException, SQLException {
+		settingRepo.setDevicetokenNull(getAccountId());
+	}
+
 }

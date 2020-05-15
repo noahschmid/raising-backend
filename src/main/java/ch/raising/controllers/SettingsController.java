@@ -43,5 +43,11 @@ public class SettingsController {
 	public ResponseEntity<?> getSettings() throws DataAccessException, SQLException{
 		return ResponseEntity.ok(settingService.getSettings());
 	}
+	
+	@PatchMapping("/deletetoken")
+	public ResponseEntity<?> deleteDeviceToken() throws DataAccessException, SQLException{
+		settingService.deleteNotificationToken();
+		return ResponseEntity.ok().build();
+	}
 
 }
