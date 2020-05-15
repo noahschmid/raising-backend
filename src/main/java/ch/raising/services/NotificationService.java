@@ -72,7 +72,7 @@ public class NotificationService {
 		push.setActionId(actionId);
 		push.setTitle(title);
 		push.setRequesteeId(requesteeId);
-		push.setType(NotificationType.REQUEST);
+		push.setType(NotificationType.MATCHLIST);
 		push.setAccountId(partnerId);
 		sendMessage(push);
 	}

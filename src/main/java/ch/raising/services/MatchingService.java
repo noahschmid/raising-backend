@@ -319,9 +319,9 @@ public class MatchingService {
 			boolean startupSubscribed = subscriptionService.isSubscribed(match.getStartupId());
 			boolean investorSubscribed = subscriptionService.isSubscribed(match.getInvestorId());
 
-			if(!isStartup && !startupSubscribed || isStartup && !investorSubscribed) {
+		/*	if(!isStartup && !startupSubscribed || isStartup && !investorSubscribed) {
 				break;
-			}
+			}*/
 
 			if (match.getStartupDecidedAt() != null) {
 				if (getZeroTimeDate(match.getStartupDecidedAt()).before(matchDay) && isStartup) {
