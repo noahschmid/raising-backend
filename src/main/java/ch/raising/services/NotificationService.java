@@ -37,9 +37,9 @@ public class NotificationService {
 		this.accountService = accountService;
 	}
 
-	public void sendLeadNotification(long partnerAccountId, InteractionType type, long actionId) {
-		String message = getAccountName(partnerAccountId) + " wants to " + type.getActionString() + " with you.";
-		String title = "New Lead";
+	public void sendLeadNotification(long requesteeId, long partnerAccountId, InteractionType type, long actionId) {
+		String name = getAccountName(requesteeId);
+		String message = name + " wants to " + type.getActionString() + " with you.";
 		PushNotification push = PushNotification.builder()
 				.accountId(partnerAccountId)
 				.message(message)
@@ -52,7 +52,6 @@ public class NotificationService {
 
 	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction, long actionId) {
 		String name = getAccountName(requesteeId);
-		String title = "New Connection";
 		String message = name + " accepted your request for " + interaction.getPretty() + ".";
 		PushNotification push = PushNotification.builder()
 				.accountId(partnerAccountId)
@@ -67,21 +66,19 @@ public class NotificationService {
 
 	public void sendRequestMatch(long requesteeId, long partnerId, long actionId) {
 		String name = getAccountName(requesteeId);
-		String title = "New Matching Request";
 		String message = name + " would like to get in contact with you. Check out their profile";
 		PushNotification push = new PushNotification();
 		push.setMessage(message);
 		push.setActionId(actionId);
 		push.setTitle(title);
 		push.setRequesteeId(requesteeId);
-		push.setType(NotificationType.REQUEST);
+		push.setType(NotificationType.MATCHLIST);
 		push.setAccountId(partnerId);
 		sendMessage(push);
 	}
 
 	public void sendMatchRequestAccept(long requesteeId, long partnerId, long actionId) {
 		String name = getAccountName(requesteeId);
-		String title = "Accepted Match";
 		String message = name + " is now a lead. Open Rai$ing and start interacting!";
 		PushNotification push = PushNotification.builder()
 									.accountId(partnerId)
