@@ -1,6 +1,9 @@
 package ch.raising.models;
 
 import java.util.List;
+
+import com.google.api.services.androidpublisher.model.Timestamp;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +30,7 @@ public class Account {
 	private long countryId = -1;
 	private String website = "";
 	private long profilePictureId = -1;
+	private Timestamp lastChanged;
 
 	/* ========================================================================= */
 

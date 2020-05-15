@@ -87,7 +87,7 @@ public class NotificationService {
 				notification.setMessage(message);
 				notification.setTitle(title);
 				notification.setToken(notificationSettings.getToken());
-				notification.setClickAction(type.name());
+				notification.setClickAction("NOTIFICATION");
 				fcmService.sendMessage(notification);
 			}
 		} catch (DataAccessException | SQLException e) {
