@@ -39,7 +39,7 @@ public class NotificationService {
 
 	public void sendLeadNotification(long requesteeId, long partnerAccountId, InteractionType type, long actionId) {
 		String name = getAccountName(requesteeId);
-		String message = name + " wants to " + type.getActionString() + " with you.";
+		String message = name + " wants to " + type.getActionString();
 		PushNotification push = PushNotification.builder()
 				.accountId(partnerAccountId)
 				.message(message)

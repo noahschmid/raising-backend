@@ -218,6 +218,7 @@ public class InteractionService {
 							+ isStartup() + " ,investor: " + isInvestor() + ") " + " investor: "
 							+ accountRepo.isInvestor(interaction.getAccountId()));
 		}
+		
 		insert.setInteraction(interaction.getInteraction());
 		return insert;
 	}
@@ -241,7 +242,9 @@ public class InteractionService {
 			shareRepo.deleteById(dataId);
 			throw e;
 		}
-		notificationService.sendConnectionNotification(getAccountId(), accept.getAccountId(), accept.getInteraction(), interactionId);
+
+		notificationService.sendConnectionNotification(getAccountId(), accept.getAccountId(),
+			accept.getInteraction(), interactionId);
 		return getSharedDataAndDelete(interactionId);
 	}
 
