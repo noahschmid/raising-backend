@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import ch.raising.data.AccountRepository;
 import ch.raising.data.MediaRepository;
 import ch.raising.interfaces.IMediaRepository;
 import ch.raising.models.AccountDetails;
@@ -20,8 +21,6 @@ import ch.raising.utils.MediaException;
 
 @Service
 public class MediaService{
-
-	
 	private final IMediaRepository<Media> mediaRepo;
 	private final int MAX_ALLOWED_ITEMS;
 	

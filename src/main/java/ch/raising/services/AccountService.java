@@ -311,13 +311,22 @@ public class AccountService implements UserDetailsService {
 	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
-	public void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
+	public LoginResponse updateAccount(int id, Account acc, String token) throws DataAccessException, SQLException, 
+		NotAuthorizedException {
 		countryRepo.updateAssignment(id, acc.getCountries());
 		continentRepo.updateAssignment(id, acc.getContinents());
 		supportRepo.updateAssignment(id, acc.getSupport());
 		industryRepo.updateAssignment(id, acc.getIndustries());
 
 		accountRepository.update(id, acc);
+
+		if(acc.getEmail() != null && !acc.getEmail().isEmpty()) {
+			AccountDetails accDetails = (AccountDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			accDetails.setEmail(acc.getEmail());
+			return new LoginResponse(jwtUtil.generateToken(accDetails), accDetails.getId());
+		}
+
+		return refreshToken(token);
 	}
 
 	/**
@@ -419,12 +428,6 @@ public class AccountService implements UserDetailsService {
 		return new LoginResponse(jwtUtil.generateToken(uDet), uDet.getId(), uDet.getStartup(), uDet.getInvestor());
 	}
 
-	public LoginResponse createToken(long accountId) throws UsernameNotFoundException {
-		AccountDetails uDet = loadUserById(accountId);
-		System.out.println("user details: " + uDet.getId() + " " + uDet.getUsername());
-		return new LoginResponse(jwtUtil.generateToken(uDet), uDet.getId(), uDet.getStartup(), uDet.getInvestor());
-	}
-
 	public boolean isStartup(long accountId) {
 		try {
 			return accountRepository.isStartup(accountId);
@@ -439,5 +442,4 @@ public class AccountService implements UserDetailsService {
 			return false;
 		}
 	}
-
 }

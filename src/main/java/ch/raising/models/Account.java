@@ -1,8 +1,7 @@
 package ch.raising.models;
 
+import java.sql.Timestamp;
 import java.util.List;
-
-import com.google.api.services.androidpublisher.model.Timestamp;
 
 import lombok.Builder;
 import lombok.Data;

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -79,10 +80,11 @@ public class StartupController {
      * @throws DataAccessException 
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request) throws DataAccessException, SQLException {
-		startupService.updateAccount(id, request);
+	public ResponseEntity<?> updateStartupProfile(@PathVariable int id, @RequestBody Startup request, 
+		@RequestHeader("Authorization") String token) throws DataAccessException, SQLException, NotAuthorizedException {
+		LoginResponse response = startupService.updateAccount(id, request, token);
 		matchingService.match(id, true);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(response);
     }
 	
 	/**

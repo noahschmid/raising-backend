@@ -39,6 +39,8 @@ public class AccountDetails implements UserDetails {
     	return this.investor;
     }
 
+    public void setEmail(String email) { this.email = email; }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

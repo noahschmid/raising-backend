@@ -204,11 +204,12 @@ public class AccountController {
 	@PatchMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<?> updateAccount(@PathVariable int id, @RequestBody Account updateRequest,
-			HttpServletRequest request) throws DataAccessException, SQLException {
+			HttpServletRequest request, @RequestHeader("Authorization") String token) throws DataAccessException, SQLException,
+			NotAuthorizedException {
 		if (!accountService.isOwnAccount(id) && !request.isUserInRole("ADMIN"))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("Access denied"));
 
-		accountService.updateAccount(id, updateRequest);
+		accountService.updateAccount(id, updateRequest, token);
 		return ResponseEntity.ok().build();
 	}
 

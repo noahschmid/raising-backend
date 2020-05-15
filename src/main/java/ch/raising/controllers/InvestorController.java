@@ -7,16 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.raising.models.AccountDetails;
 import ch.raising.models.Investor;
 import ch.raising.models.responses.LoginResponse;
 import ch.raising.services.AccountService;
@@ -24,6 +27,7 @@ import ch.raising.services.AssignmentTableService;
 import ch.raising.services.InvestorService;
 import ch.raising.services.MatchingService;
 import ch.raising.utils.DatabaseOperationException;
+import ch.raising.utils.NotAuthorizedException;
 
 @Controller
 @RequestMapping("/investor")
@@ -67,11 +71,12 @@ public class InvestorController {
 	 * @throws DataAccessException
 	 */
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Investor request)
-			throws DataAccessException, SQLException {
-		investorService.updateAccount(id, request);
+	public ResponseEntity<?> updateInvestorProfile(@PathVariable int id, @RequestBody Investor request, 
+	@RequestHeader("Authorization") String token)
+			throws DataAccessException, SQLException, NotAuthorizedException {
+		LoginResponse response = investorService.updateAccount(id, request, token);
 		matchingService.match(id, false);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(response);
 	}
 
 	/**

@@ -15,7 +15,6 @@ public enum InteractionType {
 		this.actionString = actionString;
 	}
 	
-	
 	public String getPretty() {
 		return pretty;
 	}

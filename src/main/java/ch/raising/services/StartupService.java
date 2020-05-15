@@ -17,6 +17,7 @@ import ch.raising.utils.JwtUtil;
 import ch.raising.utils.MailUtil;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.MediaException;
+import ch.raising.utils.NotAuthorizedException;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UidUtil;
 import ch.raising.data.AccountRepository;
@@ -37,6 +38,7 @@ import ch.raising.models.Founder;
 import ch.raising.models.MatchingProfile;
 import ch.raising.models.PrivateShareholder;
 import ch.raising.models.Startup;
+import ch.raising.models.responses.LoginResponse;
 
 @Service
 public class StartupService extends AccountService {
@@ -158,14 +160,15 @@ public class StartupService extends AccountService {
 	 * @throws DataAccessException
 	 */
 	@Override
-	public void updateAccount(int id, Account acc) throws DataAccessException, SQLException {
-		super.updateAccount(id, acc);
+	public LoginResponse updateAccount(int id, Account acc, String token) throws DataAccessException, SQLException, 
+		NotAuthorizedException {
+		LoginResponse response = super.updateAccount(id, acc, token);
 		Startup su = (Startup) acc;
 		investorTypeRepository.updateAssignment(id, su.getInvestorTypes());
 		labelRepository.updateAssignment(id, su.getLabels());
 		startupRepository.update(id, su);
 
-		// matchingService.match(id, true);
+		return response;
 	}
 
 	/**

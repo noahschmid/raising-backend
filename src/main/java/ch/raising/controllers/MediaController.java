@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import ch.raising.data.AccountRepository;
 import ch.raising.models.Icon;
 import ch.raising.models.Media;
 import ch.raising.models.responses.ErrorResponse;
@@ -48,8 +49,11 @@ public class MediaController {
 	private final static int MAX_PPIC_SIZE = 1;
 	private final static int MAX_PDF_SIZE = 1;
 
+
+	private AccountRepository accountRepository;
+
 	@Autowired
-	public MediaController(JdbcTemplate jdbc, IconService iconService) {
+	public MediaController(JdbcTemplate jdbc, IconService iconService, AccountRepository accountRepository) {
 		this.videoService = new MediaService(jdbc, "video", MAX_VIDEO_SIZE);
 		this.ppicService = new MediaService(jdbc, "profilepicture", MAX_PPIC_SIZE);
 		this.galleryService = new MediaService(jdbc, "gallery", MAX_GALLERY_SIZE);
@@ -128,6 +132,7 @@ public class MediaController {
 			@PathVariable("id") long id) throws DataAccessException, SQLException, MediaException, IOException {
 		if (file.getContentType().equals("image/png") || file.getContentType().equals("image/jpeg")) {
 			ppicService.updateMediaOfAccount(file, id);
+			accountRepository.updateLastChanged();
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.status(415).body(new ErrorResponse("Filetype not supported, try .png or .jpeg"));

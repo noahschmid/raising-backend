@@ -81,6 +81,11 @@ public class AccountRepository implements IRepository<Account> {
 		throw new EmailNotFoundException("Email " + email + "was not found.");
 	}
 
+
+	public void updateLastChanged() {
+		
+	}
+
 	/**
 	 * Add a new account to the database
 	 * 
@@ -108,6 +113,8 @@ public class AccountRepository implements IRepository<Account> {
 		ps.setInt(c++, account.getTicketMaxId());
 		ps.setLong(c++, account.getCountryId());
 		ps.setString(c++, account.getWebsite());
+		ps.setTimestamp(c++, account.getLastChanged());
+		
 		if(ppicId != -1)
 			ps.setLong(c++, ppicId);
 		else
