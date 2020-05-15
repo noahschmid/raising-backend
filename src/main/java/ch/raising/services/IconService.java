@@ -61,13 +61,17 @@ public class IconService{
 		insert.setContentType(icon.getContentType());
 		return iconRepo.addMedia(insert);
 	}
-	
 	public Icon getIcon(long id) {
 		return iconRepo.find(id);
 	}
-
+	public List<Long> getAllIds() throws DataAccessException, SQLException {
+		return iconRepo.findAllIds();
+	}
+	public List<Icon> getAllIcons() throws DataAccessException, SQLException {
+		return iconRepo.findAllIcons();
+	}
 	public void update(int id, MultipartFile build) throws DataAccessException, IOException {
-		iconRepo.update(Icon.builder().icon(build.getBytes()).contentType(build.getContentType()).build());
+		iconRepo.update(Icon.builder().id(id).icon(build.getBytes()).contentType(build.getContentType()).build());
 	}
 
 }

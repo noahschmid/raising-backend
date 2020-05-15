@@ -290,7 +290,7 @@ public class MediaController {
 		return ResponseEntity.ok(iconService.addIconAndReturnId(icon));
 	}
 
-	@PostMapping("/icon/{id}")
+	@PatchMapping("/icon/{id}")
 	public ResponseEntity<?> updateIcon(@PathVariable int id, @RequestParam("icon") MultipartFile icon)
 			throws DataAccessException, IOException {
 		iconService.update(id, icon);
@@ -302,6 +302,10 @@ public class MediaController {
 		Icon icon = iconService.getIcon(id);
 		MediaType returns = getMediaType(icon.getContentType());
 		return ResponseEntity.ok().contentType(returns).body(icon.getIcon());
+	}
+	@GetMapping("/icon")
+	public ResponseEntity<?> getIcon() throws DataAccessException, SQLException {
+		return ResponseEntity.ok().body(iconService.getAllIcons());
 	}
 	
 	@GetMapping("/icon/raising")

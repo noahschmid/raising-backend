@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 
 import ch.raising.models.Icon;
+import ch.raising.utils.MapUtil;
 
 
 @Repository
@@ -26,6 +28,7 @@ public class IconRepository {
 	private final String INSERT_ICON = "INSERT INTO icon(media, type, lastchanged) VALUES (?,?,now())";
 	private final String FIND_BY_ID = "SELECT * FROM icon where id = ?";
 	private final String UPDATE = "UPDATE icon set type = ?, media = ? where id = ?";
+	private final String FIND_ALL = "SELECT id, type, media, lastchanged FROM icon";
 
 	public IconRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
@@ -76,5 +79,13 @@ public class IconRepository {
 			return Icon.builder().id(rs.getLong("id")).contentType(rs.getString("type")).icon(rs.getBytes("media")).build();
 		}
 		
+	}
+
+	public List<Long> findAllIds() throws SQLException, DataAccessException {
+		return jdbc.query(FIND_ALL, MapUtil::mapRowToId);
+	}
+
+	public List<Icon> findAllIcons() {
+		return jdbc.query(FIND_ALL, new IconMapper());
 	}
 }
