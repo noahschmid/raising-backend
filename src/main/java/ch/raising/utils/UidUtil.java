@@ -3,14 +3,14 @@ package ch.raising.utils;
 public class UidUtil {
 	
 	public static boolean isValidUId(String unternehmensId) {
-		if(unternehmensId.length() < 13)
-			return false;
-		char[] uId = unternehmensId.toCharArray();
-		int[] uIdNumber = compileUIdNumber(uId);
-		if(uIdNumber.length < 9)
-			return false;
-		if(!checkNumber(uIdNumber))
-			return false;
+//		if(unternehmensId.length() < 13)
+//			return false;
+//		char[] uId = unternehmensId.toCharArray();
+//		int[] uIdNumber = compileUIdNumber(uId);
+//		if(uIdNumber.length < 9)
+//			return false;
+//		if(!checkNumber(uIdNumber))
+//			return false;
 		
 		return true;
 	}
