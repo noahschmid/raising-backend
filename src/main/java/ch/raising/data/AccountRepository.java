@@ -87,7 +87,7 @@ public class AccountRepository implements IRepository<Account> {
 	 * @param id id of account
 	 */
 	public void updateLastChanged(long id) {
-		String query = "UPDATE FROM account SET lastchanged=now() WHERE id = ?;";
+		String query = "UPDATE account SET lastchanged=now() WHERE id = ?;";
 		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
