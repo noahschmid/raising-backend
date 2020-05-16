@@ -43,8 +43,6 @@ public class InteractionService {
 	private final StartupRepository suRepo;
 	private final NotificationService notificationService;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(InteractionService.class);
-
 	@Autowired
 	public InteractionService(InteractionRepository interactionRepo, RelationshipRepository relationshipRepo,
 			AccountRepository accountRepo, SharedDataRepository shareRepo, InvestorRepository invRepo,
@@ -158,7 +156,7 @@ public class InteractionService {
 			throw e;
 		}
 		notificationService.sendLeadNotification(getAccountId(), interaction.getData().getAccountId(),
-				interaction.getInteraction(), interactionId);
+				interaction.getInteraction(), interaction.getRelationshipId());
 	}
 
 	private void validateSharedData(InteractionType state, SharedData data) throws InvalidInteractionException {
@@ -220,7 +218,7 @@ public class InteractionService {
 			throw e;
 		}
 		notificationService.sendConnectionNotification(getAccountId(), accept.getData().getAccountId(), accept.getInteraction(),
-				interactionId);
+				accept.getRelationshipId());
 		return getSharedDataAndDelete(interactionId);
 	}
 

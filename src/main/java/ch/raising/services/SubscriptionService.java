@@ -93,7 +93,7 @@ public class SubscriptionService {
 
 	public boolean hasIOSSubscription(long id) {
 		long accountId = getAccountId();
-		long now = System.currentTimeMillis();
+		long now = getCurrentTimeMillis();
 		if (now < iosRepo.getExpiresDateInMs(id)) {
 			return true;
 		} else {
@@ -115,8 +115,12 @@ public class SubscriptionService {
 		}
 	}
 
+	private long getCurrentTimeMillis() {
+		return System.currentTimeMillis();
+	}
+
 	public boolean hasAndroidSubscription(long accountId) {
-		long now = System.currentTimeMillis();
+		long now = getCurrentTimeMillis();
 		if (now < androidRepo.getExpiresDateInMs(accountId)) {
 			return true;
 		} else {
