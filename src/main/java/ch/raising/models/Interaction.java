@@ -5,12 +5,15 @@ import java.sql.Timestamp;
 import ch.raising.models.enums.InteractionType;
 import ch.raising.models.enums.State;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @Builder
+@ToString
 public class Interaction {
 	@Builder.Default private long id = -1l;
 	@Builder.Default private int relationshipId = -1;

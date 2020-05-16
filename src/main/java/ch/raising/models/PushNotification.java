@@ -22,4 +22,11 @@ public class PushNotification {
 	private Device device;
 	private NotificationType type;
 	private String token;
+
+	@Override
+	public String toString() {
+		return "{accountId: " + accountId + ", requesteeId: " + "actionId: " + actionId + ", title: " + title
+				+ ", message: " + message + ", device: " + device + ", notificationType: " + type + ", token:" + token
+				+ "}";
+	}
 }
