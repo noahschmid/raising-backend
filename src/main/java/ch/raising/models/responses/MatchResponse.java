@@ -23,4 +23,5 @@ public class MatchResponse {
     private int matchingPercent;
     private List<Interaction> interactions;
     private Timestamp lastchanged;
+    private Timestamp accountLastChanged;
 }

@@ -67,7 +67,7 @@ public class Account {
 	@Builder(builderMethodName = "accountBuilder")
 	public Account(long accountId, long countryId, String password, String roles, String email, int ticketMinId,
 			int ticketMaxId, String companyName, String description, String pitch, String website,
-			long profilePictureId, String firstName, String lastName) {
+			long profilePictureId, String firstName, String lastName, Timestamp lastChanged) {
 
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -83,6 +83,7 @@ public class Account {
 		this.countryId = countryId;
 		this.website = website;
 		this.profilePictureId = profilePictureId;
+		this.lastChanged = lastChanged;
 	}
 
 	/**
@@ -133,6 +134,7 @@ public class Account {
 		this.gallery = acc.gallery;
 		this.countryId = acc.countryId;
 		this.website = acc.website;
+		this.lastChanged = acc.lastChanged;
 	}
 
 	public boolean isComplete() {
