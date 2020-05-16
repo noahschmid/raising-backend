@@ -1,8 +1,11 @@
 package ch.raising.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
@@ -19,10 +22,20 @@ import ch.raising.models.Media;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MediaException;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+
+import java.awt.image.BufferedImage;
+
 @Service
 public class MediaService{
 	private final IMediaRepository<Media> mediaRepo;
 	private final int MAX_ALLOWED_ITEMS;
+
+	private final double MAX_FILE_SIZE = 150 * 1024;
 	
 	public MediaService() {
 		this.mediaRepo = null;
@@ -35,7 +48,7 @@ public class MediaService{
 	}
 	/**
 	 * adds a image to the table if the maximum count is not exeeded
-	 * @param video
+	 * @param media
 	 * @return
 	 * @throws DataAccessException
 	 * @throws SQLException
@@ -46,7 +59,7 @@ public class MediaService{
 		long accountId = getAccountId();
 		if(mediaRepo.countMediaOfAccount(accountId) + 1 <= MAX_ALLOWED_ITEMS) {
 			media.setAccountId(accountId);
-			return mediaRepo.addMedia(media);
+			return mediaRepo.addMedia(compress(media));
 		}
 		throw new MediaException("All media items for this account were added. Try updating instead.");
 	}
@@ -56,7 +69,7 @@ public class MediaService{
 		if(id > 0) {
 			media.setId(id);
 			media.setAccountId(getAccountId());
-			mediaRepo.updateMedia(media);
+			mediaRepo.updateMedia(compress(media));
 		}else {
 			throw new MediaException("mediaId not specified");
 		}
@@ -102,6 +115,50 @@ public class MediaService{
 			ids.add(uploadMediaAndReturnId(insert));
 		}
 		return ids;
+	}
+
+	public Media compress(Media media) {
+		if(media.getContentType().contains("image/")) {
+			String type = media.getContentType().substring(6);
+			ByteArrayInputStream bis = new ByteArrayInputStream(media.getMedia());
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+			try {
+				BufferedImage bufferedImage = ImageIO.read(bis);
+				Iterator<ImageWriter> imageWriters = ImageIO.getImageWritersByFormatName(type);
+
+				if (!imageWriters.hasNext())
+					throw new IllegalStateException("Writers Not Found!!");
+
+				long size = media.getMedia().length;
+				double factor = MAX_FILE_SIZE / size;
+
+				if(factor >= 1)
+					return media;
+			
+				ImageWriter imageWriter = (ImageWriter)imageWriters.next();
+				ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(bos);
+				imageWriter.setOutput(imageOutputStream);
+
+				ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
+
+				//Set the compress quality metrics
+				imageWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+				imageWriteParam.setCompressionQuality((float)factor);
+
+				//Created image
+				imageWriter.write(null, new IIOImage(bufferedImage, null, null), imageWriteParam);
+
+				media.setMedia(bos.toByteArray());
+				System.out.println("Compression successful. Original size: " + size + "KB new size: " + (media.getMedia().length / 1024) + "KB");
+
+			} catch (Exception e) {
+				System.out.println("Exception while compressing: " + e.getMessage());
+			}
+
+		}
+
+		return media;
 	}
 }
  

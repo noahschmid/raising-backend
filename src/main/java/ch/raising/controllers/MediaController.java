@@ -59,6 +59,7 @@ public class MediaController {
 		this.galleryService = new MediaService(jdbc, "gallery", MAX_GALLERY_SIZE);
 		this.documentService = new MediaService(jdbc, "document", MAX_PDF_SIZE);
 		this.iconService = iconService;
+		this.accountRepository = accountRepository;
 	}
 
 	@PostMapping("/video")
