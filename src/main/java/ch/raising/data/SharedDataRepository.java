@@ -23,7 +23,7 @@ import ch.raising.models.SharedData;
 @Repository
 public class SharedDataRepository {
 
-	private final RowMapper<SharedData> ShareMapper = new ShareMapper();
+	private final RowMapper<SharedData> shareMapper = new ShareMapper();
 	private final JdbcTemplate jdbc;
 	private final String FIND_BY_ACCOUNT_ID;
 	private final String FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID;
@@ -46,11 +46,11 @@ public class SharedDataRepository {
 	}
 
 	public List<SharedData> findByAccountId(long accountId)throws EmptyResultDataAccessException, SQLException {
-		return jdbc.query(FIND_BY_ACCOUNT_ID, new Object[] { accountId }, ShareMapper);
+		return jdbc.query(FIND_BY_ACCOUNT_ID, new Object[] { accountId }, shareMapper);
 	}
 
 	public SharedData findByInteractionIdAndAccountId(long interactionId, long accountId) {
-		return jdbc.queryForObject(FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID, new Object[] {interactionId, accountId}, ShareMapper);
+		return jdbc.queryForObject(FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID, new Object[] {interactionId, accountId}, shareMapper);
 	}
 	
 	public void deleteByInteractionIdAndAccountId(long interactionId, long accountId) throws SQLException{
@@ -64,7 +64,7 @@ public class SharedDataRepository {
 	public void deleteByInteractionId(long interactionId) throws SQLException, DataAccessException{
 		jdbc.update(DELETE_BY_INTERACTION_ID, new Object[] {interactionId}, new int[] {Types.BIGINT});
 	}
-	public void deleteByAccountId(long accountId)throws SQLException, DataAccessException{
+	public void deleteByAccountId(long accountId) throws SQLException, DataAccessException{
 		jdbc.update(DELETE_BY_ACCOUNT_ID, new Object[] {accountId}, new int[] {Types.BIGINT});
 	}
 	public void deleteById(long dataId) {

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -34,7 +33,6 @@ import ch.raising.utils.InvalidInteractionException;
 
 @Service
 public class InteractionService {
-
 	private final InteractionRepository interactionRepo;
 	private final RelationshipRepository relationshipRepo;
 	private final AccountRepository accountRepo;
@@ -156,6 +154,7 @@ public class InteractionService {
 			interactionRepo.deleteByInteractionId(interactionId);
 			throw e;
 		}
+		LoggerFactory.getLogger(this.getClass().getName()).info(interaction.toString());
 		notificationService.sendLeadNotification(getAccountId(), interaction.getData().getAccountId(),
 				interaction.getInteraction(), interaction.getRelationshipId());
 	}
@@ -203,6 +202,7 @@ public class InteractionService {
 
 	public SharedData acceptInteraction(long interactionId, InteractionRequest accept)
 			throws InvalidInteractionException, DataAccessException, DatabaseOperationException, SQLException {
+		LoggerFactory.getLogger(this.getClass().getName()).info(accept.toString());
 		SharedData data = accept.getData();
 		data.setInteractionId(interactionId);
 		validateSharedData(accept.getInteraction(), data);
@@ -234,7 +234,7 @@ public class InteractionService {
 			} catch (Exception e) {
 				if (retreived != null)
 					shareRepo.addSharedData(retreived);
-				throw e;
+				LoggerFactory.getLogger(this.getClass().getName()).info("Could not retreive data: interactionId" + interactionId + " accountId: " + accountId);
 			}
 			shareRepo.deleteByInteractionIdAndAccountId(interactionId, accountId);
 			return retreived;

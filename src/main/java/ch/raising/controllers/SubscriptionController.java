@@ -55,13 +55,13 @@ public class SubscriptionController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@PostMapping("/android/notify")
+	//@PostMapping("/android/notify")
 	public ResponseEntity<?> notifyAndroid(@RequestBody Map<String, String> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
 		subService.processAndroidPush(json);
 		return ResponseEntity.ok().build();
 	}
 	
-	@PostMapping("/ios/notify")
+	//@PostMapping("/ios/notify")
 	public ResponseEntity<?> notifyIOS(@RequestBody Map<String, String> json) throws InvalidSubscriptionException, DataAccessException, JsonMappingException, JsonProcessingException {
 		subService.processIOSPush(json);
 		return ResponseEntity.ok().build();

@@ -29,6 +29,12 @@ class UIdValidationAndFormatTest {
 		String uId = "109322551";
 		assertEquals(true, UidUtil.isValidUId(uId));
 	}
+	
+	@Test
+	void testValid5() {
+		String uId = "CHE-231.080.450";
+		assertEquals(true, UidUtil.isValidUId(uId));
+	}
 
 
 }

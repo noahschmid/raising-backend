@@ -1,5 +1,9 @@
 package ch.raising.utils;
-
+/**
+ * not currently used
+ * @author manus
+ *
+ */
 public class UidUtil {
 	
 	public static boolean isValidUId(String unternehmensId) {

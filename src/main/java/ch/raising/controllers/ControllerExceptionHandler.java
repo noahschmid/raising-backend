@@ -101,7 +101,7 @@ public class ControllerExceptionHandler {
 	@ExceptionHandler(EmptyResultDataAccessException.class)
 	public ResponseEntity<?> handle(EmptyResultDataAccessException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
-		return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(new ErrorResponse("No Element found for specified id", e.getMessage()));
+		return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(new ErrorResponse("No Element found for specified id", e.getStackTrace()));
 	}
 	@ExceptionHandler(InvalidInteractionException.class)
 	public ResponseEntity<?> handle(InvalidInteractionException e){

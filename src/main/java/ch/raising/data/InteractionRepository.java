@@ -102,7 +102,7 @@ public class InteractionRepository {
 		jdbc.update(DELETE_BY_INTERACTION_ID, new Object[] {interactionId}, new int[] {Types.BIGINT});
 	}
 	
-	public List<Interaction> findByRelationshipId(long rId) {
+	public List<Interaction> findByRelationshipId(long rId) throws DataAccessException, SQLException{
 		return jdbc.query(FIND_BY_REALTIONSHIP_ID, new Object[] {rId}, new InteractionMapper());
 	}
 	
