@@ -173,7 +173,7 @@ public class SubscriptionService {
 	public void processAndroidPush(Object json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
 		String purchaseToken = "";
 		String subscriptionId = "";
-		Logger.info(json.toString());
+		Logger.info("\n\n======== Google Push: {} ========\n\n", json.toString());
 //		JsonNode message = mapper.readTree(json.get("message"));
 //		String base64Payload = message.findValue("data").asText();
 //		String decodedPayload = new String(Base64.getDecoder().decode(base64Payload));
