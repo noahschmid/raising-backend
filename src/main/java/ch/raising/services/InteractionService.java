@@ -58,7 +58,7 @@ public class InteractionService {
 			throws EmptyResultDataAccessException, DataAccessException, SQLException, InvalidInteractionException {
 		long accountId = getAccountId();
 		List<Relationship> relationships = getRelationships(accountId);
-		List<MatchResponse> matchResponses = populateWithInteraction(relationships, accountId);
+		List<MatchResponse> matchResponses = populateWithInteraction(relationships);
 		populateWithAccountInfo(matchResponses);
 		return matchResponses;
 	}
@@ -92,7 +92,8 @@ public class InteractionService {
 		}
 
 	}
-	private List<MatchResponse> populateWithInteraction(List<Relationship> relationship, long accountId)
+
+	private List<MatchResponse> populateWithInteraction(List<Relationship> relationship)
 			throws SQLException, InvalidInteractionException {
 		List<MatchResponse> responses = new ArrayList<MatchResponse>();
 		for (Relationship rId : relationship) {
@@ -160,7 +161,8 @@ public class InteractionService {
 	}
 
 	private void validateSharedData(InteractionType state, SharedData data) throws InvalidInteractionException {
-
+		if(data == null) 
+			throw new InvalidInteractionException("send the required data object: " +  new SharedData());
 		if (data.getAccountId() == -1 || data.getAccountId() == 0)
 			throw new InvalidInteractionException("add data.accountId");
 		if (data.getEmail() == "" || data.getEmail() == null)
@@ -206,6 +208,7 @@ public class InteractionService {
 		SharedData data = accept.getData();
 		data.setInteractionId(interactionId);
 		validateSharedData(accept.getInteraction(), data);
+		shareRepo.addSharedData(data);
 		try {
 			if (isStartup()) {
 				interactionRepo.startupUpdate(State.ACCEPTED, interactionId, getAccountId());
@@ -218,14 +221,14 @@ public class InteractionService {
 			shareRepo.deleteByInteractionIdAndAccountId(interactionId, data.getAccountId());
 			throw e;
 		}
-		notificationService.sendConnectionNotification(getAccountId(), accept.getData().getAccountId(), accept.getInteraction(),
-				accept.getRelationshipId());
+		notificationService.sendConnectionNotification(getAccountId(), accept.getData().getAccountId(),
+				accept.getInteraction(), accept.getRelationshipId());
 		return getSharedDataAndDelete(interactionId);
 	}
 
 	private SharedData getSharedDataAndDelete(long interactionId) throws EmptyResultDataAccessException, SQLException {
 		long accountId = getAccountId();
-		Interaction updated = interactionRepo.findByAccountIdAndId(interactionId, accountId);
+		Interaction updated = interactionRepo.findByIdAndAccountId(interactionId, accountId);
 
 		if (updated.getInvestorState() == State.ACCEPTED && updated.getStartupState() == State.ACCEPTED) {
 			SharedData retreived = null;
@@ -234,7 +237,6 @@ public class InteractionService {
 			} catch (Exception e) {
 				if (retreived != null)
 					shareRepo.addSharedData(retreived);
-				LoggerFactory.getLogger(this.getClass().getName()).info("Could not retreive data: interactionId" + interactionId + " accountId: " + accountId);
 			}
 			shareRepo.deleteByInteractionIdAndAccountId(interactionId, accountId);
 			return retreived;

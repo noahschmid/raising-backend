@@ -76,7 +76,7 @@ public class InteractionRepository {
 		};
 	}
 
-	public Interaction findByAccountIdAndId(long interactionId, long accountId)
+	public Interaction findByIdAndAccountId(long interactionId, long accountId)
 			throws EmptyResultDataAccessException, SQLException {
 		return jdbc.queryForObject(FIND_BY_ACCOUNTID_AND_ID, new Object[] { interactionId, accountId, accountId },
 				this.interactionMapper);

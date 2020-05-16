@@ -113,7 +113,7 @@ class InteractionRepositoryTest {
 
 	@Test
 	void testFindByAccountIdAndId() throws EmptyResultDataAccessException, SQLException {
-		Interaction found = interactionRepo.findByAccountIdAndId(id, startupId);
+		Interaction found = interactionRepo.findByIdAndAccountId(id, startupId);
 		assertNotNull(found);
 		assertEquals(interaction.getStartupId(), found.getStartupId());
 	}

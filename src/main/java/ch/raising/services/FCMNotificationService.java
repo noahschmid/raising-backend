@@ -24,7 +24,7 @@ public class FCMNotificationService {
 	private final static String CHANNELID = "1";
 	
 	public void sendMessage(PushNotification notification) throws InterruptedException, ExecutionException {
-		LoggerFactory.getLogger(FCMNotificationService.class).info("sending message: " + notification.getMessage());
+		LoggerFactory.getLogger(FCMNotificationService.class).info("sending message: " + notification);
 		Message m = getMessage(notification);
 		String response = FirebaseMessaging.getInstance().sendAsync(m).get();
 		LoggerFactory.getLogger(FCMNotificationService.class).info("sent message: " + response);
