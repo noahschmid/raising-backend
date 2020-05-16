@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.List;
 
+import org.hibernate.validator.internal.util.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -50,6 +51,7 @@ public class SharedDataRepository {
 	}
 
 	public SharedData findByInteractionIdAndAccountId(long interactionId, long accountId) {
+		
 		return jdbc.queryForObject(FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID, new Object[] {interactionId, accountId}, ShareMapper);
 	}
 	

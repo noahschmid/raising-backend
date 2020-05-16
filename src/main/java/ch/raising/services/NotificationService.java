@@ -50,6 +50,7 @@ public class NotificationService {
 	}
 
 	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction, long actionId) {
+		LoggerFactory.getLogger(this.getClass().getName()).info("processing interactionrequest: actionId {}", actionId);
 		String name = getAccountName(requesteeId);
 		String title = "New Connection";
 		String message = name + " accepted your Request for " + interaction.getPretty() + ".";
@@ -65,6 +66,8 @@ public class NotificationService {
 	}
 
 	public void sendRequestMatch(long requesteeId, long partnerId, long actionId) {
+
+		LoggerFactory.getLogger(this.getClass().getName()).info("processing interactionrequest: actionId {}", actionId);
 		String name = getAccountName(requesteeId);
 		String title = "New Matching Request";
 		String message = "You got a new handshake request from " + name + ".";
@@ -79,6 +82,7 @@ public class NotificationService {
 	}
 
 	public void sendMatchRequestAccept(long requesteeId, long partnerId, long actionId) {
+		LoggerFactory.getLogger(this.getClass().getName()).info("processing interactionrequest: actionId {}", actionId);
 		String name = getAccountName(requesteeId);
 		String title = "Accepted Match";
 		String message = name + " accepted your request.";
@@ -109,6 +113,7 @@ public class NotificationService {
 	}
 
 	private void sendMessage(PushNotification push) {
+		LoggerFactory.getLogger(this.getClass().getName()).info("trying to send: push.actionId(): {}", push.getActionId());
 		try {
 			Settings notificationSettings = settingRepo.findInfoByAccountId(push.getAccountId());
 			if (notificationSettings.getToken() == null || notificationSettings.getToken().equals("")) {

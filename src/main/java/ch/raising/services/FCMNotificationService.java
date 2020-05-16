@@ -40,6 +40,7 @@ public class FCMNotificationService {
 				.putData("interaction", notification.getType().name())
 				.putData("id", "" + notification.getActionId())
 				.putData("accountId", "" + notification.getRequesteeId())
+				.putData("click_action", notification.getType().name())
 				.build();
 	}
 
