@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import ch.raising.models.AndroidSubscription;
 import ch.raising.services.SubscriptionService;
 import ch.raising.utils.InvalidSubscriptionException;
 
@@ -55,8 +56,8 @@ public class SubscriptionController {
 		return ResponseEntity.ok().build();
 	}
 	
-	//@PostMapping("/android/notify")
-	public ResponseEntity<?> notifyAndroid(@RequestBody Map<String, String> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
+	@PostMapping("/android/notify")
+	public ResponseEntity<?> notifyAndroid(@RequestBody Object json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
 		subService.processAndroidPush(json);
 		return ResponseEntity.ok().build();
 	}
@@ -77,10 +78,11 @@ public class SubscriptionController {
 	
 	@GetMapping("/android")
 	public ResponseEntity<?> getSubscriptionInfoToken() {
-//		resp.put("subscriptionId","ch.swissef.raisingapp.subscription1y");
-//		resp.put("expiresDate", "2020-05-10T09:53:42.028+0000");
-//		resp.put("purchaseToken", "dbkaldngninmfnkoninbhope.AO-J1Ow2JVFxbA4PZzmQBpJecHKgY4osvzBHMnFMgzAQYRzD1GqoQZFGmHu4gi-wmXXbCB_ZAQECeAl6_nvUpxSyRYfhaOsVD05aWzJ46GHD8_w1csewojvtFO-Gz2t10jO9hS8B30GdS52hPpbYpWu5pSGQy3oebQ");
-		return ResponseEntity.ok(subService.getAndroidInfo());
+		AndroidSubscription sub = subService.getAndroidInfo();
+		if(System.currentTimeMillis() < sub.getExpiresDate().getTime())
+			return ResponseEntity.ok(sub);
+		else
+			return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
 
 	}
 }

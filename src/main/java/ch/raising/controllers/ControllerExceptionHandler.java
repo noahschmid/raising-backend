@@ -86,7 +86,7 @@ public class ControllerExceptionHandler {
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<?> handle(IOException e){
 		LoggerFactory.getILoggerFactory().getLogger(e.getClass().toString()).error(e.getMessage());
-		return ResponseEntity.status(500).contentType(MediaType.APPLICATION_JSON).contentType(null).body(new ErrorResponse("File malformed", e.getMessage()));
+		return ResponseEntity.status(500).contentType(MediaType.APPLICATION_JSON).body(new ErrorResponse("File malformed", e.getMessage()));
 	}
 	@ExceptionHandler(MediaException.class)
 	public ResponseEntity<?> handle(MediaException e){
