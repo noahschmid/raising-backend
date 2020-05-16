@@ -44,8 +44,8 @@ public class AccountRepository implements IRepository<Account> {
 		this.jdbc = jdbc;
 		this.encoder = encoder;
 		this.ADD_ACCOUNT = "INSERT INTO account(firstname, lastname, companyname, password, emailhash, pitch, "
-				+ "description, ticketminid, ticketmaxid, countryid, website, profilepictureid) VALUES"
-				+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+				+ "description, ticketminid, ticketmaxid, countryid, website, profilepictureid, lastchanged) VALUES"
+				+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 		this.ADD_ADMIN = "INSERT INTO account(firstname, lastname, emailhash, password, roles) VALUES (?,?,?,?,?)";
 		this.FIND_DATA_FOR_MATCHRESPONSE ="SELECT id, firstname, lastname, companyname, profilepictureid FROM ACCOUNT WHERE id = ?";
 	}
@@ -113,12 +113,12 @@ public class AccountRepository implements IRepository<Account> {
 		ps.setInt(c++, account.getTicketMaxId());
 		ps.setLong(c++, account.getCountryId());
 		ps.setString(c++, account.getWebsite());
-		ps.setTimestamp(c++, account.getLastChanged());
-		
 		if(ppicId != -1)
 			ps.setLong(c++, ppicId);
 		else
 			ps.setNull(c++, java.sql.Types.BIGINT);
+		ps.setTimestamp(c++, account.getLastChanged());
+		
 		if (ps.executeUpdate() > 0) {
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {

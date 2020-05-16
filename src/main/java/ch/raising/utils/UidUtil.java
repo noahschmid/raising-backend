@@ -3,16 +3,12 @@ package ch.raising.utils;
 public class UidUtil {
 	
 	public static boolean isValidUId(String unternehmensId) {
-		if(unternehmensId.length() < 13)
-			return false;
 		char[] uId = unternehmensId.toCharArray();
 		int[] uIdNumber = compileUIdNumber(uId);
 		if(uIdNumber.length < 9)
 			return false;
-		if(!checkNumber(uIdNumber))
-			return false;
 		
-		return true;
+		return checkNumber(uIdNumber);
 	}
 
 	private static boolean checkNumber(int[] uIdNumber) {
@@ -41,16 +37,6 @@ public class UidUtil {
 			}
 		}
 		return uIdNumber;
-	}
-
-	private static boolean beginsWithThreeUpper(char[] uId) {
-		int lower = 0;
-		int upper = 'Z' - 'A';
-		for (int i = 0; i < 3; i++) {
-			if(uId[0] - 'A' < lower || uId[0] - 'A' > upper)
-				return false;
-		}
-		return true;
 	}
 
 }

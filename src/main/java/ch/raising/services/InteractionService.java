@@ -71,7 +71,7 @@ public class InteractionService {
 		List<Interaction> response = new ArrayList<Interaction>();
 		response.addAll(interactionRepo.findByInvestorAndStartup(investorId, startupId));
 		return response;
-	} 
+	}
 
 	private void populateWithAccountInfo(List<MatchResponse> matchResponses) throws InvalidInteractionException {
 		for (MatchResponse m : matchResponses) {
@@ -95,43 +95,25 @@ public class InteractionService {
 		}
 
 	}
-
-	private List<MatchResponse> populateWithInteraction(List<Relationship> relationships, long accountId)
+	private List<MatchResponse> populateWithInteraction(List<Relationship> relationship, long accountId)
 			throws SQLException, InvalidInteractionException {
-		List<Interaction> interactions = interactionRepo.findAllByAccountId(accountId);
 		List<MatchResponse> responses = new ArrayList<MatchResponse>();
-		for (Relationship r : relationships) {
-			List<Interaction> interactionsOfR = new ArrayList<Interaction>();
-			for (Interaction i : interactions) {
-				if (i.getStartupId() == r.getStartupId() && i.getInvestorId() == r.getInvestorId()) {
-					SharedData shared = null;
-					try {
-						shared = getSharedDataAndDelete(i.getId());
-						i.setData(shared);
-					} catch (EmptyResultDataAccessException e) {
-						i.setData(shared);
-					}
-					i.setInvestorId(0); // because this should be changed to relationshipid in the database
-					i.setStartupId(0); // same here
-					interactionsOfR.add(i);
-				}
-			}
-			for (Interaction i : interactionsOfR) {
-				interactions.remove(i);
+		for (Relationship rId : relationship) {
+			List<Interaction> interactions = interactionRepo.findByRelationshipId(rId.getId());
+			for (Interaction interaction : interactions) {
+				SharedData shared = getSharedDataAndDelete(interaction.getId());
+				interaction.setData(shared);
 			}
 			MatchResponse matchResp = new MatchResponse();
-			matchResp.setId(r.getId());
-			matchResp.setState(r.getState());
-			matchResp.setInteractions(interactionsOfR);
-			matchResp.setMatchingPercent(MatchingService.getMatchingPercent(r.getMatchingScore()));
-			matchResp.setLastchanged(r.getLastchanged());
+			matchResp.setId(rId.getId());
+			matchResp.setState(rId.getState());
+			matchResp.setInteractions(interactions);
+			matchResp.setMatchingPercent(MatchingService.getMatchingPercent(rId.getMatchingScore()));
+			matchResp.setLastchanged(rId.getLastchanged());
 			if (isStartup()) {
-				matchResp.setAccountId(r.getInvestorId());
+				matchResp.setAccountId(rId.getInvestorId());
 			} else if (isInvestor()) {
-				matchResp.setAccountId(r.getStartupId());
-			} else {
-				throw new InvalidInteractionException(
-						"cannot map matches to an account that is neither a startup nor an investor");
+				matchResp.setAccountId(rId.getStartupId());
 			}
 			responses.add(matchResp);
 		}
@@ -146,7 +128,6 @@ public class InteractionService {
 		for (RelationshipState s : allExceptMatch) {
 			all.addAll(relationshipRepo.getByAccountIdAndState(accountId, s));
 		}
-
 		return all;
 	}
 
@@ -164,14 +145,11 @@ public class InteractionService {
 
 	public void addInteraction(InteractionRequest interaction)
 			throws DataAccessException, SQLException, InvalidInteractionException {
-
-		interaction.getData().setAccountId(interaction.getAccountId());
 		Interaction insert = constructInteraction(interaction);
 		long interactionId = interactionRepo.addInteraction(insert);
-		
+
 		try {
 			SharedData data = interaction.getData();
-			data.setAccountId(interaction.getAccountId());
 			data.setInteractionId(interactionId);
 			validateSharedData(interaction.getInteraction(), interaction.getData());
 			shareRepo.addSharedData(interaction.getData());
@@ -179,7 +157,8 @@ public class InteractionService {
 			interactionRepo.deleteByInteractionId(interactionId);
 			throw e;
 		}
-		notificationService.sendLeadNotification(getAccountId(), interaction.getAccountId(), interaction.getInteraction(), interactionId);
+		notificationService.sendLeadNotification(getAccountId(), interaction.getData().getAccountId(),
+				interaction.getInteraction(), interactionId);
 	}
 
 	private void validateSharedData(InteractionType state, SharedData data) throws InvalidInteractionException {
@@ -202,34 +181,32 @@ public class InteractionService {
 		if (interaction.getInteraction() == null)
 			throw new InvalidInteractionException("no interaction set");
 
-		if (isStartup() && accountRepo.isInvestor(interaction.getAccountId())) {
+		if (isStartup() && accountRepo.isInvestor(interaction.getData().getAccountId())) {
 			insert.setStartupId(requesteeId);
-			insert.setInvestorId(interaction.getAccountId());
+			insert.setInvestorId(interaction.getData().getAccountId());
 			insert.setStartupState(State.ACCEPTED);
 			insert.setInvestorState(State.OPEN);
-		} else if (isInvestor() && accountRepo.isStartup(interaction.getAccountId())) {
+		} else if (isInvestor() && accountRepo.isStartup(interaction.getData().getAccountId())) {
 			insert.setInvestorId(requesteeId);
-			insert.setStartupId(interaction.getAccountId());
+			insert.setStartupId(interaction.getData().getAccountId());
 			insert.setInvestorState(State.ACCEPTED);
 			insert.setStartupState(State.OPEN);
 		} else {
 			throw new InvalidInteractionException(
 					"This type of account cannot have a relationship. One party has to be a startup and the other has to be an investor. token: (startup: "
 							+ isStartup() + " ,investor: " + isInvestor() + ") " + " investor: "
-							+ accountRepo.isInvestor(interaction.getAccountId()));
+							+ accountRepo.isInvestor(interaction.getData().getAccountId()));
 		}
-		
 		insert.setInteraction(interaction.getInteraction());
+		insert.setRelationshipId(interaction.getRelationshipId());
 		return insert;
 	}
 
 	public SharedData acceptInteraction(long interactionId, InteractionRequest accept)
 			throws InvalidInteractionException, DataAccessException, DatabaseOperationException, SQLException {
 		SharedData data = accept.getData();
-		validateSharedData(accept.getInteraction(), data);
 		data.setInteractionId(interactionId);
-		data.setAccountId(accept.getAccountId());
-		long dataId = shareRepo.addSharedData(data);
+		validateSharedData(accept.getInteraction(), data);
 		try {
 			if (isStartup()) {
 				interactionRepo.startupUpdate(State.ACCEPTED, interactionId, getAccountId());
@@ -239,12 +216,11 @@ public class InteractionService {
 				throw new InvalidInteractionException("This type of account cannot accept an interaction");
 			}
 		} catch (Exception e) {
-			shareRepo.deleteById(dataId);
+			shareRepo.deleteByInteractionIdAndAccountId(interactionId, data.getAccountId());
 			throw e;
 		}
-
-		notificationService.sendConnectionNotification(getAccountId(), accept.getAccountId(),
-			accept.getInteraction(), interactionId);
+		notificationService.sendConnectionNotification(getAccountId(), accept.getData().getAccountId(), accept.getInteraction(),
+				interactionId);
 		return getSharedDataAndDelete(interactionId);
 	}
 
@@ -280,16 +256,17 @@ public class InteractionService {
 			throw new InvalidInteractionException("This type of account cannot decline an interaction");
 		}
 	}
-	
-	public void reopenInteraction(long interactionId) throws DataAccessException, SQLException, DatabaseOperationException, InvalidInteractionException {
+
+	public void reopenInteraction(long interactionId)
+			throws DataAccessException, SQLException, DatabaseOperationException, InvalidInteractionException {
 		long accountId = getAccountId();
-		if(isStartup()) {
+		if (isStartup()) {
 			interactionRepo.startupUpdate(State.OPEN, interactionId, accountId);
 			shareRepo.deleteByInteractionId(interactionId);
-		}else if(isInvestor()) {
+		} else if (isInvestor()) {
 			interactionRepo.investorUpdate(State.OPEN, interactionId, accountId);
 			shareRepo.deleteByInteractionId(interactionId);
-		}else {
+		} else {
 			throw new InvalidInteractionException("This type of account cannot decline an interaction");
 		}
 	}

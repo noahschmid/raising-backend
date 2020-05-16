@@ -26,26 +26,21 @@ import ch.raising.utils.DatabaseOperationException;
 public class InteractionRepository {
 
 	private final JdbcTemplate jdbc;
-	private final String FIND_ALL;
-	private final String INSERT_INTERACTION;
-	private final String FIND_BY_ACCOUNTID_AND_ID;
-	private final String STARTUP_UPDATE;
-	private final String INVESTOR_UPDATE;
-	private final String DELETE_BY_INTERACTION_ID;
-	private final String FIND_BY_STARTUP_AND_INVESTOR_ID;
+	private final static String FIND_ALL = "SELECT * FROM interaction WHERE startupid = ? OR investorid = ?";
+	private final static String INSERT_INTERACTION = "INSERT INTO interaction(relationshipid, startupid, investorid, interaction, startupstate, investorstate) VALUES (?,?,?,?,?,?)";
+	private final static String FIND_BY_ACCOUNTID_AND_ID = "SELECT * FROM interaction WHERE id = ? AND (startupid =? OR investorid=?)";
+	private final static String STARTUP_UPDATE = "UPDATE interaction SET startupstate = ?, acceptedat = now() WHERE id = ? AND startupid = ?";
+	private final static String INVESTOR_UPDATE = "UPDATE interaction SET investorstate = ?, acceptedat = now() WHERE id = ? AND investorid = ?";
+	private final static String DELETE_BY_INTERACTION_ID = "DELETE FROM interaction WHERE id = ?";
+	private final static String FIND_BY_STARTUP_AND_INVESTOR_ID = "SELECT * FROM interaction WHERE investorid = ? AND startupid = ?";
+	private final static String FIND_BY_REALTIONSHIP_ID = "SELECT * FROM interaction WHERE relationshipid = ?";
+
 
 	private final RowMapper<Interaction> interactionMapper = new InteractionMapper();
 
 	@Autowired
 	public InteractionRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
-		this.FIND_ALL = "SELECT * FROM interaction WHERE startupid = ? OR investorid = ?";
-		this.INSERT_INTERACTION = "INSERT INTO interaction(startupid, investorid, interaction, startupstate, investorstate) VALUES (?,?,?,?,?)";
-		this.FIND_BY_ACCOUNTID_AND_ID = "SELECT * FROM interaction WHERE id = ? AND (startupid =? OR investorid=?)";
-		this.INVESTOR_UPDATE = "UPDATE interaction SET investorstate = ?, acceptedat = now() WHERE id = ? AND investorid = ?";
-		this.STARTUP_UPDATE = "UPDATE interaction SET startupstate = ?, acceptedat = now() WHERE id = ? AND startupid = ?";
-		this.DELETE_BY_INTERACTION_ID = "DELETE FROM interaction WHERE id = ?";
-		this.FIND_BY_STARTUP_AND_INVESTOR_ID = "SELECT * FROM interaction WHERE investorid = ? AND startupid = ?";
 	}
 
 	public List<Interaction> findAllByAccountId(long accountId) {
@@ -65,6 +60,7 @@ public class InteractionRepository {
 			@Override
 			public Long doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
+				ps.setInt(c++, interaction.getRelationshipId());
 				ps.setLong(c++, interaction.getStartupId());
 				ps.setLong(c++, interaction.getInvestorId());
 				ps.setString(c++, interaction.getInteraction().name());
@@ -106,6 +102,10 @@ public class InteractionRepository {
 		jdbc.update(DELETE_BY_INTERACTION_ID, new Object[] {interactionId}, new int[] {Types.BIGINT});
 	}
 	
+	public List<Interaction> findByRelationshipId(long rId) {
+		return jdbc.query(FIND_BY_REALTIONSHIP_ID, new Object[] {rId}, new InteractionMapper());
+	}
+	
 	private class AddAndReturnIdPreparedStatement implements PreparedStatementCreator{
 
 		@Override
@@ -116,11 +116,11 @@ public class InteractionRepository {
 	}
 	
 	public class InteractionMapper implements RowMapper<Interaction>{
-
 		@Override
 		public Interaction mapRow(ResultSet rs, int rowNum) throws SQLException {
 			return Interaction.builder()
 					.id(rs.getLong("id"))
+					.relationshipId(rs.getInt("relationshipid"))
 					.startupId(rs.getLong("startupid"))
 					.investorId(rs.getLong("investorid"))
 					.interaction(InteractionType.valueOf(rs.getString("interaction")))
@@ -132,5 +132,4 @@ public class InteractionRepository {
 		}
 		
 	}
-
 }

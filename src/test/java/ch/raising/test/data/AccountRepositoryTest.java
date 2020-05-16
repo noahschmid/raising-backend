@@ -76,7 +76,7 @@ public class AccountRepositoryTest {
 				.pair("description", Type.VARCHAR).pair("companyName", Type.VARCHAR).pair("password", Type.VARCHAR)
 				.pair("roles", Type.VARCHAR).pair("emailhash", Type.VARCHAR).pair("ticketminid", Type.INT)
 				.pair("ticketmaxid", Type.INT).pair("countryId", Type.BIGINT).pair("website", Type.VARCHAR)
-				.pair("profilepictureid", Type.VARCHAR).createTable();
+				.pair("profilepictureid", Type.VARCHAR).pair("lastchanged", Type.TIMESTAMP).createTable();
 		jdbc.execute(createTable);
 
 		makeAccounts();

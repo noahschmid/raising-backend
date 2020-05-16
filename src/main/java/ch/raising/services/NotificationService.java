@@ -40,27 +40,17 @@ public class NotificationService {
 	public void sendLeadNotification(long requesteeId, long partnerAccountId, InteractionType type, long actionId) {
 		String name = getAccountName(requesteeId);
 		String message = name + " wants to " + type.getActionString();
-		PushNotification push = PushNotification.builder()
-				.accountId(partnerAccountId)
-				.message(message)
-				.title(title)
-				.actionId(actionId)
-				.type(NotificationType.LEAD)
-				.build();
+		PushNotification push = PushNotification.builder().accountId(partnerAccountId).message(message).title(title)
+				.actionId(actionId).type(NotificationType.LEAD).build();
 		sendMessage(push);
 	}
 
-	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction, long actionId) {
+	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction,
+			long actionId) {
 		String name = getAccountName(requesteeId);
 		String message = name + " accepted your request for " + interaction.getPretty() + ".";
-		PushNotification push = PushNotification.builder()
-				.accountId(partnerAccountId)
-				.requesteeId(requesteeId)
-				.message(message)
-				.title(title)
-				.actionId(actionId)
-				.type(NotificationType.CONNECTION)
-				.build();
+		PushNotification push = PushNotification.builder().accountId(partnerAccountId).requesteeId(requesteeId)
+				.message(message).title(title).actionId(actionId).type(NotificationType.CONNECTION).build();
 		sendMessage(push);
 	}
 
@@ -80,15 +70,9 @@ public class NotificationService {
 	public void sendMatchRequestAccept(long requesteeId, long partnerId, long actionId) {
 		String name = getAccountName(requesteeId);
 		String message = name + " is now a lead. Open Rai$ing and start interacting!";
-		PushNotification push = PushNotification.builder()
-									.accountId(partnerId)
-									.requesteeId(requesteeId)
-									.message(message)
-									.title(title)
-									.actionId(actionId)
-									.type(NotificationType.REQUEST)
-									.build();
-				sendMessage(push);
+		PushNotification push = PushNotification.builder().accountId(partnerId).requesteeId(requesteeId)
+				.message(message).title(title).actionId(actionId).type(NotificationType.REQUEST).build();
+		sendMessage(push);
 	}
 
 	private String getAccountName(long partnerAccount) {
@@ -119,7 +103,6 @@ public class NotificationService {
 			}
 		} catch (DataAccessException | SQLException e) {
 			LoggerFactory.getLogger(NotificationService.class).error("Could not retreive settings");
-			e.printStackTrace();
 		} catch (InterruptedException | ExecutionException e) {
 			LoggerFactory.getLogger(NotificationService.class)
 					.error("Notification could not be sent: " + e.getMessage());

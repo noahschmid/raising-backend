@@ -9,7 +9,12 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class InteractionRequest {
-	private long accountId;
+	private int relationshipId;
 	private InteractionType interaction;
 	private SharedData data;
+	
+	@Override
+	public String toString() {
+		return "{ relationshipId: " + relationshipId + ", interaction: " + interaction + ", data" + data;
+	}
 }

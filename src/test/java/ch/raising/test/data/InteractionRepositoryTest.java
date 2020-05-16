@@ -59,7 +59,7 @@ class InteractionRepositoryTest {
 		String create = QueryBuilder.getInstance().tableName("interaction").pair("id", Type.SERIAL)
 				.pair("startupid", Type.BIGINT).pair("investorid", Type.BIGINT).pair("interaction", Type.VARCHAR)
 				.pair("startupstate", Type.VARCHAR).pair("investorstate", Type.VARCHAR)
-				.pair("createdat", Type.TIMESTAMP).pair("acceptedat", Type.TIMESTAMP).createTable();
+				.pair("createdat", Type.TIMESTAMP).pair("acceptedat", Type.TIMESTAMP).pair("relationshipid", Type.BIGINT).createTable();
 		jdbc.execute(create);
 		insert();
 	}
@@ -87,7 +87,7 @@ class InteractionRepositoryTest {
 		assertNotNull(foundStartup);
 		assertEquals(1, foundStartup.size());
 		Interaction found = foundStartup.get(0);
-		assertEquals(interaction, found);
+		assertEquals(interaction.getInteraction(), found.getInteraction());
 
 	}
 
@@ -97,25 +97,25 @@ class InteractionRepositoryTest {
 		assertNotNull(foundStartup);
 		assertEquals(1, foundStartup.size());
 		Interaction found = foundStartup.get(0);
-		assertEquals(interaction, found);
+		assertEquals(interaction.getData(), found.getData());
 
 	}
 
 	@Test
 	void addInteraction() {
-		Interaction insert = Interaction.builder().id(12).startupId(13).investorId(45)
+		Interaction insert = Interaction.builder().id(12).relationshipId(132).startupId(13).investorId(45)
 				.interaction(InteractionType.EMAIL).startupState(State.OPEN).investorState(State.OPEN).build();
 		interactionRepo.addInteraction(insert);
 		Interaction found = jdbc.queryForObject("SELECT * FROM interaction WHERE startupid = 13",
 				interactionRepo.new InteractionMapper());
-		assertEquals(insert, found);
+		assertEquals(insert.getRelationshipId(), found.getRelationshipId());
 	}
 
 	@Test
 	void testFindByAccountIdAndId() throws EmptyResultDataAccessException, SQLException {
 		Interaction found = interactionRepo.findByAccountIdAndId(id, startupId);
 		assertNotNull(found);
-		assertEquals(interaction, found);
+		assertEquals(interaction.getStartupId(), found.getStartupId());
 	}
 
 	@Test
