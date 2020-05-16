@@ -123,6 +123,10 @@ public class SubscriptionService {
 		} else {
 			try {
 				AndroidSubscription oldToken = androidRepo.findSubscription(accountId);
+
+				if(oldToken.getSubscriptionId() == null || oldToken.getSubscriptionId() == "")
+					return false;
+
 				AndroidSubscription verified = verifyAndroidSubscription(oldToken.getPurchaseToken(),
 						oldToken.getSubscriptionId());
 				if (now < verified.getExpiresDate().getTime()) {
