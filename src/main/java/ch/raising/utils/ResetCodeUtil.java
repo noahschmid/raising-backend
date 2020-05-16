@@ -69,6 +69,8 @@ public class ResetCodeUtil {
             return null;
 
         String code;
+        resetCodeRepository.deleteByAccountId(account.getAccountId());
+
         do {
             code = generate();
         } while (resetCodeRepository.findByCode(code) != null);
