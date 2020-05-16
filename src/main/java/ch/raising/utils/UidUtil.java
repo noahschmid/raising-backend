@@ -11,7 +11,7 @@ public class UidUtil {
      * @param uid
      * @return
      */
-    public static boolean isValidUid(String uid) {
+    public static boolean isValidUId(String uid) {
         if (!uid.matches("[A-Z]{3}-\\d\\d\\d\\.\\d\\d\\d\\.\\d\\d\\d")) {
             return false;
         }
