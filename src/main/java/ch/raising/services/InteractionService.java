@@ -80,6 +80,7 @@ public class InteractionService {
 			m.setLastName(userData.getLastName());
 			m.setCompanyName(userData.getCompanyName());
 			m.setProfilePictureId(userData.getProfilePictureId());
+			m.setAccountLastChanged(userData.getAccountLastChanged());
 			if (isStartup()) {
 				m.setInvestorTypeId(invRepo.getInvestorType(m.getAccountId()));
 				m.setInvestmentPhaseId(-1);

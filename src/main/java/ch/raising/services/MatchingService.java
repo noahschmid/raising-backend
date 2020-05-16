@@ -361,6 +361,7 @@ public class MatchingService {
 				response.setFirstName(investor.getFirstName());
 				response.setLastName(investor.getLastName());
 				response.setProfilePictureId(investor.getProfilePictureId());
+				response.setAccountLastChanged(investor.getLastChanged());
 
 			} else {
 				response.setStartup(true);
@@ -375,6 +376,7 @@ public class MatchingService {
 				response.setDescription(startup.getDescription());
 				response.setCompanyName(startup.getCompanyName());
 				response.setProfilePictureId(startup.getProfilePictureId());
+				response.setAccountLastChanged(startup.getLastChanged());
 			}
 			matchResponses.add(response);
 			++matchesCount;

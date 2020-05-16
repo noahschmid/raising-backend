@@ -47,7 +47,7 @@ public class AccountRepository implements IRepository<Account> {
 				+ "description, ticketminid, ticketmaxid, countryid, website, profilepictureid, lastchanged) VALUES"
 				+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 		this.ADD_ADMIN = "INSERT INTO account(firstname, lastname, emailhash, password, roles) VALUES (?,?,?,?,?)";
-		this.FIND_DATA_FOR_MATCHRESPONSE ="SELECT id, firstname, lastname, companyname, profilepictureid FROM ACCOUNT WHERE id = ?";
+		this.FIND_DATA_FOR_MATCHRESPONSE ="SELECT id, firstname, lastname, companyname, profilepictureid, lastchanged FROM ACCOUNT WHERE id = ?";
 	}
 
 	/**
@@ -169,6 +169,7 @@ public class AccountRepository implements IRepository<Account> {
 		match.setLastName(rs.getString("lastname"));
 		match.setCompanyName(rs.getString("companyname"));
 		match.setProfilePictureId(rs.getLong("profilepictureid"));
+		match.setAccountLastChanged(rs.getTimestamp("lastchanged"));
 		return match;
 	}
 
@@ -197,6 +198,7 @@ public class AccountRepository implements IRepository<Account> {
 				.website(rs.getString("website"))
 				.profilePictureId(rs.getObject("profilepictureid") == null ?
 				-1 : rs.getLong("profilepictureid"))
+				.lastChanged(rs.getTimestamp("lastchanged"))
 				.build();
 	}
 
