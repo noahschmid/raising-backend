@@ -47,6 +47,7 @@ public class NotificationService {
 
 	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction,
 			long actionId) {
+		LoggerFactory.getLogger(this.getClass().getName()).info("processing interactionrequest: actionId {}", actionId);
 		String name = getAccountName(requesteeId);
 		String message = name + " accepted your request for " + interaction.getPretty() + ".";
 		PushNotification push = PushNotification.builder().accountId(partnerAccountId).requesteeId(requesteeId)
@@ -55,6 +56,8 @@ public class NotificationService {
 	}
 
 	public void sendRequestMatch(long requesteeId, long partnerId, long actionId) {
+
+		LoggerFactory.getLogger(this.getClass().getName()).info("processing interactionrequest: actionId {}", actionId);
 		String name = getAccountName(requesteeId);
 		String message = name + " would like to get in contact with you. Check out their profile";
 		PushNotification push = new PushNotification();
@@ -68,6 +71,7 @@ public class NotificationService {
 	}
 
 	public void sendMatchRequestAccept(long requesteeId, long partnerId, long actionId) {
+		LoggerFactory.getLogger(this.getClass().getName()).info("processing interactionrequest: actionId {}", actionId);
 		String name = getAccountName(requesteeId);
 		String message = name + " is now a lead. Open Rai$ing and start interacting!";
 		PushNotification push = PushNotification.builder().accountId(partnerId).requesteeId(requesteeId)
@@ -91,6 +95,8 @@ public class NotificationService {
 	}
 
 	private void sendMessage(PushNotification push) {
+		LoggerFactory.getLogger(this.getClass().getName()).info("trying to send: push.actionId(): {}",
+				push.getActionId());
 		try {
 			Settings notificationSettings = settingRepo.findInfoByAccountId(push.getAccountId());
 			if (notificationSettings.getToken() == null || notificationSettings.getToken().equals("")) {
