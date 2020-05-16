@@ -135,6 +135,8 @@ public class MediaService{
 
 				if(factor >= 1)
 					return media;
+
+				factor = Math.max(factor, 0.2);
 			
 				ImageWriter imageWriter = (ImageWriter)imageWriters.next();
 				ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(bos);
