@@ -1,6 +1,7 @@
 package ch.raising.services;
 
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.Map;
 
 import org.slf4j.LoggerFactory;
@@ -170,10 +171,13 @@ public class SubscriptionService {
 		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 	}
 
-	public void processAndroidPush(Object json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
+	public void processAndroidPush(Map<String, Object> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
 		String purchaseToken = "";
 		String subscriptionId = "";
-		Logger.info("\n\n======== Google Push: {} ========\n\n", json.toString());
+		JsonNode base64data = mapper.readTree(json.get("message").toString());
+		Logger.info("base64: {}", base64data.asText());
+		String token = new String(Base64.getDecoder().decode(base64data.asText()));
+		Logger.info("token: ", token);
 //		JsonNode message = mapper.readTree(json.get("message"));
 //		String base64Payload = message.findValue("data").asText();
 //		String decodedPayload = new String(Base64.getDecoder().decode(base64Payload));

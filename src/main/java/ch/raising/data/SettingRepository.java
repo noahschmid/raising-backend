@@ -51,7 +51,6 @@ public class SettingRepository {
 	}
 
 	public void update(Settings token, long accountId) throws SQLException, DataAccessException {
-		System.out.println(token.toString());
 		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "settings", accountId, "accountid");
 		update.addField(token.getToken(), "token");
 		update.addField(token.getDevice().name(), "device");

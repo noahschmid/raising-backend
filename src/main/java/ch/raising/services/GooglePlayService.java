@@ -30,6 +30,7 @@ import com.google.api.services.androidpublisher.AndroidPublisher.Purchases.Subsc
 import com.google.api.services.androidpublisher.AndroidPublisherRequestInitializer;
 import com.google.api.services.androidpublisher.AndroidPublisherScopes;
 import com.google.api.services.androidpublisher.model.SubscriptionPurchase;
+import com.google.firebase.auth.internal.GetAccountInfoResponse;
 
 import ch.raising.models.AndroidSubscription;
 import ch.raising.utils.InvalidSubscriptionException;
@@ -72,7 +73,7 @@ public class GooglePlayService {
 												.subscriptionId(subscriptionId)
 												.build();
 
-			Logger.info("Payment verified successfully for google play api environment: {}", subscription);
+			Logger.info("Play-API verified successfully for: {}", subscription);
 			return subscription;
 		} catch (IOException e) {
 			Logger.error("Payment verification google play api error: " + e.getMessage());
