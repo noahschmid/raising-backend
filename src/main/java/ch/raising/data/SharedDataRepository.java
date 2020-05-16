@@ -6,11 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.List;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -52,7 +50,6 @@ public class SharedDataRepository {
 	}
 
 	public SharedData findByInteractionIdAndAccountId(long interactionId, long accountId) {
-		LoggerFactory.getLogger(this.getClass().getName()).info("interactionId: {} accountid: {}", interactionId, accountId);
 		return jdbc.queryForObject(FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID, new Object[] {interactionId, accountId}, shareMapper);
 	}
 	

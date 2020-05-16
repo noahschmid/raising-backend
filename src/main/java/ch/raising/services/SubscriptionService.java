@@ -142,7 +142,7 @@ public class SubscriptionService {
 		return hasAndroidSubscription(id) || hasIOSSubscription(id);
 	}
 
-	public Object getAndroidInfo(long accountId) {
+	public AndroidSubscription getAndroidInfo(long accountId) {
 		return androidRepo.findSubscription(accountId);
 	}
 
@@ -162,7 +162,7 @@ public class SubscriptionService {
 		return isSubscribed(getAccountId());
 	}
 
-	public Object getAndroidInfo() {
+	public AndroidSubscription getAndroidInfo() {
 		return getAndroidInfo(getAccountId());
 	}
 
@@ -170,10 +170,10 @@ public class SubscriptionService {
 		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 	}
 
-	public void processAndroidPush(Map<String, String> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
+	public void processAndroidPush(Object json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
 		String purchaseToken = "";
 		String subscriptionId = "";
-		Logger.info("\n===================================\n =Got a push from GooglePlay-API=\n ================================");
+		Logger.info(json.toString());
 //		JsonNode message = mapper.readTree(json.get("message"));
 //		String base64Payload = message.findValue("data").asText();
 //		String decodedPayload = new String(Base64.getDecoder().decode(base64Payload));
