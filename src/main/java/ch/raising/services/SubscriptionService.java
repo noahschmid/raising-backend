@@ -60,6 +60,7 @@ public class SubscriptionService {
 
 	private void updateIOSRepository(long accountId, IOSSubscription resp) {
 		long expiresDate = iosRepo.getExpiresDateInMs(accountId);
+		Logger.info("was here");
 		if (!iosRepo.hasEntry(accountId)) {
 			iosRepo.addNewReceipt(resp, accountId);
 		} else if (expiresDate < resp.getExpiresDate().getTime()) {
@@ -178,6 +179,7 @@ public class SubscriptionService {
 		Logger.info("base64: {}", base64data.asText());
 		String token = new String(Base64.getDecoder().decode(base64data.asText()));
 		Logger.info("token: ", token);
+		
 //		JsonNode message = mapper.readTree(json.get("message"));
 //		String base64Payload = message.findValue("data").asText();
 //		String decodedPayload = new String(Base64.getDecoder().decode(base64Payload));

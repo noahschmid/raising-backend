@@ -40,7 +40,7 @@ public class SubscriptionController {
 	
 	@GetMapping("/ios/verify")
 	public ResponseEntity<?> verifyReceipt(){
-		if(subService.hasIOSSubscription())
+		if(subService.isSubscribed())
 			return ResponseEntity.ok().build();
 		else
 			return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
@@ -70,7 +70,7 @@ public class SubscriptionController {
 	
 	@GetMapping("/android/verify")
 	public ResponseEntity<?> verifyPurchaseToken() {
-		if(subService.hasAndroidSubscription())
+		if(subService.isSubscribed())
 			return ResponseEntity.ok().build();
 		else
 			return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
