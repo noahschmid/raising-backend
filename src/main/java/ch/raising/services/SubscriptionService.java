@@ -1,10 +1,6 @@
 package ch.raising.services;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.LoggerFactory;
@@ -100,13 +96,12 @@ public class SubscriptionService {
 			try {
 				IOSSubscription receipt = iosRepo.getSubscriptionInfo(accountId);
 				IOSSubscription verified = verifyIOSSubscription(receipt.getLatestReceiptData());
-				if (verified.getExpiresDate().getTime() < now) {
-					return false;
-				} else {
+				if (now < verified.getExpiresDate().getTime()) {
 					return true;
+				} else {
+					return false;
 				}
 			} catch (DataAccessException | SQLException e) {
-				Logger.error("Status polling failed: could not retreive data from repository: {}", e.getMessage());
 				return false;
 			} catch (InvalidSubscriptionException e) {
 				Logger.error("Status polling failed: could not verify receipt: {}", e.getMessage());
@@ -128,16 +123,15 @@ public class SubscriptionService {
 				AndroidSubscription oldToken = androidRepo.findSubscription(accountId);
 				AndroidSubscription verified = verifyAndroidSubscription(oldToken.getPurchaseToken(),
 						oldToken.getSubscriptionId());
-				if (verified.getExpiresDate().getTime() < now) {
-					return false;
-				} else {
+				if (now < verified.getExpiresDate().getTime()) {
 					return true;
+				} else {
+					return false;
 				}
 			} catch (DataAccessException e) {
-				Logger.error("Status polling failed: could not retreive data from repository: {}", e.getMessage());
 				return false;
 			} catch (InvalidSubscriptionException e) {
-				Logger.error("Status polling failed: could not verify receipt: {}", e.getMessage());
+				Logger.error("Status polling failed: could not verify purchaseToken: {}", e.getMessage());
 				return false;
 			}
 		}
@@ -179,7 +173,7 @@ public class SubscriptionService {
 	public void processAndroidPush(Map<String, String> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
 		String purchaseToken = "";
 		String subscriptionId = "";
-		Logger.info("Got a push from GooglePlay-API");
+		Logger.info("\n===================================\n =Got a push from GooglePlay-API=\n ================================");
 //		JsonNode message = mapper.readTree(json.get("message"));
 //		String base64Payload = message.findValue("data").asText();
 //		String decodedPayload = new String(Base64.getDecoder().decode(base64Payload));

@@ -24,11 +24,10 @@ public class FCMNotificationService {
 	private final static String CHANNELID = "1";
 	
 	public void sendMessage(PushNotification notification) throws InterruptedException, ExecutionException {
-		LoggerFactory.getLogger(FCMNotificationService.class).info("sending message: " + notification);
+		LoggerFactory.getLogger(FCMNotificationService.class).info("Sending message to FCM: " + notification);
 		Message m = getMessage(notification);
 		String response = FirebaseMessaging.getInstance().sendAsync(m).get();
-		LoggerFactory.getLogger(FCMNotificationService.class).info("sent message: " + response);
-
+		LoggerFactory.getLogger(FCMNotificationService.class).info("Sent message to FCM: " + response);
 	}
 
 	private Message getMessage(PushNotification notification) {
@@ -38,7 +37,7 @@ public class FCMNotificationService {
 				.setToken(notification.getToken())
 				.setNotification(new Notification(notification.getTitle(), notification.getMessage()))
 				.putData("interaction", notification.getType().name())
-				.putData("id", "" + notification.getActionId())
+				.putData("relationshipId", "" + notification.getActionId())
 				.putData("accountId", "" + notification.getRequesteeId())
 				.putData("click_action", notification.getType().name())
 				.build();

@@ -204,7 +204,7 @@ public class InteractionService {
 
 	public SharedData acceptInteraction(long interactionId, InteractionRequest accept)
 			throws InvalidInteractionException, DataAccessException, DatabaseOperationException, SQLException {
-		LoggerFactory.getLogger(this.getClass().getName()).info(accept.toString());
+
 		SharedData data = accept.getData();
 		data.setInteractionId(interactionId);
 		validateSharedData(accept.getInteraction(), data);
