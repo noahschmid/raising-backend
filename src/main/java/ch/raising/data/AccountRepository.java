@@ -271,7 +271,7 @@ public class AccountRepository implements IRepository<Account> {
 	}
 
 	public void deleteProfilePicture(long accountId)throws DataAccessException, SQLException{
-		jdbc.execute("update account set profilepictureid = ? where accountid = ?", new PreparedStatementCallback<Boolean>() {
+		jdbc.execute("update account set profilepictureid = ? where id = ?", new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				int c = 1;
