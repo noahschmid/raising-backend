@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import ch.raising.data.AccountRepository;
+import ch.raising.models.Account;
 import ch.raising.models.Icon;
 import ch.raising.models.Media;
 import ch.raising.models.responses.ErrorResponse;
