@@ -11,6 +11,7 @@ import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import ch.raising.data.AccountRepository;
 import ch.raising.models.Account;
 import ch.raising.models.Icon;
 import ch.raising.models.Media;
+import ch.raising.models.AccountDetails;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.models.responses.ReturnIdResponse;
 import ch.raising.services.IconService;
@@ -134,10 +136,22 @@ public class MediaController {
 			@PathVariable("id") long id) throws DataAccessException, SQLException, MediaException, IOException {
 		if (file.getContentType().equals("image/png") || file.getContentType().equals("image/jpeg")) {
 			ppicService.updateMediaOfAccount(file, id);
-			accountRepository.updateLastChanged();
+			accountRepository.updateLastChanged(getAccountId());
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.status(415).body(new ErrorResponse("Filetype not supported, try .png or .jpeg"));
+	}
+
+	/**
+	 * Get id of account that's sending the request
+	 */
+	private long getAccountId() {
+		try {
+			return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal()).getId();
+		}catch(Exception e) {
+			return -1;
+		}
 	}
 
 	/**

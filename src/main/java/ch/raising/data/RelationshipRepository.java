@@ -28,7 +28,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
     @Autowired
     public RelationshipRepository(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
-        this.FIND_BY_STATE_AND_ACCOUNT_ID = "SELECT * FROM relationship WHERE (startupId = ? OR investorId = ?) AND state = ?;";
+        this.FIND_BY_STATE_AND_ACCOUNT_ID = "SELECT * FROM relationship WHERE (startupId = ? OR investorId = ?) AND state = ? ORDER BY matchingScore DESC;";
     }
 
     /**
@@ -195,7 +195,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      */
     public List<Relationship> getByAccountId(long accountId) throws EmptyResultDataAccessException, SQLException{
         try {
-            String sql = "SELECT * FROM relationship WHERE startupId = ? OR investorId = ? ORDER BY matchingScore;";
+            String sql = "SELECT * FROM relationship WHERE startupId = ? OR investorId = ? ORDER BY matchingScore DESC;";
             return jdbc.query(sql, new Object[] { accountId, accountId }, this::mapRowToModel);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -209,7 +209,7 @@ public class RelationshipRepository implements IRepository<Relationship> {
      */
     public List<Relationship> getByState(RelationshipState state) throws EmptyResultDataAccessException, SQLException{
         try {
-            String sql = "SELECT * FROM relationship WHERE state = ? ORDER BY matchingScore;";
+            String sql = "SELECT * FROM relationship WHERE state = ? ORDER BY matchingScore DESC;";
             return jdbc.query(sql, new Object[] { state.name() }, this::mapRowToModel);
         } catch (Exception e) {
             System.out.println(e.getMessage());

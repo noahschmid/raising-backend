@@ -304,8 +304,7 @@ public class MatchingService {
 			System.out.println("getMatches: couldn't find settings for account " + accountId);
 		}
 		int matchesCount = 0;
-		int weeklyMatchesCount = matchesPreference <= MAX_WEEKLY_MATCHES_COUNT ? matchesPreference
-				: MAX_WEEKLY_MATCHES_COUNT;
+		int weeklyMatchesCount = Math.min(MAX_WEEKLY_MATCHES_COUNT, matchesPreference);
 
 		// last "release date" of matches
 		Date matchDay = Date.from(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -316,8 +315,8 @@ public class MatchingService {
 		System.out.println("Last matchday: " + matchDay.toString());
 
 		for (Relationship match : matches) {
-			boolean startupSubscribed = subscriptionService.isSubscribed(match.getStartupId());
-			boolean investorSubscribed = subscriptionService.isSubscribed(match.getInvestorId());
+			//boolean startupSubscribed = subscriptionService.isSubscribed(match.getStartupId());
+			//boolean investorSubscribed = subscriptionService.isSubscribed(match.getInvestorId());
 
 		/*	if(!isStartup && !startupSubscribed || isStartup && !investorSubscribed) {
 				break;
@@ -380,9 +379,9 @@ public class MatchingService {
 			}
 			matchResponses.add(response);
 			++matchesCount;
-			/*
-			 * if(matchesCount == weeklyMatchesCount) { break; }
-			 */
+			
+			if(matchesCount == weeklyMatchesCount) { break; }
+			 
 		}
 		return matchResponses;
 	}

@@ -82,8 +82,19 @@ public class AccountRepository implements IRepository<Account> {
 		throw new EmailNotFoundException("Email " + email + "was not found.");
 	}
 
-	public void updateLastChanged() {
-
+	/**
+	 * Update last changed timestamp of account
+	 * @param id id of account
+	 */
+	public void updateLastChanged(long id) {
+		String query = "UPDATE account SET lastchanged=now() WHERE id = ?;";
+		jdbc.execute(query, new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				ps.setLong(1, id);
+				return ps.execute();
+			}
+		});
 	}
 
 	/**
