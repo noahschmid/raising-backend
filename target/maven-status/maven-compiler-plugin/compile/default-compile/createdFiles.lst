@@ -54,6 +54,7 @@ ch\raising\services\InteractionService.class
 ch\raising\models\PrivateShareholder.class
 ch\raising\data\AssignmentTableRepository$2.class
 ch\raising\models\enums\State.class
+ch\raising\data\AccountRepository$3.class
 ch\raising\models\AssignmentTableWithIcon.class
 ch\raising\models\Boardmember.class
 ch\raising\services\NotificationService.class
@@ -86,6 +87,7 @@ ch\raising\utils\PreparedStatementUtil.class
 ch\raising\data\ResetCodeRepository$1.class
 ch\raising\models\Startup.class
 ch\raising\models\Media.class
+ch\raising\data\AccountRepository$2.class
 ch\raising\data\MediaRepositoryFactory.class
 ch\raising\models\StartupMember.class
 ch\raising\data\SharedDataRepository$ShareMapper.class

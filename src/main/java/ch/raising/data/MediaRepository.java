@@ -40,6 +40,7 @@ public class MediaRepository implements IMediaRepository<Media> {
 	private final String COUNT_MEDIA_OF_ACCOUNT;
 	private final String UPDATE_MEDIA;
 	private final String FIND_ACCOUNT_ID_BY_MEDIA_ID;
+	private final String DELETE_MEDIA;
 
 	public MediaRepository(JdbcTemplate jdbc, String tableName) {
 		this.rowMapper = MapUtil::mapRowToMedia;
@@ -53,9 +54,15 @@ public class MediaRepository implements IMediaRepository<Media> {
 		this.COUNT_MEDIA_OF_ACCOUNT = "SELECT COUNT(id) FROM " + tableName + " WHERE accountid = ?";
 		this.UPDATE_MEDIA = "UPDATE " + tableName + " SET media = ?, type = ? where id = ? AND accountid = ?";
 		this.FIND_ACCOUNT_ID_BY_MEDIA_ID = "SELECT accountid FROM " + tableName + " WHERE id = ?";
+		this.DELETE_MEDIA = "delete from " + tableName + " where id = ?";
 		this.jdbc = jdbc;
 	}
 
+	@Override
+	public void deleteMedia(long mediaId) {
+		jdbc.update(DELETE_MEDIA, new Object[] {mediaId}, new int[] {Types.BIGINT});
+	}
+	
 	@Override
 	public long addMedia(Media media) throws DataAccessException, SQLException, DatabaseOperationException {
 

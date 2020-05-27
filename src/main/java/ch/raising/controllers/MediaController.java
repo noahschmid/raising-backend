@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import ch.raising.data.AccountRepository;
+import ch.raising.models.Account;
 import ch.raising.models.Icon;
 import ch.raising.models.Media;
 import ch.raising.models.AccountDetails;
@@ -143,6 +144,7 @@ public class MediaController {
 
 	/**
 	 * Get id of account that's sending the request
+	 * @return id of the user that makes the request.
 	 */
 	private long getAccountId() {
 		try {
@@ -162,6 +164,7 @@ public class MediaController {
 	 */
 	@DeleteMapping("/profilepicture/{id}")
 	public ResponseEntity<?> deleteProfilePicture(@PathVariable long id) throws DataAccessException, SQLException {
+		accountRepository.deleteProfilePicture(getAccountId());
 		ppicService.deleteMedia(id);
 		return ResponseEntity.ok().build();
 	}

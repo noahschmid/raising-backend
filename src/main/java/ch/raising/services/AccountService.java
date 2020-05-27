@@ -54,7 +54,7 @@ import ch.raising.utils.UpdateQueryBuilder;
 public class AccountService implements UserDetailsService {
 
 	private final int NUMBER_OF_MATCHES = 5;
-	private final String STANDARD_LANGUAGE = "english";
+	private final String STANDARD_LANGUAGE = "ENGLISH";
 	protected AccountRepository accountRepository;
 	private MailUtil mailUtil;
 	private ResetCodeUtil resetCodeUtil;

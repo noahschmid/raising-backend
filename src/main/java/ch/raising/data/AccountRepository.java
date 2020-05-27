@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,8 +35,8 @@ public class AccountRepository implements IRepository<Account> {
 	private JdbcTemplate jdbc;
 	private PasswordEncoder encoder;
 
-	private  final String FIND_DATA_FOR_MATCHRESPONSE;
-	
+	private final String FIND_DATA_FOR_MATCHRESPONSE;
+
 	private final String ADD_ACCOUNT;
 	private final String ADD_ADMIN;
 
@@ -47,7 +48,7 @@ public class AccountRepository implements IRepository<Account> {
 				+ "description, ticketminid, ticketmaxid, countryid, website, profilepictureid, lastchanged) VALUES"
 				+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 		this.ADD_ADMIN = "INSERT INTO account(firstname, lastname, emailhash, password, roles) VALUES (?,?,?,?,?)";
-		this.FIND_DATA_FOR_MATCHRESPONSE ="SELECT id, firstname, lastname, companyname, profilepictureid, lastchanged FROM ACCOUNT WHERE id = ?";
+		this.FIND_DATA_FOR_MATCHRESPONSE = "SELECT id, firstname, lastname, companyname, profilepictureid, lastchanged FROM ACCOUNT WHERE id = ?";
 	}
 
 	/**
@@ -67,8 +68,8 @@ public class AccountRepository implements IRepository<Account> {
 	 * @param email the email to search for
 	 * @return instance of the found user account
 	 * @throws EmailNotFoundException
-	 * @throws SQLException 
-	 * @throws DataAccessException 
+	 * @throws SQLException
+	 * @throws DataAccessException
 	 */
 	public Account findByEmail(String email) throws EmailNotFoundException, DataAccessException, SQLException {
 		List<Account> accounts = getAll();
@@ -80,7 +81,6 @@ public class AccountRepository implements IRepository<Account> {
 		}
 		throw new EmailNotFoundException("Email " + email + "was not found.");
 	}
-
 
 	/**
 	 * Update last changed timestamp of account
@@ -124,12 +124,12 @@ public class AccountRepository implements IRepository<Account> {
 		ps.setInt(c++, account.getTicketMaxId());
 		ps.setLong(c++, account.getCountryId());
 		ps.setString(c++, account.getWebsite());
-		if(ppicId != -1)
+		if (ppicId != -1)
 			ps.setLong(c++, ppicId);
 		else
 			ps.setNull(c++, java.sql.Types.BIGINT);
 		ps.setTimestamp(c++, account.getLastChanged());
-		
+
 		if (ps.executeUpdate() > 0) {
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
@@ -168,11 +168,12 @@ public class AccountRepository implements IRepository<Account> {
 				this::mapRowToModel);
 		return account;
 	}
-	
+
 	public MatchResponse getDataForMatchResponse(long accountId) {
-		return jdbc.queryForObject(FIND_DATA_FOR_MATCHRESPONSE, new Object[] {accountId}, this::mapRowToMatchResponse);
+		return jdbc.queryForObject(FIND_DATA_FOR_MATCHRESPONSE, new Object[] { accountId },
+				this::mapRowToMatchResponse);
 	}
-	
+
 	private MatchResponse mapRowToMatchResponse(ResultSet rs, int row) throws SQLException {
 		MatchResponse match = new MatchResponse();
 		match.setAccountId(rs.getLong("id"));
@@ -193,24 +194,15 @@ public class AccountRepository implements IRepository<Account> {
 	 * @throws SQLException
 	 */
 	public Account mapRowToModel(ResultSet rs, int rowNum) throws SQLException {
-		return Account.accountBuilder()
-				.accountId(rs.getLong("id"))
-				.firstName(rs.getString("firstname"))
-				.lastName(rs.getString("lastname"))
-				.companyName(rs.getString("companyName"))
-				.pitch(rs.getString("pitch"))
-				.description(rs.getString("description"))
-				.email(rs.getString("emailHash"))
-				.roles(rs.getString("roles"))
-				.ticketMaxId(rs.getInt("ticketmaxid"))
-				.ticketMinId(rs.getInt("ticketminid"))
-				.password(rs.getString("password"))
+		return Account.accountBuilder().accountId(rs.getLong("id")).firstName(rs.getString("firstname"))
+				.lastName(rs.getString("lastname")).companyName(rs.getString("companyName"))
+				.pitch(rs.getString("pitch")).description(rs.getString("description")).email(rs.getString("emailHash"))
+				.roles(rs.getString("roles")).ticketMaxId(rs.getInt("ticketmaxid"))
+				.ticketMinId(rs.getInt("ticketminid")).password(rs.getString("password"))
 				.countryId(rs.getObject("countryId") == null ? -1 : rs.getLong("countryId"))
 				.website(rs.getString("website"))
-				.profilePictureId(rs.getObject("profilepictureid") == null ?
-				-1 : rs.getLong("profilepictureid"))
-				.lastChanged(rs.getTimestamp("lastchanged"))
-				.build();
+				.profilePictureId(rs.getObject("profilepictureid") == null ? -1 : rs.getLong("profilepictureid"))
+				.lastChanged(rs.getTimestamp("lastchanged")).build();
 	}
 
 	/**
@@ -234,10 +226,9 @@ public class AccountRepository implements IRepository<Account> {
 		boolean isAdmin;
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			
-			isAdmin = authentication.getAuthorities().stream()
-				.anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
-		} catch(NullPointerException e) {
+
+			isAdmin = authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+		} catch (NullPointerException e) {
 			isAdmin = false;
 		}
 
@@ -277,6 +268,19 @@ public class AccountRepository implements IRepository<Account> {
 		} catch (EmptyResultDataAccessException e) {
 			return false;
 		}
+	}
+
+	public void deleteProfilePicture(long accountId)throws DataAccessException, SQLException{
+		jdbc.execute("update account set profilepictureid = ? where id = ?", new PreparedStatementCallback<Boolean>() {
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				int c = 1;
+				ps.setLong(c++, accountId);
+				ps.setNull(c++,	Types.BIGINT);
+				return ps.execute();
+			}
+		}) 	;
+		
 	}
 
 	public long registerAdmin(Account admin) throws SQLException, DatabaseOperationException {

@@ -80,7 +80,7 @@ public class MediaService{
 	}
 	
 	public void deleteMedia(long videoId) throws DataAccessException, SQLException{
-		mediaRepo.deleteMediaFromAccount(videoId, getAccountId());
+		mediaRepo.deleteMedia(videoId);
 	}
 	
 	private long getAccountId() {
