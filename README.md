@@ -7,7 +7,7 @@
 
 ---
 
-<p align="center"> This is the Backend part of our app Rai$ing. You can find our project deliverables <a href="https://github.com/olistaehli/raising-deliverables">here!</a>
+<p align="center"> This is the backend part of our app Rai$ing. You can find our project deliverables <a href="https://github.com/olistaehli/raising-deliverables">here!</a>
     <br> 
 </p>
 
