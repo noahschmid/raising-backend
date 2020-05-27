@@ -3,11 +3,11 @@
  <img width=550px height=200px src="docs-resources/raising_schrift.PNG" alt="Project logo"></a>
 </p>
 
-<h3 align="center">RAI$ING - Android</h3>
+<h3 align="center">RAI$ING - Backend</h3>
 
 ---
 
-<p align="center"> This is the Android part of our app Rai$ing. 
+<p align="center"> This is the Backend part of our app Rai$ing. You can find our project deliverables <a href="https://github.com/olistaehli/raising-deliverables">here!</a>
     <br> 
 </p>
 
