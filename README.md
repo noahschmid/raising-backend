@@ -37,8 +37,13 @@ Use [Postman](https://www.postman.com/downloads/) to perform HTTP Requests again
 An overview about the currently implemented endpoints can be found at: http://raising.herokuapp.com/docs/
 
 # Databse Schema <a name="schema">
-This schmema represents the current version of the database server located at http://33384.hostserv.eu
+This schmema represents the current version of the database server located at http://33384.hostserv.eu. This address is only reachable for the webserver.
 ![schema.png](/docs-resources/schema.png)
+  
+# UML Class Diagram <a name="uml">
+The following picture is the UML-Class diagram of the webserver. The original picture can be found [here](/docs-resources/raising-backend-class-diagramm.svg).
+  ![raising-backend-class-diagramm.svg](/docs-resources/raising-backend-class-diagramm.svg)
+  
 ## 📁 Folder structure <a name = "folderstructure"></a>
 
 | Link | Content |
