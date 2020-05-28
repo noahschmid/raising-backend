@@ -19,7 +19,7 @@
 5. [Authors](#authors)
 
 # Installation <a name="install">
-1. Install both [OpenJDK Version 8](https://www.java.com/de/download/) and [Maven](http://maven.apache.org/download.cgi) in order to build/run the backend server. <br />
+1. Install both [OpenJDK Version 11](https://www.java.com/de/download/) and [Maven](http://maven.apache.org/download.cgi) in order to build/run the backend server. <br />
 1. Clone this repository to your local machine
 1. If you use [VS Code](https://code.visualstudio.com/) as your code editor, make sure to install the [Java Extension Pack](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack), [Maven for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-maven), [Spring Boot Extension Pack](https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack), [Spring Boot Tools](https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-spring-boot) and [Language Support for Java(TM) by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.java) in order to comfortably work with the project
 
