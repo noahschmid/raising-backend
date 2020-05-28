@@ -34,6 +34,15 @@ Use [Postman](https://www.postman.com/downloads/) to perform HTTP Requests again
 # Endpoints <a name="endpoints">
 An overview about the currently implemented endpoints can be found at: http://raising.herokuapp.com/docs/
 
+## 📁 Folder structure <a name = "folderstructure"></a>
+
+| Link | Content |
+|---|---|
+**<a href="/src/main/java/ch/raising">raising</a>** | **The source code written by us***
+<a href="/src/test/java/ch/raising/test">raising-tests</a> | Unit aswell as integration tests
+<a href="/src/main/resources">*.properties</a> | The configuration files for java spring
+<a href="/src/main/resources/db/migration">flyway</a> | Sql files for database-migration
+<a href="/docs-resources">docs-resources</a> | The images used for this README
 
 ## Authors <a name="authors"/>
 
