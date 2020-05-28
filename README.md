@@ -16,10 +16,11 @@
 2. [Live Server](#live)
 3. [Local Version](#local)
 4. [Endpoints](#endpoints)
-5. [Authors](#authors)
+5. [Folder Structure](#folderstructure)
+6. [Authors](#authors)
 
 # Installation <a name="install">
-1. Install both [OpenJDK Version 8](https://www.java.com/de/download/) and [Maven](http://maven.apache.org/download.cgi) in order to build/run the backend server. <br />
+1. Install both [OpenJDK Version 11](https://www.java.com/de/download/) and [Maven](http://maven.apache.org/download.cgi) in order to build/run the backend server. <br />
 1. Clone this repository to your local machine
 1. If you use [VS Code](https://code.visualstudio.com/) as your code editor, make sure to install the [Java Extension Pack](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack), [Maven for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-maven), [Spring Boot Extension Pack](https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack), [Spring Boot Tools](https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-spring-boot) and [Language Support for Java(TM) by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.java) in order to comfortably work with the project
 
@@ -34,6 +35,17 @@ Use [Postman](https://www.postman.com/downloads/) to perform HTTP Requests again
 # Endpoints <a name="endpoints">
 An overview about the currently implemented endpoints can be found at: http://raising.herokuapp.com/docs/
 
+## 📁 Folder structure <a name = "folderstructure"></a>
+
+| Link | Content |
+|---|---|
+**<a href="/src/main/java/ch/raising">raising</a>** | **The source code written by us***
+<a href="/src/test/java/ch/raising/test">raising-tests</a> | Unit as well as integration tests
+<a href="/src/main/resources">*.properties</a> | The configuration files for Java Spring
+<a href="/src/main/resources/db/migration">flyway</a> | Sql files for database-migration
+<a href="/docs-resources">docs-resources</a> | The images used for this README
+
+*This folder contains another README with additional, more precise information about the folder.
 
 ## Authors <a name="authors"/>
 
