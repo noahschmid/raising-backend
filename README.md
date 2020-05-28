@@ -35,6 +35,9 @@ Use [Postman](https://www.postman.com/downloads/) to perform HTTP Requests again
 # Endpoints <a name="endpoints">
 An overview about the currently implemented endpoints can be found at: http://raising.herokuapp.com/docs/
 
+# Databse Schema <a name="schema">
+This schmema represents the current version of the database server located at http://33384.hostserv.eu
+![schema.png](/docs-resources/schema.png)
 ## 📁 Folder structure <a name = "folderstructure"></a>
 
 | Link | Content |
