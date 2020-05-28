@@ -17,8 +17,9 @@
 3. [Local Version](#local)
 4. [Endpoints](#endpoints)
 5. [Database Schema](#schema)
-6. [Folder Structure](#folderstructure)
-7. [Authors](#authors)
+6. [UML Diagram](#uml)
+7. [Folder Structure](#folderstructure)
+8. [Authors](#authors)
 
 # Installation <a name="install">
 1. Install both [OpenJDK Version 11](https://www.java.com/de/download/) and [Maven](http://maven.apache.org/download.cgi) in order to build/run the backend server. <br />
@@ -42,7 +43,6 @@ This schmema represents the current version of the database server located at ht
   
 # UML Class Diagram <a name="uml">
 The following picture is the UML-Class diagram of the webserver. The original picture can be found [here](/docs-resources/raising-backend-class-diagramm.svg).
-  ![raising-backend-class-diagramm.svg](/docs-resources/raising-backend-class-diagramm.svg)
   
 ## 📁 Folder structure <a name = "folderstructure"></a>
 
