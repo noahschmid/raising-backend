@@ -39,7 +39,7 @@ An overview about the currently implemented endpoints can be found at: http://ra
 
 | Link | Content |
 |---|---|
-**<a href="/src/main/java/ch/raising">raising</a>** | **The source code written by us***
+**<a href="/src/main/java/ch/raising">raising</a>** | **The source code written by us**
 <a href="/src/test/java/ch/raising/test">raising-tests</a> | Unit aswell as integration tests
 <a href="/src/main/resources">*.properties</a> | The configuration files for java spring
 <a href="/src/main/resources/db/migration">flyway</a> | Sql files for database-migration
