@@ -16,7 +16,8 @@
 2. [Live Server](#live)
 3. [Local Version](#local)
 4. [Endpoints](#endpoints)
-5. [Authors](#authors)
+5. [Folder Structure](#folderstructure)
+6. [Authors](#authors)
 
 # Installation <a name="install">
 1. Install both [OpenJDK Version 11](https://www.java.com/de/download/) and [Maven](http://maven.apache.org/download.cgi) in order to build/run the backend server. <br />
