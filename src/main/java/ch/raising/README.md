@@ -18,7 +18,11 @@
 ## 🏁 Code structure <a name = "code_structure"></a>
 | Path | Content |
 |---|---|
-fragments | This folder contains all code that's needed to display and interact with the UI
-models | The model folder contains the Datamodels used for the app grouped by the section they are used for.
-util | The util folder contains static classes that perfom useful tasks (like services) and adapters for the recycler views
-viewModel | The viewModel folder contains the view models which are used to store and retrieve data that's being accessed from multiple fragments
+config | This folder contains all global configuration for Spring
+controllers | This folder contains the classes that controll all the backend endpoints
+data | The data folder contains the repositories which are used to interact with the database
+interfaces | The interfaces folder contains interfaces for models and repositories
+models | The models folder contains the data models used for communication with the frontend
+raisingbackend | This folder contains the main function of the backend application
+services | This folder contains services which implement the functionality used by the controllers. They heavily depend on the repositories.
+utils | The util folder contains useful classes that are not services (like filters, exceptions, static methods)
