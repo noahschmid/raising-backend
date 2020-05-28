@@ -14,11 +14,17 @@ public enum InteractionType {
 		this.pretty = pretty;
 		this.actionString = actionString;
 	}
-	
+	/**
+	 * 
+	 * @return a pretty sring for using in the context of a sentence
+	 */
 	public String getPretty() {
 		return pretty;
 	}
-
+	/**
+	 * @see ch.raising.services.NotificationService
+	 * @return a string that completes a sentence
+	 */
 	public String getActionString() {
 		return actionString;
 	}

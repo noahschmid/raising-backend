@@ -18,7 +18,11 @@ import ch.raising.models.Founder;
 import ch.raising.models.Media;
 import ch.raising.models.Investor;
 import ch.raising.models.PrivateShareholder;
-
+/**
+ * util class for mapping functions that are used by many different classes
+ * @author manus
+ *
+ */
 public class MapUtil {
 
 	public static long mapRowToId(ResultSet rs, int row) throws SQLException {

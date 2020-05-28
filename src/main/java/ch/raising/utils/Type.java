@@ -1,5 +1,10 @@
 package ch.raising.utils;
-
+/**
+ * was written prior to getting to know the {@link java.sql.Types} class
+ * @see QueryBuilder
+ * @author manus
+ *
+ */
 public enum Type {
 	VARCHAR ("varchar"), 
 	INT ("int"), 

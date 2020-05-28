@@ -25,7 +25,7 @@ import ch.raising.utils.PreparedStatementUtil;
 import ch.raising.utils.functionalInterface.PSTwoParameters;
 import ch.raising.utils.functionalInterface.RowMapper;
 
-public class MediaRepository implements IMediaRepository<Media> {
+public class MediaRepository implements IMediaRepository {
 
 	private final JdbcTemplate jdbc;
 	private final RowMapper<ResultSet, Integer, Media> rowMapper;

@@ -25,7 +25,11 @@ import ch.raising.models.Investor;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.UpdateQueryBuilder;
-
+/**
+ * repository for the investor
+ * @author noahs, manus
+ *
+ */
 @Repository
 public class InvestorRepository implements IRepository<Investor> {
 	private JdbcTemplate jdbc;

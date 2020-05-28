@@ -35,7 +35,7 @@ public class StartupControllerTest extends AccountControllerTestBaseClass{
 	private int breakEvenYear = 2021;
 	private int numberOfFte = 12;
 	private int preMoneyValuation = 1111;
-	private Date closingTime = new Date(System.currentTimeMillis());
+	private Date closingTime = new Date(System.currentTimeMillis() + 1000*60	);
 	private int revenueMaxId = 5;
 	private int revenueMinId = 7;
 	private int scope = 3;

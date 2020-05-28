@@ -126,7 +126,27 @@
 			<artifactId>google-api-services-androidpublisher</artifactId>
 			<version>v3-rev20200421-1.30.9</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-pubsub</artifactId>
+			</dependency>
+
+
+
+
+
 	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-gcp-dependencies</artifactId>
+				<version>1.2.2.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<build>
 		<plugins>
 			<plugin>

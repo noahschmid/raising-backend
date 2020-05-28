@@ -8,6 +8,11 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 
+/**
+ * Configures the Firebase Messaging classes and manages the credentials. If anything fails its during startup.
+ * @author manus
+ *
+ */
 @Service
 public class FCMConfig {
 
@@ -22,7 +27,7 @@ public class FCMConfig {
 			if(FirebaseApp.getApps().isEmpty()) {
 				FirebaseApp.initializeApp(opt);
 			}
-			LoggerFactory.getLogger(FCMConfig.class).info("FCM intialized.");
+			LoggerFactory.getLogger(FCMConfig.class).info("FCM intialized");
 		} catch (Exception e) {
 			LoggerFactory.getLogger(FCMConfig.class).error(e.getMessage());
 			throw e;

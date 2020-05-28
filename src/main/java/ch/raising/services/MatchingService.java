@@ -28,7 +28,11 @@ import ch.raising.models.Startup;
 import ch.raising.models.enums.RelationshipState;
 import ch.raising.models.responses.AdminMatchResponse;
 import ch.raising.models.responses.MatchResponse;
-
+/**
+ * service that is used to generate and manage the matches
+ * @author noahs
+ *
+ */
 @Service
 public class MatchingService {
 
@@ -52,8 +56,6 @@ public class MatchingService {
 
 	private final static int MAX_WEEKLY_MATCHES_COUNT = 5;
 
-	private SubscriptionService subscriptionService;
-
 	@Autowired
 	public MatchingService(RelationshipRepository relationshipRepository, StartupService startupService,
 			StartupRepository startupRepository, InvestorService investorService, InvestorRepository investorRepository,
@@ -67,7 +69,6 @@ public class MatchingService {
 		this.settingService = settingService;
         this.notificationService = notificationService;
 		this.interactionService = interactionService;
-		this.subscriptionService = subscriptionService;
 	}
 
 	/**
@@ -133,8 +134,6 @@ public class MatchingService {
 	 */
 	public static int getMatchingScore(MatchingProfile subject, MatchingProfile object) {
 		int score = 0;
-		boolean found = false;
-
 		if (subject.getInvestmentMin() != -1 && subject.getInvestmentMax() != -1 && object.getInvestmentMax() != -1
 				&& object.getInvestmentMin() != -1) {
 			if (subject.getInvestmentMax() >= object.getInvestmentMin()

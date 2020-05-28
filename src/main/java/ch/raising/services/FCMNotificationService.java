@@ -16,13 +16,22 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 
 import ch.raising.models.PushNotification;
-
+/**
+ * Service for creating and configuring the Firebase Cloud Messaging request for pushnotifications.
+ * @author manus
+ *
+ */
 @Service
 public class FCMNotificationService {
 
 	private final static String ANDROIDCLICKACTION = "NOTIFICATION";
 	private final static String CHANNELID = "1";
-	
+	/**
+	 * sends the Message to FCM
+	 * @param notification to be sent
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	public void sendMessage(PushNotification notification) throws InterruptedException, ExecutionException {
 		LoggerFactory.getLogger(FCMNotificationService.class).info("Sending message to FCM: " + notification);
 		Message m = getMessage(notification);

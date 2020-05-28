@@ -22,7 +22,11 @@ import ch.raising.models.enums.NotificationType;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.Type;
 import ch.raising.utils.UpdateQueryBuilder;
-
+/**
+ * repository for managing the settings
+ * @author manus
+ *
+ */
 @Repository
 public class SettingRepository {
 
@@ -36,7 +40,13 @@ public class SettingRepository {
 	public SettingRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 	}
-
+	/**
+	 * 
+	 * @param accountId of user whose settings are added
+	 * @param settings {@link Settings} to be added
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 */
 	public void addSettings(long accountId, Settings settings) throws DataAccessException, SQLException {
 		String notificationTypes = parseToString(settings.getNotificationTypes());
 		String device = settings.getDevice() == null ? "NONE" : settings.getDevice().name();
@@ -45,11 +55,23 @@ public class SettingRepository {
 						settings.getLanguage(), settings.getNumberOfMatches() },
 				new int[] { Types.BIGINT, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER });
 	}
-
+	/**
+	 * 
+	 * @param accountId
+	 * @return {@link Settings} of that account
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
 	public Settings findByAccountId(long accountId) throws SQLException, DataAccessException {
 		return jdbc.queryForObject(SELECT_BY_ACCOUNTID, new Object[] { accountId }, new SettingMapper());
 	}
-
+	/**
+	 * values that should be unchanged should have their initial value
+	 * @param token
+	 * @param accountId
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
 	public void update(Settings token, long accountId) throws SQLException, DataAccessException {
 		UpdateQueryBuilder update = new UpdateQueryBuilder(jdbc, "settings", accountId, "accountid");
 		update.addField(token.getToken(), "token");
@@ -79,7 +101,11 @@ public class SettingRepository {
 		}
 		return types;
 	}
-
+	/**
+	 * function for checking if a user has settings
+	 * @param accountId
+	 * @return true if user has an entry
+	 */
 	public boolean hasSettings(long accountId) {
 		long id = -1;
 		try {
@@ -89,7 +115,13 @@ public class SettingRepository {
 		}
 		return id != -1;
 	}
-
+	/**
+	 * 
+	 * @param accountId
+	 * @return {@link Settings} but only the token and notificationtypes are intitialized
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
 	public Settings findInfoByAccountId(long accountId) throws SQLException, DataAccessException {
 		return jdbc.queryForObject(FIND_NOTIFICATIONSETTINGS_BY_ACCOUNTID, new Object[] { accountId },
 				new NotificationSettingMapper());
@@ -116,7 +148,10 @@ public class SettingRepository {
 		}
 
 	}
-
+	/**
+	 * this means the user will not receive any notifications
+	 * @param accountId
+	 */
 	public void setDevicetokenNull(long accountId) {
 		jdbc.execute(SET_DEVICE_NULL, new PreparedStatementCallback<Boolean>() {
 

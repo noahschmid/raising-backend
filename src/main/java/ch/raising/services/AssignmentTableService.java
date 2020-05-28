@@ -23,7 +23,11 @@ import ch.raising.models.AssignmentTableModel;
 import ch.raising.models.AssignmentTableWithDescritionAndIcon;
 import ch.raising.models.responses.CompletePublicInformation;
 import ch.raising.utils.MapUtil;
-
+/**
+ * Service used for the many to many relationships of an account. Some functions are startup / investorspecific.
+ * @author manus
+ *
+ */
 @Service
 public class AssignmentTableService {
 
@@ -280,7 +284,13 @@ public class AssignmentTableService {
 	public void deleteFromStartupById(long accountId, String name, List<Long> models) throws DataAccessException, SQLException {
 		deleteById(accountId, atrFactory.getRepositoryForStartup(name), models);
 	}
-
+	/**
+	 * 
+	 * @param name
+	 * @param models
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 */
 	public void updateAssignmentTable(String name, List<Long> models) throws DataAccessException, SQLException {
 		long accountId = getAccountId();
 		AssignmentTableRepository ar = atrFactory.getRepository(name);

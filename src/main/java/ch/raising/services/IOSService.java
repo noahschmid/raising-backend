@@ -27,13 +27,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.raising.models.IOSSubscription;
 import ch.raising.utils.InvalidSubscriptionException;
 
+/**
+ * service used for requests to the Apple Store API
+ * 
+ * @author manus
+ *
+ */
 @Service
 public class IOSService {
 
 	private static final String PRODUCTION_URL = "https://buy.itunes.apple.com/verifyReceipt";
 	private static final String SANDBOX_URL = "https://sandbox.itunes.apple.com/verifyReceipt";
 	private static final String PASSWORD = "1f6d372d08144670841c6912cbe8539d";
-	
 
 	private static final Logger Logger = LoggerFactory.getLogger(IOSService.class);
 
@@ -47,49 +52,51 @@ public class IOSService {
 	 * 
 	 * @param receipt
 	 * @return a fully initialized receipt
-	 * @throws InvalidSubscriptionException if the receipt could not be validated for any reason
+	 * @throws InvalidSubscriptionException if the receipt could not be validated
+	 *                                      for any reason
 	 */
-	public IOSSubscription verifyReceipt(String receipt) throws InvalidSubscriptionException{
+	public IOSSubscription verifyReceipt(String receipt) throws InvalidSubscriptionException {
 		IOSReceiptValidationRequest request = new IOSReceiptValidationRequest(receipt, PASSWORD, mapper);
 
 		IOSSubscription response;
 		try {
 			response = productionRequest(request.toJson());
-			
-			if(response.getStatus() == 0) {
+
+			if (response.getStatus() == 0) {
 				Logger.info("Payment verified successfully for ios-production environment: {}", response.toString());
 				return response;
-			}else if(response.getStatus() == 21007){
+			} else if (response.getStatus() == 21007) {
 				response = sandboxRequest(request.toJson());
-				if(response.getStatus() != 0) {
-					throw new InvalidSubscriptionException("cannot validate sandbox-receipt. status: " + response.getStatus());
-				}else {
+				if (response.getStatus() != 0) {
+					throw new InvalidSubscriptionException(
+							"cannot validate sandbox-receipt. status: " + response.getStatus());
+				} else {
 					Logger.info("Payment verified successfully for ios-sandbox environment: {}", response.toString());
 					return response;
 				}
-			}else {
-				throw new InvalidSubscriptionException("cannot validate production-receipt. status: " + response.getStatus());
+			} else {
+				throw new InvalidSubscriptionException(
+						"cannot validate production-receipt. status: " + response.getStatus());
 			}
 		} catch (IOException e) {
 			throw new InvalidSubscriptionException("there was a problem regarding the json");
 		}
-		
+
 	}
 
-	public IOSSubscription productionRequest(String json) throws IOException {
+	private IOSSubscription productionRequest(String json) throws IOException {
 		HttpsURLConnection con = prepareConnection(PRODUCTION_URL);
 		sendReceipt(con, json);
 		return receiveData(con);
 	}
 
-	public IOSSubscription sandboxRequest(String json) throws IOException {
+	private IOSSubscription sandboxRequest(String json) throws IOException {
 		HttpsURLConnection con = prepareConnection(SANDBOX_URL);
 		sendReceipt(con, json);
 		return receiveData(con);
 	}
 
-	private IOSSubscription receiveData(HttpsURLConnection con)
-			throws IOException {
+	private IOSSubscription receiveData(HttpsURLConnection con) throws IOException {
 		final BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
 		StringBuilder response = new StringBuilder();
 		String nextline = br.readLine();
@@ -103,8 +110,7 @@ public class IOSService {
 		if (status == 0) {
 			String latestReceipt = jn.findValue("latest_receipt").asText();
 			jn = jn.findValue("latest_receipt_info");
-			return IOSSubscription.builder().status(status)
-					.expiresDate(jn.findValue("expires_date_ms").asLong())
+			return IOSSubscription.builder().status(status).expiresDate(jn.findValue("expires_date_ms").asLong())
 					.latestReceiptData(latestReceipt)
 					.originalTransactionId(jn.findValue("original_transaction_id").asText())
 					.subscriptionId(jn.findValue("product_id").asText()).build();
@@ -129,6 +135,13 @@ public class IOSService {
 		return con;
 	}
 
+	/**
+	 * class used for building the data that will be used to send an Apple Store API
+	 * request
+	 * 
+	 * @author manus
+	 *
+	 */
 	private class IOSReceiptValidationRequest {
 		private String receipt;
 		private String password;
@@ -136,7 +149,7 @@ public class IOSService {
 		private ObjectMapper mapper;
 
 		/**
-		 * exclude-old-transactions is true by default
+		 * exclude_old_transactions is true by default
 		 * 
 		 * @param receipt
 		 * @param password

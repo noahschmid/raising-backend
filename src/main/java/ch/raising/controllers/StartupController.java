@@ -37,7 +37,11 @@ import ch.raising.services.MatchingService;
 import ch.raising.services.StartupService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.NotAuthorizedException;
-
+/**
+ * class for controlling startupspecific features
+ * @author noahs, manus
+ *
+ */
 @Controller
 @RequestMapping("/startup")
 public class StartupController {

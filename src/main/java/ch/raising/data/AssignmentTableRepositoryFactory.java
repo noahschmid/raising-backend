@@ -6,7 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import ch.raising.utils.MapUtil;
-
+/**
+ * factory for an AssignmentTableReposotry
+ * @author manus
+ *
+ */
 @Repository
 public class AssignmentTableRepositoryFactory {
 

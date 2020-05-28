@@ -19,7 +19,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.RowMapper;
 
 import ch.raising.models.SharedData;
-
+/**
+ * repository that is used for managing the data that is shared with an interaction
+ * @author manus
+ *
+ */
 @Repository
 public class SharedDataRepository {
 
@@ -44,29 +48,66 @@ public class SharedDataRepository {
 		this.DELETE_BY_ID = "DELETE FROM share WHERE id = ?";
 		this.DELETE_BY_INTERACTION_ID_AND_ACCOUNT_ID = "DELETE FROM share WHERE interactionid = ? and accountid = ?";
 	}
-
+	/**
+	 * 
+	 * @param accountId
+	 * @return a list of {@link SharedData}  
+	 * @throws EmptyResultDataAccessException
+	 * @throws SQLException
+	 */
 	public List<SharedData> findByAccountId(long accountId)throws EmptyResultDataAccessException, SQLException {
 		return jdbc.query(FIND_BY_ACCOUNT_ID, new Object[] { accountId }, shareMapper);
 	}
-
+	/**
+	 * 
+	 * @param interactionId
+	 * @param accountId
+	 * @return {@link SharedData}
+	 */
 	public SharedData findByInteractionIdAndAccountId(long interactionId, long accountId) {
 		return jdbc.queryForObject(FIND_BY_INTERACTION_ID_AND_ACCOUNT_ID, new Object[] {interactionId, accountId}, shareMapper);
 	}
-	
+	/**
+	 * 
+	 * @param interactionId
+	 * @param accountId
+	 * @throws SQLException
+	 */
 	public void deleteByInteractionIdAndAccountId(long interactionId, long accountId) throws SQLException{
 		jdbc.update(DELETE_BY_INTERACTION_ID_AND_ACCOUNT_ID, new Object[] {interactionId, accountId}, new int[] {Types.BIGINT, Types.BIGINT});
 	}
-	
+	/**
+	 * 
+	 * @param data
+	 * @return the id of the inserted datas
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
 	public long addSharedData(SharedData data)throws SQLException, DataAccessException {
 		return jdbc.execute(new AddSharePreparedStaement(), insertSharedDataCallback(data));
 	}
-	
+	/**
+	 * 
+	 * @param interactionId
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
 	public void deleteByInteractionId(long interactionId) throws SQLException, DataAccessException{
 		jdbc.update(DELETE_BY_INTERACTION_ID, new Object[] {interactionId}, new int[] {Types.BIGINT});
 	}
+	/**
+	 * 
+	 * @param accountId
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
 	public void deleteByAccountId(long accountId) throws SQLException, DataAccessException{
 		jdbc.update(DELETE_BY_ACCOUNT_ID, new Object[] {accountId}, new int[] {Types.BIGINT});
 	}
+	/**
+	 * delete by id
+	 * @param dataId
+	 */
 	public void deleteById(long dataId) {
 		jdbc.update(DELETE_BY_ID, new Object[] {dataId}, new int[] {Types.BIGINT});
 	}
@@ -96,7 +137,6 @@ public class SharedDataRepository {
 	}
 	
 	private class AddSharePreparedStaement implements PreparedStatementCreator{
-
 		@Override
 		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 			return con.prepareStatement(INSERT_SHARED_DATA, Statement.RETURN_GENERATED_KEYS);
@@ -105,7 +145,6 @@ public class SharedDataRepository {
 	}
 
 	private static class ShareMapper implements RowMapper<SharedData> {
-
 		@Override
 		public SharedData mapRow(ResultSet rs, int row) throws SQLException {
 			return SharedData.builder()

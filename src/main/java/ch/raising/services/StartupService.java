@@ -51,8 +51,6 @@ public class StartupService extends AccountService {
 	private final CorporateShareholderRepository cshRepository;
 	private final AssignmentTableRepository investorTypeRepository;
 
-	// private final MatchingService matchingService;
-
 	private final AssignmentTableRepository countryRepository;
 	private final AssignmentTableRepository continentRepository;
 	private final AssignmentTableRepository industryRepository;
@@ -81,7 +79,6 @@ public class StartupService extends AccountService {
 		this.supportRepository = atrFactory.getRepository("support");
 		this.industryRepository = atrFactory.getRepository("industry");
 
-		// this.matchingService = matchingService;
 	}
 
 	@Override
@@ -160,8 +157,8 @@ public class StartupService extends AccountService {
 	 * @throws DataAccessException
 	 */
 	@Override
-	public LoginResponse updateAccount(int id, Account acc, String token) throws DataAccessException, SQLException, 
-		NotAuthorizedException {
+	public LoginResponse updateAccount(int id, Account acc, String token)
+			throws DataAccessException, SQLException, NotAuthorizedException {
 		LoginResponse response = super.updateAccount(id, acc, token);
 		Startup su = (Startup) acc;
 		investorTypeRepository.updateAssignment(id, su.getInvestorTypes());

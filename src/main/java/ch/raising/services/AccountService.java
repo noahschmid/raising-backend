@@ -49,6 +49,13 @@ import ch.raising.utils.PasswordResetException;
 import ch.raising.utils.ResetCodeUtil;
 import ch.raising.utils.UpdateQueryBuilder;
 
+/**
+ * this class provides the services for any accountrelated functions
+ * @see StartupService
+ * @see InestorService
+ * @author manus
+ *
+ */
 @Primary
 @Service
 public class AccountService implements UserDetailsService {
@@ -60,8 +67,8 @@ public class AccountService implements UserDetailsService {
 	private ResetCodeUtil resetCodeUtil;
 	private JwtUtil jwtUtil;
 	private PasswordEncoder encoder;
-	private IMediaRepository<Media> galleryRepository;
-	private IMediaRepository<Media> pPicRepository;
+	private IMediaRepository galleryRepository;
+	private IMediaRepository pPicRepository;
 	private final SettingRepository settingRepo;
 
 	@Autowired
@@ -92,7 +99,7 @@ public class AccountService implements UserDetailsService {
 		this.pPicRepository = mrFactory.getMediaRepository("profilepicture");
 		this.jdbc = jdbc;
 	}
-
+	
 	@Override
 	public AccountDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		try {
@@ -109,7 +116,12 @@ public class AccountService implements UserDetailsService {
 			throw new UsernameNotFoundException(e.getMessage());
 		}
 	}
-
+	/**
+	 * @see ch.raising.utils.JwtRequestFilter for faster retreiving that by email, since it is hashed.
+	 * @param id
+	 * @return {@link AccountDetails} of that user
+	 * @throws UsernameNotFoundException if the id did yield a result
+	 */
 	public AccountDetails loadUserById(long id) throws UsernameNotFoundException {
 		try {
 			Account account = accountRepository.find(id);
@@ -137,7 +149,12 @@ public class AccountService implements UserDetailsService {
 			return true;
 		}
 	}
-
+	/**
+	 * for registering a new admin
+	 * @param admin
+	 * @return {@link LoginResponse} 
+	 * @throws Exception
+	 */
 	public LoginResponse registerAdmin(Account admin) throws Exception {
 		long id;
 		try {
@@ -183,7 +200,7 @@ public class AccountService implements UserDetailsService {
 	}
 
 	/**
-	 * saves an {@link Account} supertype to the database should be overridden and
+	 * saves an {@link Account} super type to the database should be overridden and
 	 * called by subclass.
 	 * 
 	 * @param req sent from the frontend
@@ -395,7 +412,16 @@ public class AccountService implements UserDetailsService {
 		final String returnToken = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}
-
+	/**
+	 * logs an admin in
+	 * @param req
+	 * @return {@link LoginRequest} containing a special token to identify an admin.
+	 * @throws UsernameNotFoundException
+	 * @throws DataAccessException
+	 * @throws AuthenticationException
+	 * @throws SQLException
+	 * @throws NotAuthorizedException
+	 */
 	public LoginResponse adminLogin(LoginRequest req) throws UsernameNotFoundException, DataAccessException,
 			AuthenticationException, SQLException, NotAuthorizedException {
 
@@ -416,7 +442,12 @@ public class AccountService implements UserDetailsService {
 		final String returnToken = jwtUtil.generateToken(userDetails);
 		return new LoginResponse(returnToken, userDetails.getId(), userDetails.getStartup(), userDetails.getInvestor());
 	}
-
+	/**
+	 * use to refresh a valid token
+	 * @param token
+	 * @return {@link LoginRequest} 
+	 * @throws NotAuthorizedException
+	 */
 	public LoginResponse refreshToken(String token) throws NotAuthorizedException {
 		if (token == null) {
 			throw new NotAuthorizedException("token not found");
@@ -427,7 +458,11 @@ public class AccountService implements UserDetailsService {
 		AccountDetails uDet = loadUserByUsername(username);
 		return new LoginResponse(jwtUtil.generateToken(uDet), uDet.getId(), uDet.getStartup(), uDet.getInvestor());
 	}
-
+	/**
+	 * makes a db request to evaluate if a user is a startup or an investor
+	 * @param accountId
+	 * @return true if account is a startup
+	 */
 	public boolean isStartup(long accountId) {
 		try {
 			return accountRepository.isStartup(accountId);
@@ -435,6 +470,11 @@ public class AccountService implements UserDetailsService {
 			return false;
 		}
 	}
+	/**
+	 * makes a db request to evaluate if a user is a investor or an investor
+	 * @param accountId
+	 * @return true if account is a investor
+	 */
 	public boolean isInvestor(long accountId) {
 		try {
 			return accountRepository.isInvestor(accountId);

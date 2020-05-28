@@ -41,7 +41,12 @@ import ch.raising.models.Settings;
 import ch.raising.models.enums.NotificationType;
 import ch.raising.models.responses.ErrorResponse;
 import ch.raising.models.responses.LoginResponse;
-
+/**
+ * service that handles interaction specific functions
+ * @see AccountService
+ * @author noahs, manus
+ *
+ */
 @Service
 public class InvestorService extends AccountService {
 
@@ -57,11 +62,6 @@ public class InvestorService extends AccountService {
 
 	private AssignmentTableRepository industryRepository;
 
-	private AssignmentTableRepository investorTypeRepository;
-
-	// private MatchingService matchingService;
-
-	private final SettingRepository settingRepo;
 
 	@Autowired
 	public InvestorService(AccountRepository accountRepository, InvestorRepository investorRepository,
@@ -76,11 +76,8 @@ public class InvestorService extends AccountService {
 		this.continentRepository = atrFactory.getRepository("continent");
 		this.supportRepository = atrFactory.getRepository("support");
 		this.industryRepository = atrFactory.getRepository("industry");
-		this.investorTypeRepository = atrFactory.getRepositoryForStartup("investortype");
-		this.settingRepo = settingRepo;
-		// this.matchingService = matchingService;
 	}
-
+	
 	@Override
 	protected long registerAccount(Account requestInvestor) throws InvalidProfileException, DataAccessException,
 			SQLException, MediaException, DatabaseOperationException {
@@ -94,7 +91,6 @@ public class InvestorService extends AccountService {
 		invReq.setAccountId(accountId);
 		investorRepository.add(invReq);
 		investmentPhaseRepository.addEntriesToAccount(accountId, invReq.getInvestmentPhases());
-		// matchingService.match(accountId, false);
 		return accountId;
 
 	}

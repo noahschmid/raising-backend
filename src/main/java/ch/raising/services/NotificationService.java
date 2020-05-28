@@ -17,9 +17,10 @@ import ch.raising.models.enums.NotificationType;
 import ch.raising.utils.DatabaseOperationException;
 
 /**
+ * This class manages different notifications and if the user wants to receive
+ * them.
  * 
- * @author manus This class manages different notifications and if the user
- *         wants to receive them.
+ * @author manus
  */
 @Service
 public class NotificationService {
@@ -37,6 +38,16 @@ public class NotificationService {
 		this.accountService = accountService;
 	}
 
+	/**
+	 * sends a notification if a new lead was generated
+	 * 
+	 * @see ch.raising.services.InteractionService
+	 * @see ch.raising.services.Matchingservice
+	 * @param requesteeId
+	 * @param partnerAccountId
+	 * @param type
+	 * @param actionId
+	 */
 	public void sendLeadNotification(long requesteeId, long partnerAccountId, InteractionType type, long actionId) {
 		String name = getAccountName(requesteeId);
 		String message = name + " wants to " + type.getActionString();
@@ -45,6 +56,15 @@ public class NotificationService {
 		sendMessage(push);
 	}
 
+	/**
+	 * sends a notification if a connection is made
+	 * 
+	 * @see InteractionService
+	 * @param requesteeId
+	 * @param partnerAccountId
+	 * @param interaction
+	 * @param actionId
+	 */
 	public void sendConnectionNotification(long requesteeId, long partnerAccountId, InteractionType interaction,
 			long actionId) {
 		String name = getAccountName(requesteeId);
@@ -54,6 +74,13 @@ public class NotificationService {
 		sendMessage(push);
 	}
 
+	/**
+	 * is sent if a match was accepted by one party.
+	 * 
+	 * @param requesteeId
+	 * @param partnerId
+	 * @param actionId
+	 */
 	public void sendRequestMatch(long requesteeId, long partnerId, long actionId) {
 		String name = getAccountName(requesteeId);
 		String message = name + " would like to get in contact with you. Check out their profile";
@@ -67,6 +94,13 @@ public class NotificationService {
 		sendMessage(push);
 	}
 
+	/**
+	 * is sent if both parties have accepted a match
+	 * 
+	 * @param requesteeId
+	 * @param partnerId
+	 * @param actionId
+	 */
 	public void sendMatchRequestAccept(long requesteeId, long partnerId, long actionId) {
 		String name = getAccountName(requesteeId);
 		String message = name + " is now a lead. Open Rai$ing and start interacting!";

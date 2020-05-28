@@ -27,7 +27,11 @@ import ch.raising.services.IOSService;
 import ch.raising.services.AssignmentTableService;
 import ch.raising.services.GooglePlayService;
 import ch.raising.utils.InvalidSubscriptionException;
-
+/**
+ * class that is used for all the values uesd to characterize a profile.
+ * @author manus
+ *
+ */
 @Controller
 @RequestMapping("/public")
 public class PublicInformationController {

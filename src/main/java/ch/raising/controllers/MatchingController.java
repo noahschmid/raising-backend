@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.raising.services.MatchingService;
 import ch.raising.utils.JwtUtil;
-
+/**
+ * This class is for all enpoints on {BaseUrl}/match and is used for getting, accepting and declinging matches.
+ * @author noahs
+ *
+ */
 @Controller
 @RequestMapping("/match")
 public class MatchingController {
@@ -30,9 +34,12 @@ public class MatchingController {
         this.jwtUtil = jwtUtil;
     }
 
-    /**
-     * Get all matches of account
-     */
+   /**
+    * 
+    * @param request the HttpServletRequest as received from the client
+    * @return ResponseEntity with a list of all matches for the account requesting or a response according to {@link ControllerExceptionHandler}
+    * @throws Exception
+    */
     @GetMapping
     public ResponseEntity<?> getMatches(HttpServletRequest request) throws Exception {
         String token = jwtUtil.getToken(request);

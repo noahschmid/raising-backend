@@ -21,10 +21,17 @@ import ch.raising.models.enums.NotificationType;
 import ch.raising.services.NotificationService;
 import ch.raising.services.SettingService;
 
+/**
+ * Class that is responsible to provide endpoints for getting and saving
+ * settings. The devicetoken for PushNotifiactions is saved here
+ * 
+ * @author manus
+ *
+ */
 @Controller
 @RequestMapping("/settings")
 public class SettingsController {
-	
+
 	private final NotificationService notificationService;
 	private final SettingService settingService;
 
@@ -32,20 +39,39 @@ public class SettingsController {
 		this.settingService = settingService;
 		this.notificationService = notificationService;
 	}
-	
+	/**
+	 * 
+	 * @param dtr {@link Settings} 
+	 * * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 */
 	@PatchMapping
-	public ResponseEntity<?> addOrUpdateDevice(@RequestBody Settings dtr) throws DataAccessException, SQLException{
+	public ResponseEntity<?> addOrUpdateDevice(@RequestBody Settings dtr) throws DataAccessException, SQLException {
 		settingService.update(dtr);
 		return ResponseEntity.ok().build();
 	}
-	
+	/**
+	 * 
+	 * * @return ResponseEntity with status code 200 and an {@link Settings} object for the user or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 */
 	@GetMapping
-	public ResponseEntity<?> getSettings() throws DataAccessException, SQLException{
+	public ResponseEntity<?> getSettings() throws DataAccessException, SQLException {
 		return ResponseEntity.ok(settingService.getSettings());
 	}
-	
+	/**
+	 * 
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 */
 	@PatchMapping("/deletetoken")
-	public ResponseEntity<?> deleteDeviceToken() throws DataAccessException, SQLException{
+	public ResponseEntity<?> deleteDeviceToken() throws DataAccessException, SQLException {
 		settingService.deleteNotificationToken();
 		return ResponseEntity.ok().build();
 	}

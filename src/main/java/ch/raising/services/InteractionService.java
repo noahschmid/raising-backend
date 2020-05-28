@@ -31,6 +31,12 @@ import ch.raising.models.responses.MatchResponse;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.InvalidInteractionException;
 
+/**
+ * service for handling all the interactions
+ * 
+ * @author manus
+ *
+ */
 @Service
 public class InteractionService {
 	private final InteractionRepository interactionRepo;
@@ -54,6 +60,14 @@ public class InteractionService {
 		this.notificationService = notifiactionService;
 	}
 
+	/**
+	 * 
+	 * @return a list of {@link MatchResonse} objects of a certain account
+	 * @throws EmptyResultDataAccessException
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws InvalidInteractionException
+	 */
 	public List<MatchResponse> getAllByAccountId()
 			throws EmptyResultDataAccessException, DataAccessException, SQLException, InvalidInteractionException {
 		long accountId = getAccountId();
@@ -63,6 +77,12 @@ public class InteractionService {
 		return matchResponses;
 	}
 
+	/**
+	 * 
+	 * @param investorId
+	 * @param startupId
+	 * @return a list of {@link Interaction} objects of an investor and a startup
+	 */
 	public List<Interaction> getInteractionsByInvestorAndStartup(long investorId, long startupId) {
 		List<Interaction> response = new ArrayList<Interaction>();
 		response.addAll(interactionRepo.findByInvestorAndStartup(investorId, startupId));
@@ -141,6 +161,14 @@ public class InteractionService {
 		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getInvestor();
 	}
 
+	/**
+	 * adds an interaction
+	 * 
+	 * @param interaction {@link InteractionRequest} to be newly inserted
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws InvalidInteractionException
+	 */
 	public void addInteraction(InteractionRequest interaction)
 			throws DataAccessException, SQLException, InvalidInteractionException {
 		Interaction insert = constructInteraction(interaction);
@@ -161,8 +189,8 @@ public class InteractionService {
 	}
 
 	private void validateSharedData(InteractionType state, SharedData data) throws InvalidInteractionException {
-		if(data == null) 
-			throw new InvalidInteractionException("send the required data object: " +  new SharedData());
+		if (data == null)
+			throw new InvalidInteractionException("send the required data object: " + new SharedData());
 		if (data.getAccountId() == -1 || data.getAccountId() == 0)
 			throw new InvalidInteractionException("add data.accountId");
 		if (data.getEmail() == "" || data.getEmail() == null)
@@ -202,6 +230,19 @@ public class InteractionService {
 		return insert;
 	}
 
+	/**
+	 * updates the state of an interaction
+	 * 
+	 * @param interactionId to be accepted
+	 * @param accept        {@link InteractionRequest} that holds the data for the
+	 *                      interaction to be accepted
+	 * @return the {@link SharedData} of the partner that already accepted the
+	 *         request
+	 * @throws InvalidInteractionException
+	 * @throws DataAccessException
+	 * @throws DatabaseOperationException
+	 * @throws SQLException
+	 */
 	public SharedData acceptInteraction(long interactionId, InteractionRequest accept)
 			throws InvalidInteractionException, DataAccessException, DatabaseOperationException, SQLException {
 
@@ -244,6 +285,16 @@ public class InteractionService {
 		return null;
 	}
 
+	/**
+	 * The declinging will delete any data that is saved by any party and also the
+	 * state will be updated.
+	 * 
+	 * @param interactionId of the interaction to be declined
+	 * @throws DataAccessException
+	 * @throws DatabaseOperationException
+	 * @throws InvalidInteractionException
+	 * @throws SQLException
+	 */
 	public void declineInteraction(long interactionId)
 			throws DataAccessException, DatabaseOperationException, InvalidInteractionException, SQLException {
 		long accountId = getAccountId();
@@ -258,6 +309,15 @@ public class InteractionService {
 		}
 	}
 
+	/**
+	 * if a request was mistakingly made the interaction can be reopened
+	 * 
+	 * @param interactionId of the interaction to be reopened
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws DatabaseOperationException
+	 * @throws InvalidInteractionException
+	 */
 	public void reopenInteraction(long interactionId)
 			throws DataAccessException, SQLException, DatabaseOperationException, InvalidInteractionException {
 		long accountId = getAccountId();

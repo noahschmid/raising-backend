@@ -13,7 +13,11 @@ import ch.raising.data.SharedDataRepository;
 import ch.raising.models.AccountDetails;
 import ch.raising.models.SharedData;
 import ch.raising.utils.DatabaseOperationException;
-
+/**
+ * service for retreiving shared data
+ * @author manus
+ *
+ */
 @Service
 public class SharedDataService {
 

@@ -2,7 +2,11 @@ package ch.raising.utils;
 
 import java.util.Map;
 
-
+/**
+ * helper class for repository tests
+ * @author manus
+ *
+ */
 public class QueryBuilder {
 	
 	String tableName;

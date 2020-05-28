@@ -35,6 +35,12 @@ import ch.raising.services.MediaService;
 import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.MediaException;
 
+/**
+ * This end point is used for storing, updating and retreiving media.
+ * 
+ * @author manus
+ *
+ */
 @RequestMapping("/media")
 @Controller
 public class MediaController {
@@ -44,14 +50,13 @@ public class MediaController {
 	private final MediaService galleryService;
 	private final MediaService documentService;
 	private final IconService iconService;
-	
+
 	private final static int RAISING_ICON = 49;
 
 	private final static int MAX_GALLERY_SIZE = 9;
 	private final static int MAX_VIDEO_SIZE = 1;
 	private final static int MAX_PPIC_SIZE = 1;
 	private final static int MAX_PDF_SIZE = 1;
-
 
 	private AccountRepository accountRepository;
 
@@ -65,29 +70,12 @@ public class MediaController {
 		this.accountRepository = accountRepository;
 	}
 
-	@PostMapping("/video")
-	public ResponseEntity<?> uploadVideo(@RequestBody Media video)
-			throws DataAccessException, SQLException, DatabaseOperationException, MediaException {
-		long videoid = videoService.uploadMediaAndReturnId(video);
-		return ResponseEntity.ok().body(new ReturnIdResponse("added video", videoid));
-	}
-
-	@DeleteMapping("/video/{videoId}")
-	public ResponseEntity<?> deleteVideo(@PathVariable long videoId) throws DataAccessException, SQLException {
-		videoService.deleteMedia(videoId);
-		return ResponseEntity.ok().build();
-	}
-
-	@GetMapping("/video/{id}")
-	public ResponseEntity<?> getVideoOfAccount(@PathVariable long id)
-			throws DataAccessException, SQLException, DatabaseOperationException {
-		return ResponseEntity.ok().body(videoService.getMedia(id));
-	}
-
 	/**
+	 * Fetches the profile picture having this id.
 	 * 
 	 * @param id of the profilepicture
-	 * @return
+	 * @return ResponseEntity with a byte[] in the body represented a or a response
+	 *         according to {@link ControllerExceptionHandler}
 	 * @throws SQLException
 	 * @throws DataAccessException
 	 */
@@ -102,7 +90,9 @@ public class MediaController {
 	/**
 	 * 
 	 * @param file To be uploaded
-	 * @return a response containing the id of the uploaded picture
+	 * @return ResponseEntity with {@link ReturnIdResponse} in the body represented
+	 *         a or a response according to {@link ControllerExceptionHandler} if
+	 *         the image has the wrong content type code 415 will be returned
 	 * @throws DataAccessException
 	 * @throws SQLException
 	 * @throws IOException
@@ -125,7 +115,8 @@ public class MediaController {
 	 * 
 	 * @param file
 	 * @param id
-	 * @return
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
 	 * @throws DataAccessException
 	 * @throws SQLException
 	 * @throws MediaException
@@ -144,21 +135,23 @@ public class MediaController {
 
 	/**
 	 * Get id of account that's sending the request
+	 * 
 	 * @return id of the user that makes the request.
 	 */
 	private long getAccountId() {
 		try {
-			return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication()
-					.getPrincipal()).getId();
-		}catch(Exception e) {
+			return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+		} catch (Exception e) {
 			return -1;
 		}
 	}
 
 	/**
+	 * deletes the image from the id
 	 * 
 	 * @param id
-	 * @return
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
 	 * @throws DataAccessException
 	 * @throws SQLException
 	 */
@@ -173,7 +166,7 @@ public class MediaController {
 	 * returns an image from gallery specified by the id of said image
 	 * 
 	 * @param id
-	 * @return a byte[] and the contenttype in the header
+	 * @return a byte[] and the content type in the header
 	 * @throws DataAccessException
 	 * @throws SQLException
 	 * @throws DatabaseOperationException
@@ -207,6 +200,17 @@ public class MediaController {
 		return ResponseEntity.ok().body(galleryService.uploadMultipleAndReturnIds(gallery));
 	}
 
+	/**
+	 * 
+	 * @param MultipartFile
+	 * @param id
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws MediaException
+	 * @throws IOException
+	 */
 	@PatchMapping("/gallery/{id}")
 	public ResponseEntity<?> updateGalleryImage(@RequestParam("gallery") MultipartFile file, @PathVariable long id)
 			throws DataAccessException, SQLException, MediaException, IOException {
@@ -217,12 +221,29 @@ public class MediaController {
 		return ResponseEntity.status(415).body(new ErrorResponse("Filetype not supported, try .png or .jpeg"));
 	}
 
+	/**
+	 * 
+	 * @param id of the media to be deleted
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 */
 	@DeleteMapping("/gallery/{id}")
 	public ResponseEntity<?> deleteGalleryImage(@PathVariable long id) throws DataAccessException, SQLException {
 		galleryService.deleteMedia(id);
 		return ResponseEntity.ok().build();
 	}
 
+	/**
+	 * 
+	 * @param id of the document to be fetched
+	 * @return ResponseEntity with a byte[] as body or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws DatabaseOperationException
+	 */
 	@GetMapping("/document/{id}")
 	public ResponseEntity<?> getBusinessPlan(@PathVariable long id)
 			throws DataAccessException, SQLException, DatabaseOperationException {
@@ -251,6 +272,14 @@ public class MediaController {
 		return ResponseEntity.ok().build();
 	}
 
+	/**
+	 * 
+	 * @param id of the media to be deleted
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 */
 	@DeleteMapping("/document/{id}")
 	public ResponseEntity<?> deleteDocument(@PathVariable long id) throws DataAccessException, SQLException {
 		documentService.deleteMedia(id);
@@ -261,6 +290,18 @@ public class MediaController {
 		return type.equals("none") ? null : MediaType.parseMediaType(type);
 	}
 
+	/**
+	 * 
+	 * @param tableEntryId the id of the investortype the icon should be mapped to
+	 * @param icon         as MultiPartFile the filetype must be png
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws DatabaseOperationException
+	 * @throws MediaException
+	 */
 	@PostMapping("/icon/investortype/{tableEntryId}")
 	public ResponseEntity<?> uploadInvTypeIcon(@PathVariable long tableEntryId,
 			@RequestParam("icon") MultipartFile icon)
@@ -272,6 +313,19 @@ public class MediaController {
 		return ResponseEntity.ok().build();
 	}
 
+	/**
+	 * 
+	 * @param tableEntryId the id of the investmentphase the icon should be mapped
+	 *                     to
+	 * @param icon         as MultiPartFile the filetype must be png
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws DatabaseOperationException
+	 * @throws MediaException
+	 */
 	@PostMapping("/icon/investmentphase/{tableEntryId}")
 	public ResponseEntity<?> uploadInvPhaseIcon(@PathVariable long tableEntryId,
 			@RequestParam("icon") MultipartFile icon)
@@ -282,7 +336,18 @@ public class MediaController {
 		iconService.addToInvestmentPhase(icon, tableEntryId);
 		return ResponseEntity.ok().build();
 	}
-
+	/**
+	 * 
+	 * @param tableEntryId the id of the support the icon should be mapped to
+	 * @param icon as MultiPartFile the filetype must be png
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws DatabaseOperationException
+	 * @throws MediaException
+	 */
 	@PostMapping("/icon/support/{tableEntryId}")
 	public ResponseEntity<?> uploadSupIcon(@PathVariable long tableEntryId, @RequestParam("icon") MultipartFile icon)
 			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
@@ -292,7 +357,19 @@ public class MediaController {
 		iconService.addToSupport(icon, tableEntryId);
 		return ResponseEntity.ok().build();
 	}
-
+	
+	/**
+	 * 
+	 * @param tableEntryId the id of the intdustry the icon should be mapped to
+	 * @param icon         as MultiPartFile the filetype must be png
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws DatabaseOperationException
+	 * @throws MediaException
+	 */
 	@PostMapping("/icon/industry/{tableEntryId}")
 	public ResponseEntity<?> uploadIndustryIcon(@PathVariable long tableEntryId,
 			@RequestParam("icon") MultipartFile icon)
@@ -304,6 +381,18 @@ public class MediaController {
 		return ResponseEntity.ok().build();
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param icon as MultiPartFile the filetype must be png
+	 * @return ResponseEntity with status code 200 or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws DatabaseOperationException
+	 * @throws MediaException
+	 */
 	@PostMapping("/icon")
 	public ResponseEntity<?> uploadLabelIcon(@RequestParam("icon") MultipartFile icon)
 			throws DataAccessException, SQLException, IOException, DatabaseOperationException, MediaException {
@@ -320,17 +409,46 @@ public class MediaController {
 		return ResponseEntity.ok().build();
 	}
 
+	/**
+	 * 
+	 * @param id of the document to be fetched
+	 * @return ResponseEntity with a byte[] as body or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws DatabaseOperationException
+	 */
 	@GetMapping("/icon/{id}")
 	public ResponseEntity<?> getIcon(@PathVariable long id) {
 		Icon icon = iconService.getIcon(id);
 		MediaType returns = getMediaType(icon.getContentType());
 		return ResponseEntity.ok().contentType(returns).body(icon.getIcon());
 	}
+
+	/**
+	 * 
+	 * @param id of the document to be fetched
+	 * @return ResponseEntity with a List of {@link Icon} as body or a response
+	 *         according to {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws DatabaseOperationException
+	 */
 	@GetMapping("/icon")
 	public ResponseEntity<?> getIcon() throws DataAccessException, SQLException {
 		return ResponseEntity.ok().body(iconService.getAllIcons());
 	}
-	
+
+	/**
+	 * returns the raising icon
+	 * 
+	 * @param id of the document to be fetched
+	 * @return ResponseEntity with a byte[] as body or a response according to
+	 *         {@link ControllerExceptionHandler}
+	 * @throws DataAccessException
+	 * @throws SQLException
+	 * @throws DatabaseOperationException
+	 */
 	@GetMapping("/icon/raising")
 	public ResponseEntity<?> getRaisingIcon() {
 		Icon icon = iconService.getIcon(RAISING_ICON);

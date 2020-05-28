@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import ch.raising.models.AndroidSubscription;
 import ch.raising.services.SubscriptionService;
@@ -57,12 +59,12 @@ public class SubscriptionController {
 	}
 	
 	@PostMapping("/android/notify")
-	public ResponseEntity<?> notifyAndroid(@RequestBody Map<String, Object> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
+	public ResponseEntity<?> notifyAndroid(@RequestBody byte[] json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException, InvalidProtocolBufferException {
 		subService.processAndroidPush(json);
 		return ResponseEntity.ok().build();
 	}
 	
-	//@PostMapping("/ios/notify")
+	@PostMapping("/ios/notify")
 	public ResponseEntity<?> notifyIOS(@RequestBody Map<String, String> json) throws InvalidSubscriptionException, DataAccessException, JsonMappingException, JsonProcessingException {
 		subService.processIOSPush(json);
 		return ResponseEntity.ok().build();

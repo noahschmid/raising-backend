@@ -19,14 +19,17 @@ import ch.raising.models.CorporateShareholder;
 import ch.raising.models.Founder;
 import ch.raising.models.PrivateShareholder;
 import ch.raising.utils.NotAuthorizedException;
-
+/**
+ * service that is used to get the stakeholder of a startup 
+ * @author manus
+ *
+ */
 @Service
 public class AdditionalInformationService {
 
 	FounderRepository founderRepository;
 	BoardmemberRepository bmemRepository;
 	PrivateShareholderRepository pShareholderRepository;
-
 	CorporateShareholderRepository cShareholderRepository;
 
 	@Autowired

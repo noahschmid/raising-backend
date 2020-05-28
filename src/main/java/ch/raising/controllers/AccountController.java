@@ -42,7 +42,11 @@ import ch.raising.utils.PasswordResetException;
 import ch.raising.controllers.AccountController;
 import ch.raising.models.ForgotPasswordRequest;
 import ch.raising.models.FreeEmailRequest;
-
+/**
+ * Manages all the endpoints for the account. This means every endpoint a user might use that is not startup or investor specific.
+ * @author noahs, manus
+ *
+ */
 @RequestMapping("/account")
 @Controller
 public class AccountController {
@@ -475,7 +479,12 @@ public class AccountController {
 		assignmentTableService.deleteFromAccountById(accountId, "industry", industries);
 		return ResponseEntity.ok().build();
 	}
-	
+	/**
+	 * This endpoint can be used to refresh a token if it is expiring soon. It only works if the token is still valid.
+	 * @param token
+	 * @return Responseentity with status 200, 500, 403
+	 * @throws NotAuthorizedException if the token is invalid
+	 */
 	@GetMapping("/refresh")
 	public ResponseEntity<?> getNewToken(@RequestHeader("Authorization") String token) throws NotAuthorizedException{
 		return ResponseEntity.ok(accountService.refreshToken(token));

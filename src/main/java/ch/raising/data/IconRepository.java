@@ -20,7 +20,11 @@ import org.springframework.stereotype.Repository;
 import ch.raising.models.Icon;
 import ch.raising.utils.MapUtil;
 
-
+/**
+ * repository for managing the icons
+ * @author manus
+ *
+ */
 @Repository
 public class IconRepository {
 	
@@ -33,11 +37,21 @@ public class IconRepository {
 	public IconRepository(JdbcTemplate jdbc) {
 		this.jdbc = jdbc;
 	}
-	
+	/**
+	 * adds the icon 
+	 * @param icon
+	 * @return new id of inserted element
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
 	public long addMedia(Icon icon) throws SQLException, DataAccessException{
 		return jdbc.execute(new AddAndReturnIdPreparedStatement(), addIconCallback(icon));
 	}    
-	
+	/**
+	 * 
+	 * @param id
+	 * @return {@link Icon}
+	 */
 	public Icon find(long id) {
 		return jdbc.queryForObject(FIND_BY_ID, new Object[] {id}, new IconMapper());
 	}
@@ -91,12 +105,20 @@ public class IconRepository {
 		}
 		
 	}
-
+	/**
+	 * 
+	 * @return a list of ids of all icons
+	 * @throws SQLException
+	 * @throws DataAccessException
+	 */
 	public List<Long> findAllIds() throws SQLException, DataAccessException {
 		return jdbc.query(FIND_ALL, MapUtil::mapRowToId);
 	}
-
-	public List<Icon> findAllIcons() {
+	/**
+	 * 
+	 * @return a list of all Icons
+	 */
+	public List<Icon> findAllIcons() throws SQLException, DataAccessException{
 		return jdbc.query(FIND_ALL, new IconMapper());
 	}
 }

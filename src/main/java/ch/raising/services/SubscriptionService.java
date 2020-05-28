@@ -1,6 +1,7 @@
 package ch.raising.services;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.pubsub.v1.PubsubMessage;
 
 import ch.raising.data.AndroidSubscriptionRepository;
 import ch.raising.data.IOSSubscriptionRepository;
@@ -21,6 +25,7 @@ import ch.raising.models.AccountDetails;
 import ch.raising.models.AndroidSubscription;
 import ch.raising.models.IOSSubscription;
 import ch.raising.utils.InvalidSubscriptionException;
+import io.grpc.netty.shaded.io.netty.handler.codec.base64.Base64Decoder;
 
 /**
  * The class that is used to talk to the repositories aswell as the individual
@@ -175,24 +180,20 @@ public class SubscriptionService {
 		return ((AccountDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 	}
 
-	public void processAndroidPush(Map<String, Object> json) throws InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
+	public void processAndroidPush(byte[] json) {
 		String purchaseToken = "";
 		String subscriptionId = "";
-//		JsonNode base64data = mapper.readTree(json.get("message").toString());
-//		Logger.info("base64: {}", base64data.findValue("data").asText());
-		
-//		JsonNode message = mapper.readTree(json.get("message"));
-//		String base64Payload = message.findValue("data").asText();
-//		String decodedPayload = new String(Base64.getDecoder().decode(base64Payload));
-//		Logger.info("payload: {}", decodedPayload);
-		//find fields in testnotification and do nothing (if not present in subscriptionNotification)
-		//verifyAndroidSubscription(purchaseToken, subscriptionId);
+		PubsubMessage msg;
+		try{
+			msg = PubsubMessage.parseFrom(json);
+			Logger.info(msg.getData().toStringUtf8());
+		} catch (InvalidProtocolBufferException e) {
+			Logger.info("Could not parse message.");
+		}
 	}
 
 	public void processIOSPush(Map<String, String> json) throws DataAccessException, InvalidSubscriptionException, JsonMappingException, JsonProcessingException {
 		Logger.info("Got a push from IOS-Server");//unified_receipt.latest_receipt
-		JsonNode jn = mapper.readTree(json.get("unified_receipt"));
-		String receipt = jn.findValue("latest_receipt").asText();
-		verifyIOSSubscription(receipt);
+		verifyIOSSubscription("");
 	}
 }

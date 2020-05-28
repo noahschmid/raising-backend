@@ -19,7 +19,11 @@ import ch.raising.interfaces.IRepository;
 import ch.raising.models.Relationship;
 import ch.raising.models.enums.RelationshipState;
 import ch.raising.utils.UpdateQueryBuilder;
-
+/**
+ * 
+ * @author noahs, manus
+ *
+ */
 @Repository
 public class RelationshipRepository implements IRepository<Relationship> {
     private final JdbcTemplate jdbc;

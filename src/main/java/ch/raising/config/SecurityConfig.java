@@ -22,6 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
+/**
+ * 
+ * @author noahs, manus
+ * This class contains the configuration for Spring Security. 
+ */
 @EnableWebSecurity
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -36,6 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(accountService);
     }
 
+    /**
+     * Configures the Filters inserted before a request is handled by the controllers @see ch.raising.controllers
+     */
     @Override 
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf()

@@ -15,7 +15,11 @@ import org.springframework.stereotype.Repository;
 
 import ch.raising.models.IOSSubscription;
 import ch.raising.utils.MapUtil;
-
+/**
+ * repository for managing the subscription of ios users
+ * @author manus
+ *
+ */
 @Repository
 public class IOSSubscriptionRepository {
 

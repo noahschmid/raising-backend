@@ -14,7 +14,11 @@ import ch.raising.data.ResetCodeRepository;
 import ch.raising.models.Account;
 import ch.raising.models.PasswordResetRequest;
 import ch.raising.models.ResetCode;
-
+/**
+ * 
+ * @author noahs
+ *
+ */
 @Service
 public class ResetCodeUtil {
     

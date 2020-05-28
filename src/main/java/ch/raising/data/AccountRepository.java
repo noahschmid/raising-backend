@@ -28,7 +28,11 @@ import ch.raising.utils.DatabaseOperationException;
 import ch.raising.utils.EmailNotFoundException;
 import ch.raising.utils.MapUtil;
 import ch.raising.utils.UpdateQueryBuilder;
-
+/**
+ * 
+ * @author noahs, manus
+ *
+ */
 @Repository
 public class AccountRepository implements IRepository<Account> {
 

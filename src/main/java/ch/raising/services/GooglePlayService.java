@@ -1,10 +1,6 @@
 package ch.raising.services;
 
-import java.io.FileNotFoundException;
-
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 import org.slf4j.Logger;
@@ -15,26 +11,19 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.androidpublisher.AndroidPublisher;
-import com.google.api.services.androidpublisher.AndroidPublisher.Purchases.Subscriptions;
 import com.google.api.services.androidpublisher.AndroidPublisher.Purchases.Subscriptions.Get;
-import com.google.api.services.androidpublisher.AndroidPublisherRequestInitializer;
 import com.google.api.services.androidpublisher.AndroidPublisherScopes;
 import com.google.api.services.androidpublisher.model.SubscriptionPurchase;
-import com.google.firebase.auth.internal.GetAccountInfoResponse;
-
 import ch.raising.models.AndroidSubscription;
 import ch.raising.utils.InvalidSubscriptionException;
-
+/**
+ */
 @Service
 public class GooglePlayService {
 
@@ -52,7 +41,13 @@ public class GooglePlayService {
 		this.cred = GoogleCredential.fromStream(new ClassPathResource(PATH_TO_CREDENTIALS).getInputStream())
 				.createScoped(Collections.singleton(AndroidPublisherScopes.ANDROIDPUBLISHER));
 	}
-
+	/**
+	 * sends an API request to the Google Play API
+	 * @param token
+	 * @param subscriptionId
+	 * @return {@link AndroidSubscription}
+	 * @throws InvalidSubscriptionException if anything goes wrong
+	 */
 	public AndroidSubscription verifyPurchaseToken(String token, String subscriptionId) throws InvalidSubscriptionException {
 		HttpTransport http = new NetHttpTransport();
 		HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
