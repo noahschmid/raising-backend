@@ -28,7 +28,6 @@ ch\raising\models\AndroidSubscription$Builder.class
 ch\raising\data\IOSSubscriptionRepository$SubscriptionMapper.class
 ch\raising\models\AndroidSubscription$1.class
 ch\raising\controllers\SubscriptionController.class
-ch\raising\services\ProfileService.class
 ch\raising\utils\MediaException.class
 ch\raising\data\InteractionRepository.class
 ch\raising\data\InteractionRepository$InteractionMapper.class
@@ -140,7 +139,6 @@ ch\raising\utils\QueryBuilder.class
 ch\raising\data\StartupRepository.class
 ch\raising\data\AndroidSubscriptionRepository$1.class
 ch\raising\utils\PreparedStatementUtil$1.class
-ch\raising\controllers\SharedDataController.class
 ch\raising\data\PrivateShareholderRepository.class
 ch\raising\models\AndroidSubscription.class
 ch\raising\controllers\ControllerExceptionHandler.class
