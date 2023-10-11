@@ -34,11 +34,7 @@ Use [Postman](https://www.postman.com/downloads/) to perform HTTP Requests again
 1. Run `mvn clean install` to install the neccessary dependencies.<br />
 1. Use `mvn spring-boot:run` to start the backend server. 
 
-# Endpoints <a name="endpoints">
-An overview about the currently implemented endpoints can be found at: http://raising.herokuapp.com/docs/
-
 # Database Schema <a name="schema">
-This schmema represents the current version of the database server located at http://33384.hostserv.eu. This address is only reachable for the webserver.
 ![schema.png](/docs-resources/schema.png)
   
 # UML Class Diagram <a name="uml">
@@ -58,4 +54,4 @@ The following picture is the UML-Class diagram of the webserver. The original pi
 
 ## Authors <a name="authors"/>
 
-[Manuel Schüpbach](https://github.com/maschuep) (main developer) <br /> [Noah Schmid](https://github.com/noahschmid) (matching, assistance)
+[Manuel Schüpbach](https://github.com/maschuep) <br /> [Noah Schmid](https://github.com/noahschmid) 
